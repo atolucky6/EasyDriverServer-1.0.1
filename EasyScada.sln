@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriverPlugin", "EasyDri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyScada.Core", "EasyScada.Core\EasyScada.Core.csproj", "{67089D82-2FDE-46C7-9264-ED5C066DC8AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyScada.ServerApp", "EasyScada.ServerApp\EasyScada.ServerApp.csproj", "{7086846E-AE2B-451B-85CC-CA75E0185311}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.ModbusRTU", "EasyDriver.ModbusRTU\EasyDriver.ModbusRTU.csproj", "{948DC54F-D9C2-4ACC-A948-DF58D489023D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{DDC365FF-FE58-4979-932E-66E29C551C10}"
@@ -33,10 +31,6 @@ Global
 		{67089D82-2FDE-46C7-9264-ED5C066DC8AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67089D82-2FDE-46C7-9264-ED5C066DC8AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67089D82-2FDE-46C7-9264-ED5C066DC8AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7086846E-AE2B-451B-85CC-CA75E0185311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7086846E-AE2B-451B-85CC-CA75E0185311}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7086846E-AE2B-451B-85CC-CA75E0185311}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7086846E-AE2B-451B-85CC-CA75E0185311}.Release|Any CPU.Build.0 = Release|Any CPU
 		{948DC54F-D9C2-4ACC-A948-DF58D489023D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{948DC54F-D9C2-4ACC-A948-DF58D489023D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{948DC54F-D9C2-4ACC-A948-DF58D489023D}.Release|Any CPU.ActiveCfg = Release|Any CPU

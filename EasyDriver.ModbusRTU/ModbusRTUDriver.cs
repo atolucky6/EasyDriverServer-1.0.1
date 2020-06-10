@@ -147,7 +147,7 @@ namespace EasyDriver.ModbusRTU
                                         {
                                             readSuccess = true;
                                             tag.ParameterContainer.Parameters["TryCount"] = 0;
-                                            tag.Value = tag.DataType.ConvertToValue(buffer, 0, 0, byteOrder);
+                                            tag.Value = tag.DataType.ConvertToValue(buffer, tag.Gain, tag.Offset, 0, 0, byteOrder);
                                             tag.TimeStamp = DateTime.Now;
                                             tag.Quality = Quality.Good;
                                             tag.RefreshInterval = DateTime.Now - tag.TimeStamp;
@@ -164,7 +164,7 @@ namespace EasyDriver.ModbusRTU
                                         {
                                             readSuccess = true;
                                             tag.ParameterContainer.Parameters["TryCount"] = 0;
-                                            tag.Value = tag.DataType.ConvertToValue(buffer, 0, 0, byteOrder);
+                                            tag.Value = tag.DataType.ConvertToValue(buffer, tag.Gain, tag.Offset, 0, 0, byteOrder);
                                             tag.TimeStamp = DateTime.Now;
                                             tag.Quality = Quality.Good;
                                             tag.RefreshInterval = DateTime.Now - tag.TimeStamp;

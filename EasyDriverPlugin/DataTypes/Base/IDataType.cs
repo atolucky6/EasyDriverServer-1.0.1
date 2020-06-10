@@ -38,7 +38,7 @@ namespace EasyDriverPlugin
         /// <param name="value"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        bool TryParseToByteArray(object value, out byte[] buffer, ByteOrder byteOrder = ByteOrder.ABCD);
+        bool TryParseToByteArray(object value, double gaine, double offset, out byte[] buffer, ByteOrder byteOrder = ByteOrder.ABCD);
 
         /// <summary>
         /// Hàm chuyển đổi chuỗi byte thành giá trị
@@ -47,7 +47,7 @@ namespace EasyDriverPlugin
         /// <param name="pos"></param>
         /// <param name="bit"></param>
         /// <returns></returns>
-        string ConvertToValue(byte[] buffer, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD);
+        string ConvertToValue(byte[] buffer, double gain, double offset, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD);
 
         /// <summary>
         /// Chỉ mục đến <see cref="IDataTypeIndex"/>
