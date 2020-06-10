@@ -45,6 +45,7 @@ namespace EasyDriver.ModbusRTU
         {
             if (Channel.ParameterContainer.Parameters.Count < 5)
                 return false;
+            //TEst
             try
             {
                 InitializeSerialPort();
