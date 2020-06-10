@@ -1,0 +1,117 @@
+﻿<UserControl x:Class="EasyScada.ServerApplication.ProjectTreeWorkspaceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EasyScada.ServerApplication"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400"
+             
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"  
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm">
+    <UserControl.Resources>
+        <local:ProjectTreeCellTemplateSelector x:Key="ProjectTreeCellTemplateSelector"/>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService/>
+    </dxmvvm:Interaction.Behaviors>
+    <dxb:BarManager>
+        <dxb:BarManager.Items>
+            <dxb:BarItemSeparator x:Name="bSeparator"/>
+            <dxb:BarButtonItem x:Name="bExpandAll" Content="Expand all" 
+                               Command="{Binding ExpandAllCommand}"/>
+            <dxb:BarButtonItem x:Name="bCollapseAll" Content="Collapse all" 
+                               Command="{Binding CollapseAllCommand}"/>
+            <dxb:BarButtonItem x:Name="bAddStation" Content="Add Station" 
+                               IsVisible="{Binding ElementName=bAddStation, Path=IsEnabled}" GlyphSize="Default"
+                               Command="{Binding AddStationCommand}"/>
+            <dxb:BarButtonItem x:Name="bAddChannel" Content="Add Channel" 
+                               IsVisible="{Binding ElementName=bAddChannel, Path=IsEnabled}" GlyphSize="Default"
+                               Command="{Binding AddChannelCommand}"/>
+            <dxb:BarButtonItem x:Name="bAddDevice" Content="Add Device" 
+                               IsVisible="{Binding ElementName=bAddDevice, Path=IsEnabled}" GlyphSize="Default"
+                               Command="{Binding AddDeviceCommand}"/>
+            <dxb:BarButtonItem x:Name="bEdit" Content="Edit" 
+                               IsVisible="{Binding ElementName=bEdit, Path=IsEnabled}" GlyphSize="Default"
+                               Command="{Binding EditCommand}"/>
+            <dxb:BarButtonItem x:Name="bOpen" Content="Open"
+                               IsVisible="{Binding ElementName=bOpen, Path=IsEnabled}"
+                               Command="{Binding OpenCommand}"/>
+            <dxb:BarButtonItem x:Name="bCopy" Content="Copy" Command="{Binding CopyCommand}" GlyphSize="Default" KeyGesture="Ctrl+C"/>
+            <dxb:BarButtonItem x:Name="bCut" Content="Cut" Command="{Binding CutCommand}" GlyphSize="Default" KeyGesture="Ctrl+X"/>
+            <dxb:BarButtonItem x:Name="bPaste" Content="Paste" Command="{Binding PasteCommand}" GlyphSize="Default" KeyGesture="Ctrl+V"/>
+            <dxb:BarButtonItem x:Name="bDelete" Content="Delete" Command="{Binding DeleteCommand}" GlyphSize="Default" KeyGesture="Delete"/>
+        </dxb:BarManager.Items>
+        <dxg:TreeListControl SelectionMode="Row"
+                             SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             SelectedItems="{Binding SelectedItems, Mode=OneWayToSource}"
+                             ItemsSource="{Binding CurrentProject.Childs}">
+            <dxmvvm:Interaction.Behaviors>
+                <dxmvvm:EventToCommand EventName="PreviewMouseDown" Command="{Binding ShowPropertyOnClickCommand}">
+                    <dxmvvm:EventToCommand.EventArgsConverter>
+                        <dx:EventArgsToDataRowConverter/>
+                    </dxmvvm:EventToCommand.EventArgsConverter>
+                </dxmvvm:EventToCommand>
+                <dxmvvm:EventToCommand EventName="PreviewMouseDoubleClick" Command="{Binding OpenOnDoubleClickCommand}">
+                    <dxmvvm:EventToCommand.EventArgsConverter>
+                        <dx:EventArgsToDataRowConverter/>
+                    </dxmvvm:EventToCommand.EventArgsConverter>
+                </dxmvvm:EventToCommand>
+            </dxmvvm:Interaction.Behaviors>
+            <dxg:TreeListControl.View>
+                <dxg:TreeListView TreeColumnFieldName="Name"
+                                  AllowEditing="False"
+                                  ShowIndicator="False"
+                                  HorizontalScrollbarVisibility="Auto"
+                                  VerticalScrollbarVisibility="Auto"
+                                  ShowHorizontalLines="False"
+                                  ShowVerticalLines="False"
+                                  NavigationStyle="Row"
+                                  ShowColumnHeaders="False"
+                                  AutoExpandAllNodes="True"
+                                  TreeDerivationMode="ChildNodesSelector">
+                    <dxmvvm:Interaction.Behaviors>
+                        <local:TreeListViewUtilities/>
+                    </dxmvvm:Interaction.Behaviors>
+                    <dxg:TreeListView.ChildNodesSelector>
+                        <local:ProjectTreeChildNodeSelector/>
+                    </dxg:TreeListView.ChildNodesSelector>
+                    <dxg:TreeListView.RowCellMenuCustomizations>
+                        <dxb:BarButtonItemLink BarItemName="bOpen"/>
+                        <dxb:BarItemSeparator/>
+                        <dxb:BarButtonItemLink BarItemName="bAddChannel"/>
+                        <dxb:BarButtonItemLink BarItemName="bAddDevice"/>
+                        <dxb:BarButtonItemLink BarItemName="bEdit"/>
+                        <dxb:BarItemSeparator/>
+                        <dxb:BarButtonItemLink BarItemName="bCopy"/>
+                        <dxb:BarButtonItemLink BarItemName="bCut"/>
+                        <dxb:BarButtonItemLink BarItemName="bPaste"/>
+                        <dxb:BarButtonItemLink BarItemName="bDelete"/>
+                        <dxb:BarItemSeparator/>
+                        <dxb:BarButtonItemLink BarItemName="bExpandAll"/>
+                        <dxb:BarButtonItemLink BarItemName="bCollapseAll"/>
+                    </dxg:TreeListView.RowCellMenuCustomizations>
+                </dxg:TreeListView>
+            </dxg:TreeListControl.View>
+            <dxg:TreeListControl.Columns>
+                <dxg:TreeListColumn FieldName="Name" Width="1*" CellTemplateSelector="{StaticResource ProjectTreeCellTemplateSelector}"/>
+            </dxg:TreeListControl.Columns>
+            <dxb:BarManager.DXContextMenu>
+                <dxb:PopupMenu>
+                    <dxb:BarButtonItemLink BarItemName="bAddStation"/>
+                    <dxb:BarItemSeparator/>
+                    <dxb:BarButtonItemLink BarItemName="bCopy" IsEnabled="False"/>
+                    <dxb:BarButtonItemLink BarItemName="bCut" IsEnabled="False"/>
+                    <dxb:BarButtonItemLink BarItemName="bPaste" IsEnabled="False"/>
+                    <dxb:BarButtonItemLink BarItemName="bDelete" IsEnabled="False"/>
+                    <dxb:BarItemSeparator/>
+                    <dxb:BarButtonItemLink BarItemName="bExpandAll"/>
+                    <dxb:BarButtonItemLink BarItemName="bCollapseAll"/>
+                </dxb:PopupMenu>
+            </dxb:BarManager.DXContextMenu>
+        </dxg:TreeListControl>
+    </dxb:BarManager>
+</UserControl>

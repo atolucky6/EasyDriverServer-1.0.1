@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="EasyScada.ServerApplication.ItemPropertiesWorkspaceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EasyScada.ServerApplication"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400"
+             
+             xmlns:dxprg="http://schemas.devexpress.com/winfx/2008/xaml/propertygrid"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors">
+    <dxprg:PropertyGridControl SelectedObject="{Binding SelectedObject}"    
+                               SelectedPropertyPath="{Binding SelectedPropertyPath, Mode=OneWayToSource}"
+                               ShowProperties="All" BorderThickness="0" AllowCommitOnValidationAttributeError="False"
+                               ShowMenuButtonInRows="False" SnapsToDevicePixels="True"
+                               UseLayoutRounding="True"
+                               HeaderColumnWidth="Auto"
+                               ScrollViewer.VerticalScrollBarVisibility="Auto"
+                               ReadOnly="{Binding SelectedObject.IsReadOnly}"
+                               ShowCategories="True" ExpandCategoriesWhenSelectedObjectChanged="True">
+        <!--Property nào là read only thì phải khai báo trong PropertyDefinitions-->
+        <dxprg:PropertyDefinition Path="Description" EditSettings="{dxe:TextSettings TextWrapping=Wrap}" IsHitTestVisible="False"/>
+        <dxprg:PropertyDefinition Path="CreatedDate" IsReadOnly="True" IsHitTestVisible="False">
+            <dxprg:PropertyDefinition.EditSettings>
+                <dxe:TextEditSettings DisplayFormat="dd/MM/yyy HH:mm:ss"/>
+            </dxprg:PropertyDefinition.EditSettings>
+        </dxprg:PropertyDefinition>
+        <dxprg:PropertyDefinition Path="ModifiedDate" IsReadOnly="True" IsHitTestVisible="False">
+            <dxprg:PropertyDefinition.EditSettings>
+                <dxe:TextEditSettings DisplayFormat="dd/MM/yyy HH:mm:ss"/>
+            </dxprg:PropertyDefinition.EditSettings>
+        </dxprg:PropertyDefinition>
+        <dxprg:PropertyDefinition Path="Path" IsReadOnly="True"/>
+        <dxprg:PropertyDefinition Path="ParameterContainer" AllowExpanding="Force" ShowChildren="False">
+            <dxprg:PropertyDefinition.ContentTemplate>
+                <DataTemplate>
+                    <dxprg:PropertyGridControl SelectedObject="{Binding EditableObject, Converter={dxprg:EditableObjectConverter}}"
+                                               ShowCategories="false"
+                                               ShowSearchBox="False"
+                                               ShowToolPanel="False"
+                                               ShowGridLines="True"
+                                               ShowMenuButtonInRows="False"
+                                               UseLayoutRounding="True"
+                                               ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                               BorderThickness="0">
+                    </dxprg:PropertyGridControl>
+                </DataTemplate>
+            </dxprg:PropertyDefinition.ContentTemplate>
+        </dxprg:PropertyDefinition>
+
+    </dxprg:PropertyGridControl>
+</UserControl>

@@ -1,0 +1,13 @@
+﻿<dx:ThemedWindow x:Class="EasyScada.ServerApplication.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:local="clr-namespace:EasyScada.ServerApplication"
+                 xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+                 xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+                 Title="Easy Scada Server Version 1.0.1" Height="700" Width="1000"
+                 >
+    <dx:ThemedWindow.ToolbarItems>
+        <dxb:MainMenuControl VerticalAlignment="Center" dxb:MergingProperties.AllowMerging="True"/>
+    </dx:ThemedWindow.ToolbarItems>
+    <local:MainView/>
+</dx:ThemedWindow>
