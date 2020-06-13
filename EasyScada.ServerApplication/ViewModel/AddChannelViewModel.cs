@@ -52,7 +52,7 @@ namespace EasyScada.ServerApplication
         public object Parameter { get; set; }
         public object ParentViewModel { get; set; }
         public ProjectTreeWorkspaceViewModel ProjectTreeWorkspaceViewModel { get => ParentViewModel as ProjectTreeWorkspaceViewModel; }
-        public IStation Parent { get => Parameter as IStation; }
+        public IStationCore Parent { get => Parameter as IStationCore; }
         public virtual bool IsBusy { get; set; }
         #endregion
 
@@ -75,7 +75,7 @@ namespace EasyScada.ServerApplication
                 else
                 {
                     IsBusy = true;
-                    IChannel channel = new Channel(Parent)
+                    IChannelCore channel = new Channel(Parent)
                     {
                         Name = Name,
                         DriverPath = DriverPath

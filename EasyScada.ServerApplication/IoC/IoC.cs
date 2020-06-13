@@ -20,6 +20,7 @@ namespace EasyScada.ServerApplication
 
         public IKernel Kernel { get; private set; } = new StandardKernel();
         public IList<Type> RegisteredTypes { get; private set; } = new List<Type>();
+        public IProjectManagerService ProjectManagerService => Get<IProjectManagerService>();
 
         #endregion
 
@@ -41,7 +42,7 @@ namespace EasyScada.ServerApplication
             Kernel.Bind<IReverseService>().ToConstant(new ReverseService());
             Kernel.Bind<IWorkspaceManagerService>().ToConstant(new WorkspaceManagerService((token) =>
             {
-                if (token is IDevice)
+                if (token is IDeviceCore)
                     return Kernel.GetPOCOViewModel<TagCollectionViewModel>();
                 return null;
             }));

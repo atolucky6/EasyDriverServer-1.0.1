@@ -26,7 +26,7 @@ namespace EasyDriverPlugin
         }
 
         /// <summary>
-        /// Hàm kiểm tra địa chỉ của <see cref="ITag"/> có phù hợp với <see cref="IDataType"/> hay không
+        /// Hàm kiểm tra địa chỉ của <see cref="ITagCore"/> có phù hợp với <see cref="IDataType"/> hay không
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>

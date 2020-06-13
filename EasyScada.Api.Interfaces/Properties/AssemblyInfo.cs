@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("EasyScada.ServerAPI")]
+[assembly: AssemblyTitle("EasyScada.Api.Interfaces")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("EasyScada.ServerAPI")]
+[assembly: AssemblyProduct("EasyScada.Api.Interfaces")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3253bf00-4e02-427d-919f-50dba2616c58")]
+[assembly: Guid("3762269d-2a9c-42d1-9384-52895320faa4")]
 
 // Version information for an assembly consists of the following four values:
 //

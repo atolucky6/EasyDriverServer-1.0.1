@@ -62,7 +62,7 @@ namespace TestConsole
             {
                 case ByteOrder.ABCD:
                     return (int)((Buffer[Pos] << 8) | Buffer[Pos + 1]);
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     return (int)(Buffer[Pos] | Buffer[Pos + 1] << 8);
                 default:
                     return 0;
@@ -76,7 +76,7 @@ namespace TestConsole
                     Buffer[Pos] = (byte)(Value >> 8);
                     Buffer[Pos + 1] = (byte)(Value & 0x00FF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0x00FF);
                     Buffer[Pos + 1] = (byte)(Value >> 8);
                     break;
@@ -98,7 +98,7 @@ namespace TestConsole
                         Result += Buffer[Pos + 3];
                         return Result;
                     }
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     {
                         int Result;
                         Result = Buffer[Pos + 3]; Result <<= 8;
@@ -122,7 +122,7 @@ namespace TestConsole
                     Buffer[Pos + 1] = (byte)((Value >> 16) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 24) & 0xFF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
                     Buffer[Pos + 2] = (byte)((Value >> 16) & 0xFF);
@@ -152,7 +152,7 @@ namespace TestConsole
                     Buffer[Pos + 2] = FloatArray[1];
                     Buffer[Pos + 3] = FloatArray[0];
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos + 3] = FloatArray[3];
                     Buffer[Pos + 2] = FloatArray[2];
                     Buffer[Pos + 1] = FloatArray[1];
@@ -178,7 +178,7 @@ namespace TestConsole
                         Result |= Buffer[Pos + 3];
                         return Result;
                     }
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     {
                         UInt32 Result;
                         Result = Buffer[Pos + 3]; Result <<= 8;
@@ -201,7 +201,7 @@ namespace TestConsole
                     Buffer[Pos + 1] = (byte)((Value >> 16) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 24) & 0xFF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
                     Buffer[Pos + 2] = (byte)((Value >> 16) & 0xFF);

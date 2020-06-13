@@ -91,6 +91,10 @@
       <Project>{5cbce8b3-27a3-4d71-b38a-9ceeef539f0a}</Project>
       <Name>EasyDriverPlugin</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EasyScada.Api.Interfaces\EasyScada.Api.Interfaces.csproj">
+      <Project>{3762269D-2A9C-42D1-9384-52895320FAA4}</Project>
+      <Name>EasyScada.Api.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
       <Project>{67089d82-2fde-46c7-9264-ed5c066dc8ad}</Project>
       <Name>EasyScada.Core</Name>

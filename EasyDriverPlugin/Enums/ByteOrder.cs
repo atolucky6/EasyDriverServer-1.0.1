@@ -8,6 +8,6 @@ namespace EasyDriverPlugin
         ABCD,
         CDAB,
         BADC,
-        DCAB,
+        DCBA,
     }
 }

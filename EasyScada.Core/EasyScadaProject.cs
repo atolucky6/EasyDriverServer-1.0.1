@@ -10,7 +10,7 @@ namespace EasyScada.Core
     {
         public EasyScadaProject() : base(null, false)
         {
-            Stations = new Indexer<IStation>(this);
+            Stations = new Indexer<IStationCore>(this);
             LocalStation = new LocalStation(this);
             Add(LocalStation);
         }
@@ -25,9 +25,9 @@ namespace EasyScada.Core
 
         public IReadOnlyCollection<RemoteStation> RemoteStations => Find(x => x is RemoteStation).Select(x => x as RemoteStation).ToList();
 
-        public Indexer<IStation> Stations { get; private set; }
+        public Indexer<IStationCore> Stations { get; private set; }
 
-        Indexer<IStation> IEasyScadaProject.Stations => throw new NotImplementedException();
+        Indexer<IStationCore> IEasyScadaProject.Stations => throw new NotImplementedException();
 
         IParameterContainer ISupportParameters.ParameterContainer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

@@ -201,7 +201,7 @@ namespace EasyDriverPlugin
             {
                 case ByteOrder.ABCD:
                     return (short)((Buffer[Pos] << 8) | Buffer[Pos + 1]);
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     return (short)(Buffer[Pos] | Buffer[Pos + 1] << 8);
                 default:
                     return default;
@@ -215,7 +215,7 @@ namespace EasyDriverPlugin
                     Buffer[Pos] = (byte)(Value >> 8);
                     Buffer[Pos + 1] = (byte)(Value & 0x00FF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos + 1] = (byte)(Value >> 8);
                     Buffer[Pos] = (byte)(Value & 0x00FF);
                     break;
@@ -239,7 +239,7 @@ namespace EasyDriverPlugin
                         Result += Buffer[Pos + 3];
                         return Result;
                     }
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     {
                         int Result;
                         Result = Buffer[Pos + 3]; Result <<= 8;
@@ -263,7 +263,7 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 1] = (byte)((Value >> 16) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 24) & 0xFF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
                     Buffer[Pos + 2] = (byte)((Value >> 16) & 0xFF);
@@ -293,7 +293,7 @@ namespace EasyDriverPlugin
                         Result += Buffer[Pos + 7];
                         return Result;
                     }
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     {
                         Int64 Result;
                         Result = Buffer[Pos + 7]; Result <<= 8;
@@ -324,7 +324,7 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 1] = (byte)((Value >> 48) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 56) & 0xFF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
                     Buffer[Pos + 2] = (byte)((Value >> 16) & 0xFF);
@@ -358,7 +358,7 @@ namespace EasyDriverPlugin
             {
                 case ByteOrder.ABCD:
                     return (UInt16)((Buffer[Pos] << 8) | Buffer[Pos + 1]);
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     return (UInt16)((Buffer[Pos + 1] << 8) | Buffer[Pos]);
                 default:
                     return default;
@@ -372,7 +372,7 @@ namespace EasyDriverPlugin
                     Buffer[Pos] = (byte)(Value >> 8);
                     Buffer[Pos + 1] = (byte)(Value & 0x00FF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos + 1] = (byte)(Value >> 8);
                     Buffer[Pos] = (byte)(Value & 0x00FF);
                     break;
@@ -396,7 +396,7 @@ namespace EasyDriverPlugin
                         Result |= Buffer[Pos + 3];
                         return Result;
                     }
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     {
                         UInt32 Result;
                         Result = Buffer[Pos + 3]; Result <<= 8;
@@ -419,7 +419,7 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 1] = (byte)((Value >> 16) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 24) & 0xFF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
                     Buffer[Pos + 2] = (byte)((Value >> 16) & 0xFF);
@@ -449,7 +449,7 @@ namespace EasyDriverPlugin
                         Result |= Buffer[Pos + 7];
                         return Result;
                     }
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     {
                         UInt64 Result;
                         Result = Buffer[Pos + 7]; Result <<= 8;
@@ -480,7 +480,7 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 1] = (byte)((Value >> 48) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 56) & 0xFF);
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
                     Buffer[Pos + 2] = (byte)((Value >> 16) & 0xFF);
@@ -558,7 +558,7 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 2] = FloatArray[1];
                     Buffer[Pos + 3] = FloatArray[0];
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos + 3] = FloatArray[3];
                     Buffer[Pos + 2] = FloatArray[2];
                     Buffer[Pos + 1] = FloatArray[1];
@@ -592,7 +592,7 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 6] = FloatArray[1];
                     Buffer[Pos + 7] = FloatArray[0];
                     break;
-                case ByteOrder.DCAB:
+                case ByteOrder.DCBA:
                     Buffer[Pos + 7] = FloatArray[7];
                     Buffer[Pos + 6] = FloatArray[6];
                     Buffer[Pos + 5] = FloatArray[5];

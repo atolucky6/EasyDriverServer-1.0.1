@@ -18,14 +18,14 @@ namespace EasyDriver.ModbusRTU
 
         public IEasyDriverPlugin Driver { get; set; }
         public List<ByteOrder> ByteOrderSource { get; set; }
-        public IDevice Device { get; set; }
-        public IChannel Channel => Device?.Parent as IChannel;
+        public IDeviceCore Device { get; set; }
+        public IChannelCore Channel => Device?.Parent as IChannelCore;
 
         #endregion
 
         #region Constructors
 
-        public EditDeviceView(IEasyDriverPlugin driver, IDevice device)
+        public EditDeviceView(IEasyDriverPlugin driver, IDeviceCore device)
         {
             Driver = driver;
             Device = device;
@@ -100,7 +100,7 @@ namespace EasyDriver.ModbusRTU
                 return false;
             }
 
-            if (Channel.Childs.FirstOrDefault(x => x != Device && (decimal)(x as IDevice).ParameterContainer.Parameters["DeviceId"] == spnDeviceId.Value) != null)
+            if (Channel.Childs.FirstOrDefault(x => x != Device && (decimal)(x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnDeviceId.Value) != null)
             {
                 DXMessageBox.Show($"The device id '{spnDeviceId.Value}' is already used in this device.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;

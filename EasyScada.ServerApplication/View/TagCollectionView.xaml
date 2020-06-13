@@ -92,13 +92,12 @@
                                            AllowScrollToFocusedRow="True"
                                            ShowGroupPanel="False"
                                            AllowFixedColumnMenu="False"
-                                           
                                            >
                                 <dxmvvm:Interaction.Behaviors>
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:TableView.RowCellMenuCustomizations>
                                     <dxb:BarButtonItemLink BarItemName="bAdd"/>
-                                    <dxb:BarSubItem Content="Insert tag" GlyphSize="Medium">
+                                    <dxb:BarSubItem Content="Insert tag" GlyphSize="Default">
                                         <dxb:BarSubItem.Items>
                                             <dxb:BarButtonItemLink BarItemName="bInsertAbove"/>
                                             <dxb:BarButtonItemLink BarItemName="bInsertBelow"/>

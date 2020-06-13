@@ -17,14 +17,14 @@ namespace EasyDriver.ModbusRTU
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
-        public IChannel Channel { get; set; }
+        public IChannelCore Channel { get; set; }
         public List<ByteOrder> ByteOrderSource { get; set; }
 
         #endregion
 
         #region Constructors
 
-        public CreateDeviceView(IEasyDriverPlugin driver, IChannel channel)
+        public CreateDeviceView(IEasyDriverPlugin driver, IChannelCore channel)
         {
             Driver = driver;
             Channel = channel;
@@ -60,13 +60,13 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            if (Channel.Childs.FirstOrDefault(x => (decimal)(x as IDevice).ParameterContainer.Parameters["DeviceId"] == spnDeviceId.Value) != null)
+            if (Channel.Childs.FirstOrDefault(x => (decimal)(x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnDeviceId.Value) != null)
             {
                 DXMessageBox.Show($"The device id '{spnDeviceId.Value}' is already used in this device.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            IDevice device = new Device(Channel);
+            IDeviceCore device = new Device(Channel);
             device.Name = txbName.Text?.Trim();
             device.ParameterContainer.DisplayName = "ModbusRTU Device Parameter";
             device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";

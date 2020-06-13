@@ -49,10 +49,10 @@
                         <dxb:BarButtonItem x:Name="btnClose" Content="Close" KeyGesture="Alt + F4" Command="{Binding CloseCommand}" Glyph="{dx:DXImage SvgImages/XAF/Action_Close.svg}"/>
                     </dxb:BarSubItem>
                     <dxb:BarSubItem x:Name="biEdit" Content="Edit">
-                        <dxb:BarButtonItem x:Name="btnAddStation" Content="Add Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}"/>
-                        <dxb:BarButtonItem x:Name="btnAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}"/>
-                        <dxb:BarButtonItem x:Name="btnAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}"/>
-                        <dxb:BarButtonItem x:Name="btnAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}"/>
+                        <dxb:BarButtonItem x:Name="btnAddStation" Content="Add Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" />
+                        <dxb:BarButtonItem x:Name="btnAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_16px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_16px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/tag_16px.png" />
                         <dxb:BarItemSeparator/>
                         <dxb:BarButtonItem x:Name="btnUndo" Content="Undo" KeyGesture="Ctrl + Z" Command="{Binding SaveCommand}" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Undo.svg}"/>
                         <dxb:BarButtonItem x:Name="btnRedo" Content="Redo" KeyGesture="Ctrl + Y" Command="{Binding SaveAsCommand}" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Redo.svg}"/>
@@ -86,6 +86,7 @@
                     <dxb:BarButtonItemLink BarItemName="btnAddDevice"/>
                     <dxb:BarButtonItemLink BarItemName="btnAddTag"/>
                 </dxb:Bar>
+
             </dxb:BarManager.Bars>
             <Grid>
                 <dxdo:DockLayoutManager x:Name="dockContainer"

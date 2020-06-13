@@ -9,6 +9,6 @@ namespace EasyScada.Core
         string ProjectPath { get; set; }
         LocalStation LocalStation { get; }
         IReadOnlyCollection<RemoteStation> RemoteStations { get; }
-        Indexer<IStation> Stations { get; }
+        Indexer<IStationCore> Stations { get; }
     }
 }

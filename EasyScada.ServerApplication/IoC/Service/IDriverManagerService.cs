@@ -6,23 +6,23 @@ namespace EasyScada.ServerApplication
 {
     public interface IDriverManagerService
     {
-        Dictionary<IChannel, IEasyDriverPlugin> DriverPoll { get; }
+        Dictionary<IChannelCore, IEasyDriverPlugin> DriverPoll { get; }
         IEasyDriverPlugin GetDriver(ICoreItem item);
-        IEasyDriverPlugin AddDriver(IChannel channel, IEasyDriverPlugin driver);
-        IEasyDriverPlugin AddDriver(IChannel channel, string driverPath);
-        void RemoveDriver(IChannel channel);
+        IEasyDriverPlugin AddDriver(IChannelCore channel, IEasyDriverPlugin driver);
+        IEasyDriverPlugin AddDriver(IChannelCore channel, string driverPath);
+        void RemoveDriver(IChannelCore channel);
     }
 
     public class DriverManagerService : IDriverManagerService
     {
         public DriverManagerService()
         {
-            DriverPoll = new Dictionary<IChannel, IEasyDriverPlugin>();
+            DriverPoll = new Dictionary<IChannelCore, IEasyDriverPlugin>();
         }
 
-        public Dictionary<IChannel, IEasyDriverPlugin> DriverPoll { get; private set; }
+        public Dictionary<IChannelCore, IEasyDriverPlugin> DriverPoll { get; private set; }
 
-        public IEasyDriverPlugin AddDriver(IChannel channel, IEasyDriverPlugin driver)
+        public IEasyDriverPlugin AddDriver(IChannelCore channel, IEasyDriverPlugin driver)
         {
             if (DriverPoll.ContainsKey(channel))
                 return DriverPoll[channel];
@@ -31,7 +31,7 @@ namespace EasyScada.ServerApplication
             return driver;
         }
 
-        public IEasyDriverPlugin AddDriver(IChannel channel, string driverPath)
+        public IEasyDriverPlugin AddDriver(IChannelCore channel, string driverPath)
         {
             if (GetDriver(channel) == null)
             {
@@ -45,13 +45,13 @@ namespace EasyScada.ServerApplication
 
         public IEasyDriverPlugin GetDriver(ICoreItem item)
         {
-            IChannel channel = GetChannel(item);
+            IChannelCore channel = GetChannel(item);
             if (DriverPoll.ContainsKey(channel))
                 return DriverPoll[channel];
             return null;
         }
 
-        public void RemoveDriver(IChannel channel)
+        public void RemoveDriver(IChannelCore channel)
         {
             IEasyDriverPlugin driver = GetDriver(channel);
             if (driver != null)
@@ -61,11 +61,11 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private IChannel GetChannel(ICoreItem item)
+        private IChannelCore GetChannel(ICoreItem item)
         {
             if (item == null)
                 return null;
-            if (item is IChannel channel)
+            if (item is IChannelCore channel)
                 return channel;
             return GetChannel(item.Parent);
         }

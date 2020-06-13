@@ -3,7 +3,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:local="clr-namespace:EasyScada.ServerApplication"
                  xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-                 xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+                 xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" ShowInTaskbar="True" ShowIcon="False"
                  Title="Easy Scada Server Version 1.0.1" Height="700" Width="1000"
                  >
     <dx:ThemedWindow.ToolbarItems>

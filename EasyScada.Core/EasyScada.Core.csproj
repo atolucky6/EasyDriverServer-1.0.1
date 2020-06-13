@@ -73,6 +73,10 @@
       <Project>{5cbce8b3-27a3-4d71-b38a-9ceeef539f0a}</Project>
       <Name>EasyDriverPlugin</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EasyScada.Api.Interfaces\EasyScada.Api.Interfaces.csproj">
+      <Project>{3762269d-2a9c-42d1-9384-52895320faa4}</Project>
+      <Name>EasyScada.Api.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

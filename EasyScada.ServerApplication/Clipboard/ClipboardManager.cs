@@ -27,7 +27,7 @@ namespace EasyScada.ServerApplication
         public static void CopyToClipboard(object objectToCopy, object context)
         {
             Clear();
-            IsDevice = objectToCopy is IDevice;
+            IsDevice = objectToCopy is IDeviceCore;
 
             //if (objectToCopy is IComponent component)
             //    ModuleType = component.Owner.ModuleType;

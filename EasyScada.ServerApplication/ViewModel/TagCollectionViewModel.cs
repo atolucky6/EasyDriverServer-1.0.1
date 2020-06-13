@@ -53,7 +53,7 @@ namespace EasyScada.ServerApplication
 
         public virtual ObservableCollection<object> SelectedItems { get; set; }
 
-        public virtual IDevice Parent => Token as IDevice;
+        public virtual IDeviceCore Parent => Token as IDeviceCore;
 
         public MainViewModel MainViewModel => ParentViewModel as MainViewModel;
 
@@ -69,7 +69,7 @@ namespace EasyScada.ServerApplication
 
         public virtual void ShowProperty(object item)
         {
-            if (item is ITag tag)
+            if (item is ITagCore tag)
                 Messenger.Default.Send(new ShowPropertiesMessage(this, item));
         }
 
@@ -79,7 +79,7 @@ namespace EasyScada.ServerApplication
                 return;
 
             IsBusy = true;
-            if (item is ITag tag)
+            if (item is ITagCore tag)
             {
                 IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
                 ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}");
@@ -94,11 +94,11 @@ namespace EasyScada.ServerApplication
         public void Add()
         {
             IsBusy = true;
-            IChannel channel = Parent.FindParent<IChannel>(x => x is IChannel);
+            IChannelCore channel = Parent.FindParent<IChannelCore>(x => x is IChannelCore);
             IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
             if (driver != null)
             {
-                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITag newTag)
+                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITagCore newTag)
                 {
                     CurrentItem = SelectedItem = newTag;
                 }
@@ -114,11 +114,11 @@ namespace EasyScada.ServerApplication
         public void InsertAbove()
         {
             IsBusy = true;
-            IChannel channel = Parent.FindParent<IChannel>(x => x is IChannel);
+            IChannelCore channel = Parent.FindParent<IChannelCore>(x => x is IChannelCore);
             IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
             if (driver != null)
             {
-                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITag newTag)
+                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITagCore newTag)
                 {
                     int selectedIndex = Parent.Childs.IndexOf(SelectedItem as ICoreItem);
                     Parent.Childs.Move(Parent.Childs.Count - 1, selectedIndex);
@@ -135,11 +135,11 @@ namespace EasyScada.ServerApplication
         public void InsertBelow()
         {
             IsBusy = true;
-            IChannel channel = Parent.FindParent<IChannel>(x => x is IChannel);
+            IChannelCore channel = Parent.FindParent<IChannelCore>(x => x is IChannelCore);
             IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
             if (driver != null)
             {
-                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITag newTag)
+                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITagCore newTag)
                 {
                     int selectedIndex = Parent.Childs.IndexOf(SelectedItem as ICoreItem);
                     Parent.Childs.Move(Parent.Childs.Count - 1, selectedIndex + 1);
@@ -152,7 +152,7 @@ namespace EasyScada.ServerApplication
         {
             IsBusy = true;
 
-            if (SelectedItem is ITag tag)
+            if (SelectedItem is ITagCore tag)
             {
                 IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
                 ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}");

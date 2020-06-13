@@ -5,6 +5,7 @@ using System.IO.Ports;
 using System.Text.RegularExpressions;
 using System.Timers;
 using EasyDriverPlugin;
+using EasyScada.Api.Interfaces;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -27,7 +28,7 @@ namespace EasyDriver.ModbusRTU
             };
         }
 
-        public IChannel Channel { get; set; }
+        public IChannelCore Channel { get; set; }
 
         public int OpenPortFailCount { get; set; } = 0;
 
@@ -45,7 +46,7 @@ namespace EasyDriver.ModbusRTU
         {
             if (Channel.ParameterContainer.Parameters.Count < 5)
                 return false;
-            //TEst
+
             try
             {
                 InitializeSerialPort();
@@ -54,7 +55,7 @@ namespace EasyDriver.ModbusRTU
                 return result;
             }
             catch { return false; }
-        }
+        }   
 
         private void InitializeSerialPort()
         {
@@ -81,7 +82,7 @@ namespace EasyDriver.ModbusRTU
                     OpenPortFailCount = 0;
                     for (int i = 0; i < Channel.Childs.Count; i++)
                     {
-                        IDevice device = Channel.Childs[i] as IDevice;
+                        IDeviceCore device = Channel.Childs[i] as IDeviceCore;
 
                         byte deviceId = byte.Parse(device.ParameterContainer.Parameters["DeviceId"].ToString());
                         ByteOrder byteOrder = (ByteOrder)device.ParameterContainer.Parameters["ByteOrder"];
@@ -94,7 +95,7 @@ namespace EasyDriver.ModbusRTU
 
                         for (int k = 0; k < device.Childs.Count; k++)
                         {
-                            ITag tag = device.Childs[k] as ITag;
+                            ITagCore tag = device.Childs[k] as ITagCore;
 
                             if (!tag.ParameterContainer.Parameters.ContainsKey("TryCount"))
                                 tag.ParameterContainer.Parameters["TryCount"] = 0;
@@ -201,10 +202,10 @@ namespace EasyDriver.ModbusRTU
                     {
                         for (int i = 0; i < Channel.Childs.Count; i++)
                         {
-                            IDevice device = Channel.Childs[i] as IDevice;
+                            IDeviceCore device = Channel.Childs[i] as IDeviceCore;
                             for (int k = 0; k < device.Childs.Count; k++)
                             {
-                                ITag tag = device.Childs[k] as ITag;
+                                ITagCore tag = device.Childs[k] as ITagCore;
 
                                 if ((DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
                                 {
@@ -246,22 +247,22 @@ namespace EasyDriver.ModbusRTU
             return new CreateDeviceView(this, Channel);
         }
 
-        public object GetCreateTagControl(IDevice parent)
+        public object GetCreateTagControl(IDeviceCore parent)
         {
             return new CreateTagView(this, parent);
         }
 
-        public object GetEditChannelControl(IChannel channel)
+        public object GetEditChannelControl(IChannelCore channel)
         {
             return new EditChannelView(this, channel);
         }
 
-        public object GetEditDeviceControl(IDevice device)
+        public object GetEditDeviceControl(IDeviceCore device)
         {
             return new EditDeviceView(this, device);
         }
 
-        public object GetEditTagControl(ITag tag)
+        public object GetEditTagControl(ITagCore tag)
         {
             return new EditTagView(this, tag);
         }
@@ -272,12 +273,12 @@ namespace EasyDriver.ModbusRTU
             
         }
 
-        public void WriteMulti(ITag[] tags, string[] values)
+        public void WriteMulti(ITagCore[] tags, string[] values)
         {
             throw new System.NotImplementedException();
         }
 
-        public Quality WriteSingle(ITag tag, string value)
+        public Quality WriteSingle(ITagCore tag, string value)
         {
             throw new System.NotImplementedException();
         }

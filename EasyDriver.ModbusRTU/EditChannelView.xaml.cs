@@ -26,13 +26,13 @@ namespace EasyDriver.ModbusRTU
         public List<int> DataBitsSource { get; set; }
         public List<Parity> ParitySource { get; set; }
         public List<StopBits> StopBitsSource { get; set; }
-        public IChannel Channel { get; set; }
+        public IChannelCore Channel { get; set; }
 
         #endregion
 
         #region Constructors
 
-        public EditChannelView(IEasyDriverPlugin driver, IChannel channel)
+        public EditChannelView(IEasyDriverPlugin driver, IChannelCore channel)
         {
             Driver = driver;
             Channel = channel;

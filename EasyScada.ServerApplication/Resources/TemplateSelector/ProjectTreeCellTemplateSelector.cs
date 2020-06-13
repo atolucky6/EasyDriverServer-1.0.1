@@ -18,11 +18,11 @@ namespace EasyScada.ServerApplication
             if (item != null)
             {
                 var row = (item as GridCellData).Row;
-                if (row is IStation)
+                if (row is IStationCore)
                     return StationTemplate;
-                if (row is IChannel)
+                if (row is IChannelCore)
                     return ChannelTemplate;
-                if (row is IDevice)
+                if (row is IDeviceCore)
                     return DeviceTemplate;
             }
             return DefaultTemplate;

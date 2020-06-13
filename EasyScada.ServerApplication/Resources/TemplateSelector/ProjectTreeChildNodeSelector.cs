@@ -11,7 +11,7 @@ namespace EasyScada.ServerApplication
         {
             if (item != null)
             {
-                if (item is IDevice)
+                if (item is IDeviceCore)
                     return null;
                 if (item is IGroupItem groupItem)
                     return groupItem.Childs;

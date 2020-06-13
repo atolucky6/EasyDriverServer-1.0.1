@@ -5,7 +5,7 @@ using System.ComponentModel;
 namespace EasyScada.Core
 {
     [Serializable]
-    public class RemoteStation : GroupItemBase, IStation
+    public class RemoteStation : GroupItemBase, IStationCore
     {
         public RemoteStation(IGroupItem parent, bool isReadOnly = false) : base(parent, isReadOnly)
         {

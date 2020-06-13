@@ -99,12 +99,12 @@ namespace EasyScada.ServerApplication
             {
                 foreach (var item in e.OldProject.Childs)
                 {
-                    IStation station = item as IStation;
+                    IStationCore station = item as IStationCore;
                     if (station is LocalStation)
                     {
                         foreach (var x in station.Childs)
                         {
-                            if (x is IChannel channel)
+                            if (x is IChannelCore channel)
                                 DriverManagerService.RemoveDriver(channel);
                         }
                     }
@@ -115,12 +115,12 @@ namespace EasyScada.ServerApplication
             {
                 foreach (var item in e.NewProject.Childs)
                 {
-                    IStation station = item as IStation;
+                    IStationCore station = item as IStationCore;
                     if (station is LocalStation)
                     {
                         foreach (var x in station.Childs)
                         {
-                            if (x is IChannel channel)
+                            if (x is IChannelCore channel)
                             {
                                 IEasyDriverPlugin driver = DriverManagerService.AddDriver(channel, channel.DriverPath); 
                                 driver?.Connect();
@@ -187,7 +187,7 @@ namespace EasyScada.ServerApplication
             try
             {
                 IsBusy = true;
-                IEasyDriverPlugin driver = DriverManagerService.GetDriver(SelectedItem as IChannel);
+                IEasyDriverPlugin driver = DriverManagerService.GetDriver(SelectedItem as IChannelCore);
                 if (driver != null)
                 {
                     ContextWindowService.Show(driver.GetCreateDeviceControl(), "Add Device");
@@ -203,7 +203,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanAddDevice()
         {
-            if (SelectedItem is IChannel)
+            if (SelectedItem is IChannelCore)
                 return !IsBusy;
             return false;
         }
@@ -217,7 +217,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanOpen()
         {
-            if (SelectedItem is IDevice)
+            if (SelectedItem is IDeviceCore)
                 return !IsBusy;
             return false;
         }
@@ -225,12 +225,12 @@ namespace EasyScada.ServerApplication
         public void Edit()
         {
             IsBusy = true;
-            if (SelectedItem is IChannel channel)
+            if (SelectedItem is IChannelCore channel)
             {
                 IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
                 ContextWindowService.Show(driver.GetEditChannelControl(channel), $"Edit Channel - {channel.Name}");
             }
-            else if (SelectedItem is IDevice device)
+            else if (SelectedItem is IDeviceCore device)
             {
                 IEasyDriverPlugin driver = DriverManagerService.GetDriver(device);
                 ContextWindowService.Show(driver.GetEditDeviceControl(device), $"Edit Device - {device.Name}");

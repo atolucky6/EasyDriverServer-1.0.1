@@ -9,7 +9,7 @@ namespace EasyScada.ServerApplication
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is ITag)
+            if (value is ITagCore)
                 return value;
             return null;
         }

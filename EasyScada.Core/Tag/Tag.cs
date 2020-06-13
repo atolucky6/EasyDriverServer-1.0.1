@@ -1,17 +1,20 @@
 ﻿using EasyDriverPlugin;
+using EasyScada.Api.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace EasyScada.Core
 {
     [Serializable]
-    public class Tag : GroupItemBase, ITag
+    public class Tag : GroupItemBase, ITagCore, ITag
     {
+        #region ITagCore
+
         public Tag(IGroupItem parent, bool isReadOnly = false) : base(parent, isReadOnly)
         {
             SyncObject = new object();
             ParameterContainer = new ParameterContainer();
-            Tags = new Indexer<ITag>(this);
+            Tags = new Indexer<ITagCore>(this);
             Gain = 1;
             Offset = 0;
         }
@@ -28,7 +31,7 @@ namespace EasyScada.Core
             set => SetProperty(value);
         }
 
-        [field:NonSerialized]
+        [field: NonSerialized]
         string value;
         public string Value
         {
@@ -40,12 +43,12 @@ namespace EasyScada.Core
                     string oldValue = this.value;
                     this.value = value;
                     RaisePropertyChanged();
-                    ValueChanged?.Invoke(this, new TagValueChangedEventArgs(this, oldValue, value));
+                    ValueChanged?.Invoke(this, new TagValueChangedEventArgs(oldValue, value));
                 }
             }
         }
 
-        [field:NonSerialized]
+        [field: NonSerialized]
         Quality quality = Quality.Uncertain;
         public Quality Quality
         {
@@ -110,7 +113,7 @@ namespace EasyScada.Core
 
         public object SyncObject { get; protected set; }
 
-        public Indexer<ITag> Tags { get; protected set; }
+        public Indexer<ITagCore> Tags { get; protected set; }
 
         public IParameterContainer ParameterContainer { get; set; }
 
@@ -128,6 +131,8 @@ namespace EasyScada.Core
 
         public string DataTypeName => DataType?.Name;
 
+        public string CommunicationError { get; set; }
+
         public IDataType DataType
         {
             get => GetProperty<IDataType>();
@@ -138,7 +143,7 @@ namespace EasyScada.Core
             }
         }
 
-        public IEnumerable<ITag> GetAllChildTag()
+        public IEnumerable<ITagCore> GetAllChildTag()
         {
             return null;
         }
@@ -154,5 +159,31 @@ namespace EasyScada.Core
 
         public event EventHandler<TagValueChangedEventArgs> ValueChanged;
         public event EventHandler<TagQualityChangedEventArgs> QualityChanged;
+
+        #endregion
+
+        #region ITag
+
+        string ITag.Name => Name;
+
+        string ITag.Address => Address;
+
+        string ITag.DataType => DataTypeName;
+
+        string ITag.Value => Value;
+
+        string ITag.Quality => Quality.ToString();
+
+        int ITag.RefreshRate => RefreshRate;
+
+        int ITag.RefreshInterval => (int)RefreshInterval.TotalMilliseconds;
+
+        string ITag.Error => CommunicationError;
+
+        DateTime ITag.LastRefreshTime => TimeStamp;
+
+        Dictionary<string, object> ITag.Parameters => throw new NotImplementedException();
+
+        #endregion
     }
 }

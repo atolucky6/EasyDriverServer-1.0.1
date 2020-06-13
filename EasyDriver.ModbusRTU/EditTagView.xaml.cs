@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using DevExpress.Xpf.Core;
 using EasyScada.Core;
+using EasyScada.Api.Interfaces;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -17,8 +18,8 @@ namespace EasyDriver.ModbusRTU
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
-        public IDevice Device => TagEdit?.Parent as IDevice;
-        public ITag TagEdit { get; set; }
+        public IDeviceCore Device => TagEdit?.Parent as IDeviceCore;
+        public ITagCore TagEdit { get; set; }
         public List<AccessPermission> AccessPermissionSource { get; set; }
         public List<IDataType> DataTypeSource { get; set; }
 
@@ -26,7 +27,7 @@ namespace EasyDriver.ModbusRTU
 
         #region Constructors
 
-        public EditTagView(IEasyDriverPlugin driver, ITag tag)
+        public EditTagView(IEasyDriverPlugin driver, ITagCore tag)
         {
             Driver = driver;
             TagEdit = tag;

@@ -64,7 +64,7 @@ namespace EasyDriverPlugin
         IDataTypeIndex this[Func<IDataTypeIndex, bool> predicate] { get; }
 
         /// <summary>
-        /// Cập nhật lại danh sách <see cref="ITag"/>
+        /// Cập nhật lại danh sách <see cref="ITagCore"/>
         /// </summary>
         /// <param name="tags"></param>
         void UpdateSource(List<IDataTypeIndex> tags);
