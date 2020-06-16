@@ -1,4 +1,5 @@
 ﻿using EasyDriverPlugin;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -149,6 +150,7 @@ namespace EasyScada.Core
         /// </summary>
         [Display(AutoGenerateField = false)]
         [Browsable(false)]
+        [JsonIgnore]
         public virtual bool IsChanged { get; protected set; }
 
         #endregion
@@ -160,6 +162,7 @@ namespace EasyScada.Core
         /// </summary>
         [Display(AutoGenerateField = false)]
         [Browsable(false)]
+        [JsonIgnore]
         public bool IsInEdit { get; private set; }
 
         /// <summary>
@@ -249,6 +252,7 @@ namespace EasyScada.Core
         /// <summary>
         /// Lưu trữ các thuộc tính của đối tượng
         /// </summary>
+        [JsonIgnore]
         protected PropertyBag PropertyBag
         {
             get
@@ -282,11 +286,13 @@ namespace EasyScada.Core
         /// <summary>
         /// Dùng để lưu trữ giá trị và tên của thuộc tính
         /// </summary>
+        [JsonIgnore]
         public Dictionary<string, object> PropertyDictionary { get; protected set; }
 
         /// <summary>
         /// Dùng để lưu trữ thông tin lỗi của từng thuộc tính
         /// </summary>
+        [JsonIgnore]
         public Dictionary<string, IErrorInfo> ErrorDictionary { get; protected set; }
 
         public PropertyBag()

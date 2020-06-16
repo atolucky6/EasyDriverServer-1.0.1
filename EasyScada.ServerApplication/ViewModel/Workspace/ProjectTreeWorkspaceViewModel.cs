@@ -29,6 +29,8 @@ namespace EasyScada.ServerApplication
         protected IReverseService ReverseService { get; set; }
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
+        protected IHubFactory HubFactory { get; set; }
+        protected IHubConnectionManagerService HubConnectionManagerService { get; set; }
 
         #endregion
 
@@ -47,7 +49,9 @@ namespace EasyScada.ServerApplication
             IWorkspaceManagerService workspaceManagerService, 
             IReverseService reverseService,
             IProjectManagerService projectManagerService,
-            IDriverManagerService driverManagerService) : base(null)
+            IDriverManagerService driverManagerService,
+            IHubFactory hubFactory,
+            IHubConnectionManagerService hubConnectionManagerService) : base(null)
         {
             WorkspaceName = WorkspaceRegion.ProjectTree;
             Caption = "Project Explorer";
@@ -55,6 +59,8 @@ namespace EasyScada.ServerApplication
             ReverseService = reverseService;
             ProjectManagerService = projectManagerService;
             DriverManagerService = driverManagerService;
+            HubFactory = hubFactory;
+            HubConnectionManagerService = hubConnectionManagerService;
 
             ProjectManagerService.ProjectChanged += ProjectManagerService_ProjectChanged;
 
@@ -151,7 +157,17 @@ namespace EasyScada.ServerApplication
 
         public void AddStation()
         {
+            try
+            {
+                IsBusy = true;
+                WindowService.Show("RemoteStationView", ProjectManagerService.CurrentProject, this);
+                IsBusy = false;
+            }
+            catch (Exception ex)
+            {
 
+            }
+            finally { IsBusy = false; }
         }
 
         public bool CanAddStation()
@@ -224,23 +240,39 @@ namespace EasyScada.ServerApplication
 
         public void Edit()
         {
-            IsBusy = true;
-            if (SelectedItem is IChannelCore channel)
+            try
             {
-                IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
-                ContextWindowService.Show(driver.GetEditChannelControl(channel), $"Edit Channel - {channel.Name}");
+                IsBusy = true;
+                if (SelectedItem is IChannelCore channel)
+                {
+                    IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
+                    ContextWindowService.Show(driver.GetEditChannelControl(channel), $"Edit Channel - {channel.Name}");
+                }
+                else if (SelectedItem is IDeviceCore device)
+                {
+                    IEasyDriverPlugin driver = DriverManagerService.GetDriver(device);
+                    ContextWindowService.Show(driver.GetEditDeviceControl(device), $"Edit Device - {device.Name}");
+                }
+                else if (SelectedItem is RemoteStation remoteStation)
+                {
+                    WindowService.Show("RemoteStationView", SelectedItem, this);
+                }
             }
-            else if (SelectedItem is IDeviceCore device)
+            catch (Exception ex)
             {
-                IEasyDriverPlugin driver = DriverManagerService.GetDriver(device);
-                ContextWindowService.Show(driver.GetEditDeviceControl(device), $"Edit Device - {device.Name}");
+
             }
-            IsBusy = false;
+            finally { IsBusy = false; }
         }
 
         public bool CanEdit()
         {
-            return !IsBusy && SelectedItem != null;
+            if (SelectedItem is ICoreItem coreItem && !IsBusy)
+            {
+                if (!coreItem.IsReadOnly)
+                    return !(SelectedItem is LocalStation);
+            }
+            return false;
         }
 
         public void ExpandAll()

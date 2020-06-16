@@ -36,6 +36,8 @@ namespace EasyScada.ServerApplication
         {
             Title = "Add Channel";
             SizeToContent = SizeToContent.WidthAndHeight;
+            Width = 600;
+            Height = 120;
             ProjectManagerService = projectManagerService;
             DriverManagerService = driverManagerService;
         }
@@ -46,6 +48,8 @@ namespace EasyScada.ServerApplication
 
         public string Title { get; set; }
         public SizeToContent SizeToContent { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
         public virtual string Name { get; set; }
         public virtual string DriverPath { get; set; }
 
@@ -75,7 +79,7 @@ namespace EasyScada.ServerApplication
                 else
                 {
                     IsBusy = true;
-                    IChannelCore channel = new Channel(Parent)
+                    IChannelCore channel = new ChannelCore(Parent)
                     {
                         Name = Name,
                         DriverPath = DriverPath

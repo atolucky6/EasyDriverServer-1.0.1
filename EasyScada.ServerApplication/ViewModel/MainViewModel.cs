@@ -1,10 +1,18 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using EasyScada.Api.Interfaces;
 using EasyScada.Core;
 using EasyScada.ServerApplication.Workspace;
+using Microsoft.AspNet.SignalR.Client;
+using Microsoft.AspNet.SignalR.Client.Transports;
+using Newtonsoft.Json;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -277,11 +285,26 @@ namespace EasyScada.ServerApplication
         /// <summary>
         /// Lệnh thêm <see cref="IChannel"/> vào <see cref="IStation"/>
         /// </summary>
-        public void AddChannel()
+        public async void AddChannel()
         {
-            WindowService.Show("AddChannelView", null, this);
-        }
+            try
+            {
+                var hubConnection = new HubConnection("http://localhost:999/easyScada/");
 
+                IHubProxy hubProxy = hubConnection.CreateHubProxy("EasyDriverServerHub");
+                await hubConnection.Start(new LongPollingTransport());
+                Thread.Sleep(1000);
+                var result = await hubProxy.Invoke<string>("getAllStations");
+                var stations = JsonConvert.DeserializeObject<List<Station>>(result);
+                Thread.Sleep(1000);
+
+                //hubConnection.Dispose();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
         /// <summary>
         /// Điều kiện để thực thi lệnh <see cref="AddChannel"/>
         /// </summary>

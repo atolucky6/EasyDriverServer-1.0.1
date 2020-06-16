@@ -1,16 +1,17 @@
 ﻿using EasyDriverPlugin;
 using EasyScada.Api.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
 namespace EasyScada.Core
 {
     [Serializable]
-    public class Tag : GroupItemBase, ITagCore, ITag
+    public class TagCore : GroupItemBase, ITagCore, ITag
     {
         #region ITagCore
 
-        public Tag(IGroupItem parent, bool isReadOnly = false) : base(parent, isReadOnly)
+        public TagCore(IGroupItem parent, bool isReadOnly = false) : base(parent, isReadOnly)
         {
             SyncObject = new object();
             ParameterContainer = new ParameterContainer();
@@ -19,12 +20,14 @@ namespace EasyScada.Core
             Offset = 0;
         }
 
+        [JsonIgnore]
         public string DisplayName
         {
             get => GetProperty<string>();
             set => SetProperty(value);
         }
 
+        [JsonIgnore]
         public string Address
         {
             get => GetProperty<string>();
@@ -33,6 +36,7 @@ namespace EasyScada.Core
 
         [field: NonSerialized]
         string value;
+        [JsonIgnore]
         public string Value
         {
             get => value;
@@ -50,6 +54,7 @@ namespace EasyScada.Core
 
         [field: NonSerialized]
         Quality quality = Quality.Uncertain;
+        [JsonIgnore]
         public Quality Quality
         {
             get => quality;
@@ -65,25 +70,30 @@ namespace EasyScada.Core
             }
         }
 
+        [JsonIgnore]
         public int RefreshRate
         {
             get => GetProperty<int>();
             set => SetProperty(value);
         }
 
+        [JsonIgnore]
         public AccessPermission AccessPermission
         {
             get => GetProperty<AccessPermission>();
             set => SetProperty(value);
         }
 
+        [JsonIgnore]
         public ByteOrder ByteOrder
         {
             get => GetProperty<ByteOrder>();
             set => SetProperty(value);
         }
 
+        [field: NonSerialized]
         DateTime timeStamp;
+        [JsonIgnore]
         public DateTime TimeStamp
         {
             get => timeStamp;
@@ -97,8 +107,10 @@ namespace EasyScada.Core
             }
         }
 
-        TimeSpan refreshInterval;
-        public TimeSpan RefreshInterval
+        [field: NonSerialized]
+        int refreshInterval;
+        [JsonIgnore]
+        public int RefreshInterval
         {
             get => refreshInterval;
             set
@@ -111,34 +123,61 @@ namespace EasyScada.Core
             }
         }
 
+        [JsonIgnore]
         public object SyncObject { get; protected set; }
 
+        [JsonIgnore]
         public Indexer<ITagCore> Tags { get; protected set; }
 
+        [JsonIgnore]
         public IParameterContainer ParameterContainer { get; set; }
 
+        [JsonIgnore]
         public double Gain
         {
             get => GetProperty<double>();
             set => SetProperty(value);
         }
 
+        [JsonIgnore]
         public double Offset
         {
             get => GetProperty<double>();
             set => SetProperty(value);
         }
 
-        public string DataTypeName => DataType?.Name;
+        [field:NonSerialized]
+        string dataTypeName;
+        [JsonIgnore]
+        public string DataTypeName
+        {
+            get
+            {
+                if (DataType != null)
+                    return DataType.Name;
+                return dataTypeName;
+            }
+            set
+            {
+                if (dataTypeName != value)
+                {
+                    dataTypeName = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
+        [JsonIgnore]
         public string CommunicationError { get; set; }
 
+        [JsonIgnore]
         public IDataType DataType
         {
             get => GetProperty<IDataType>();
             set
             {
                 SetProperty(value);
+                RaisePropertyChanged();
                 RaisePropertyChanged("DataTypeName");
             }
         }
@@ -164,25 +203,61 @@ namespace EasyScada.Core
 
         #region ITag
 
+        [JsonProperty("Name")]
         string ITag.Name => Name;
 
+        [JsonProperty("Path")]
+        string IPath.Path => Path;
+
+        [JsonProperty("Address")]
         string ITag.Address => Address;
 
+        [JsonProperty("DataType")]
         string ITag.DataType => DataTypeName;
 
+        [JsonProperty("Value")]
         string ITag.Value => Value;
 
-        string ITag.Quality => Quality.ToString();
+        [JsonProperty("Quality")]
+        Quality ITag.Quality => Quality;
 
+        [JsonProperty("AccessPermission")]
+        AccessPermission ITag.AccessPermission => AccessPermission;
+
+        [JsonProperty("RefreshRate")]
         int ITag.RefreshRate => RefreshRate;
 
-        int ITag.RefreshInterval => (int)RefreshInterval.TotalMilliseconds;
+        [JsonProperty("RefreshInterval")]
+        int ITag.RefreshInterval => RefreshInterval;
 
+        [JsonProperty("Error")]
         string ITag.Error => CommunicationError;
 
-        DateTime ITag.LastRefreshTime => TimeStamp;
+        [JsonProperty("LastRefreshTime")]
+        DateTime ITag.TimeStamp => TimeStamp;
 
-        Dictionary<string, object> ITag.Parameters => throw new NotImplementedException();
+        [JsonProperty("Parameters")]
+        Dictionary<string, object> ITag.Parameters => ParameterContainer?.Parameters;
+
+        public T GetItem<T>(string pathToObject) where T : class, IPath
+        {
+            if (string.IsNullOrWhiteSpace(pathToObject))
+                return null;
+            if (Path == pathToObject)
+                return this as T;
+            if (pathToObject.StartsWith(Path))
+            {
+                foreach (var child in Childs)
+                {
+                    if (child is IPath item)
+                    {
+                        if (pathToObject.StartsWith(item.Path))
+                            return item.GetItem<T>(pathToObject);
+                    }
+                }
+            }
+            return null;
+        }
 
         #endregion
     }

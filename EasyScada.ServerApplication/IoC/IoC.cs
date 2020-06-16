@@ -21,6 +21,7 @@ namespace EasyScada.ServerApplication
         public IKernel Kernel { get; private set; } = new StandardKernel();
         public IList<Type> RegisteredTypes { get; private set; } = new List<Type>();
         public IProjectManagerService ProjectManagerService => Get<IProjectManagerService>();
+        public string Key { get; set; }
 
         #endregion
 
@@ -37,6 +38,8 @@ namespace EasyScada.ServerApplication
 
         public void Setup()
         {
+            Kernel.Bind<IHubFactory>().ToConstant(new HubFactory("EasyDriverServerHub"));
+            Kernel.Bind<IHubConnectionManagerService>().ToConstant(new HubConnectionManagerService());
             Kernel.Bind<IDriverManagerService>().ToConstant(new DriverManagerService());
             Kernel.Bind<IProjectManagerService>().ToConstant(new ProjectManagerService());
             Kernel.Bind<IReverseService>().ToConstant(new ReverseService());

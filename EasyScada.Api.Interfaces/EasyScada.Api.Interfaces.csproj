@@ -41,19 +41,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Channel.cs" />
+    <Compile Include="Device.cs" />
     <Compile Include="Enums\AccessPermission.cs" />
     <Compile Include="Enums\ConnectionType.cs" />
-    <Compile Include="IChannel.cs" />
-    <Compile Include="IDevice.cs" />
+    <Compile Include="Interfaces\IChannel.cs" />
+    <Compile Include="Interfaces\IDevice.cs" />
     <Compile Include="IEasyScadaClientApi.cs" />
-    <Compile Include="ITag.cs" />
+    <Compile Include="Interfaces\IPath.cs" />
+    <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IStation.cs" />
-    <Compile Include="Enums\ComunicationMode.cs" />
+    <Compile Include="Interfaces\IStation.cs" />
+    <Compile Include="Enums\CommunicationMode.cs" />
     <Compile Include="Enums\Quality.cs" />
     <Compile Include="Enums\WriteMode.cs" />
     <Compile Include="EventArgs\TagQualityChangedEventArgs.cs" />
     <Compile Include="EventArgs\TagValueChangedEventArgs.cs" />
+    <Compile Include="Station.cs" />
+    <Compile Include="Tag.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

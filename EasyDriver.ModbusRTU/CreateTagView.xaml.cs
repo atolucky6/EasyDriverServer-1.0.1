@@ -109,7 +109,7 @@ namespace EasyDriver.ModbusRTU
                 }
             }
 
-            ITagCore tag = new Tag(Device);
+            ITagCore tag = new TagCore(Device);
             tag.Name = txbName.Text?.Trim();
             tag.AccessPermission = accessPermission;
             tag.DataType = (IDataType)cobDataType.SelectedItem;

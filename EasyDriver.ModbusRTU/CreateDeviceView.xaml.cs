@@ -66,7 +66,7 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            IDeviceCore device = new Device(Channel);
+            IDeviceCore device = new DeviceCore(Channel);
             device.Name = txbName.Text?.Trim();
             device.ParameterContainer.DisplayName = "ModbusRTU Device Parameter";
             device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";

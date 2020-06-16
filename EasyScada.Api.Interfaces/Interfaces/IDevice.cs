@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EasyScada.Api.Interfaces
 {
-    public interface IDevice
+    public interface IDevice : IPath
     {
         string Name { get; }
         Dictionary<string, object> Parameters { get; }

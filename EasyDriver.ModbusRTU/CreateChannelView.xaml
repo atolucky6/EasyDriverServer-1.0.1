@@ -7,7 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="185" d:DesignWidth="400"
              MinWidth="400"
-             xmlns:serial="clr-nameSerialPortace:System.IO.Ports;assembly=System"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"

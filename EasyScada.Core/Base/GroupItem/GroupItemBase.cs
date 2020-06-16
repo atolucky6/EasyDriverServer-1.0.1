@@ -1,4 +1,5 @@
 ﻿using EasyDriverPlugin;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -19,6 +20,7 @@ namespace EasyScada.Core
         /// Tên của đối tượng
         /// </summary>
         [Category(PropertyCategory.General), DisplayName("Name")]
+        [JsonIgnore]
         public virtual string Name
         {
             get => GetProperty<string>()?.Trim();
@@ -29,12 +31,14 @@ namespace EasyScada.Core
         /// Đường dẫn đến đối tượng
         /// </summary>
         [Category(PropertyCategory.General), DisplayName("Path"), ReadOnly(true)]
-        public virtual string Path { get => Parent == null ? Name : string.Format("{0}/{1}", Parent.Path, Name); }
+        [JsonIgnore]
+        public virtual string Path { get => Parent == null || string.IsNullOrEmpty(Parent?.Path) ? Name : string.Format("{0}/{1}", Parent.Path, Name); }
 
         /// <summary>
         /// Thời gian tạo đối tượng
         /// </summary>
         [Category(PropertyCategory.General), DisplayName("Created date"), ReadOnly(true)]
+        [JsonIgnore]
         public virtual DateTime CreatedDate
         {
             get => GetProperty<DateTime>();
@@ -45,6 +49,7 @@ namespace EasyScada.Core
         /// Thời gian lần cuối cùng chỉnh sữa đối tượng
         /// </summary>
         [Category(PropertyCategory.General), DisplayName("Modified date"), ReadOnly(true)]
+        [JsonIgnore]
         public virtual DateTime ModifiedDate
         {
             get => GetProperty<DateTime>();
@@ -55,6 +60,7 @@ namespace EasyScada.Core
         /// Mô tả
         /// </summary>
         [Category(PropertyCategory.General), DisplayName("Description")]
+        [JsonIgnore]
         public virtual string Description
         {
             get => GetProperty<string>()?.Trim();
@@ -69,18 +75,21 @@ namespace EasyScada.Core
         /// Đối tượng cha chứa đối tượng này
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public virtual IGroupItem Parent { get; set; }
 
         /// <summary>
         /// Bit cho biết đối tượng chỉ được đọc hay không
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public virtual bool IsReadOnly { get; private set; }
 
         /// <summary>
         /// Danh sách con của đối tượng này
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public ObservableCoreItems Childs { get; private set; }
 
         #endregion

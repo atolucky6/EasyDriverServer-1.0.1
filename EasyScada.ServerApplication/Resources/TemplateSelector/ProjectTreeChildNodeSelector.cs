@@ -1,5 +1,6 @@
 ﻿using DevExpress.Xpf.Grid;
 using EasyDriverPlugin;
+using EasyScada.Api.Interfaces;
 using EasyScada.Core;
 using System.Collections;
 
@@ -10,11 +11,24 @@ namespace EasyScada.ServerApplication
         public IEnumerable SelectChildren(object item)
         {
             if (item != null)
-            {
+            {               
                 if (item is IDeviceCore)
                     return null;
                 if (item is IGroupItem groupItem)
                     return groupItem.Childs;
+                if (item is HubModel hubModel)
+                    return hubModel.Stations;
+                if (item is Station station)
+                {
+                    if (station.IsLocalStation)
+                        return station.Channels;
+                    else
+                        return station.RemoteStations;
+                }
+                if (item is Channel channel)
+                    return channel.Devices;
+                if (item is Device device)
+                    return device.Tags;
             }
             return null;
         }

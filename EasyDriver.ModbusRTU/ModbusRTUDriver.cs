@@ -118,7 +118,7 @@ namespace EasyDriver.ModbusRTU
                                             tag.Value = retVal[0] ? "1" : "0";
                                             tag.TimeStamp = DateTime.Now;
                                             tag.Quality = Quality.Good;
-                                            tag.RefreshInterval = DateTime.Now - tag.TimeStamp;
+                                            tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
 
                                         }
 
@@ -134,7 +134,7 @@ namespace EasyDriver.ModbusRTU
                                             tag.Value = retVal[0] ? "1" : "0";
                                             tag.TimeStamp = DateTime.Now;
                                             tag.Quality = Quality.Good;
-                                            tag.RefreshInterval = DateTime.Now - tag.TimeStamp;
+                                            tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
 
                                         }
 
@@ -152,7 +152,7 @@ namespace EasyDriver.ModbusRTU
                                             tag.Value = tag.DataType.ConvertToValue(buffer, tag.Gain, tag.Offset, 0, 0, byteOrder);
                                             tag.TimeStamp = DateTime.Now;
                                             tag.Quality = Quality.Good;
-                                            tag.RefreshInterval = DateTime.Now - tag.TimeStamp;
+                                            tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
 
                                         }
                                     }
@@ -169,7 +169,7 @@ namespace EasyDriver.ModbusRTU
                                             tag.Value = tag.DataType.ConvertToValue(buffer, tag.Gain, tag.Offset, 0, 0, byteOrder);
                                             tag.TimeStamp = DateTime.Now;
                                             tag.Quality = Quality.Good;
-                                            tag.RefreshInterval = DateTime.Now - tag.TimeStamp;
+                                            tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
 
                                         }
                                     }
@@ -187,7 +187,7 @@ namespace EasyDriver.ModbusRTU
                                 {
                                     tag.TimeStamp = DateTime.Now;
                                     tag.Quality = Quality.Bad;
-                                    tag.RefreshInterval = DateTime.Now - tag.TimeStamp;
+                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
                                 }
 
                             }
@@ -211,7 +211,7 @@ namespace EasyDriver.ModbusRTU
                                 {
                                     tag.TimeStamp = DateTime.Now;
                                     tag.Quality = Quality.Bad;
-                                    tag.RefreshInterval = DateTime.Now - tag.TimeStamp;
+                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
                                 }
                             }
                         }
@@ -286,6 +286,7 @@ namespace EasyDriver.ModbusRTU
         public void Dispose()
         {
             Disconnect();
+            mbMaster.Dispose();
         }
     }
 

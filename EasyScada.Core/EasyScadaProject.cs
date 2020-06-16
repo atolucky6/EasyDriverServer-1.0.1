@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using EasyDriverPlugin;
+using EasyScada.Api.Interfaces;
 
 namespace EasyScada.Core
 {
     [Serializable]
-    public class EasyScadaProject : GroupItemBase, IEasyScadaProject
+    public class EasyScadaProject : GroupItemBase, IEasyScadaProject, IPath
     {
         public EasyScadaProject() : base(null, false)
         {
@@ -14,6 +15,8 @@ namespace EasyScada.Core
             LocalStation = new LocalStation(this);
             Add(LocalStation);
         }
+
+        public override string Path => string.Empty;
 
         public string ProjectPath { get; set; }
 
@@ -33,12 +36,26 @@ namespace EasyScada.Core
 
         public override string GetErrorOfProperty(string propertyName)
         {
-            throw new NotImplementedException();
+            return string.Empty;
         }
 
         public override void GetErrors(ref IErrorInfo errorInfo)
         {
-            throw new NotImplementedException();
+
+        }
+
+        T IPath.GetItem<T>(string pathToObject)
+        {
+            foreach (var child in Childs)
+            {
+                if (child is IPath item)
+                {
+                    T result = item.GetItem<T>(pathToObject);
+                    if (result != null)
+                        return result;
+                }
+            }
+            return null;
         }
     }
 }

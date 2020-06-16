@@ -3,7 +3,7 @@ using System.IO.Ports;
 
 namespace EasyDriver.ModbusRTU
 {
-    class ModbusSerialRTU
+    class ModbusSerialRTU : IDisposable
     {
         public SerialPort SerialPort { get; private set; } = new SerialPort();
         public string modbusStatus;
@@ -15,7 +15,7 @@ namespace EasyDriver.ModbusRTU
         }
         ~ModbusSerialRTU()
         {
-            SerialPort.Dispose();
+            SerialPort?.Dispose();
         }
         #endregion
 
@@ -665,7 +665,11 @@ namespace EasyDriver.ModbusRTU
                 return false;
             }
 
+        }
 
+        public void Dispose()
+        {
+            SerialPort?.Dispose();
         }
         #endregion
     }

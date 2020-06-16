@@ -48,13 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Channel\Channel.cs" />
+    <Compile Include="Channel\ChannelCore.cs" />
     <Compile Include="Base\Commons\BindableCore.cs" />
     <Compile Include="Base\CoreItem\CoreItemBase.cs" />
     <Compile Include="Base\GroupItem\GroupItemBase.cs" />
     <Compile Include="Base\Interfaces\IErrorInfo.cs" />
     <Compile Include="Base\Commons\PropertyCategory.cs" />
-    <Compile Include="Device\Device.cs" />
+    <Compile Include="Device\DeviceCore.cs" />
     <Compile Include="EasyScadaProject.cs" />
     <Compile Include="Extensions\AssemblyHelper.cs" />
     <Compile Include="Extensions\CopyHelper.cs" />
@@ -63,7 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Station\LocalStation.cs" />
     <Compile Include="Station\RemoteStation.cs" />
-    <Compile Include="Tag\Tag.cs" />
+    <Compile Include="Tag\TagCore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

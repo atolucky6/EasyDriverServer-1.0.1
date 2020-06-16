@@ -50,7 +50,7 @@ namespace EasyDriverPlugin
         /// <summary>
         /// Thời gian giữa 2 lần cập nhật giá trị gần nhất
         /// </summary>
-        TimeSpan RefreshInterval { get; set; }  
+        int RefreshInterval { get; set; }  
 
         double Gain { get; set; }
 
@@ -61,7 +61,7 @@ namespace EasyDriverPlugin
         /// <summary>
         /// Kiểu dữ liệu 
         /// </summary>
-        string DataTypeName { get; }
+        string DataTypeName { get; set; }
 
         string CommunicationError { get; set; }
 
