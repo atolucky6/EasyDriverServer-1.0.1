@@ -5,7 +5,7 @@ using System.IO.Ports;
 using System.Text.RegularExpressions;
 using System.Timers;
 using EasyDriverPlugin;
-using EasyScada.Api.Interfaces;
+using EasyDriver.Client.Models;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -59,7 +59,7 @@ namespace EasyDriver.ModbusRTU
 
         private void InitializeSerialPort()
         {
-            if (Channel.ParameterContainer.Parameters.Count >= 5)
+            if (Channel.ParameterContainer.Parameters.Count >= 6)
             {
                 var port = Channel.ParameterContainer.Parameters["Port"].ToString();
                 var baudRate = (int)Channel.ParameterContainer.Parameters["Baudrate"];
@@ -222,7 +222,14 @@ namespace EasyDriver.ModbusRTU
             {
                 Debug.WriteLine(ex.Message);
             }
-            finally { scanTimer.Enabled = true; }
+            finally
+            {
+                int refreshRate = 100;
+                if (Channel != null && Channel.ParameterContainer != null && Channel.ParameterContainer.Parameters.ContainsKey("RefreshRate"))
+                    refreshRate = Convert.ToInt32(Channel.ParameterContainer.Parameters["RefreshRate"]);
+                scanTimer.Interval = refreshRate;
+                scanTimer.Enabled = true;
+            }
         }
 
         public bool Disconnect()

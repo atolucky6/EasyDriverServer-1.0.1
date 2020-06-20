@@ -5,8 +5,8 @@ using System;
 using System.Linq;
 using System.Windows;
 using DevExpress.Xpf.Core;
-using EasyScada.Core;
-using EasyScada.Api.Interfaces;
+using EasyDriver.Server.Models;
+using EasyDriver.Client.Models;
 
 namespace EasyDriver.ModbusRTU
 {

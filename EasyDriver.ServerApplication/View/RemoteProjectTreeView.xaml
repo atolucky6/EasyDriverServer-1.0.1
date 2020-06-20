@@ -1,0 +1,144 @@
+﻿<UserControl xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"  
+             x:Class="EasyScada.ServerApplication.RemoteProjectTreeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EasyScada.ServerApplication"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="400"
+             DataContext="{local:ViewModelContainer local:RemoteProjectTreeViewModel}"
+             xmlns:api="clr-namespace:EasyDriver.Client.Models;assembly=EasyDriver.Client.Models"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"  
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm">
+    <UserControl.Resources>
+        <DataTemplate x:Key="HubTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="ChannelTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="DeviceTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="TagTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <local:ProjectTreeCellTemplateSelector x:Key="ProjectTreeCellTemplateSelector"
+                                               HubTemplate="{StaticResource HubTemplate}"
+                                               ChannelTemplate="{StaticResource ChannelTemplate}"
+                                               DeviceTemplate="{StaticResource DeviceTemplate}"
+                                               TagTemplate="{StaticResource TagTemplate}"/>
+    </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:DispatcherService/>
+        <dxmvvm:CurrentWindowService/>
+        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnLoadedCommand}"/>
+    </dxmvvm:Interaction.Behaviors>
+    <dxb:BarManager>
+        <dxb:BarManager.Items>
+            <dxb:BarItemSeparator x:Name="bSeparator"/>
+            <dxb:BarButtonItem x:Name="bExpandAll" Content="Expand all" 
+                               Command="{Binding ExpandAllCommand}" Glyph="{dx:DXImage SvgImages/Spreadsheet/ExpandFieldPivotTable.svg}"/>
+            <dxb:BarButtonItem x:Name="bCollapseAll" Content="Collapse all" 
+                               Command="{Binding CollapseAllCommand}" Glyph="{dx:DXImage SvgImages/Spreadsheet/CollapseFieldPivotTable.svg}"/>
+            <dxb:BarButtonItem x:Name="bRefresh" Content="Refresh" Command="{Binding RefreshCommand}" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Refresh.svg}"/>
+            <dxb:BarButtonItem x:Name="bComfirm" Content="Comfirm" Command="{Binding ComfirmCommand}" Alignment="Far" Glyph="{dx:DXImage SvgImages/Business Objects/BO_Validation.svg}"/>
+        </dxb:BarManager.Items>
+        <dxb:BarManager.Bars>
+            <dxb:Bar Caption="Toolbox" UseWholeRow="True" AllowQuickCustomization="False" AllowCollapse="False"
+                     AllowCustomizationMenu="False" AllowHide="False" AllowRemove="False" ShowDragWidget="False">
+                <dxb:Bar.DockInfo>
+                    <dxb:BarDockInfo ContainerName="barContainer"/>
+                </dxb:Bar.DockInfo>
+                <dxb:Bar.ItemLinks>
+                    <dxb:BarButtonItemLink BarItemName="bRefresh"/>
+                    <dxb:BarItemLinkSeparator BarItemName="bSeparator"/>
+                    <dxb:BarButtonItemLink BarItemName="bExpandAll"/>
+                    <dxb:BarButtonItemLink BarItemName="bCollapseAll"/>
+                    <dxb:BarItemLinkSeparator BarItemName="bSeparator"/>
+                    <dxb:BarButtonItemLink BarItemName="bComfirm"/>
+                </dxb:Bar.ItemLinks>
+            </dxb:Bar>
+        </dxb:BarManager.Bars>
+        <Grid>
+            <DockPanel>
+                <Border BorderThickness="0,0,0,0" BorderBrush="#FFABABAB" DockPanel.Dock="Top">
+                    <dxb:BarContainerControl x:Name="barContainer" BorderBrush="Transparent"/>
+                </Border>
+                <dxlc:GroupBox TitleVisibility="Visible" Header="Select which data will be fetch from server" Padding="0">
+                    <dxlc:GroupBox.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Margin="0 3" FontWeight="SemiBold" FontSize="12"/>
+                        </DataTemplate>
+                    </dxlc:GroupBox.HeaderTemplate>
+                    <dxg:TreeListControl SelectionMode="Row"
+                                         ShowBorder="False"
+                                         SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         SelectedItems="{Binding SelectedItems, Mode=OneWayToSource}"
+                                         ItemsSource="{Binding Source}">
+                        <dxmvvm:Interaction.Behaviors>
+                            <dxmvvm:EventToCommand EventName="PreviewMouseDoubleClick" Command="{Binding OpenOnDoubleClickCommand}">
+                                <dxmvvm:EventToCommand.EventArgsConverter>
+                                    <dx:EventArgsToDataRowConverter/>
+                                </dxmvvm:EventToCommand.EventArgsConverter>
+                            </dxmvvm:EventToCommand>
+                        </dxmvvm:Interaction.Behaviors>
+                        <dxg:TreeListControl.View>
+                            <dxg:TreeListView TreeColumnFieldName="Name"
+                                              AllowEditing="False"
+                                              ShowIndicator="False"
+                                              HorizontalScrollbarVisibility="Auto"
+                                              VerticalScrollbarVisibility="Auto"
+                                              ShowHorizontalLines="False"
+                                              ShowVerticalLines="False"
+                                              NavigationStyle="Row"
+                                              ShowColumnHeaders="False"
+                                              ShowCheckboxes="True"
+                                              AllowRecursiveNodeChecking="True"
+                                              CheckBoxFieldName="Checked"
+                                              AutoExpandAllNodes="True"
+                                              TreeDerivationMode="ChildNodesSelector">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <local:TreeListViewUtilities/>
+                                </dxmvvm:Interaction.Behaviors>
+                                <dxg:TreeListView.ChildNodesSelector>
+                                    <local:ProjectTreeChildNodeSelector/>
+                                </dxg:TreeListView.ChildNodesSelector>
+                                <dxg:TreeListView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItemLink BarItemName="bRefresh"/>
+                                    <dxb:BarItemSeparator/>
+                                    <dxb:BarButtonItemLink BarItemName="bExpandAll"/>
+                                    <dxb:BarButtonItemLink BarItemName="bCollapseAll"/>
+                                </dxg:TreeListView.RowCellMenuCustomizations>
+                            </dxg:TreeListView>
+                        </dxg:TreeListControl.View>
+                        <dxg:TreeListControl.Columns>
+                            <dxg:TreeListColumn FieldName="Name" Width="1*" CellTemplateSelector="{StaticResource ProjectTreeCellTemplateSelector}"/>
+                        </dxg:TreeListControl.Columns>
+                        <dxb:BarManager.DXContextMenu>
+                            <dxb:PopupMenu>
+                                <dxb:BarButtonItemLink BarItemName="bRefresh"/>
+                                <dxb:BarItemSeparator/>
+                                <dxb:BarButtonItemLink BarItemName="bExpandAll"/>
+                                <dxb:BarButtonItemLink BarItemName="bCollapseAll"/>
+                            </dxb:PopupMenu>
+                        </dxb:BarManager.DXContextMenu>
+                    </dxg:TreeListControl>
+                </dxlc:GroupBox>
+            </DockPanel>
+            <dx:WaitIndicator Content="Please wait..." DeferedVisibility="{Binding IsBusy}" Panel.ZIndex="999"/>
+        </Grid>
+    </dxb:BarManager>
+</UserControl>

@@ -1,4 +1,5 @@
-﻿using EasyScada.Api.Interfaces;
+﻿using EasyDriver.Client.Models;
+using System;
 
 namespace EasyDriverPlugin
 {
@@ -7,6 +8,7 @@ namespace EasyDriverPlugin
         ConnectionType ConnectionType { get; set; }
         Indexer<IDeviceCore> Devices { get; }
         string DriverPath { get; set; }
-        int RefreshRate { get; set; }
+        string CommunicationError { get; set; }
+        DateTime LastRefreshTime { get; set; }
     }
 }

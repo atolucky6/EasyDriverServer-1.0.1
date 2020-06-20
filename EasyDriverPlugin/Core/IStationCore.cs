@@ -1,4 +1,5 @@
-﻿using EasyScada.Api.Interfaces;
+﻿using EasyDriver.Client.Models;
+using System;
 
 namespace EasyDriverPlugin
 {
@@ -9,6 +10,7 @@ namespace EasyDriverPlugin
         CommunicationMode CommunicationMode { get; set; }
         int RefreshRate { get; set; }
         string CommunicationError { get; set; }
+        DateTime LastRefreshTime { get; set; }
         bool IsLocalStation { get; set; }
     }
 }

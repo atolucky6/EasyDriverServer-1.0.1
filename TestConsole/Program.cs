@@ -1,5 +1,4 @@
 ﻿using EasyDriverPlugin;
-using EasyScada.Core;
 using System;
 
 namespace TestConsole

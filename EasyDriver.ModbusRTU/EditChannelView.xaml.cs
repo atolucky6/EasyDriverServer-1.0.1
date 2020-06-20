@@ -1,6 +1,6 @@
 ﻿using DevExpress.Xpf.Core;
 using EasyDriverPlugin;
-using EasyScada.Core;
+using EasyDriver.Server.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;

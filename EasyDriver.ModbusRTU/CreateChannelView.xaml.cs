@@ -83,6 +83,7 @@ namespace EasyDriver.ModbusRTU
                 Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem;
                 Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem;
                 Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem;
+                Driver.Channel.ParameterContainer.Parameters["RefreshRate"] = spnRefreshRate.Value;
 
                 Driver.Connect();
                 ((Parent as FrameworkElement).Parent as Window).Tag = Driver.Channel;

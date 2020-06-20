@@ -87,9 +87,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EasyScada.Api.Interfaces\EasyScada.Api.Interfaces.csproj">
-      <Project>{3762269D-2A9C-42D1-9384-52895320FAA4}</Project>
-      <Name>EasyScada.Api.Interfaces</Name>
+    <ProjectReference Include="..\EasyDriver.Client.Models\EasyDriver.Client.Models.csproj">
+      <Project>{3762269d-2a9c-42d1-9384-52895320faa4}</Project>
+      <Name>EasyDriver.Client.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

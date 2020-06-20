@@ -90,10 +90,6 @@
       <Project>{5CBCE8B3-27A3-4D71-B38A-9CEEEF539F0A}</Project>
       <Name>EasyDriverPlugin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
-      <Project>{67089D82-2FDE-46C7-9264-ED5C066DC8AD}</Project>
-      <Name>EasyScada.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

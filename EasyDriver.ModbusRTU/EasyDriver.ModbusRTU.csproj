@@ -87,17 +87,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EasyDriver.Client.Models\EasyDriver.Client.Models.csproj">
+      <Project>{3762269d-2a9c-42d1-9384-52895320faa4}</Project>
+      <Name>EasyDriver.Client.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.Server.Models\EasyDriver.Server.Models.csproj">
+      <Project>{67089d82-2fde-46c7-9264-ed5c066dc8ad}</Project>
+      <Name>EasyDriver.Server.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EasyDriverPlugin\EasyDriverPlugin.csproj">
       <Project>{5cbce8b3-27a3-4d71-b38a-9ceeef539f0a}</Project>
       <Name>EasyDriverPlugin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyScada.Api.Interfaces\EasyScada.Api.Interfaces.csproj">
-      <Project>{3762269D-2A9C-42D1-9384-52895320FAA4}</Project>
-      <Name>EasyScada.Api.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
-      <Project>{67089d82-2fde-46c7-9264-ed5c066dc8ad}</Project>
-      <Name>EasyScada.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
