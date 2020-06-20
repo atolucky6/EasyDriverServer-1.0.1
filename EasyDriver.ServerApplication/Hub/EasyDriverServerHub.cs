@@ -104,10 +104,10 @@ namespace EasyScada.ServerApplication
         {
             if (pathToStations != null && ioc.ProjectManagerService.CurrentProject != null)
             {
-                List<Station> stations = new List<Station>();
+                List<IStation> stations = new List<IStation>();
                 foreach (var path in pathToStations)
                 {
-                    Station station = ioc.ProjectManagerService.CurrentProject.GetItem<Station>(path);
+                    IStation station = ioc.ProjectManagerService.CurrentProject.GetItem<IStation>(path);
                     if (station != null)
                         stations.Add(station);
                 }

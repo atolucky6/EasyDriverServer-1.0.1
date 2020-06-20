@@ -36,7 +36,7 @@
             // 
             // easyDriverConnector1
             // 
-            this.easyDriverConnector1.CommunicationMode = EasyDriver.Client.Models.CommunicationMode.ReceiveFromServer;
+            this.easyDriverConnector1.CommunicationMode = EasyDriver.Client.Models.CommunicationMode.RequestToServer;
             this.easyDriverConnector1.Port = ((ushort)(8800));
             this.easyDriverConnector1.RefreshRate = 1000;
             this.easyDriverConnector1.ServerAddress = "127.0.0.1";
@@ -45,7 +45,7 @@
             // 
             this.easyLabel1.AutoSize = true;
             this.easyLabel1.Connector = this.easyDriverConnector1;
-            this.easyLabel1.Location = new System.Drawing.Point(207, 167);
+            this.easyLabel1.Location = new System.Drawing.Point(207, 50);
             this.easyLabel1.Name = "easyLabel1";
             this.easyLabel1.PathToTag = "Local Station/Channel1/Device1/Tag1";
             this.easyLabel1.Size = new System.Drawing.Size(61, 13);
@@ -56,7 +56,7 @@
             // 
             this.easyLabel2.AutoSize = true;
             this.easyLabel2.Connector = this.easyDriverConnector1;
-            this.easyLabel2.Location = new System.Drawing.Point(327, 167);
+            this.easyLabel2.Location = new System.Drawing.Point(327, 50);
             this.easyLabel2.Name = "easyLabel2";
             this.easyLabel2.PathToTag = "Local Station/Channel1/Device2/Tag1";
             this.easyLabel2.Size = new System.Drawing.Size(61, 13);
