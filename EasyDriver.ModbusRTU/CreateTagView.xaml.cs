@@ -61,7 +61,7 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            if (Device.Childs.FirstOrDefault(x => x.Name == txbName.Text?.Trim()) != null)
+            if (Device.Childs.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The tag name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;

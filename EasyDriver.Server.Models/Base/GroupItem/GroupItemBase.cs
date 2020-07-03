@@ -148,7 +148,7 @@ namespace EasyDriver.Server.Models
                 return true;
             foreach (var item in Childs)
             {
-                if (item.HasChanges())
+                if ((item as ICoreItem).HasChanges())
                     return true;
             }
             return false;
@@ -169,7 +169,7 @@ namespace EasyDriver.Server.Models
                 return true;
             foreach (var item in Childs)
             {
-                if (item.HasError())
+                if ((item as ICoreItem).HasError())
                     return true;
             }
             return false;
@@ -233,13 +233,13 @@ namespace EasyDriver.Server.Models
                     }
                     else if (item is ICoreItem)
                     {
-                        if (predicate(item))
+                        if (predicate(item as ICoreItem))
                             return true;
                     }
                 }
                 return false;
             }
-            return Childs.FirstOrDefault(predicate) != null;
+            return FirstOrDefault(predicate) != null;
         }
 
         /// <summary>
@@ -254,8 +254,8 @@ namespace EasyDriver.Server.Models
             {
                 foreach (var item in Childs)
                 {
-                    if (predicate(item))
-                        return item;
+                    if (predicate(item as ICoreItem))
+                        return item as ICoreItem;
                 }
                 foreach (var item in Childs)
                 {
@@ -268,7 +268,7 @@ namespace EasyDriver.Server.Models
                 }
                 return null;
             }
-            return Childs.FirstOrDefault(predicate);
+            return Childs.FirstOrDefault((x) => predicate(x as ICoreItem)) as ICoreItem;
         }
 
         /// <summary>
@@ -283,13 +283,14 @@ namespace EasyDriver.Server.Models
             {
                 foreach (var item in Childs)
                 {
-                    if (predicate(item))
-                        yield return item;
-                    if (item is IGroupItem)
+                    if (predicate(item as ICoreItem))
+                        yield return item as ICoreItem;
+                    else
                     {
-                        foreach (var itemInChild in (item as IGroupItem).Find(predicate, findInChildren))
+                        if (item is IGroupItem)
                         {
-                            yield return itemInChild;
+                            foreach (var itemInChild in (item as IGroupItem).Find(predicate, findInChildren))
+                                yield return itemInChild;
                         }
                     }
                 }
@@ -298,8 +299,8 @@ namespace EasyDriver.Server.Models
             {
                 foreach (var item in Childs)
                 {
-                    if (predicate.Invoke(item))
-                        yield return item;
+                    if (predicate.Invoke(item as ICoreItem))
+                        yield return item as ICoreItem;
                 }
             }
         }

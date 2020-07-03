@@ -13,6 +13,7 @@ namespace EasyScada.ServerApplication.Workspace
         public ObservableCollection<TPanel> Workspaces { get; protected set; }
         protected Func<object, TPanel> CreatePanelByTokenFunc { get; set; }
         public virtual bool IsBusy { get; protected set; }
+        public TPanel CurrentActivePanel { get; set; }
 
         #endregion
 

@@ -25,7 +25,6 @@ namespace EasyScada.ServerApplication
 
         #region Injected members
 
-        protected IWorkspaceManagerService WorkspaceManagerService { get; set; }
         protected IReverseService ReverseService { get; set; }
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
@@ -51,7 +50,7 @@ namespace EasyScada.ServerApplication
             IProjectManagerService projectManagerService,
             IDriverManagerService driverManagerService,
             IHubFactory hubFactory,
-            IHubConnectionManagerService hubConnectionManagerService) : base(null)
+            IHubConnectionManagerService hubConnectionManagerService) : base(null, workspaceManagerService)
         {
             WorkspaceName = WorkspaceRegion.ProjectTree;
             Caption = "Project Explorer";
@@ -62,7 +61,7 @@ namespace EasyScada.ServerApplication
             HubFactory = hubFactory;
             HubConnectionManagerService = hubConnectionManagerService;
 
-            ProjectManagerService.ProjectChanged += ProjectManagerService_ProjectChanged;
+            ProjectManagerService.ProjectChanged += OnProjectChanged;
 
         }
 
@@ -94,44 +93,71 @@ namespace EasyScada.ServerApplication
 
         #region Event handlers
 
-        private void ProjectManagerService_ProjectChanged(object sender, ProjectChangedEventArgs e)
+        /// <summary>
+        /// Hàm sử lý sự kiện khi project đang xử lý của chương trình thay đổi 
+        /// </summary>
+        /// <remarks>Hàm chạy khi người dùng thực hiện lệnh New hoặc Open một project khác</remarks>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnProjectChanged(object sender, ProjectChangedEventArgs e)
         {
+            // Thông báo thuộc tính CurrentProject thay đổi để cập nhật lên UI
             this.RaisePropertyChanged(x => x.CurrentProject);
+
+            // Xóa tất cả các TagDocument liên quan đến project
             WorkspaceManagerService.RemoveAllDocumentPanel();
 
-            // TODO: Need to check driver path is valid or not
-
+            // Nếu project cũ khác null thì xóa tất cả các thông tin liên quan đến project
+            // như là các DriverPlugin và HubConnection
             if (e.OldProject != null)
             {
+                // Loop qua tất cả các đối tượng con của project để xử lý
                 foreach (var item in e.OldProject.Childs)
                 {
-                    IStationCore station = item as IStationCore;
-                    if (station is LocalStation)
+                    // Nếu đối tượng con là 1 LocalStation
+                    if (item is LocalStation localStation)
                     {
-                        foreach (var x in station.Childs)
+                        // Xóa tất cả các DriverPlugin liên quan tới Channel có trong LocalStation
+                        foreach (var x in localStation.Childs)
                         {
                             if (x is IChannelCore channel)
                                 DriverManagerService.RemoveDriver(channel);
                         }
                     }
+                    // Nếu đối tượng con là 1 RemoteStation
+                    else if (item is RemoteStation remoteStation)
+                    {
+                        // Xóa connection liên quan tới RemoteStation
+                        HubConnectionManagerService.RemoveConnection(remoteStation);
+                    }
                 }
             }
             
+            // Nếu project mới khác null thì khởi tạo các DriverPlugin và HubConnection
             if (e.NewProject != null)
             {
+                // Loop qua các đối tương con của project mới để xử lý
                 foreach (var item in e.NewProject.Childs)
                 {
-                    IStationCore station = item as IStationCore;
-                    if (station is LocalStation)
+                    // Nếu đối tương là một LocalStation thì khới tạo các DriverPlugin tương ứng với các Channel có trong LocalStation
+                    if (item is LocalStation localStation)
                     {
-                        foreach (var x in station.Childs)
+                        foreach (var x in localStation.Childs)
                         {
                             if (x is IChannelCore channel)
                             {
+                                // Thêm driver tương ứng với channel vào DriverManagerService
                                 IEasyDriverPlugin driver = DriverManagerService.AddDriver(channel, channel.DriverPath); 
+                                // Khởi động driver bằng hàm connect
                                 driver?.Connect();
                             }
                         }
+                    }
+                    /// Nếu đối tượng là một RemoteStation thì khởi tạo các HubConnection tương ứng với các RemoteStation
+                    else if (item is RemoteStation remoteStation)
+                    {
+                        // Thêm Hubconnection vào HubConnectionManagerService
+                        HubConnectionManagerService.AddConnection(remoteStation);
                     }
                 }
             }
@@ -193,8 +219,8 @@ namespace EasyScada.ServerApplication
 
         public bool CanAddChannel()
         {
-            if (SelectedItem is LocalStation)
-                return !IsBusy;
+            if (SelectedItem is LocalStation localStation)
+                return !IsBusy && localStation.Parent is IEasyScadaProject;
             return false;
         }
 
@@ -219,8 +245,8 @@ namespace EasyScada.ServerApplication
 
         public bool CanAddDevice()
         {
-            if (SelectedItem is IChannelCore)
-                return !IsBusy;
+            if (SelectedItem is IChannelCore channelCore)
+                return !IsBusy && !channelCore.IsReadOnly;
             return false;
         }
 
@@ -271,6 +297,11 @@ namespace EasyScada.ServerApplication
             {
                 if (!coreItem.IsReadOnly)
                     return !(SelectedItem is LocalStation);
+                else
+                {
+                    if (SelectedItem is RemoteStation remoteStation)
+                        return remoteStation.Parent is IEasyScadaProject;
+                }
             }
             return false;
         }
@@ -327,18 +358,64 @@ namespace EasyScada.ServerApplication
             return false;
         }
 
+        /// <summary>
+        /// Lệnh thực hiện việc xóa đối tượng
+        /// </summary>
         public void Delete()
         {
+            try
+            {
+                // Hỏi người dùng có muốn xóa đối tượng đang chọn hay không
+                var mbr = MessageBoxService.ShowMessage($"Do you want to delete '{(SelectedItem as ICoreItem).Name}' and all object associated with it?",
+                    "Easy Driver Server",
+                    MessageButton.YesNo, MessageIcon.Question);
+
+                // Nếu người dùng chọn 'Yes' thì thực hiện việc xóa đối tượng
+                if (mbr == MessageResult.Yes)
+                {
+                    // Khóa luồng làm việc của chương trình
+                    IsBusy = true;
+                    // Lấy đối tương cha của đối tượng cần xóa
+                    IGroupItem parent = (SelectedItem as ICoreItem).Parent;
+
+                    // Nếu đối tượng là một RemoteStation thì ta cần phải xóa
+                    // HubConnection liên quan đến nó ở IHubConnectionManagerService
+                    if (SelectedItem is RemoteStation remoteStation)
+                        HubConnectionManagerService.RemoveConnection(remoteStation);
+
+                    // Nếu đối tượng là một Channel thì ta cần phải xỏa
+                    // DriverPlugin liên quan đến nó ở IDriverManagerService
+                    if (SelectedItem is ChannelCore channelCore)
+                        DriverManagerService.RemoveDriver(channelCore);
+
+                    // Xóa tất cả các TagDocument liên quan
+                    foreach (var item in (SelectedItem as IGroupItem).Find(x => x is IDeviceCore, true))
+                        WorkspaceManagerService.RemovePanel(x => x.Token == item);
+
+                    // Xóa đối tượng khỏi danh sách con của đối tượng cha
+                    parent.Childs.Remove(SelectedItem);
+                }
+            }
+            catch { }
+            // Mở khóa luồng làm việc của chương trình
+            finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh xóa đối tượng
+        /// </summary>
+        /// <returns></returns>
         public bool CanDelete()
         {
-            if (SelectedItems == null)
-                return false;
-            if (SelectedItems.Count == 0)
-                return false;
-            if (SelectedItems.FirstOrDefault(x => !(x as ICoreItem).IsReadOnly) != null)
-                return true;
+            // TH1: Đối tượng đang chọn là một RemoteStation
+            if (SelectedItem is RemoteStation remoteStation)
+                return !IsBusy; // Cho phép xóa nếu chương trình không bận
+
+            // TH2: Đối tượng đang chọn là một CoreItem
+            if (SelectedItem is ICoreItem coreItem)
+                return !coreItem.IsReadOnly && !IsBusy; // Cho phép xóa nếu chương trình không bận và CoreItem không phải ReadOnly
+
+            // Các trường hợp khác thì không cho xóa
             return false;
         }
 

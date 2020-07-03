@@ -8,6 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800"
              
              DataContext="{local:ViewModelContainer local:MainViewModel}"
+             xmlns:dxbt="http://schemas.devexpress.com/winfx/2008/xaml/bars/themekeys"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"  
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"  
@@ -38,79 +39,161 @@
     <dx:BackgroundPanel>
         <dxb:BarManager>
             <dxb:BarManager.Bars>
-                <dxb:Bar Caption="MainMenu" IsMainMenu="True">
+                <dxb:Bar Caption="MainMenu" IsMainMenu="True" dxb:MergingProperties.ElementMergingBehavior="All" AllowCustomizationMenu="False"
+                         AllowCollapse="False" AllowHide="False" AllowRemove="False" AllowRename="False" AllowQuickCustomization="False">
                     <dxb:BarSubItem x:Name="biFile" Content="File">
-                        <dxb:BarButtonItem x:Name="btnNew" Content="New" KeyGesture="Ctrl + N" Command="{Binding NewCommand}" Glyph="{dx:DXImage SvgImages/Actions/New.svg}"/>
-                        <dxb:BarButtonItem x:Name="btnOpen" Content="Open" KeyGesture="Ctrl + O" Command="{Binding OpenCommand}" Glyph="{dx:DXImage SvgImages/Actions/Open2.svg}"/>
+                        <dxb:BarButtonItem x:Name="btnNew" Content="New" KeyGesture="Ctrl + N" Command="{Binding NewCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/file_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnOpen" Content="Open" KeyGesture="Ctrl + O" Command="{Binding OpenCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/opened_folder_48px.png"/>
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnSave" Content="Save" KeyGesture="Ctrl + S" Command="{Binding SaveCommand}" Glyph="{dx:DXImage SvgImages/Save/Save.svg}"/>
-                        <dxb:BarButtonItem x:Name="btnSaveAs" Content="Save as..." KeyGesture="" Command="{Binding SaveAsCommand}" Glyph="{dx:DXImage SvgImages/Save/SaveAs.svg}"/>
+                        <dxb:BarButtonItem x:Name="btnSave" Content="Save" KeyGesture="Ctrl + S" Command="{Binding SaveCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/save_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnSaveAs" Content="Save as..." KeyGesture="" Command="{Binding SaveAsCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/save_as_48px.png"/>
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnClose" Content="Close" KeyGesture="Alt + F4" Command="{Binding CloseCommand}" Glyph="{dx:DXImage SvgImages/XAF/Action_Close.svg}"/>
+                        <dxb:BarButtonItem x:Name="btnClose" Content="Close" KeyGesture="Alt + F4" Command="{Binding CloseCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/close-window-48.png"/>
                     </dxb:BarSubItem>
                     <dxb:BarSubItem x:Name="biEdit" Content="Edit">
-                        <dxb:BarButtonItem x:Name="btnAddStation" Content="Add Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" />
-                        <dxb:BarButtonItem x:Name="btnAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_16px.png"/>
-                        <dxb:BarButtonItem x:Name="btnAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_16px.png"/>
-                        <dxb:BarButtonItem x:Name="btnAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/tag_16px.png" />
+                        <dxb:BarButtonItem x:Name="btnAddStation" Content="Add Remote Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/tag_48px.png" />
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnUndo" Content="Undo" KeyGesture="Ctrl + Z" Command="{Binding SaveCommand}" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Undo.svg}"/>
-                        <dxb:BarButtonItem x:Name="btnRedo" Content="Redo" KeyGesture="Ctrl + Y" Command="{Binding SaveAsCommand}" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Redo.svg}"/>
+                        <dxb:BarButtonItem x:Name="btnUndo" Content="Undo" KeyGesture="Ctrl + Z" Command="{Binding SaveCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/undo-48.png"/>
+                        <dxb:BarButtonItem x:Name="btnRedo" Content="Redo" KeyGesture="Ctrl + Y" Command="{Binding SaveAsCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/redo-48px.png"/>
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnCut" Content="Cut" KeyGesture="Ctrl + X" Command="{Binding CutCommand}" Glyph="{dx:DXImage SvgImages/Edit/Cut.svg}"/>
-                        <dxb:BarButtonItem x:Name="btnCopy" Content="Copy" KeyGesture="Ctrl + C" Command="{Binding CopyCommand}" Glyph="{dx:DXImage SvgImages/Edit/Copy.svg}"/>
+                        <dxb:BarButtonItem x:Name="btnCut" Content="Cut" KeyGesture="Ctrl + X" Command="{Binding CutCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cut_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnCopy" Content="Copy" KeyGesture="Ctrl + C" Command="{Binding CopyCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/copy_48px.png"/>
                         <dxb:BarButtonItem x:Name="btnPaste" Content="Paste" KeyGesture="Ctrl + V" Command="{Binding PasteCommand}" Glyph="{dx:DXImage SvgImages/Edit/Paste.svg}"/>
-                        <dxb:BarButtonItem x:Name="btnDelete" Content="Delete" KeyGesture="Del" Command="{Binding DeleteCommand}" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Delete.svg}"/>
+                        <dxb:BarButtonItem x:Name="btnDelete" Content="Delete" KeyGesture="Del" Command="{Binding DeleteCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/delete_48px.png"/>
+                    </dxb:BarSubItem>
+                    <dxb:BarSubItem x:Name="biTools" Content="Tools">
+                        <dxb:BarButtonItem x:Name="btnCreateConnectionSchemaFile" Content="Create Connection Schema File" Command="{Binding CreateConnectionSchemaFileCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cloud-file-48.png"/>
+                        <dxb:BarItemSeparator/>
+                        <dxb:BarButtonItem x:Name="btnOptions" Content="Options..." Command="{Binding ShowOptionsViewCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/settings_48px.png"/>
                     </dxb:BarSubItem>
                 </dxb:Bar>
+                
                 <dxb:Bar Caption="Toolbar"
                          UseWholeRow="True"
+                         AllowCollapse="False"
+                         AllowHide="False"
                          AllowCustomizationMenu="False"
                          AllowQuickCustomization="False"
+                         ShowDragWidget="False"
                          AllowRemove="False">
-                    <dxb:BarButtonItemLink BarItemName="btnNew"/>
-                    <dxb:BarButtonItemLink BarItemName="btnOpen"/>
+                    <dxb:BarButtonItem x:Name="tNew" Content="New" KeyGesture="Ctrl + N" Command="{Binding NewCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/file_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tOpen" Content="Open" KeyGesture="Ctrl + O" Command="{Binding OpenCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/opened_folder_48px.png"/>
                     <dxb:BarItemSeparator/>
-                    <dxb:BarButtonItemLink BarItemName="btnSave"/>
+                    <dxb:BarButtonItem x:Name="tSave" Content="Save" KeyGesture="Ctrl + S" Command="{Binding SaveCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/save_48px.png"/>
                     <dxb:BarItemSeparator/>
-                    <dxb:BarButtonItemLink BarItemName="btnUndo"/>
-                    <dxb:BarButtonItemLink BarItemName="btnRedo"/>
+                    <dxb:BarButtonItem x:Name="tUndo" Content="Undo" KeyGesture="Ctrl + Z" Command="{Binding UndoCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/undo-48.png"/>
+                    <dxb:BarButtonItem x:Name="tRedo" Content="Redo" KeyGesture="Ctrl + Y" Command="{Binding RedoCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/redo-48px.png"/>
                     <dxb:BarItemSeparator/>
-                    <dxb:BarButtonItemLink BarItemName="btnCut"/>
-                    <dxb:BarButtonItemLink BarItemName="btnCopy"/>
-                    <dxb:BarButtonItemLink BarItemName="btnPaste"/>
-                    <dxb:BarButtonItemLink BarItemName="btnDelete"/>
+                    <dxb:BarButtonItem x:Name="tCut" Content="Cut" KeyGesture="Ctrl + X" Command="{Binding CutCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cut_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tCopy" Content="Copy" KeyGesture="Ctrl + C" Command="{Binding CopyCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/copy_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tPaste" Content="Paste" KeyGesture="Ctrl + V" Command="{Binding PasteCommand}" Glyph="{dx:DXImage SvgImages/Edit/Paste.svg}"/>
+                    <dxb:BarButtonItem x:Name="tDelete" Content="Delete" KeyGesture="Del" Command="{Binding DeleteCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/delete_48px.png"/>
                     <dxb:BarItemSeparator/>
-                    <dxb:BarButtonItemLink BarItemName="btnAddStation"/>
-                    <dxb:BarButtonItemLink BarItemName="btnAddChannel"/>
-                    <dxb:BarButtonItemLink BarItemName="btnAddDevice"/>
-                    <dxb:BarButtonItemLink BarItemName="btnAddTag"/>
+                    <dxb:BarButtonItem x:Name="tddStation" Content="Add Remote Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"/>
+                    <dxb:BarButtonItem x:Name="tAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"/>
+                    <dxb:BarButtonItem x:Name="tAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"/>
+                    <dxb:BarButtonItem x:Name="tAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/tag_48px.png" />
+                </dxb:Bar>
+
+                <dxb:Bar IsStatusBar="True"
+                         IsMainMenu="False"
+                         AllowCustomizationMenu="False">
+                    <dxb:Bar.Resources>
+                        <ControlTemplate x:Key="{dxbt:BarControlThemeKey ResourceKey=BarTemplate, IsThemeIndependent=True}" TargetType="{x:Type ContentControl}">
+                            <Border x:Name="Background" Background="#FF262626">
+                                <ContentPresenter/>
+                            </Border>
+                        </ControlTemplate>
+
+                        <ControlTemplate x:Key="{dxbt:BarControlThemeKey ResourceKey=MainMenuTemplate}" TargetType="{x:Type ContentControl}">
+                            <Border x:Name="Background" Background="#FF262626">
+                                <ContentPresenter/>
+                            </Border>
+                        </ControlTemplate>
+
+                        <ControlTemplate x:Key="{dxbt:BarContainerControlThemeKey ResourceKey=BackgroundTemplate, IsThemeIndependent=True}" TargetType="{x:Type ContentControl}">
+                            <Border x:Name="Background" Background="#FF262626">
+                                <ContentPresenter Content="{TemplateBinding Content}" />
+                            </Border>
+                        </ControlTemplate>
+                    </dxb:Bar.Resources>
+                    <dxb:Bar.DockInfo>
+                        <dxb:BarDockInfo ContainerType="Bottom"/>
+                    </dxb:Bar.DockInfo>
+                    <dxb:Bar.Items>
+                        <dxb:BarStaticItem Content="{Binding Source={x:Static local:IoC.Instance}, Path=ApplicationViewModel.ServerConfiguration.Port}">
+                            <dxb:BarStaticItem.ContentTemplate>
+                                <DataTemplate>
+                                    <TextBlock Foreground="{StaticResource GreenBrush}" Margin="4 0 0 0">
+                                        <Run Text="Server running on port "/>
+                                        <Run Text="{Binding Mode=OneWay}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </dxb:BarStaticItem.ContentTemplate>
+                        </dxb:BarStaticItem>
+                        <dxb:BarItemSeparator/>
+                        <dxb:BarStaticItem Content="{Binding Source={x:Static local:IoC.Instance}, Path=ApplicationViewModel.TotalConnectedClients}">
+                            <dxb:BarStaticItem.ContentTemplate>
+                                <DataTemplate>
+                                    <TextBlock Margin="4 0 0 0">
+                                        <Run Text="Clients: "/>
+                                        <Run Text="{Binding Mode=OneWay}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </dxb:BarStaticItem.ContentTemplate>
+                        </dxb:BarStaticItem>
+                        <dxb:BarStaticItem Content="{Binding Source={x:Static local:IoC.Instance}, Path=ApplicationViewModel.CurrentOpenedProjectPath}" Alignment="Far">
+                            <dxb:BarStaticItem.ContentTemplate>
+                                <DataTemplate>
+                                    <TextBlock Margin="4 0 0 0" Foreground="{StaticResource CyanBrush}">
+                                        <Run Text="Project path: "/>
+                                        <Run Text="{Binding Mode=OneWay}"/>
+                                        <!--<TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource CyanBrush}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>-->
+                                    </TextBlock>
+                                </DataTemplate>
+                            </dxb:BarStaticItem.ContentTemplate>
+                        </dxb:BarStaticItem>
+                    </dxb:Bar.Items>
                 </dxb:Bar>
 
             </dxb:BarManager.Bars>
-            <Grid>
-                <dxdo:DockLayoutManager x:Name="dockContainer"
-                                        FloatingMode="Desktop"
-                                        ViewStyle="Default"
-                                        DockingStyle="Default"
-                                        FloatingDocumentContainer="DocumentHost"
-                                        ItemsSource="{Binding Workspaces}">
-                    <dxdo:LayoutGroup x:Name="root">
-                        <dxdo:LayoutGroup Orientation="Vertical">
-                            <dxdo:LayoutGroup Orientation="Horizontal">
-                                <dxdo:LayoutGroup x:Name="ProjectTree" DestroyOnClosingChildren="False" ItemWidth="300"/>
-                                <dxdo:DocumentGroup x:Name="DocumentHost" DestroyOnClosingChildren="False"
-                                                    ClosePageButtonShowMode="InActiveTabPageAndTabControlHeader"/>
-                                <dxdo:LayoutGroup x:Name="Properties" DestroyOnClosingChildren="False" ItemWidth="300"/>
-                            </dxdo:LayoutGroup>
-                            <dxdo:LayoutGroup DestroyOnClosingChildren="False" ItemHeight="200">
-                                <dxdo:TabbedGroup x:Name="Informaion" DestroyOnClosingChildren="False"/>
+            <Border BorderThickness="0 1 0 0" BorderBrush="#44475a">
+                <Grid>
+                    <dxdo:DockLayoutManager x:Name="dockContainer"
+                                            FloatingMode="Desktop"
+                                            ViewStyle="Light"
+                                            DockingStyle="Default"
+                                            FloatingDocumentContainer="DocumentHost"
+                                            ItemsSource="{Binding Workspaces}">
+                        <dxdo:LayoutGroup x:Name="root">
+                            <dxdo:LayoutGroup Orientation="Vertical">
+                                <dxdo:LayoutGroup Orientation="Horizontal">
+                                    <dxdo:LayoutGroup x:Name="ProjectTree" DestroyOnClosingChildren="False" ItemWidth="300"/>
+                                    <dxdo:DocumentGroup x:Name="DocumentHost" DestroyOnClosingChildren="False"
+                                                        ClosePageButtonShowMode="InActiveTabPageAndTabControlHeader"/>
+                                    <dxdo:LayoutGroup x:Name="Properties" DestroyOnClosingChildren="False" ItemWidth="300"/>
+                                </dxdo:LayoutGroup>
+                                <dxdo:LayoutGroup DestroyOnClosingChildren="False" ItemHeight="200">
+                                    <dxdo:TabbedGroup x:Name="Informaion" DestroyOnClosingChildren="False"/>
+                                </dxdo:LayoutGroup>
                             </dxdo:LayoutGroup>
                         </dxdo:LayoutGroup>
-                    </dxdo:LayoutGroup>
-                </dxdo:DockLayoutManager>
-                <dx:WaitIndicator Content="Please wait..." DeferedVisibility="{Binding IsBusy}" Panel.ZIndex="999"/>
-            </Grid>
+                    </dxdo:DockLayoutManager>
+                    <dx:WaitIndicator Content="Please wait..." DeferedVisibility="{Binding IsBusy}" Panel.ZIndex="999"/>
+                </Grid>
+            </Border>
         </dxb:BarManager>
     </dx:BackgroundPanel>
 </UserControl>

@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Collections.Generic;
 
 namespace EasyScada.ServerApplication
 {
@@ -25,6 +26,7 @@ namespace EasyScada.ServerApplication
 
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
+        protected ApplicationViewModel ApplicationViewModel { get; set; }
 
         #endregion
 
@@ -32,7 +34,8 @@ namespace EasyScada.ServerApplication
 
         public AddChannelViewModel(
             IProjectManagerService projectManagerService,
-            IDriverManagerService driverManagerService)
+            IDriverManagerService driverManagerService,
+            ApplicationViewModel applicationViewModel)
         {
             Title = "Add Channel";
             SizeToContent = SizeToContent.WidthAndHeight;
@@ -40,6 +43,7 @@ namespace EasyScada.ServerApplication
             Height = 120;
             ProjectManagerService = projectManagerService;
             DriverManagerService = driverManagerService;
+            ApplicationViewModel = applicationViewModel;
         }
 
         #endregion
@@ -51,7 +55,8 @@ namespace EasyScada.ServerApplication
         public double Width { get; set; }
         public double Height { get; set; }
         public virtual string Name { get; set; }
-        public virtual string DriverPath { get; set; }
+        public virtual string SelectedDriver { get; set; }
+        public List<string> DriverNameSource { get; set; }
 
         public object Parameter { get; set; }
         public object ParentViewModel { get; set; }
@@ -72,7 +77,7 @@ namespace EasyScada.ServerApplication
         {
             try
             {
-                if (Parent.Childs.FirstOrDefault(x => x.Name == Name?.Trim()) != null)
+                if (Parent.Childs.FirstOrDefault(x => (x as ICoreItem).Name == Name?.Trim()) != null)
                 {
                     MessageBoxService.ShowMessage($"The channel name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning); 
                 }
@@ -82,42 +87,34 @@ namespace EasyScada.ServerApplication
                     IChannelCore channel = new ChannelCore(Parent)
                     {
                         Name = Name,
-                        DriverPath = DriverPath
+                        DriverPath = $"{ApplicationViewModel.DriverFolderPath}\\{SelectedDriver}.dll"
                     };
-                    IEasyDriverPlugin driver = AssemblyHelper.LoadAndCreateInstance<IEasyDriverPlugin>(DriverPath);
+                    IEasyDriverPlugin driver = AssemblyHelper.LoadAndCreateInstance<IEasyDriverPlugin>(channel.DriverPath);
                     if (driver != null)
                     {
                         CurrentWindowService.Hide();
                         driver.Channel = channel;
-                        ContextWindowService.Show(driver.GetCreateChannelControl(), "Add Channel");
-                        if (channel.ParameterContainer.Parameters.Count > 0)
+                        if (ContextWindowService.Show(driver.GetCreateChannelControl(), "Add Channel") == channel)
+                        {
                             Parent.Add(channel);
-                        DriverManagerService.AddDriver(channel, driver);
+                            DriverManagerService.AddDriver(channel, driver);
+                        }
                         CurrentWindowService.Close();
                     }
+                    else
+                    {
+                        MessageBoxService.ShowMessage($"Can't load the driver {SelectedDriver}.", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                    }
                 }
-
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
+                MessageBoxService.ShowMessage($"Can't load the driver {SelectedDriver}.", "Easy Driver Server", MessageButton.OK, MessageIcon.Error); 
             }
             finally { IsBusy = false; }
         }
 
-        public bool CanSave() => string.IsNullOrEmpty(Error) && !string.IsNullOrEmpty(DriverPath) && !IsBusy;
-
-        public void Browse()
-        {
-            OpenFileDialogService.Filter = "Easy Scada Driver (*.dll)|*.dll";
-            OpenFileDialogService.Title = "Select driver";
-            if (OpenFileDialogService.ShowDialog())
-            {
-                DriverPath = OpenFileDialogService.File.GetFullName();
-            }
-        }
-
-        public bool CanBrowse() => !IsBusy;
+        public bool CanSave() => string.IsNullOrEmpty(Error) && !string.IsNullOrEmpty(SelectedDriver) && !IsBusy;
 
         public void Close() => CurrentWindowService.Close();
 
@@ -130,6 +127,8 @@ namespace EasyScada.ServerApplication
         public void OnLoaded()
         {
             Name = Parent.GetUniqueNameInGroup("Channel1");
+            DriverNameSource = ApplicationViewModel.DriverNameSource;
+            this.RaisePropertyChanged(x => x.DriverNameSource);
         }
 
         #endregion

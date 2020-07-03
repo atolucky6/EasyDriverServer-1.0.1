@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using DevExpress.Mvvm.POCO;
 
 namespace EasyScada.ServerApplication
 {
@@ -46,10 +48,9 @@ namespace EasyScada.ServerApplication
             List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(stationsJson);
             if (stations != null && stations.Count > 0)
             {
-                if (Enum.TryParse(communicationMode, out CommunicationMode mode))
+                if (Enum.TryParse(communicationMode, out CommunicationMode comMode))
                 {
-                    ioc.ServerBroadcastService.ClientToCommunicationMode[Context.ConnectionId] = mode;
-                    ioc.ServerBroadcastService.ClientToSubscribedStations[Context.ConnectionId] = stations;
+                    ioc.ServerBroadcastService.AddEndpoint(Context.ConnectionId, stations, comMode, refreshRate);
                     return "Ok";
                 }
             }
@@ -62,13 +63,26 @@ namespace EasyScada.ServerApplication
 
         public string Unsubscribe()
         {
-            ioc.ServerBroadcastService.ClientToCommunicationMode.Remove(Context.ConnectionId);
-            ioc.ServerBroadcastService.ClientToSubscribedStations.Remove(Context.ConnectionId);
+            ioc.ServerBroadcastService.RemoveEndpoint(Context.ConnectionId);
             return "Ok";
         }
         public async Task<string> UnsubscribeAsync()
         {
             return await Task.Run(() => Unsubscribe());
+        }
+
+        public string GetSubscribedData()
+        {
+            if (ioc.ServerBroadcastService.BroadcastEndpoints.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId) is BroadcastEndpoint endpoint)
+            {
+                return endpoint.GetBroadcastResponse();
+            }
+            return string.Empty;
+        }
+
+        public async Task<string> GetSubscribedDataAsync()
+        {
+            return await Task.Run(() => GetSubscribedData());
         }
 
         #endregion
@@ -289,18 +303,31 @@ namespace EasyScada.ServerApplication
 
         public override Task OnConnected()
         {
+            if (!ioc.ApplicationViewModel.ConnectedClients.Contains(Context.ConnectionId))
+            {
+                ioc.ApplicationViewModel.ConnectedClients.Add(Context.ConnectionId);
+                ioc.ApplicationViewModel.RaisePropertyChanged(x => x.TotalConnectedClients);
+            }
+            Debug.WriteLine($"Client {Context.ConnectionId} connected");
             return base.OnConnected();
         }
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            ioc.ServerBroadcastService.ClientToCommunicationMode.Remove(Context.ConnectionId);
-            ioc.ServerBroadcastService.ClientToSubscribedStations.Remove(Context.ConnectionId);
+            if (ioc.ApplicationViewModel.ConnectedClients.Contains(Context.ConnectionId))
+            {
+                ioc.ApplicationViewModel.ConnectedClients.Remove(Context.ConnectionId);
+                ioc.ApplicationViewModel.RaisePropertyChanged(x => x.TotalConnectedClients);
+            }
+            Debug.WriteLine($"Client {Context.ConnectionId} disconnected");
+            ioc.ServerBroadcastService.RemoveEndpoint(Context.ConnectionId);
             return base.OnDisconnected(stopCalled);
         }
 
         public override Task OnReconnected()
         {
+            ioc.ApplicationViewModel.RaisePropertyChanged(x => x.TotalConnectedClients);
+            Debug.WriteLine($"Client {Context.ConnectionId} reconnected");
             return base.OnReconnected();
         }
 

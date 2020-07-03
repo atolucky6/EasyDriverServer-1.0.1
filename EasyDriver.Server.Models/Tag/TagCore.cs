@@ -3,6 +3,7 @@ using EasyDriver.Client.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EasyDriver.Server.Models
 {
@@ -46,7 +47,7 @@ namespace EasyDriver.Server.Models
                 {
                     string oldValue = this.value;
                     this.value = value;
-                    RaisePropertyChanged();
+                    //RaisePropertyChanged();
                     ValueChanged?.Invoke(this, new TagValueChangedEventArgs(oldValue, value));
                 }
             }
@@ -64,7 +65,7 @@ namespace EasyDriver.Server.Models
                 {
                     Quality oldQuality = quality;
                     quality = value;
-                    RaisePropertyChanged();
+                    //RaisePropertyChanged();
                     QualityChanged?.Invoke(this, new TagQualityChangedEventArgs(oldQuality, quality));
                 }
             }
@@ -94,6 +95,7 @@ namespace EasyDriver.Server.Models
         [field: NonSerialized]
         DateTime timeStamp;
         [JsonIgnore]
+        [DisplayFormat(DataFormatString = "{}{0:HH:mm:ss}")]
         public DateTime TimeStamp
         {
             get => timeStamp;
@@ -102,7 +104,7 @@ namespace EasyDriver.Server.Models
                 if (timeStamp != value)
                 {
                     timeStamp = value;
-                    RaisePropertyChanged();
+                    //RaisePropertyChanged();
                 }
             }
         }
@@ -118,7 +120,7 @@ namespace EasyDriver.Server.Models
                 if (refreshInterval != value)
                 {
                     refreshInterval = value;
-                    RaisePropertyChanged();
+                    //RaisePropertyChanged();
                 }
             }
         }
@@ -146,7 +148,6 @@ namespace EasyDriver.Server.Models
             set => SetProperty(value);
         }
 
-        [field:NonSerialized]
         string dataTypeName;
         [JsonIgnore]
         public string DataTypeName

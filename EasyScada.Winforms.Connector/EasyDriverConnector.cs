@@ -55,15 +55,24 @@ namespace EasyScada.Winforms.Connector
             InitializeComponent();
         }
 
+        ~EasyDriverConnector()
+        {
+            Dispose();
+        }
+
         public EasyDriverConnector(IContainer container)
         {
             container.Add(this);
             InitializeComponent();
+            if (!Site.DesignMode)
+                Disposed += OnDisposed;
         }
 
         #endregion
 
         #region Public members
+
+        public bool IsDisposed { get; private set; }
 
         static string serverAddress = "127.0.0.1";
         [Description("Set server address for connector")]
@@ -237,10 +246,13 @@ namespace EasyScada.Winforms.Connector
 
         private void OnDisconnected()
         {
-            // Delay a little bit before reconnect
-            Thread.Sleep(5000);
-            // When connection disconnected we will init the new connection and tring to reconnect
-            InitializeConnection();
+            if (!IsDisposed)
+            {
+                // Delay a little bit before reconnect
+                Thread.Sleep(5000);
+                // When connection disconnected we will init the new connection and tring to reconnect
+                InitializeConnection();
+            }
         }
 
         private async void OnStateChanged(StateChange stateChange)
@@ -284,52 +296,94 @@ namespace EasyScada.Winforms.Connector
             {
                 Debug.WriteLine($"Begin tring to reconnect to server {serverAddress}:{port}");
             }
+            else if (stateChange.NewState == ConnectionState.Connecting)
+            {
+
+            }
         }
 
         private async void RefreshTimerCallback(object state)
         {
             refreshTimer.Change(Timeout.Infinite, Timeout.Infinite); // Stop timer
-            int nextPeriod = RefreshRate;
 
-            // Check requires condition before get data from server
-            if (state is DriverConnector driverConnector && 
-                hubConnection != null && 
-                hubProxy != null &&
-                hubConnection.State == ConnectionState.Connected && 
-                driverConnector.CommunicationMode == CommunicationMode.RequestToServer &&
-                driverConnector.Stations != null && driverConnector.Stations .Count >0)
+            if (!IsDisposed)
             {
-                try
+                int nextPeriod = RefreshRate;
+                // Check requires condition before get data from server
+                if (state is DriverConnector driverConnector &&
+                    hubConnection != null &&
+                    hubProxy != null &&
+                    hubConnection.State == ConnectionState.Connected &&
+                    driverConnector.CommunicationMode == CommunicationMode.RequestToServer &&
+                    driverConnector.Stations != null && driverConnector.Stations.Count > 0)
                 {
-                    // Get data from server
-                    IEnumerable<string> stationsToGet = driverConnector.Stations.Select(x => x.Path);
-                    string resJson = await hubProxy.Invoke<string>("getStationsAsync", stationsToGet);
-                    if (!string.IsNullOrWhiteSpace(resJson))
+                    try
                     {
-                        // Deserialize json result
-                        List<Station> resStations = JsonConvert.DeserializeObject<List<Station>>(resJson);
-
-                        // Update value 
-                        foreach (var station in driverConnector.Stations)
+                        // Get data from server
+                        string resJson = await hubProxy.Invoke<string>("getSubscribedData");
+                        if (!string.IsNullOrWhiteSpace(resJson))
                         {
-                            Station sourceStation = resStations?.FirstOrDefault(x => x.Path == station.Path);
-                            UpdateStation(station, sourceStation);
+                            // Deserialize json result
+                            List<Station> resStations = JsonConvert.DeserializeObject<List<Station>>(resJson);
+
+                            // Update value 
+                            foreach (var station in driverConnector.Stations)
+                            {
+                                Station sourceStation = resStations?.FirstOrDefault(x => x.Path == station.Path);
+                                UpdateStation(station, sourceStation);
+                            }
                         }
                     }
+                    catch { }
                 }
-                catch { }
+                else { nextPeriod = 100; }
+
+                // If this is first scan then raise an started event to notify to all controls
+                if (!firstScan && CommunicationMode == CommunicationMode.RequestToServer)
+                {
+                    firstScan = true;
+                    Started?.Invoke(this, new EventArgs());
+                }
+
+                // Start timer again
+                refreshTimer.Change(nextPeriod, 0);
             }
-            else { nextPeriod = 100; }
-            
+        }
+
+        private void OnReceivedStations(string stationsJson, DriverConnector driverConnector)
+        {
+            if (driverConnector != null && 
+                driverConnector.Stations != null &&
+                driverConnector.CommunicationMode == CommunicationMode.ReceiveFromServer)
+            {
+                List<Station> resStations = JsonConvert.DeserializeObject<List<Station>>(stationsJson);
+                // Update value 
+                foreach (var station in driverConnector.Stations)
+                {
+                    Station sourceStation = resStations?.FirstOrDefault(x => x.Path == station.Path);
+                    UpdateStation(station, sourceStation);
+                }
+            }
+
             // If this is first scan then raise an started event to notify to all controls
-            if (!firstScan && CommunicationMode == CommunicationMode.RequestToServer)
+            if (!firstScan && CommunicationMode == CommunicationMode.ReceiveFromServer)
             {
                 firstScan = true;
                 Started?.Invoke(this, new EventArgs());
             }
+        }
 
-            // Start timer again
-            refreshTimer.Change(nextPeriod, 0);
+        private void OnDisposed(object sender, EventArgs e)
+        {
+            try
+            {
+                IsDisposed = true;
+                if (hubConnection != null)
+                    hubConnection.Dispose();
+                if (refreshTimer != null)
+                    refreshTimer.Dispose();
+            }
+            catch { }
         }
 
         private void UpdateStation(Station item, Station source)
@@ -438,29 +492,6 @@ namespace EasyScada.Winforms.Connector
             }
         }
 
-        private void OnReceivedStations(string stationsJson, DriverConnector driverConnector)
-        {
-            if (driverConnector != null && 
-                driverConnector.Stations != null &&
-                driverConnector.CommunicationMode == CommunicationMode.ReceiveFromServer)
-            {
-                List<Station> resStations = JsonConvert.DeserializeObject<List<Station>>(stationsJson);
-                // Update value 
-                foreach (var station in driverConnector.Stations)
-                {
-                    Station sourceStation = resStations?.FirstOrDefault(x => x.Path == station.Path);
-                    UpdateStation(station, sourceStation);
-                }
-            }
-
-            // If this is first scan then raise an started event to notify to all controls
-            if (!firstScan && CommunicationMode == CommunicationMode.ReceiveFromServer)
-            {
-                firstScan = true;
-                Started?.Invoke(this, new EventArgs());
-            }
-        }
-
         #endregion
     }
 
@@ -508,11 +539,18 @@ namespace EasyScada.Winforms.Connector
         {
             designerActionUIservice = GetService(typeof(DesignerActionUIService)) as DesignerActionUIService;
             BaseControl = component as EasyDriverConnector;
+            projectPath = GetCurrentDesignPath();
+            debugPath = "\\Debug\\TagFile.json";
+            releasePath = "\\Release\\TagFile.json";
         }
 
         #region Members
 
-        private bool isBusy;
+
+        readonly string projectPath;
+        readonly string debugPath;
+        readonly string releasePath;
+        bool isBusy;
         readonly EasyDriverConnector BaseControl;
         DesignerActionItemCollection actionItems;
         readonly DesignerActionUIService designerActionUIservice;
@@ -531,7 +569,7 @@ namespace EasyScada.Winforms.Connector
                     new DesignerActionPropertyItem("Port", "Port", "Easy Scada", "Set port number for connector"),
                     new DesignerActionPropertyItem("CommunicationMode", "Communication Mode", "Easy Scada", "Set communication mode for connector"),
                     new DesignerActionPropertyItem("RefreshRate", "Refresh Rate", "Easy Scada", "Set refresh rate for connector"),
-                    new DesignerActionMethodItem(this, "UpdateTagFile", "Update Tag File", "Easy Scada", "Click here to update tag file", true)
+                    new DesignerActionMethodItem(this, "EditTagFile", "Edit Tag File", "Easy Scada", "Click here to update tag file", true)
                 };
             }
             return actionItems;
@@ -546,7 +584,7 @@ namespace EasyScada.Winforms.Connector
         public string ServerAddress
         {
             get { return BaseControl.ServerAddress; }
-            set { SetValue(BaseControl, value); }
+            set { SetValue(BaseControl, value); SaveTagFile(); }
         }
 
         [Description("Set port number for connector")]
@@ -554,7 +592,7 @@ namespace EasyScada.Winforms.Connector
         public ushort Port
         {
             get { return BaseControl.Port; }
-            set { SetValue(BaseControl, value); }
+            set { SetValue(BaseControl, value); SaveTagFile(); }
         }
 
         [Description("Set communication mode for connector")]
@@ -562,7 +600,7 @@ namespace EasyScada.Winforms.Connector
         public CommunicationMode CommunicationMode
         {
             get { return BaseControl.CommunicationMode; }
-            set { SetValue(BaseControl, value); }
+            set { SetValue(BaseControl, value); SaveTagFile(); }
         }
 
         [Description("Set refresh rate for connector")]
@@ -570,14 +608,14 @@ namespace EasyScada.Winforms.Connector
         public int RefreshRate
         {
             get { return BaseControl.RefreshRate; }
-            set { SetValue(BaseControl, value); }
+            set { SetValue(BaseControl, value); SaveTagFile(); }
         }
 
         #endregion
 
         #region Action methods
 
-        private void UpdateTagFile()
+        private void EditTagFile()
         {
             try
             {
@@ -590,8 +628,54 @@ namespace EasyScada.Winforms.Connector
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.ToString(), "Easy Driver Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 isBusy = false; 
+            }
+        }
+
+        private void SaveTagFile()
+        {
+            try
+            {
+                if (File.Exists(debugPath))
+                {
+                    string resJson = File.ReadAllText(debugPath);
+                    if (!string.IsNullOrEmpty(resJson))
+                    {
+                        DriverConnector driverConnector = JsonConvert.DeserializeObject<DriverConnector>(resJson);
+                        if (driverConnector != null)
+                        {
+                            driverConnector.CommunicationMode = CommunicationMode;
+                            driverConnector.RefreshRate = RefreshRate;
+                            driverConnector.ServerAddress = ServerAddress;
+                            driverConnector.Port = Port;
+
+                            File.WriteAllText(debugPath, JsonConvert.SerializeObject(driverConnector));
+                        }
+                    }
+                }
+
+                if (File.Exists(releasePath))
+                {
+                    string resJson = File.ReadAllText(releasePath);
+                    if (!string.IsNullOrEmpty(resJson))
+                    {
+                        DriverConnector driverConnector = JsonConvert.DeserializeObject<DriverConnector>(resJson);
+                        if (driverConnector != null)
+                        {
+                            driverConnector.CommunicationMode = CommunicationMode;
+                            driverConnector.RefreshRate = RefreshRate;
+                            driverConnector.ServerAddress = ServerAddress;
+                            driverConnector.Port = Port;
+
+                            File.WriteAllText(releasePath, JsonConvert.SerializeObject(driverConnector));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error occurs when save tag file. {ex.Message}", "Easy Driver Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -599,7 +683,19 @@ namespace EasyScada.Winforms.Connector
 
         #region Helper
 
-        
+        private string GetCurrentDesignPath()
+        {
+            try
+            {
+                EnvDTE.DTE dte = this.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                return Path.GetDirectoryName(dte.ActiveDocument.FullName) + "\\bin";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return string.Empty;
+            }
+        }
 
         /// <summary>
         /// The method to get a <see cref="PropertyDescriptor"/> of the control by property name

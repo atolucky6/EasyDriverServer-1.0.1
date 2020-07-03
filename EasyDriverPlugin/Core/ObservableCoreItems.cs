@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace EasyDriverPlugin
 {
     [Serializable]
-    public class ObservableCoreItems : ObservableCollection<ICoreItem>
+    public class ObservableCoreItems : ObservableCollection<object>
     {
         #region Public members
 
@@ -50,7 +50,7 @@ namespace EasyDriverPlugin
         /// Hàm xóa nhiều đối tượng trong danh sách
         /// </summary>
         /// <param name="collection"></param>
-        public void RemoveRange(IEnumerable<ICoreItem> collection)
+        public void RemoveRange(IEnumerable<object> collection)
         {
             foreach (var item in collection) Items.Remove(item);
             NotifyResetCollection();
@@ -62,7 +62,7 @@ namespace EasyDriverPlugin
         /// <param name="action"></param>
         public void ForEach(Action<ICoreItem> action)
         {
-            foreach (var item in Items) { action.Invoke(item); }
+            foreach (var item in Items) { action.Invoke(item as ICoreItem); }
         }
 
         /// <summary>

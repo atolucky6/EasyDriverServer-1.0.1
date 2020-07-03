@@ -36,7 +36,11 @@ namespace EasyDriverPlugin
         /// <returns></returns>
         public static bool IsUniqueNameInGroup(this string name, IGroupItem item, ICoreItem ignoreItem, bool findAllLevel = false)
         {
-            if (item.Childs.FirstOrDefault(x => x.Name == name && x != ignoreItem) == null)
+            if (item.Childs.FirstOrDefault(x => {
+                if (x is ICoreItem coreItem)
+                    return coreItem.Name == name && x != ignoreItem;
+                return false;
+            }) == null)
                 return true;
             return false;
         }

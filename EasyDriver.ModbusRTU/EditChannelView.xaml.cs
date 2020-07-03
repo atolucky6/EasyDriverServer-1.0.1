@@ -98,7 +98,7 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            if (Channel.Parent.Childs.FirstOrDefault(x => x != Channel && x.Name == txbName.Text?.Trim()) != null)
+            if (Channel.Parent.Childs.FirstOrDefault(x => x != Channel && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The channel name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;

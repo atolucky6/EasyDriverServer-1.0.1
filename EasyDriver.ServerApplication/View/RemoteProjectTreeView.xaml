@@ -17,26 +17,44 @@
     <UserControl.Resources>
         <DataTemplate x:Key="HubTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ChannelTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="DeviceTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png" />
+                <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="RemoteStationTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png" />
+                <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="LocalStationTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/local_station_16px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="TagTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/tag_48px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
         <local:ProjectTreeCellTemplateSelector x:Key="ProjectTreeCellTemplateSelector"
                                                HubTemplate="{StaticResource HubTemplate}"
+                                               LocalStationTemplate="{StaticResource LocalStationTemplate}"
+                                               RemoteStationTemplate="{StaticResource RemoteStationTemplate}"
                                                ChannelTemplate="{StaticResource ChannelTemplate}"
                                                DeviceTemplate="{StaticResource DeviceTemplate}"
                                                TagTemplate="{StaticResource TagTemplate}"/>
@@ -44,17 +62,18 @@
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService/>
         <dxmvvm:CurrentWindowService/>
+        <dxmvvm:SaveFileDialogService/>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnLoadedCommand}"/>
     </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
         <dxb:BarManager.Items>
             <dxb:BarItemSeparator x:Name="bSeparator"/>
             <dxb:BarButtonItem x:Name="bExpandAll" Content="Expand all" 
-                               Command="{Binding ExpandAllCommand}" Glyph="{dx:DXImage SvgImages/Spreadsheet/ExpandFieldPivotTable.svg}"/>
+                               Command="{Binding ExpandAllCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/expand-arrow-48.png"/>
             <dxb:BarButtonItem x:Name="bCollapseAll" Content="Collapse all" 
-                               Command="{Binding CollapseAllCommand}" Glyph="{dx:DXImage SvgImages/Spreadsheet/CollapseFieldPivotTable.svg}"/>
-            <dxb:BarButtonItem x:Name="bRefresh" Content="Refresh" Command="{Binding RefreshCommand}" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Refresh.svg}"/>
-            <dxb:BarButtonItem x:Name="bComfirm" Content="Comfirm" Command="{Binding ComfirmCommand}" Alignment="Far" Glyph="{dx:DXImage SvgImages/Business Objects/BO_Validation.svg}"/>
+                               Command="{Binding CollapseAllCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/collapse-arrow-48.png"/>
+            <dxb:BarButtonItem x:Name="bRefresh" Content="Refresh" Command="{Binding RefreshCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/refresh_48px.png"/>
+            <dxb:BarButtonItem x:Name="bComfirm" Content="Comfirm" Command="{Binding ComfirmCommand}" Alignment="Far" Glyph="/EasyScada.ServerApplication;component/Resources/Images/checkmark_48px.png"/>
         </dxb:BarManager.Items>
         <dxb:BarManager.Bars>
             <dxb:Bar Caption="Toolbox" UseWholeRow="True" AllowQuickCustomization="False" AllowCollapse="False"
@@ -80,7 +99,7 @@
                 <dxlc:GroupBox TitleVisibility="Visible" Header="Select which data will be fetch from server" Padding="0">
                     <dxlc:GroupBox.HeaderTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding}" Margin="0 3" FontWeight="SemiBold" FontSize="12"/>
+                            <TextBlock Text="{Binding}" Margin="0 4" FontWeight="Bold" FontSize="12" Foreground="{StaticResource CyanBrush}"/>
                         </DataTemplate>
                     </dxlc:GroupBox.HeaderTemplate>
                     <dxg:TreeListControl SelectionMode="Row"

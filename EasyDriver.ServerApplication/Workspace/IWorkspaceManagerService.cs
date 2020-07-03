@@ -8,6 +8,7 @@ namespace EasyScada.ServerApplication.Workspace
         where TPanel : IWorkspacePanel
     {
         ObservableCollection<TPanel> Workspaces { get; }
+        TPanel CurrentActivePanel { get; set; }
 
         void AddPanel(TPanel panelViewModel, bool addAndOpen = true);
         void RemovePanel(Func<TPanel, bool> predicate);

@@ -8,7 +8,7 @@ namespace EasyDriver.Client.Models
 {
     [Serializable]
     public sealed class Station : IStation
-    {
+    {       
         public string Name { get; set; }
 
         public bool IsLocalStation { get; set; }
@@ -20,6 +20,8 @@ namespace EasyDriver.Client.Models
         public string Error { get; set; }
 
         public CommunicationMode CommunicationMode { get; set; }
+        
+        public ConnectionStatus ConnectionStatus { get; set; }
 
         public int RefreshRate { get; set; }
 
@@ -68,6 +70,7 @@ namespace EasyDriver.Client.Models
             return null;
         }
 
+        [field:NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
         public void RaisePropertyChanged([CallerMemberName]string propertyName = null)
         {

@@ -7,173 +7,383 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using Microsoft.AspNet.SignalR.Client.Transports;
 
 namespace EasyScada.ServerApplication
 {
     public interface IHubConnectionManagerService
     {
-        Dictionary<IStationCore, HubConnection> HubConnectionDictionary { get; }
-        Dictionary<HubConnection, IHubProxy> HubProxyDictionary { get; }
-        Dictionary<HubConnection, Timer> TimerDictionary { get; }
-        HubConnection AddHubConnection(IStationCore station, HubConnection hubConnection, IHubProxy hubProxy);
-        bool RemoveHubConnection(IStationCore station);
-        HubConnection GetHubConnection(IStationCore station);
-        IHubProxy GetHubProxy(HubConnection connection);
-        IHubProxy GetHubProxy(IStationCore station);
-        Timer GetHubTimer(HubConnection connection);
+        Dictionary<IStationCore, RemoteStationConnection> ConnectionDictonary { get; }
+        void AddConnection(IStationCore stationCore, HubConnection hubConnection = null, IHubProxy hubPorxy = null);
+        void RemoveConnection(IStationCore stationCore);
+        void ReloadConnection(IStationCore stationCore);
     }
 
     public class HubConnectionManagerService : IHubConnectionManagerService
     {
-        public Dictionary<IStationCore, HubConnection> HubConnectionDictionary { get; protected set; }
-
-        public Dictionary<HubConnection, IHubProxy> HubProxyDictionary { get; protected set; }
-
-        public Dictionary<HubConnection, Timer> TimerDictionary { get; protected set; }
-
         public HubConnectionManagerService()
         {
-            HubConnectionDictionary = new Dictionary<IStationCore, HubConnection>();
-            HubProxyDictionary = new Dictionary<HubConnection, IHubProxy>();
-            TimerDictionary = new Dictionary<HubConnection, Timer>();
+            ConnectionDictonary = new Dictionary<IStationCore, RemoteStationConnection>();
         }
 
-        public HubConnection AddHubConnection(IStationCore station, HubConnection hubConnection, IHubProxy hubProxy)
-        {
-            if (HubConnectionDictionary.ContainsKey(station))
-            {
-                HubConnection oldHub = HubConnectionDictionary[station];
-                IHubProxy oldProxy = HubProxyDictionary[oldHub];
-                Timer oldTimer = TimerDictionary[oldHub];
-                HubConnectionDictionary.Remove(station);
-                oldHub.Stop();
-                oldHub.Dispose();
-                oldTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                oldTimer.Dispose();
-            }
-            else
-            {
-                hubProxy.On<string>("broadcastStations", (x) => { OnReceivedStations(x, station); });
-                HubConnectionDictionary[station] = hubConnection;
-                HubProxyDictionary[hubConnection] = hubProxy;
-                hubProxy["communicationMode"] = station.CommunicationMode.ToString();
-                TimerDictionary[hubConnection] = new Timer(new TimerCallback(HubTimerCallback), station, 0, station.RefreshRate);
-            }
+        public Dictionary<IStationCore, RemoteStationConnection> ConnectionDictonary { get; private set; }
 
-            return hubConnection;
-        }
-
-        public bool RemoveHubConnection(IStationCore station)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public HubConnection GetHubConnection(IStationCore station)
-        {
-            if (HubConnectionDictionary.ContainsKey(station))
-                return HubConnectionDictionary[station];
-            return null;
-        }
-
-        public IHubProxy GetHubProxy(HubConnection connection)
-        {
-            if (HubProxyDictionary.ContainsKey(connection))
-                return HubProxyDictionary[connection];
-            return null;
-        }
-
-        public IHubProxy GetHubProxy(IStationCore station)
-        {
-            HubConnection connection = GetHubConnection(station);
-            if (connection != null)
-                return GetHubProxy(connection);
-            return null;
-        }
-
-        public Timer GetHubTimer(HubConnection connection)
-        {
-            if (TimerDictionary.ContainsKey(connection))
-                return TimerDictionary[connection];
-            return null;
-        }
-
-        private async void HubTimerCallback(object state)
-        {
-            if (state is IStationCore stationCore)
-            {
-                HubConnection hubConnection = GetHubConnection(stationCore);
-                IHubProxy hubProxy = GetHubProxy(hubConnection);
-                Timer timer = GetHubTimer(hubConnection);
-                timer.Change(Timeout.Infinite, Timeout.Infinite);
-                try
-                {
-                    if (hubConnection != null && hubProxy != null && timer != null)
-                    {
-                        if (stationCore.CommunicationMode == CommunicationMode.RequestToServer)
-                        {
-                            if (hubConnection.State == ConnectionState.Disconnected)
-                                await hubConnection.Start();
-
-                            List<IStationCore> notUpdatedStations = stationCore.Childs.Select(x => x as IStationCore).ToList();
-                            foreach (var item in stationCore.Childs)
-                            {
-                                string resJson = await hubProxy.Invoke<string>("getStation", item.Name);
-                                Station station = JsonConvert.DeserializeObject<Station>(resJson);
-                                if (station != null)
-                                {
-                                    if (stationCore.Childs.FirstOrDefault(x => x.Name == station.Name) is IStationCore innerStation)
-                                    {
-                                        UpdateStationCore(station, innerStation, $"{stationCore}/");
-                                        notUpdatedStations.Remove(innerStation);
-                                    }
-                                }
-                            }
-                            stationCore.LastRefreshTime = DateTime.Now;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-
-                }
-                finally  
-                {
-                    if (hubConnection == null || hubProxy == null || timer == null)
-                    {
-                        
-                    }
-                    else
-                    {
-                        timer.Change(stationCore.RefreshRate, 0);
-                    }
-                }
-            }
-        }
-
-        private async void OnReceivedStations(string stationsJson, IStationCore stationCore)
+        public async void AddConnection(IStationCore stationCore, HubConnection hubConnection = null, IHubProxy hubPorxy = null)
         {
             await Task.Run(() =>
             {
-                List<IStationCore> notUpdatedStations = stationCore.Childs.Select(x => x as IStationCore).ToList();
-                List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(stationsJson);
-                if (stations != null && stations.Count > 0)
+                if (!ConnectionDictonary.ContainsKey(stationCore) && stationCore != null)
                 {
-                    foreach (var station in stations)
-                    {
-                        if (stationCore.Childs.FirstOrDefault(x => x.Name == station.Name) is IStationCore innerStation)
-                        {
-                            UpdateStationCore(station, innerStation, $"{stationCore}/");
-                            notUpdatedStations.Remove(innerStation);
-                        }
-                    }
+                    ConnectionDictonary[stationCore] = new RemoteStationConnection(stationCore, hubConnection, hubPorxy);
                 }
-                stationCore.LastRefreshTime = DateTime.Now;
             });
         }
 
+        public Task NotifySubscribeDataChanged(IStationCore stationCore)
+        {
+            return Task.Run(() =>
+            {
+                if (ConnectionDictonary.ContainsKey(stationCore))
+                    ConnectionDictonary[stationCore].IsSubscribed = true;
+            });
+        }
+
+        public void ReloadConnection(IStationCore stationCore)
+        {
+            if (ConnectionDictonary.ContainsKey(stationCore))
+            {
+                var connection = ConnectionDictonary[stationCore];
+                connection.Dispose();
+                ConnectionDictonary.Remove(stationCore);
+            }
+
+            AddConnection(stationCore);
+        }
+
+        public void RemoveConnection(IStationCore stationCore)
+        {
+            if (ConnectionDictonary.ContainsKey(stationCore))
+            {
+                var connection = ConnectionDictonary[stationCore];
+                connection.Dispose();
+                ConnectionDictonary.Remove(stationCore);
+            }
+        }
+    }
+
+    public class RemoteStationConnection : IDisposable
+    {
+        #region Members
+
+        public IStationCore StationCore { get; set; }
+        public string RemoteAddress { get; private set; }
+        public ushort Port { get; private set; }
+        public bool IsDisposed { get; private set; }
+        public bool IsSubscribed { get; set; }
+
+        private Task requestTask;
+        private HubConnection hubConnection;
+        private IHubProxy hubProxy;
+
+        readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+
+        #endregion
+
+        #region Constructors
+
+        public RemoteStationConnection(IStationCore stationCore, HubConnection hubConnection = null, IHubProxy hubPorxy = null)
+        {
+            StationCore = stationCore;
+            RemoteAddress = StationCore.RemoteAddress;
+            Port = StationCore.Port;
+            InitializeConnection(hubConnection, hubPorxy);
+        }
+
+        ~RemoteStationConnection()
+        {
+            Dispose();
+        }
+
+        #endregion
+
+        #region Methods
+
+        private async void InitializeConnection(HubConnection hubConnection = null, IHubProxy hubPorxy = null)
+        {
+            try
+            {
+                if (hubConnection != null && hubPorxy != null && hubConnection.State == ConnectionState.Connected)
+                {
+                    if (this.hubConnection == null)
+                    {
+                        this.hubConnection = hubConnection;
+                        hubProxy = hubPorxy;
+                        this.hubConnection.StateChanged += OnStateChanged;
+                        this.hubConnection.Closed += OnDisconnected;
+                        this.hubConnection.ConnectionSlow += OnConnectionSlow;
+                      
+                        hubProxy.On("broadcastSubscribeData", (Action<string>)this.OnReceivedBroadcastMessage);
+                        OnStateChanged(new StateChange(ConnectionState.Connecting, this.hubConnection.State));
+                    }
+                }
+                else
+                {
+                    if (StationCore != null && StationCore.Parent.Contains(StationCore) && !IsDisposed)
+                    {
+                        if (this.hubConnection != null)
+                        {
+                            try
+                            {
+                                this.hubConnection.TransportConnectTimeout = TimeSpan.FromSeconds(1);
+                                this.hubConnection.StateChanged -= OnStateChanged;
+                                this.hubConnection.Closed -= OnDisconnected;
+                                this.hubConnection.ConnectionSlow -= OnConnectionSlow;
+                                if (this.hubConnection.State == ConnectionState.Connected)
+                                    this.hubConnection.Stop();
+                                this.hubConnection?.Dispose();
+                                this.hubConnection = null;
+                                this.hubProxy = null;
+                            }
+                            catch { }
+                        }
+                        this.hubConnection = new HubConnection($"http://{RemoteAddress}:{Port}/easyScada");
+                        this.hubConnection.StateChanged += OnStateChanged;
+                        this.hubConnection.Closed += OnDisconnected;
+                        this.hubConnection.ConnectionSlow += OnConnectionSlow;
+                        hubProxy = this.hubConnection.CreateHubProxy("EasyDriverServerHub");
+                        hubProxy.On<string>("broadcastSubscribeData", OnReceivedBroadcastMessage);
+                        await this.hubConnection.Start(new LongPollingTransport());
+                    }
+                } 
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Method to subscribe this connection to server
+        /// </summary>
+        /// <returns></returns>
+        private bool Subscribe()
+        {
+            string subscribeDataJson = JsonConvert.SerializeObject(StationCore.Childs.Select(x => x as IStation));
+            List<Station> subscribeData = JsonConvert.DeserializeObject<List<Station>>(subscribeDataJson);
+            if (subscribeData != null)
+            {
+                foreach (var station in subscribeData)
+                    RemoveFirstStationPath(station, StationCore.Name.Length + 1);
+                subscribeDataJson = JsonConvert.SerializeObject(subscribeData);
+                if (hubConnection != null && hubConnection.State == ConnectionState.Connected)
+                {
+                    var subTask = hubProxy.Invoke<string>("subscribe", subscribeDataJson, StationCore.CommunicationMode.ToString(), StationCore.RefreshRate);
+                    Task.WaitAll(subTask);
+                    if (subTask.IsCompleted)
+                        return subTask.Result == "Ok";
+                }
+            }
+            return false;
+        }
+
+        public void Dispose()
+        {
+            IsDisposed = true;
+            Task.Factory.StartNew(async () =>
+            {
+                await semaphore.WaitAsync();
+                hubConnection?.Dispose();
+                requestTask?.Dispose();
+                semaphore.Release();
+                semaphore.Dispose();
+            });
+        }
+
+        #endregion
+
+        #region Connection lifecycle handlers
+
+        private void OnConnectionSlow()
+        {
+
+        }
+
+
+        /// <summary>
+        /// The method handler when hub connection is closed
+        /// </summary>
+        private void OnDisconnected()
+        {
+            if (!IsDisposed)
+            {
+                // Delay a little bit before reconnect
+                Thread.Sleep(5000);
+                // When connection disconnected we will init the new connection and tring to reconnect
+                InitializeConnection();
+            }
+        }
+
+        /// <summary>
+        /// The method handler when state of hub connection is changed
+        /// </summary>
+        /// <param name="stateChanged">A change state</param>
+        public void OnStateChanged(StateChange stateChanged)
+        {
+            StationCore.ConnectionStatus = (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), stateChanged.NewState.ToString());
+            if (stateChanged.NewState == ConnectionState.Connected && !IsDisposed)
+            {
+                // Delay a little bit before subscribe to server
+                Thread.Sleep(1000);
+                IsSubscribed = true;
+                // Initialize the request task if it null
+                if (requestTask == null)
+                    requestTask = Task.Factory.StartNew(RefreshData, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+        }
+
+        #endregion
+
+        #region Request methods
+
+        /// <summary>
+        /// The method callback of refresh timer
+        /// </summary>
+        /// <param name="state"></param>
+        private void RefreshData()
+        {
+            while (!IsDisposed)
+            {
+                int delay = 100;
+                semaphore.Wait();
+                try
+                {
+                    // Re subscribe if needed
+                    if (IsSubscribed && hubConnection != null && hubConnection.State == ConnectionState.Connected)
+                    {
+                        bool resSub = Subscribe();
+                        if (resSub)
+                            IsSubscribed = false;
+                        delay = 100;
+                    }
+
+                    // Check requies condition to start get data from server
+                    if (StationCore != null && !IsDisposed && StationCore.Parent.Contains(StationCore))
+                    {
+                        if (StationCore.CommunicationMode == CommunicationMode.RequestToServer &&
+                            StationCore.Childs != null && StationCore.Childs.Count > 0 &&
+                            hubConnection.State == ConnectionState.Connected)
+                        {
+                            try
+                            {
+                                // Get subscribed data from server
+                                var getDataTask = hubProxy.Invoke<string>("getSubscribedDataAsync");
+                                Task.WaitAll(getDataTask);
+                                if (getDataTask.IsCompleted)
+                                {
+                                    string resJson = getDataTask.Result;
+                                    if (!string.IsNullOrWhiteSpace(resJson))
+                                    {
+                                        List<Station> resStations = JsonConvert.DeserializeObject<List<Station>>(resJson);
+                                        // Update current station with subscribed data we just get
+                                        foreach (var item in StationCore.Childs)
+                                        {
+                                            if (item is IStationCore)
+                                            {
+                                                Station sourceStation = resStations?.FirstOrDefault(x => x.Path == (item as ICoreItem).Path.Remove(0, StationCore.Name.Length + 1));
+                                                UpdateStationCore(sourceStation, item as IStationCore, $"{StationCore.Name}/"); // Method to update 
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch { }
+                            delay = StationCore.RefreshRate;
+
+                        }
+                        else { delay = 100; }
+                    }
+                }
+
+                catch { }
+                finally
+                {
+                    semaphore.Release();
+                    Thread.Sleep(delay);
+                }
+            }
+        }
+
+        #endregion
+
+        #region On message handlers
+
+        /// <summary>
+        /// The handler when the connection get broadcast message from server
+        /// </summary>
+        /// <param name="stationsJson"></param>
+        private async void OnReceivedBroadcastMessage(string stationsJson)
+        {
+            await Task.Run(async () =>
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Restart();
+                await semaphore.WaitAsync();
+                try
+                {
+                    // Check requires conditions 
+                    if (StationCore != null &&
+                        StationCore.Parent.Contains(StationCore) &&
+                        !IsDisposed &&
+                        StationCore.CommunicationMode == CommunicationMode.ReceiveFromServer)
+                    {
+                        List<IStationCore> stationCores = StationCore.Childs.Select(x => x as IStationCore).ToList();
+                        List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(stationsJson);
+
+                        //byte[] byteBuffer = Convert.FromBase64String(stationsJson);
+                        //List<Station> stations;
+                        //using (MemoryStream ms = new MemoryStream(byteBuffer))
+                        //{
+                        //    var formatter = new BinaryFormatter();
+                        //    stations = (List<Station>)formatter.Deserialize(ms);
+                        //}
+
+                        if (stations != null && stations.Count > 0)
+                        {
+                            foreach (var station in stations)
+                            {
+                                if (stationCores.FirstOrDefault(x => x.Name == station.Name) is IStationCore innerStation)
+                                {
+                                    UpdateStationCore(station, innerStation, $"{StationCore.Path}/");
+                                    stationCores.Remove(innerStation);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            stationCores.ForEach(x => x.CommunicationError = "This station could not be found on server.");
+                        }
+
+                        StationCore.LastRefreshTime = DateTime.Now;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+                finally
+                {
+                    semaphore.Release();
+                    sw.Stop();
+                    Debug.WriteLine($"Handle broadcast message: {sw.ElapsedMilliseconds}");
+                }
+            });
+        }
+
+        #endregion
+
+        #region Utils
+
         private void UpdateStationCore(Station station, IStationCore stationCore, string startPath)
         {
-            if (station != null && stationCore != null && station.Path == stationCore.Path.Replace(startPath, "") && stationCore.IsReadOnly)
+            if (station != null && stationCore != null)
             {
                 stationCore.RefreshRate = station.RefreshRate;
                 stationCore.LastRefreshTime = station.LastRefreshTime;
@@ -199,7 +409,7 @@ namespace EasyScada.ServerApplication
                 {
                     foreach (var channel in station.Channels)
                     {
-                        if (stationCore.FirstOrDefault(x => x.Path.Replace(startPath, "") == channel.Path) is IChannelCore channelCore)
+                        if (stationCore.FirstOrDefault(x => x.Path.Remove(0, startPath.Length) == channel.Path) is IChannelCore channelCore)
                         {
                             UpdateChannelCore(channel, channelCore, startPath);
                             channelCores.Remove(channelCore);
@@ -212,7 +422,7 @@ namespace EasyScada.ServerApplication
                 {
                     foreach (var remoteStation in station.RemoteStations)
                     {
-                        if (stationCores.FirstOrDefault(x => x.Path.Replace(startPath, "") == remoteStation.Path) is IStationCore updateStation)
+                        if (stationCores.FirstOrDefault(x => x.Path.Remove(0, startPath.Length) == remoteStation.Path) is IStationCore updateStation)
                         {
                             UpdateStationCore(remoteStation, updateStation, startPath);
                             stationCores.Remove(updateStation);
@@ -225,7 +435,7 @@ namespace EasyScada.ServerApplication
 
         private void UpdateChannelCore(Channel channel, IChannelCore channelCore, string startPath)
         {
-            if (channel != null && channelCore != null && channelCore.IsReadOnly)
+            if (channel != null && channelCore != null)
             {
                 channelCore.CommunicationError = channel.Error;
                 channelCore.LastRefreshTime = channel.LastRefreshTime;
@@ -236,7 +446,7 @@ namespace EasyScada.ServerApplication
                 {
                     foreach (var device in channel.Devices)
                     {
-                        if (channelCore.FirstOrDefault(x => x.Path.Replace(startPath, "") == device.Path) is IDeviceCore deviceCore)
+                        if (deviceCores.FirstOrDefault(x => x.Path.Remove(0, startPath.Length) == device.Path) is IDeviceCore deviceCore)
                         {
                             UpdateDeviceCore(device, deviceCore, startPath);
                             deviceCores.Remove(deviceCore);
@@ -250,7 +460,7 @@ namespace EasyScada.ServerApplication
 
         private void UpdateDeviceCore(Device device, IDeviceCore deviceCore, string startPath)
         {
-            if (device != null && deviceCore != null && deviceCore.IsReadOnly)
+            if (device != null && deviceCore != null)
             {
                 deviceCore.LastRefreshTime = device.LastRefreshTime;
                 deviceCore.CommunicationError = device.Error;
@@ -262,7 +472,7 @@ namespace EasyScada.ServerApplication
                 {
                     foreach (var tag in device.Tags)
                     {
-                        if (deviceCore.FirstOrDefault(x => x.Path.Replace(startPath, "") == tag.Path) is ITagCore tagCore)
+                        if (tagCores.FirstOrDefault(x => x.Path.Remove(0, startPath.Length) == tag.Path) is ITagCore tagCore)
                         {
                             UpdateTagCore(tag, tagCore, startPath);
                             tagCores.Remove(tagCore);
@@ -280,7 +490,7 @@ namespace EasyScada.ServerApplication
 
         private void UpdateTagCore(Tag tag, ITagCore tagCore, string startPath)
         {
-            if (tag != null && tagCore != null && tagCore.IsReadOnly)
+            if (tag != null && tagCore != null)
             {
                 tagCore.Value = tag.Value;
                 tagCore.TimeStamp = tag.TimeStamp;
@@ -294,5 +504,62 @@ namespace EasyScada.ServerApplication
                 tagCore.AccessPermission = tag.AccessPermission;
             }
         }
+
+        private void RemoveFirstStationPath(Station station, int length)
+        {
+            if (station != null)
+            {
+                station.Path = station.Path.Remove(0, length);
+                if (station.RemoteStations != null)
+                {
+                    foreach (var remoteStation in station.RemoteStations)
+                        RemoveFirstStationPath(remoteStation, length);
+                }
+
+                if (station.Channels != null)
+                {
+                    foreach (var channel in station.Channels)
+                        RemoveFirstStationPath(channel, length);
+                }
+            }
+        }
+
+        private void RemoveFirstStationPath(Channel channel, int length)
+        {
+            if (channel != null)
+            {
+                channel.Path = channel.Path.Remove(0, length);
+                if (channel.Devices != null)
+                {
+                    foreach (Device device in channel.Devices)
+                    {
+                        RemoveFirstStationPath(device, length);
+                    }
+                }
+            }
+        }
+
+        private void RemoveFirstStationPath(Device device, int length)
+        {
+            if (device != null)
+            {
+                device.Path = device.Path.Remove(0, length);
+                if (device.Tags != null)
+                {
+                    foreach (var tag in device.Tags)
+                    {
+                        RemoveFirstStationPath(tag, length);
+                    }
+                }
+            }
+        }
+
+        private void RemoveFirstStationPath(Tag tag, int length)
+        {
+            if (tag != null)
+                tag.Path = tag.Path.Remove(0, length);
+        }
+
+        #endregion
     }
 }

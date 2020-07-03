@@ -32,6 +32,8 @@ namespace EasyDriver.ModbusRTU
 
         public int OpenPortFailCount { get; set; } = 0;
 
+        public bool IsDisposed { get; private set; }
+
         readonly ModbusSerialRTU mbMaster;
         readonly Timer scanTimer;
         
@@ -75,143 +77,146 @@ namespace EasyDriver.ModbusRTU
             try
             {
                 scanTimer.Enabled = false;
-                InitializeSerialPort();
-
-                if (mbMaster.Open())
+                if (!IsDisposed)
                 {
-                    OpenPortFailCount = 0;
-                    for (int i = 0; i < Channel.Childs.Count; i++)
+                    InitializeSerialPort();
+
+                    if (mbMaster.Open())
                     {
-                        IDeviceCore device = Channel.Childs[i] as IDeviceCore;
-
-                        byte deviceId = byte.Parse(device.ParameterContainer.Parameters["DeviceId"].ToString());
-                        ByteOrder byteOrder = (ByteOrder)device.ParameterContainer.Parameters["ByteOrder"];
-                        int maxTryTimes = int.Parse(device.ParameterContainer.Parameters["TryReadWriteTimes"].ToString());
-                        int timeout = int.Parse(device.ParameterContainer.Parameters["Timeout"].ToString());
-
-                        mbMaster.ResponseTimeOut = timeout;
-                        mbMaster.SerialPort.ReadTimeout = timeout;
-                        mbMaster.SerialPort.WriteTimeout = timeout;
-
-                        for (int k = 0; k < device.Childs.Count; k++)
-                        {
-                            ITagCore tag = device.Childs[k] as ITagCore;
-
-                            if (!tag.ParameterContainer.Parameters.ContainsKey("TryCount"))
-                                tag.ParameterContainer.Parameters["TryCount"] = 0;
-
-                            int currentTryCount = (int)tag.ParameterContainer.Parameters["TryCount"];
-                            bool readSuccess = false;
-
-                            if ((DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
-                            {
-                                if (ushort.TryParse(tag.Address, out ushort address))
-                                {
-                                    if (address >= 0 && address < 10000)
-                                    {
-                                        address--;
-                                        bool[] retVal = new bool[1];
-                                        if (mbMaster.ReadCoils(deviceId, address, 1, ref retVal))
-                                        {
-                                            readSuccess = true;
-                                            tag.ParameterContainer.Parameters["TryCount"] = 0;
-                                            tag.Value = retVal[0] ? "1" : "0";
-                                            tag.TimeStamp = DateTime.Now;
-                                            tag.Quality = Quality.Good;
-                                            tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
-
-                                        }
-
-                                    }
-                                    else if (address > 10000 && address < 20000)
-                                    {
-                                        address = (ushort)(address - 10001);
-                                        bool[] retVal = new bool[1];
-                                        if (mbMaster.ReadDiscreteInputContact(deviceId, address, 1, ref retVal))
-                                        {
-                                            readSuccess = true;
-                                            tag.ParameterContainer.Parameters["TryCount"] = 0;
-                                            tag.Value = retVal[0] ? "1" : "0";
-                                            tag.TimeStamp = DateTime.Now;
-                                            tag.Quality = Quality.Good;
-                                            tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
-
-                                        }
-
-                                    }
-                                    else if (address > 30000 && address < 40000)
-                                    {
-                                        address = (ushort)(address - 30001);
-                                        byte[] buffer = new byte[tag.DataType.RequireByteLength];
-                                        ushort countRegister = (ushort)(tag.DataType.RequireByteLength / 2);
-                                        countRegister = countRegister == 0 ? (ushort)1 : countRegister;
-                                        if (mbMaster.ReadInputRegisters(deviceId, address, countRegister, ref buffer))
-                                        {
-                                            readSuccess = true;
-                                            tag.ParameterContainer.Parameters["TryCount"] = 0;
-                                            tag.Value = tag.DataType.ConvertToValue(buffer, tag.Gain, tag.Offset, 0, 0, byteOrder);
-                                            tag.TimeStamp = DateTime.Now;
-                                            tag.Quality = Quality.Good;
-                                            tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
-
-                                        }
-                                    }
-                                    else if (address > 40000 && address < 50000)
-                                    {
-                                        address = (ushort)(address - 40001);
-                                        byte[] buffer = new byte[tag.DataType.RequireByteLength];
-                                        ushort countRegister = (ushort)(tag.DataType.RequireByteLength / 2);
-                                        countRegister = countRegister == 0 ? (ushort)1 : countRegister;
-                                        if (mbMaster.ReadHoldingRegisters(deviceId, address, countRegister, ref buffer))
-                                        {
-                                            readSuccess = true;
-                                            tag.ParameterContainer.Parameters["TryCount"] = 0;
-                                            tag.Value = tag.DataType.ConvertToValue(buffer, tag.Gain, tag.Offset, 0, 0, byteOrder);
-                                            tag.TimeStamp = DateTime.Now;
-                                            tag.Quality = Quality.Good;
-                                            tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
-
-                                        }
-                                    }
-                                }
-
-                                if (!readSuccess)
-                                {
-                                    currentTryCount++;
-                                    tag.ParameterContainer.Parameters["TryCount"] = currentTryCount;
-                                }
-                                else
-                                    currentTryCount = 0;
-
-                                if (currentTryCount > maxTryTimes)
-                                {
-                                    tag.TimeStamp = DateTime.Now;
-                                    tag.Quality = Quality.Bad;
-                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
-                                }
-
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    OpenPortFailCount++;
-
-                    if (OpenPortFailCount > 5)
-                    {
+                        OpenPortFailCount = 0;
                         for (int i = 0; i < Channel.Childs.Count; i++)
                         {
                             IDeviceCore device = Channel.Childs[i] as IDeviceCore;
+
+                            byte deviceId = byte.Parse(device.ParameterContainer.Parameters["DeviceId"].ToString());
+                            ByteOrder byteOrder = (ByteOrder)device.ParameterContainer.Parameters["ByteOrder"];
+                            int maxTryTimes = int.Parse(device.ParameterContainer.Parameters["TryReadWriteTimes"].ToString());
+                            int timeout = int.Parse(device.ParameterContainer.Parameters["Timeout"].ToString());
+
+                            mbMaster.ResponseTimeOut = timeout;
+                            mbMaster.SerialPort.ReadTimeout = timeout;
+                            mbMaster.SerialPort.WriteTimeout = timeout;
+
                             for (int k = 0; k < device.Childs.Count; k++)
                             {
                                 ITagCore tag = device.Childs[k] as ITagCore;
 
+                                if (!tag.ParameterContainer.Parameters.ContainsKey("TryCount"))
+                                    tag.ParameterContainer.Parameters["TryCount"] = 0;
+
+                                int currentTryCount = (int)tag.ParameterContainer.Parameters["TryCount"];
+                                bool readSuccess = false;
+
                                 if ((DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
                                 {
-                                    tag.TimeStamp = DateTime.Now;
-                                    tag.Quality = Quality.Bad;
-                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+                                    if (ushort.TryParse(tag.Address, out ushort address))
+                                    {
+                                        if (address >= 0 && address < 10000)
+                                        {
+                                            address--;
+                                            bool[] retVal = new bool[1];
+                                            if (mbMaster.ReadCoils(deviceId, address, 1, ref retVal))
+                                            {
+                                                readSuccess = true;
+                                                tag.ParameterContainer.Parameters["TryCount"] = 0;
+                                                tag.Value = retVal[0] ? "1" : "0";
+                                                tag.TimeStamp = DateTime.Now;
+                                                tag.Quality = Quality.Good;
+                                                tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+
+                                            }
+
+                                        }
+                                        else if (address > 10000 && address < 20000)
+                                        {
+                                            address = (ushort)(address - 10001);
+                                            bool[] retVal = new bool[1];
+                                            if (mbMaster.ReadDiscreteInputContact(deviceId, address, 1, ref retVal))
+                                            {
+                                                readSuccess = true;
+                                                tag.ParameterContainer.Parameters["TryCount"] = 0;
+                                                tag.Value = retVal[0] ? "1" : "0";
+                                                tag.TimeStamp = DateTime.Now;
+                                                tag.Quality = Quality.Good;
+                                                tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+
+                                            }
+
+                                        }
+                                        else if (address > 30000 && address < 40000)
+                                        {
+                                            address = (ushort)(address - 30001);
+                                            byte[] buffer = new byte[tag.DataType.RequireByteLength];
+                                            ushort countRegister = (ushort)(tag.DataType.RequireByteLength / 2);
+                                            countRegister = countRegister == 0 ? (ushort)1 : countRegister;
+                                            if (mbMaster.ReadInputRegisters(deviceId, address, countRegister, ref buffer))
+                                            {
+                                                readSuccess = true;
+                                                tag.ParameterContainer.Parameters["TryCount"] = 0;
+                                                tag.Value = tag.DataType.ConvertToValue(buffer, tag.Gain, tag.Offset, 0, 0, byteOrder);
+                                                tag.TimeStamp = DateTime.Now;
+                                                tag.Quality = Quality.Good;
+                                                tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+
+                                            }
+                                        }
+                                        else if (address > 40000 && address < 50000)
+                                        {
+                                            address = (ushort)(address - 40001);
+                                            byte[] buffer = new byte[tag.DataType.RequireByteLength];
+                                            ushort countRegister = (ushort)(tag.DataType.RequireByteLength / 2);
+                                            countRegister = countRegister == 0 ? (ushort)1 : countRegister;
+                                            if (mbMaster.ReadHoldingRegisters(deviceId, address, countRegister, ref buffer))
+                                            {
+                                                readSuccess = true;
+                                                tag.ParameterContainer.Parameters["TryCount"] = 0;
+                                                tag.Value = tag.DataType.ConvertToValue(buffer, tag.Gain, tag.Offset, 0, 0, byteOrder);
+                                                tag.TimeStamp = DateTime.Now;
+                                                tag.Quality = Quality.Good;
+                                                tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+
+                                            }
+                                        }
+                                    }
+
+                                    if (!readSuccess)
+                                    {
+                                        currentTryCount++;
+                                        tag.ParameterContainer.Parameters["TryCount"] = currentTryCount;
+                                    }
+                                    else
+                                        currentTryCount = 0;
+
+                                    if (currentTryCount > maxTryTimes)
+                                    {
+                                        tag.TimeStamp = DateTime.Now;
+                                        tag.Quality = Quality.Bad;
+                                        tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        OpenPortFailCount++;
+
+                        if (OpenPortFailCount > 5)
+                        {
+                            for (int i = 0; i < Channel.Childs.Count; i++)
+                            {
+                                IDeviceCore device = Channel.Childs[i] as IDeviceCore;
+                                for (int k = 0; k < device.Childs.Count; k++)
+                                {
+                                    ITagCore tag = device.Childs[k] as ITagCore;
+
+                                    if ((DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
+                                    {
+                                        tag.TimeStamp = DateTime.Now;
+                                        tag.Quality = Quality.Bad;
+                                        tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+                                    }
                                 }
                             }
                         }
@@ -277,7 +282,6 @@ namespace EasyDriver.ModbusRTU
         public IEnumerable<IDataType> GetSupportDataTypes()
         {
             return supportDataTypes;
-            
         }
 
         public void WriteMulti(ITagCore[] tags, string[] values)
@@ -292,12 +296,15 @@ namespace EasyDriver.ModbusRTU
 
         public void Dispose()
         {
+            IsDisposed = true;
             Disconnect();
+            scanTimer.Stop();
+            scanTimer.Dispose();
             mbMaster.Dispose();
         }
     }
 
-    public static class ValidateHelper
+    static class ValidateHelper
     {
         public static string REGEX_ValidFileName = @"^[\w\-. ]+$";
 

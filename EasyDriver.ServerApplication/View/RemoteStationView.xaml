@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EasyScada.ServerApplication"
              mc:Ignorable="d" 
-             d:DesignHeight="240" d:DesignWidth="600"
+             d:DesignHeight="260" d:DesignWidth="600"
              MinWidth="400"
              DataContext="{local:ViewModelContainer local:RemoteStationViewModel}"
              xmlns:api="clr-namespace:EasyDriver.Client.Models;assembly=EasyDriver.Client.Models"
@@ -17,6 +17,11 @@
     <UserControl.Resources>
         <Style TargetType="dxlc:LayoutItem">
             <Setter Property="LabelPosition" Value="Top"/>
+            <Setter Property="ElementSpace" Value="4"/>
+            <Setter Property="Foreground" Value="{StaticResource YellowBrush}"/>
+        </Style>
+        <Style TargetType="dxlc:LayoutGroup">
+            <Setter Property="ItemSpace" Value="8"/>
         </Style>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
@@ -48,7 +53,7 @@
                                           GroupBorderStyle="Group">
                             <dxdo:LayoutGroup.CaptionTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}" FontWeight="Medium"/>
+                                    <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="{StaticResource PinkBrush}"/>
                                 </DataTemplate>
                             </dxdo:LayoutGroup.CaptionTemplate>
                             <dxdo:LayoutControlItem>
@@ -69,10 +74,11 @@
                                         </dxlc:LayoutGroup>
                                         <dxlc:LayoutGroup Orientation="Horizontal">
                                             <dxlc:LayoutItem Label="Work Mode" AddColonToLabel="True">
-                                                <dxe:ComboBoxEdit IsTextEditable="False" SelectedItem="{Binding WorkMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                <dxe:ComboBoxEdit IsTextEditable="False" SelectedItem="{Binding CommunicationMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                   AllowNullInput="False"
+                                                                  ItemsSource="{Binding CommunicationModeSource}"
                                                                   SelectedIndex="0"
-                                                                  ItemsSource="{dxe:EnumItemsSource SplitNames=True, EnumType=api:CommunicationMode}">
+                                                                  >
                                                 </dxe:ComboBoxEdit>
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Refresh Rate (ms)" AddColonToLabel="True">
@@ -86,15 +92,12 @@
                             </dxdo:LayoutControlItem>
                         </dxdo:LayoutGroup>
                     </dxdo:LayoutGroup>
-                    <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <dxdo:LayoutControlItem ItemWidth="80">
-                            <dx:SimpleButton x:Name="btnConfigure" Content="Configure" Command="{Binding ConfigureCommand}" Visibility="{Binding ElementName=btnConfigure, Path=IsEnabled, Converter={dxmvvm:BooleanToVisibilityConverter}}"/>
+                    <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 0 0">
+                        <dxdo:LayoutControlItem ItemWidth="70">
+                            <dx:SimpleButton Content="Ok" Command="{Binding SaveCommand}" Foreground="{StaticResource GreenBrush}"/>
                         </dxdo:LayoutControlItem>
                         <dxdo:LayoutControlItem ItemWidth="70">
-                            <dx:SimpleButton Content="Ok" Command="{Binding SaveCommand}"/>
-                        </dxdo:LayoutControlItem>
-                        <dxdo:LayoutControlItem ItemWidth="70">
-                            <dx:SimpleButton Content="Cancel" Command="{Binding CloseCommand}"/>
+                            <dx:SimpleButton Content="Cancel" Command="{Binding CloseCommand}" Foreground="{StaticResource RedBrush}"/>
                         </dxdo:LayoutControlItem>
                     </dxdo:LayoutGroup>
                 </dxdo:LayoutGroup>

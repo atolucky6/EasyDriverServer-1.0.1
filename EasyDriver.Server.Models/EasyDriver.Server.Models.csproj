@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BroadcastMode.cs" />
     <Compile Include="Channel\ChannelCore.cs" />
     <Compile Include="Base\Commons\BindableCore.cs" />
     <Compile Include="Base\CoreItem\CoreItemBase.cs" />

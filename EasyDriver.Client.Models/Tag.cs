@@ -124,9 +124,6 @@ namespace EasyDriver.Client.Models
 
         public bool Checked { get; set; }
 
-        public event EventHandler<TagValueChangedEventArgs> ValueChanged;
-        public event EventHandler<TagQualityChangedEventArgs> QualityChanged;
-
         T IPath.GetItem<T>(string pathToObject)
         {
             if (Path == pathToObject)
@@ -134,6 +131,13 @@ namespace EasyDriver.Client.Models
             return null;
         }
 
+        [field: NonSerialized]
+        public event EventHandler<TagValueChangedEventArgs> ValueChanged;
+
+        [field: NonSerialized]
+        public event EventHandler<TagQualityChangedEventArgs> QualityChanged;
+
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
         public void RaisePropertyChanged([CallerMemberName]string propertyName = null)
         {

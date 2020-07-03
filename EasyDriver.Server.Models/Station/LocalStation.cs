@@ -16,24 +16,46 @@ namespace EasyDriver.Server.Models
         public LocalStation(IGroupItem parent) : base(parent, true)
         {
             Name = "Local Station";
+            SyncObject = new object();
             IsLocalStation = true;
             ParameterContainer = new ParameterContainer();
         }
 
         [JsonIgnore]
-        public string RemoteAddress { get; set; }
+        public string RemoteAddress
+        {
+            get { return GetProperty<string>(); }
+            set { SetProperty(value); }
+        }
 
         [JsonIgnore]
         public string CommunicationError { get; set; }
 
         [JsonIgnore]
-        public CommunicationMode CommunicationMode { get; set; }
+        public CommunicationMode CommunicationMode
+        {
+            get { return GetProperty<CommunicationMode>(); }
+            set { SetProperty(value); }
+        }
+
+        [field: NonSerialized]
+        ConnectionStatus connectionStatus;
+        [JsonIgnore]
+        public ConnectionStatus ConnectionStatus
+        {
+            get => ConnectionStatus.Connected;
+            set { connectionStatus = value; }
+        }
 
         [JsonIgnore]
         public bool IsLocalStation { get; set; }
 
         [JsonIgnore]
-        public ushort Port { get; set; }
+        public ushort Port
+        {
+            get { return GetProperty<ushort>(); }
+            set { SetProperty(value); }
+        }
 
         [JsonIgnore]
         public int RefreshRate { get; set; }
@@ -47,7 +69,7 @@ namespace EasyDriver.Server.Models
 
         [Browsable(false)]
         [JsonIgnore]
-        public object SyncObject => throw new NotImplementedException();
+        public object SyncObject { get; set; }
 
         public override string GetErrorOfProperty(string propertyName)
         {
@@ -80,6 +102,9 @@ namespace EasyDriver.Server.Models
         [JsonProperty("CommunicationMode")]
         CommunicationMode IStation.CommunicationMode => CommunicationMode;
 
+        [JsonProperty("ConnectionStatus")]
+        ConnectionStatus IStation.ConnectionStatus => ConnectionStatus;
+
         [JsonProperty("Path")]
         string IPath.Path => Path;
 
@@ -95,17 +120,14 @@ namespace EasyDriver.Server.Models
         [JsonProperty("Channels")]
         List<IChannel> IStation.Channels
         {
-            get
-            {
-                List<IChannel> result = Childs.Select(x => x as IChannel)?.ToList();
-                if (result == null)
-                    result = new List<IChannel>();
-                return result;
-            }
+            get { return Childs.Select(x => x as IChannel)?.ToList(); }
         }
 
         [JsonProperty("RemoteStations")]
-        List<IStation> IStation.RemoteStations => new List<IStation>();
+        List<IStation> IStation.RemoteStations
+        {
+            get { return Childs.Select(x => x as IStation)?.ToList(); }
+        }
 
         public T GetItem<T>(string pathToObject) where T : class, IPath
         {

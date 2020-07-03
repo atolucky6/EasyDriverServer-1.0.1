@@ -10,6 +10,7 @@ namespace EasyDriver.Client.Models
         bool IsLocalStation { get; }
         string RemoteAddress { get; }
         CommunicationMode CommunicationMode { get; }
+        ConnectionStatus ConnectionStatus { get; }
         int RefreshRate { get; }
         ushort Port { get; }
         string Error { get; }

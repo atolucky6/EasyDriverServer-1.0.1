@@ -12,6 +12,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Threading;
+using Newtonsoft.Json;
 
 namespace EasyScada.ServerApplication
 {
@@ -49,24 +51,24 @@ namespace EasyScada.ServerApplication
             DriverManagerService = driverManagerService;
             HubFactory = hubFactory;
             HubConnectionManagerService = hubConnectionManagerService;
-
-            Messenger.Default.Register<CreateRemoteStationSuccess>(this, OnCreateRemoteStationSuccess);
+            CommunicationModeSource = Enum.GetValues(typeof(CommunicationMode)).Cast<CommunicationMode>().ToList();
+            Messenger.Default.Register<CreateRemoteStationSuccessMessage>(this, OnCreateRemoteStationSuccessMessage);
         }
 
         #endregion
 
         #region Public members
 
-        public string Title { get; set; }
+        public string Title { get; set; } = "";
         public SizeToContent SizeToContent { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
         public virtual string Name { get; set; }
-        public virtual string RemoteAddress { get; set; }
+        public virtual string RemoteAddress { get; set; } = "";
         public virtual ushort Port { get; set; }
-        public virtual object WorkMode { get; set; }
+        public virtual CommunicationMode CommunicationMode { get; set; }
         public virtual int RefreshRate { get;set; }
-
+        public virtual List<CommunicationMode> CommunicationModeSource { get; set; }
         public bool EditMode { get; set; }
         public RemoteStation RemoteStation { get; set; }
         public IEasyScadaProject Parent { get; set; }
@@ -76,7 +78,6 @@ namespace EasyScada.ServerApplication
         public ProjectTreeWorkspaceViewModel ProjectTreeWorkspaceViewModel { get => ParentViewModel as ProjectTreeWorkspaceViewModel; }
         public virtual bool IsBusy { get; set; }
         public virtual bool CreateSuccess { get; set; }
-
         HubConnection hubConnection;
         IHubProxy hubProxy;
 
@@ -89,29 +90,63 @@ namespace EasyScada.ServerApplication
             try
             {
                 IsBusy = true;
+
                 if (EditMode)
                 {
-                    if (Parent.Childs.FirstOrDefault(x => x.Name == Name?.Trim()) != null)
+                    if (Parent.Childs.FirstOrDefault(x => x != RemoteStation && (x as ICoreItem).Name == Name?.Trim()) != null)
+                    {
+                        MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                    }
+                    else
+                    {
+                        if (HubConnectionManagerService.ConnectionDictonary.ContainsKey(RemoteStation))
+                        {
+                            RemoteStation.RemoteAddress = RemoteAddress;
+                            RemoteStation.Port = Port;
+                            RemoteStation.RefreshRate = RefreshRate;
+                            RemoteStation.CommunicationMode = CommunicationMode;
+                            HubConnectionManagerService.ReloadConnection(RemoteStation);
+                            IsBusy = false;
+                            CurrentWindowService.Close();
+                        }
+                    }
+                }
+                else
+                {
+                    if (Parent.Childs.FirstOrDefault(x => x != RemoteStation && (x as ICoreItem).Name == Name?.Trim()) != null)
                     {
                         MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
                     }
                     else
                     {
 
-                    }
-                }
-                else
-                {
-                    if (Parent.Childs.FirstOrDefault(x => x != RemoteStation && x.Name == Name?.Trim()) != null)
-                    {
-                        MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
-                    }
-                    else
-                    {
-                        hubConnection = HubFactory.CreateHubConnection(RemoteAddress, Port);
-                        hubProxy = HubFactory.CreateHubProxy(hubConnection);
-                        await hubConnection.Start(new LongPollingTransport());
-                        await Task.Delay(300);
+                        if (hubConnection == null)
+                        {
+                            hubConnection = HubFactory.CreateHubConnection(RemoteAddress, Port);
+                            hubProxy = HubFactory.CreateHubProxy(hubConnection);
+                        }
+                        else
+                        {
+                            if (hubConnection.State == ConnectionState.Disconnected)
+                            {
+                                hubConnection?.Dispose();
+                                hubConnection = HubFactory.CreateHubConnection(RemoteAddress, Port);
+                                hubProxy = HubFactory.CreateHubProxy(hubConnection);
+                            }
+                        }
+
+                        try
+                        {
+                            await hubConnection.Start(new LongPollingTransport());
+                        }
+                        catch
+                        {
+                            IsBusy = false;
+                            MessageBoxService.ShowMessage($"Can't connect to server {RemoteAddress}:{Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                            return;
+                        }
+
+                        await Task.Delay(50);
                         if (hubConnection.State == ConnectionState.Connected)
                         {
                             HubModel hubModel = new HubModel()
@@ -123,9 +158,13 @@ namespace EasyScada.ServerApplication
                                 CommunicationMode = CommunicationMode.ReceiveFromServer.ToString()
                             };
                             IsBusy = false;
-                            
-                            WindowService.Show("RemoteProjectTreeView", new ArrayList() { hubConnection, hubProxy, hubModel }, this);
+                            WindowService.Show("RemoteProjectTreeView", new object[] { hubModel, hubConnection, hubProxy}, this);
                         }
+                        else
+                        {
+                            MessageBoxService.ShowMessage($"Can't connect to server {RemoteAddress}:{Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                        }
+
                     }
                 }
                 IsBusy = false;
@@ -138,16 +177,6 @@ namespace EasyScada.ServerApplication
 
         public bool CanSave() => string.IsNullOrEmpty(Error) && !IsBusy;
 
-        public void Configure()
-        {
-
-        }
-        
-        public bool CanConfigure()
-        {
-            return !IsBusy && EditMode && string.IsNullOrEmpty(Error);
-        }
-
         public void Close() => CurrentWindowService.Close();
 
         public bool CanClose() => !IsBusy;
@@ -156,7 +185,7 @@ namespace EasyScada.ServerApplication
 
         #region Event handlers
 
-        public void OnCreateRemoteStationSuccess(CreateRemoteStationSuccess message)
+        public void OnCreateRemoteStationSuccessMessage(CreateRemoteStationSuccessMessage message)
         {
             IsBusy = true;
             if (message != null && ProjectManagerService.CurrentProject != null)
@@ -166,7 +195,7 @@ namespace EasyScada.ServerApplication
                     Name = Name,
                     Port = Port,
                     RemoteAddress = RemoteAddress,
-                    CommunicationMode = CommunicationMode.ReceiveFromServer,
+                    CommunicationMode = CommunicationMode,
                     RefreshRate = RefreshRate
                 };
 
@@ -178,7 +207,8 @@ namespace EasyScada.ServerApplication
                 }
 
                 ProjectManagerService.CurrentProject.Childs.Add(remoteStation);
-                HubConnectionManagerService.AddHubConnection(remoteStation, message.HubConnection, message.HubProxy);
+                Thread.Sleep(100);
+                HubConnectionManagerService.AddConnection(remoteStation, message.HubConnection, message.HubProxy);
                 IsBusy = false;
                 ProjectTreeWorkspaceViewModel.IsBusy = false;
                 CreateSuccess = true;
@@ -262,12 +292,9 @@ namespace EasyScada.ServerApplication
         {
             await Task.Run(() =>
             {
-                if (!EditMode && !CreateSuccess)
-                {
-                    hubConnection?.Stop();
+                if (!CreateSuccess)
                     hubConnection?.Dispose();
-                }
-                Messenger.Default.Unregister<CreateRemoteStationSuccess>(this, OnCreateRemoteStationSuccess);
+                Messenger.Default.Unregister<CreateRemoteStationSuccessMessage>(this, OnCreateRemoteStationSuccessMessage);
             });
         }
 
@@ -282,10 +309,9 @@ namespace EasyScada.ServerApplication
                 RemoteAddress = remoteStation.RemoteAddress;
                 Port = remoteStation.Port;
                 RefreshRate = remoteStation.RefreshRate;
-                WorkMode = remoteStation.CommunicationMode;
-
+                CommunicationMode = remoteStation.CommunicationMode;
                 RemoteStation = remoteStation;
-
+                Parent = remoteStation.Parent as IEasyScadaProject;
             }
             else if (Parameter is IEasyScadaProject project)
             {
@@ -293,11 +319,10 @@ namespace EasyScada.ServerApplication
                 Title = "Add Remote Station";
                 Name = project.GetUniqueNameInGroup("RemoteStation1");
                 Parent = project;
-
                 Port = 8800;
-                RemoteAddress = "192.168.0.1";
+                RemoteAddress = "127.0.0.1";
                 RefreshRate = 1000;
-                WorkMode = CommunicationMode.ReceiveFromServer;
+                CommunicationMode = CommunicationMode.ReceiveFromServer; 
             }
             this.RaisePropertiesChanged();
            

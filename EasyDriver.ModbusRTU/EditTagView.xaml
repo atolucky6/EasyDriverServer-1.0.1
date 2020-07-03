@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-nameSerialPortace:EasyDriver.ModbusRTU"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="300"
+             d:DesignHeight="480" d:DesignWidth="300"
              MinWidth="300"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:plugin="clr-namespace:EasyDriverPlugin;assembly=EasyDriverPlugin"
@@ -17,8 +17,13 @@
              xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking">
     <UserControl.Resources>
         <Style TargetType="dxlc:LayoutItem">
-            <Setter Property="AddColonToLabel" Value="True"/>
             <Setter Property="LabelPosition" Value="Top"/>
+            <Setter Property="ElementSpace" Value="4"/>
+            <Setter Property="AddColonToLabel" Value="True"/>
+            <Setter Property="Foreground" Value="#F1FA88"/>
+        </Style>
+        <Style TargetType="dxlc:LayoutGroup">
+            <Setter Property="ItemSpace" Value="8"/>
         </Style>
     </UserControl.Resources>
     <dx:BackgroundPanel>
@@ -31,7 +36,7 @@
                                       GroupBorderStyle="Group">
                         <dxdo:LayoutGroup.CaptionTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding}" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="#FF79C6"/>
                             </DataTemplate>
                         </dxdo:LayoutGroup.CaptionTemplate>
                         <dxdo:LayoutControlItem>
@@ -77,7 +82,7 @@
                                       GroupBorderStyle="Group">
                         <dxdo:LayoutGroup.CaptionTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding}" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="#FF79C6"/>
                             </DataTemplate>
                         </dxdo:LayoutGroup.CaptionTemplate>
                         <dxdo:LayoutControlItem>
@@ -112,12 +117,12 @@
                         </dxdo:LayoutControlItem>
                     </dxdo:LayoutGroup>
                 </dxdo:LayoutGroup>
-                <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Horizontal" HorizontalAlignment="Right">
+                <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 0 0">
                     <dxdo:LayoutControlItem ItemWidth="70">
-                        <dx:SimpleButton Content="Ok" x:Name="btnOk"/>
+                        <dx:SimpleButton Content="Ok" x:Name="btnOk" Foreground="#50FA7B"/>
                     </dxdo:LayoutControlItem>
                     <dxdo:LayoutControlItem ItemWidth="70">
-                        <dx:SimpleButton Content="Cancel" x:Name="btnCancel"/>
+                        <dx:SimpleButton Content="Cancel" x:Name="btnCancel" Foreground="#FF5555"/>
                     </dxdo:LayoutControlItem>
                 </dxdo:LayoutGroup>
             </dxdo:LayoutGroup>

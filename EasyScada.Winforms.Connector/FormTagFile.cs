@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -11,6 +13,8 @@ namespace EasyScada.Winforms.Connector
 {
     partial class FormTagFile : Form
     {
+        #region Members
+
         readonly EasyDriverConnectorDesignerActionList actionList;
         readonly string serverAddress;
         readonly ushort port;
@@ -20,6 +24,10 @@ namespace EasyScada.Winforms.Connector
         string projectPath;
         string debugPath;
         string releasePath;
+
+        #endregion
+
+        #region Constructors
 
         public FormTagFile()
         {
@@ -37,17 +45,35 @@ namespace EasyScada.Winforms.Connector
             debugPath = projectPath + "\\Debug";
             releasePath = projectPath + "\\Release";
             serverProjectTree.AfterCheck += ServerProjectTree_AfterCheck;
+            localProjectTree.AfterCheck += LocalProjectTree_AfterCheck;
             btnSave.Enabled = false;
             btnTransfer.Enabled = false;
             Load += FormTagFile_Load;
         }
 
-        private void ServerProjectTree_AfterCheck(object sender, TreeViewEventArgs e)
+        #endregion
+
+        #region Event handlers
+
+        private async void FormTagFile_Load(object sender, EventArgs e)
         {
-            serverProjectTree.BeginUpdate();
+            try
+            {
+                ReloadLocalProjectTree();
+                await ReloadServerProjectTree();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                MessageBox.Show($"Can't connect to server {serverAddress}:{port}. Please make sure Easy Driver Server application is already opened before doing this action!", "Easy Driver Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LocalProjectTree_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            localProjectTree.BeginUpdate();
             if (e.Action != TreeViewAction.Unknown)
             {
-                
                 UpdateCheckStateParent(e.Node);
                 UpdateCheckStateChild(e.Node, e.Node.Checked);
 
@@ -55,10 +81,123 @@ namespace EasyScada.Winforms.Connector
                     btnTransfer.Enabled = serverProjectTree.Nodes[0].Checked;
                 else
                     btnTransfer.Enabled = false;
+                btnSave.Enabled = true;
+            }
+            localProjectTree.EndUpdate();
+        }
 
+        private void ServerProjectTree_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            serverProjectTree.BeginUpdate();
+            if (e.Action != TreeViewAction.Unknown)
+            {            
+                UpdateCheckStateParent(e.Node);
+                UpdateCheckStateChild(e.Node, e.Node.Checked);
+
+                if (serverProjectTree.Nodes.Count > 0)
+                    btnTransfer.Enabled = serverProjectTree.Nodes[0].Checked;
+                else
+                    btnTransfer.Enabled = false;
             }
             serverProjectTree.EndUpdate();
         }
+
+        private async void btnReloadAll_Click(object sender, EventArgs e)
+        {
+            btnTransfer.Enabled = false;
+            btnSave.Enabled = false;
+            ReloadLocalProjectTree();
+            await ReloadServerProjectTree();
+        }
+
+        private async void btnContextRefreshServer_Click(object sender, EventArgs e)
+        {
+            btnTransfer.Enabled = false;
+            await ReloadServerProjectTree();
+        }
+
+        private void btnContextRefreshLocal_Click(object sender, EventArgs e)
+        {
+            btnSave.Enabled = false;
+            ReloadLocalProjectTree();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            checkedConnector = new DriverConnector()
+            {
+                RefreshRate = serverConnector.RefreshRate,
+                CommunicationMode = serverConnector.CommunicationMode,
+                CreatedDate = DateTime.Now,
+                Port = serverConnector.Port,
+                ServerAddress = serverConnector.ServerAddress,
+                Stations = new List<Station>()
+            };
+            foreach (TreeNode serverRoot in serverProjectTree.Nodes)
+            {
+                foreach (TreeNode serverNode in serverRoot.Nodes)
+                {
+                    Station station = GetCheckedStation(serverNode);
+                    if (station != null)
+                        checkedConnector.Stations.Add(station);
+                }
+            }
+
+            if (checkedConnector != null)
+            {
+                if (Directory.Exists(debugPath))
+                {
+                    File.WriteAllText($"{debugPath}\\TagFile.json", JsonConvert.SerializeObject(checkedConnector));
+                }
+                else
+                {
+                    MessageBox.Show($"The directory '{debugPath}' doesn't exist. Please build the project first!");
+                    return;
+                }
+
+                if (Directory.Exists(releasePath))
+                {
+                    File.WriteAllText($"{releasePath}\\TagFile.json", JsonConvert.SerializeObject(checkedConnector));
+                }
+                else
+                {
+                    MessageBox.Show($"The directory '{debugPath}' doesn't exist. Please build the project first!");
+                    return;
+                }
+                btnSave.Enabled = false;
+                Thread.Sleep(300);
+                ReloadLocalProjectTree();
+            }
+        }
+
+        private void btnTransfer_Click(object sender, EventArgs e)
+        {
+            btnSave.Enabled = true;
+            checkedConnector = new DriverConnector()
+            {
+                RefreshRate = serverConnector.RefreshRate,
+                CommunicationMode = serverConnector.CommunicationMode,
+                CreatedDate = DateTime.Now,
+                Port = serverConnector.Port,
+                ServerAddress = serverConnector.ServerAddress,
+                Stations = new List<Station>()
+            };
+            foreach (TreeNode serverRoot in serverProjectTree.Nodes)
+            {
+                foreach (TreeNode serverNode in serverRoot.Nodes)
+                {
+                    Station station = GetCheckedStation(serverNode);
+                    if (station != null)
+                        checkedConnector.Stations.Add(station);
+                }
+            }
+            projectConnector = checkedConnector;
+            RefreshProjectTreeView(localProjectTree, projectConnector, true);
+        }
+
+        #endregion
+
+        #region Methods
 
         private void UpdateCheckStateParent(TreeNode treeNode)
         {
@@ -82,20 +221,6 @@ namespace EasyScada.Winforms.Connector
                 {
                     UpdateCheckStateChild(item, isChecked);
                 }
-            }
-        }
-
-        private async void FormTagFile_Load(object sender, EventArgs e)
-        {
-            try
-            {
-                ReloadLocalProjectTree();
-                await ReloadServerProjectTree();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-                MessageBox.Show($"Can't connect to server {serverAddress}:{port}. Please make sure Easy Driver Server application is already opened before doing this action!", "Easy Driver Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -127,8 +252,10 @@ namespace EasyScada.Winforms.Connector
                 catch { }
             }
 
+            if (projectConnector != null)
+                btnSave.Enabled = true;
 
-            RefreshProjectTreeView(localProjectTree, projectConnector);
+            RefreshProjectTreeView(localProjectTree, projectConnector, true);
         }
 
         private async Task ReloadServerProjectTree()
@@ -189,6 +316,7 @@ namespace EasyScada.Winforms.Connector
             if (connector != null)
             {
                 TreeNode root = new TreeNode($"Easy Driver Server - {serverAddress}:{port}");
+                root.Tag = connector;
                 if (connector.Stations != null && connector.Stations.Count > 0)
                 {
                     foreach (var station in connector.Stations)
@@ -207,6 +335,8 @@ namespace EasyScada.Winforms.Connector
             if (station == null)
                 return null;
             TreeNode treeNode = new TreeNode(station.Name, 1, 1);
+            treeNode.Tag = station;
+            treeNode.Checked = station.Checked;
             if (station.Channels != null && station.Channels.Count > 0)
             {
                 foreach (var channel in station.Channels)
@@ -233,6 +363,8 @@ namespace EasyScada.Winforms.Connector
             if (channel == null)
                 return null;
             TreeNode treeNode = new TreeNode(channel.Name, 2, 2);
+            treeNode.Tag = channel;
+            treeNode.Checked = channel.Checked;
             if (channel.Devices != null && channel.Devices.Count > 0)
             {
                 foreach (var device in channel.Devices)
@@ -250,6 +382,8 @@ namespace EasyScada.Winforms.Connector
             if (device == null)
                 return null;
             TreeNode treeNode = new TreeNode(device.Name, 3, 3);
+            treeNode.Tag = device;
+            treeNode.Checked = device.Checked;
             if (device.Tags != null && device.Tags.Count > 0)
             {
                 foreach (var tag in device.Tags)
@@ -267,7 +401,101 @@ namespace EasyScada.Winforms.Connector
             if (tag == null)
                 return null;
             TreeNode treeNode = new TreeNode(tag.Name, 4, 4);
+            treeNode.Tag = tag;
+            treeNode.Checked = tag.Checked;
             return treeNode;
+        }
+
+        private Station GetCheckedStation(TreeNode treeNode)
+        {
+            if (treeNode.Checked && treeNode.Tag is Station station)
+            {
+                Station result = DeepCopy(station);
+                result.Checked = true;
+                List<Channel> channels = new List<Channel>();
+                List<Station> stations = new List<Station>();
+                foreach (TreeNode childNode in treeNode.Nodes)
+                {
+                    if (childNode.Tag is Channel)
+                    {
+                        Channel channel = GetCheckedChannel(childNode);
+                        if (channel != null)
+                            channels.Add(channel);
+                    }
+                    else if (childNode.Tag is Station)
+                    {
+                        Station innerStation = GetCheckedStation(childNode);
+                        if (innerStation != null)
+                            stations.Add(innerStation);
+                    }
+                }
+                result.Channels = channels;
+                result.RemoteStations = stations;
+                return result;
+            }
+            return null;
+        }
+
+        private Channel GetCheckedChannel(TreeNode treeNode)
+        {
+            if (treeNode.Checked && treeNode.Tag is Channel channel)
+            {
+                Channel result = DeepCopy(channel);
+                result.Checked = true;
+                List<Device> devices = new List<Device>();
+                foreach (TreeNode childNode in treeNode.Nodes)
+                {
+                    Device device = GetCheckedDevice(childNode);
+                    if (device != null)
+                        devices.Add(device);
+                }
+                result.Devices = devices;
+                return result;
+            }
+            return null;
+        }
+
+        private Device GetCheckedDevice(TreeNode treeNode)
+        {
+            if (treeNode.Checked && treeNode.Tag is Device device)
+            {
+                Device result = DeepCopy(device);
+                result.Checked = true;
+                List<Tag> tags = new List<Tag>();
+                foreach (TreeNode childNode in treeNode.Nodes)
+                {
+                    Tag tag = GetCheckedTag(childNode);
+                    if (tag != null)
+                        tags.Add(tag);
+                }
+                result.Tags = tags;
+                return result;
+            }
+            return null;
+        }
+
+        private Tag GetCheckedTag(TreeNode treeNode)
+        {
+            if (treeNode.Checked && treeNode.Tag is Tag tag)
+            {
+                Tag result = DeepCopy(tag);
+                result.Checked = true;
+                return result;
+            }
+            return null;
+        }
+
+        private T DeepCopy<T>(T item)
+            where T : class
+        {
+            using (var stream = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(stream, item);
+                stream.Seek(0, SeekOrigin.Begin);
+
+                return formatter.Deserialize(stream) as T;
+            }
         }
 
         private string GetCurrentDesignPath()
@@ -284,70 +512,26 @@ namespace EasyScada.Winforms.Connector
             }
         }
 
-        private async void btnReloadAll_Click(object sender, EventArgs e)
+        private void btnContextCollapseAllServer_Click(object sender, EventArgs e)
         {
-            btnTransfer.Enabled = false;
-            btnSave.Enabled = false;
-            ReloadLocalProjectTree();
-            await ReloadServerProjectTree();
+            serverProjectTree.ExpandAll();
         }
 
-        private async void btnContextRefreshServer_Click(object sender, EventArgs e)
+        private void btnContextExpandAllServer_Click(object sender, EventArgs e)
         {
-            btnTransfer.Enabled = false;
-            btnSave.Enabled = false;
-            await ReloadServerProjectTree();
-            RefreshProjectTreeView(serverProjectTree, serverConnector, true);
+            serverProjectTree.CollapseAll();
         }
 
-        private void btnContextRefreshLocal_Click(object sender, EventArgs e)
+        private void btnContextExpandAllProject_Click(object sender, EventArgs e)
         {
-            btnSave.Enabled = false;
-            ReloadLocalProjectTree();
-            RefreshProjectTreeView(localProjectTree, projectConnector);
+            localProjectTree.ExpandAll();
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private void btnContextCollapseAllProject_Click(object sender, EventArgs e)
         {
-            if (checkedConnector != null)
-            {
-                if (Directory.Exists(debugPath))
-                {
-                    File.WriteAllText($"{debugPath}\\TagFile.json", JsonConvert.SerializeObject(checkedConnector));
-                }
-                else
-                {
-                    MessageBox.Show($"The directory '{debugPath}' doesn't exist. Please build the project first!");
-                    return;
-                }
-
-                if (Directory.Exists(releasePath))
-                {
-                    File.WriteAllText($"{releasePath}\\TagFile.json", JsonConvert.SerializeObject(checkedConnector));
-                }
-                else
-                {
-                    MessageBox.Show($"The directory '{debugPath}' doesn't exist. Please build the project first!");
-                    return;
-                }
-                btnSave.Enabled = false;
-            }
+            localProjectTree.CollapseAll();
         }
 
-        private void btnTransfer_Click(object sender, EventArgs e)
-        {
-            btnSave.Enabled = true;
-            checkedConnector = new DriverConnector()
-            {
-                RefreshRate = serverConnector.RefreshRate,
-                CommunicationMode = serverConnector.CommunicationMode,
-                CreatedDate = DateTime.Now,
-                Port = serverConnector.Port,
-                ServerAddress = serverConnector.ServerAddress,
-                Stations = serverConnector.Stations,
-            };
-            projectConnector = checkedConnector;
-            RefreshProjectTreeView(localProjectTree, projectConnector);
-        }
+        #endregion
     }
 }

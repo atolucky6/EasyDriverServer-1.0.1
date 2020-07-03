@@ -1,6 +1,7 @@
 ﻿using EasyDriverPlugin;
 using EasyDriver.Server.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EasyScada.ServerApplication
 {
@@ -51,14 +52,17 @@ namespace EasyScada.ServerApplication
             return null;
         }
 
-        public void RemoveDriver(IChannelCore channel)
+        public async void RemoveDriver(IChannelCore channel)
         {
-            IEasyDriverPlugin driver = GetDriver(channel);
-            if (driver != null)
+            await Task.Run(() =>
             {
-                DriverPoll.Remove(channel);
-                driver.Dispose();
-            }
+                IEasyDriverPlugin driver = GetDriver(channel);
+                if (driver != null)
+                {
+                    DriverPoll.Remove(channel);
+                    driver.Dispose();
+                }
+            });
         }
 
         private IChannelCore GetChannel(ICoreItem item)

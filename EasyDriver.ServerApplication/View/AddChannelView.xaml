@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EasyScada.ServerApplication"
              mc:Ignorable="d" 
-             d:DesignHeight="120" d:DesignWidth="600" MinWidth="600"    
+             d:DesignHeight="170" d:DesignWidth="600" MinWidth="600"    
              DataContext="{local:ViewModelContainer local:AddChannelViewModel}"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
@@ -20,25 +20,34 @@
         <Grid>
             <dxdo:DockLayoutManager>
                 <dxdo:LayoutGroup Orientation="Vertical">
-                    <dxdo:LayoutGroup ItemHeight="Auto" Caption="" ShowCaption="False" GroupBorderStyle="NoBorder">
+                    <dxdo:LayoutGroup ItemHeight="Auto" 
+                                      Caption="Select the driver" ShowCaption="True" GroupBorderStyle="Group">
+                        <dxdo:LayoutGroup.CaptionTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="{StaticResource PinkBrush}"/>
+                            </DataTemplate>
+                        </dxdo:LayoutGroup.CaptionTemplate>
                         <dxdo:LayoutControlItem>
                             <dxlc:LayoutControl>
-                                <dxlc:LayoutGroup Orientation="Vertical" ItemLabelsAlignment="Local">
-                                    <dxlc:LayoutItem Label="Name" ElementSpace="10" AddColonToLabel="True">
+                                <dxlc:LayoutGroup Orientation="Vertical" ItemLabelsAlignment="Local" ItemSpace="8">
+                                    <dxlc:LayoutItem Label="Name" AddColonToLabel="True" Foreground="{StaticResource YellowBrush}">
                                         <dxe:TextEdit Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
                                     </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem Label="Driver" ElementSpace="10" AddColonToLabel="True">
-                                        <dxe:ButtonEdit Text="{Binding DriverPath, Mode=OneWay}" IsTextEditable="False" AllowDefaultButton="False">
-                                            <dxe:ButtonInfo ButtonKind="Simple" GlyphKind="Regular" Command="{Binding BrowseCommand}"/>
-                                        </dxe:ButtonEdit>
+                                    <dxlc:LayoutItem Label="Driver" AddColonToLabel="True" Foreground="{StaticResource YellowBrush}">
+                                        <dxe:ComboBoxEdit ItemsSource="{Binding DriverNameSource}" 
+                                                          SelectedItem="{Binding SelectedDriver, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                          AllowNullInput="False"
+                                                          NullText="Click here to select the driver"
+                                                          IsTextEditable="False">
+                                        </dxe:ComboBoxEdit>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutGroup Orientation="Horizontal" >
                                         <dxlc:LayoutGroup Orientation="Horizontal" HorizontalAlignment="Right" >
                                             <dxlc:LayoutItem Width="70">
-                                                <dx:SimpleButton Content="Ok" Command="{Binding SaveCommand}"/>
+                                                <dx:SimpleButton Content="Ok" Command="{Binding SaveCommand}" Foreground="{StaticResource GreenBrush}"/>
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Width="70">
-                                                <dx:SimpleButton Content="Cancel" Command="{Binding CloseCommand}"/>
+                                                <dx:SimpleButton Content="Cancel" Command="{Binding CloseCommand}" Foreground="{StaticResource RedBrush}"/>
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                     </dxlc:LayoutGroup>

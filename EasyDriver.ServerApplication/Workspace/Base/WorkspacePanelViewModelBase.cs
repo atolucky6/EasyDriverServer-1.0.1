@@ -6,15 +6,18 @@ namespace EasyScada.ServerApplication.Workspace
     {
         #region Constructors
 
-        public WorkspacePanelViewModelBase(object token)
+        public WorkspacePanelViewModelBase(object token, IWorkspaceManagerService workspaceManagerService)
         {
             Token = token;
             IsClosed = true;
+            WorkspaceManagerService = workspaceManagerService;
         }
 
         #endregion
 
         #region Public Members
+
+        protected IWorkspaceManagerService WorkspaceManagerService { get; set; }
 
         public virtual string Caption { get; set; }
         public virtual bool IsActive { get; set; }
@@ -48,11 +51,14 @@ namespace EasyScada.ServerApplication.Workspace
         public virtual void OnIsClosedChanged()
         {
             IsOpened = !IsClosed;
+            if (IsClosed && WorkspaceManagerService != null)
+                WorkspaceManagerService.CurrentActivePanel = null;
         }
 
         public virtual void OnIsActiveChanged()
         {
-
+            if (IsActive && WorkspaceManagerService != null)
+                WorkspaceManagerService.CurrentActivePanel = this;
         }
 
         public virtual void OnTokenChanged()

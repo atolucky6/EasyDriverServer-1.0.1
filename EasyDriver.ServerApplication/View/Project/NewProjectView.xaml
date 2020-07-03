@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EasyScada.ServerApplication"
              mc:Ignorable="d" 
-             d:DesignHeight="125" d:DesignWidth="600"
+             d:DesignHeight="130" d:DesignWidth="600"
 
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
@@ -23,24 +23,25 @@
                 <dxdo:LayoutGroup Orientation="Vertical">
                     <dxdo:LayoutControlItem>
                         <dxlc:LayoutControl Orientation="Vertical">
-                            <dxlc:LayoutItem Label="Name" ElementSpace="10" AddColonToLabel="True" >
+                            <dxlc:LayoutItem Label="Name" AddColonToLabel="True" Foreground="{StaticResource YellowBrush}">
                                 <dxe:TextEdit Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
                             </dxlc:LayoutItem>
-                            <dxlc:LayoutItem Label="Path" ElementSpace="10" AddColonToLabel="True">
-                                <dxe:ButtonEdit Text="{Binding Path, Mode=OneWay}" IsTextEditable="False" AllowDefaultButton="False">
+                            <dxlc:LayoutItem Label="Path" AddColonToLabel="True" Foreground="{StaticResource YellowBrush}">
+                                <dxe:ButtonEdit Text="{Binding Path, Mode=OneWay}" IsTextEditable="False" AllowDefaultButton="False"
+                                                Foreground="{StaticResource CyanBrush}">
                                     <dxe:ButtonInfo ButtonKind="Simple" GlyphKind="Regular" Command="{Binding BrowseCommand}"/>
                                 </dxe:ButtonEdit>
                             </dxlc:LayoutItem>
                             <dxlc:LayoutGroup Orientation="Horizontal" >
-                                <dxlc:LayoutItem HorizontalAlignment="Left">
+                                <dxlc:LayoutItem HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="{StaticResource CyanBrush}">
                                     <dxe:CheckEdit IsChecked="{Binding AllowSaveProjectPath, Mode=TwoWay}" Content="Remember path"/>
                                 </dxlc:LayoutItem>
                                 <dxlc:LayoutGroup Orientation="Horizontal" HorizontalAlignment="Right" >
                                     <dxlc:LayoutItem Width="70">
-                                        <dx:SimpleButton Content="Ok" Command="{Binding AcceptCommand}"/>
+                                        <dx:SimpleButton Content="Ok" Command="{Binding AcceptCommand}" Foreground="{StaticResource GreenBrush}"/>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem Width="70">
-                                        <dx:SimpleButton Content="Cancel" Command="{Binding CloseCommand}"/>
+                                        <dx:SimpleButton Content="Cancel" Command="{Binding CloseCommand}" Foreground="{StaticResource RedBrush}"/>
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
                             </dxlc:LayoutGroup>

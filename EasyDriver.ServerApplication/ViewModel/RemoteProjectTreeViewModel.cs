@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.IO;
 
 namespace EasyScada.ServerApplication
 {
@@ -22,19 +23,22 @@ namespace EasyScada.ServerApplication
         #region Constructors
 
         public RemoteProjectTreeViewModel(
-            IHubConnectionManagerService hubConnectionManagerService)
+            IHubConnectionManagerService hubConnectionManagerService,
+            IHubFactory hubFactory)
         {
             Title = "Easy Driver Server";
             SizeToContent = SizeToContent.Manual;
             Height = 600;
             Width = 400;
             HubConnectionManagerService = hubConnectionManagerService;
+            HubFactory = hubFactory;
         }
 
         #endregion
 
         #region Injected services
 
+        protected IHubFactory HubFactory { get; set; }
         protected IHubConnectionManagerService HubConnectionManagerService { get; set; }
 
         #endregion
@@ -44,6 +48,7 @@ namespace EasyScada.ServerApplication
         protected ICurrentWindowService CurrentWindowService { get => this.GetService<ICurrentWindowService>(); }
         protected ITreeListViewUtilities TreeListViewUtilities { get => this.GetService<ITreeListViewUtilities>(); }
         protected IMessageBoxService MessageBoxService { get => this.GetService<IMessageBoxService>(); }
+        protected ISaveFileDialogService SaveFileDialogService { get => this.GetService<ISaveFileDialogService>(); }
         protected IDispatcherService DispatcherService { get => this.GetService<IDispatcherService>(); }
 
         #endregion
@@ -59,10 +64,13 @@ namespace EasyScada.ServerApplication
         public object Parameter { get; set; }
         public virtual object SelectedItem { get; set; }
         public virtual ObservableCollection<object> SelectedItems { get; set; }
-        public HubConnection HubConnection { get; private set; }
-        public IHubProxy HubProxy { get; private set; }
         public HubModel HubModel { get; private set; }
+        public ConnectionSchema ConnectionSchema { get; private set; }
+        public bool IsCreateStationMode { get; private set; }
         public List<HubModel> Source { get; set; }
+
+        HubConnection hubConnection;
+        IHubProxy hubProxy;
 
         #endregion
 
@@ -75,12 +83,19 @@ namespace EasyScada.ServerApplication
             {
                 DispatcherService.BeginInvoke(async () =>
                 {
-                    if (HubConnection.State == ConnectionState.Disconnected)
-                        await HubConnection.Start(new LongPollingTransport());
-                    await Task.Delay(500);
-                    if (HubConnection.State == ConnectionState.Connected)
+                    if (hubConnection.State == ConnectionState.Disconnected)
                     {
-                        string resJson = await HubProxy.Invoke<string>("getAllStationsAsync");
+                        try
+                        {
+                            await hubConnection.Start();
+                        }
+                        catch { }
+                    }
+                    await Task.Delay(50);
+
+                    if (hubConnection.State == ConnectionState.Connected)
+                    {
+                        string resJson = await hubProxy.Invoke<string>("getAllStationsAsync");
                         List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(resJson);
                         HubModel.Stations = new List<Station>(stations);
                         Source = new List<HubModel>() { HubModel };
@@ -93,45 +108,66 @@ namespace EasyScada.ServerApplication
                     }
                 });
             }
-            catch (Exception ex)
-            {
-                IsBusy = false;
-            }
-        }
-
-        public bool CanRefresh()
-        {
-            return !IsBusy && HubConnection != null && HubProxy != null && HubModel != null;
-        }
-
-        public async void Comfirm()
-        {
-            IsBusy = true;
-            try
-            {
-                List<Station> checkedStations = GetCheckedStations(HubModel);
-                IsBusy = false;
-                string subscribeRes = await HubProxy.Invoke<string>("subscribe", JsonConvert.SerializeObject(checkedStations), HubModel.CommunicationMode);
-                if (subscribeRes == "Ok")
-                {
-                    Messenger.Default.Send(new CreateRemoteStationSuccess(checkedStations, HubConnection, HubProxy));
-                    CurrentWindowService.Close();
-                }
-                else
-                {
-                    MessageBoxService.ShowMessage($"Can't connect to server {HubModel.RemoteAddress}:{HubModel.Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
-                }
-            }
-            catch (Exception ex)
+            catch
             {
                 IsBusy = false;
                 MessageBoxService.ShowMessage($"Can't connect to server {HubModel.RemoteAddress}:{HubModel.Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
             }
         }
 
+        public bool CanRefresh()
+        {
+            return !IsBusy && HubModel != null;
+        }
+
+        public void Comfirm()
+        {
+            try
+            {
+                if (IsCreateStationMode)
+                {
+                    IsBusy = true;
+                    List<Station> checkedStations = GetCheckedStations(HubModel);
+                    Messenger.Default.Send(new CreateRemoteStationSuccessMessage(checkedStations, HubModel, hubConnection, hubProxy));
+                    CurrentWindowService.Close();
+                    IsBusy = false;
+                }
+                else
+                {
+                    SaveFileDialogService.Title = "Save Connection Schema";
+                    SaveFileDialogService.Filter = "Connection Schema File (*.json)|*.json";
+
+                    if (SaveFileDialogService.ShowDialog())
+                    {
+                        IsBusy = true;
+                        List<Station> checkedStations = GetCheckedStations(HubModel);
+                        ConnectionSchema.Stations = checkedStations;
+                        string savePath = SaveFileDialogService.File.GetFullName();
+                        string connectionSchemaJson = JsonConvert.SerializeObject(ConnectionSchema, Formatting.Indented);
+                        try
+                        {
+                            File.WriteAllText(savePath, connectionSchemaJson);
+                            MessageBoxService.ShowMessage("Create connection schema successfully!", "Easy Driver Server", MessageButton.OK, MessageIcon.Information);
+                            Messenger.Default.Send(new CreateConnectionSchemaSuccessMessage(ConnectionSchema, savePath));
+                            CurrentWindowService.Close();
+                            IsBusy = false;
+                        }
+                        catch
+                        {
+                            MessageBoxService.ShowMessage($"Can' create connection schema file at '{savePath}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+            finally { IsBusy = false; }
+        }
+
         public bool CanComfirm()
         {
-            return !IsBusy && HubConnection != null && HubProxy != null && HubModel != null;
+            return !IsBusy && HubModel != null;
         }
 
         public void ExpandAll()
@@ -166,27 +202,31 @@ namespace EasyScada.ServerApplication
                 {
                     IsBusy = true;
                     this.RaisePropertyChanged(x => x.IsBusy);
-                    if (Parameter != null)
+                    if (Parameter is object[] arrays)
                     {
-                        if (Parameter is ArrayList array)
+                        if (arrays[0] is HubModel)
                         {
-                            foreach (var item in array)
-                            {
-                                if (item is HubConnection hubConnection)
-                                    HubConnection = hubConnection;
-                                if (item is IHubProxy hubProxy)
-                                    HubProxy = hubProxy;
-                                if (item is HubModel hubModel)
-                                    HubModel = hubModel;
-                            }
-
-                            if (HubConnection != null && HubProxy != null && HubModel != null)
-                                Refresh();
+                            HubModel = arrays[0] as HubModel;
+                            IsCreateStationMode = true;
                         }
+                        else if (arrays[0] is ConnectionSchema)
+                        {
+                            ConnectionSchema = arrays[0] as ConnectionSchema;
+                            HubModel = new HubModel()
+                            {
+                                Port = ConnectionSchema.Port.ToString(),
+                                RemoteAddress = ConnectionSchema.ServerAddress,
+                                StationName = "Server Station"
+                            };
+                        }
+
+                        hubConnection = arrays[1] as HubConnection;
+                        hubProxy = arrays[2] as IHubProxy;
+                        Refresh();
                     }
                 });
             }
-            catch (Exception ex)
+            catch
             {
                 IsBusy = false;
             }
@@ -209,10 +249,13 @@ namespace EasyScada.ServerApplication
             {
                 foreach (var station in hubModel.Stations)
                 {
-                    Station checkedStation = station.DeepCopy();
-                    checkedStation.Channels = GetCheckedChannels(station);
-                    if (checkedStation.Channels.Count > 0)
-                        checkedStations.Add(checkedStation);
+                    if (station != null)
+                    {
+                        Station checkedStation = station.DeepCopy();
+                        checkedStation.Channels = GetCheckedChannels(station);
+                        if (checkedStation.Channels.Count > 0)
+                            checkedStations.Add(checkedStation);
+                    }
                 }
             }
             else
@@ -229,10 +272,13 @@ namespace EasyScada.ServerApplication
             {
                 foreach (var channel in station.Channels)
                 {
-                    Channel checkedChannel = channel.DeepCopy();
-                    checkedChannel.Devices = GetCheckedDevices(channel);
-                    if (checkedChannel.Devices.Count > 0)
-                        checkedChannels.Add(checkedChannel);
+                    if (channel != null)
+                    {
+                        Channel checkedChannel = channel.DeepCopy();
+                        checkedChannel.Devices = GetCheckedDevices(channel);
+                        if (checkedChannel.Devices.Count > 0)
+                            checkedChannels.Add(checkedChannel);
+                    }
                 }
             }
             else
@@ -249,10 +295,13 @@ namespace EasyScada.ServerApplication
             {
                 foreach (var device in channel.Devices)
                 {
-                    Device checkedDevice = device.DeepCopy();
-                    checkedDevice.Tags = GetCheckedTags(device);
-                    if (checkedDevice.Tags.Count > 0)
-                        checkedDevices.Add(checkedDevice);
+                    if (device != null)
+                    {
+                        Device checkedDevice = device.DeepCopy();
+                        checkedDevice.Tags = GetCheckedTags(device);
+                        if (checkedDevice.Tags.Count > 0)
+                            checkedDevices.Add(checkedDevice);
+                    }
                 }
             }
             else
@@ -269,8 +318,11 @@ namespace EasyScada.ServerApplication
             {
                 foreach (var tag in device.Tags.Where(x => x.Checked))
                 {
-                    Tag checkedTag = tag.DeepCopy();
-                    checkedTags.Add(checkedTag);
+                    if (tag != null)
+                    {
+                        Tag checkedTag = tag.DeepCopy();
+                        checkedTags.Add(checkedTag);
+                    }
                 }
             }
             else

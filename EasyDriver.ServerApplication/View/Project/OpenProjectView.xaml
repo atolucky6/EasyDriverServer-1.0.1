@@ -26,7 +26,12 @@
                 <dxdo:LayoutGroup Orientation="Vertical">
                     <dxdo:LayoutControlItem>
                         <dxlc:LayoutControl Orientation="Vertical">
-                            <dxlc:LayoutItem Label="Recents Project" ElementSpace="10" LabelPosition="Top" VerticalAlignment="Stretch">
+                            <dxlc:LayoutItem Label="Recents Project" ElementSpace="8" LabelPosition="Top" VerticalAlignment="Stretch" >
+                                <dxlc:LayoutItem.LabelTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" Foreground="{StaticResource PinkBrush}" FontWeight="Bold"/>
+                                    </DataTemplate>
+                                </dxlc:LayoutItem.LabelTemplate>
                                 <dxg:GridControl ItemsSource="{Binding RecentOpenProjects}"
                                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                                  SelectionMode="Row">
@@ -48,6 +53,7 @@
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
+                                   
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn Header="Project" FieldName="Name" Width="1*"/>
                                         <dxg:GridColumn Header="Path" FieldName="Path" Width="2*"/>
@@ -66,13 +72,13 @@
                             </dxlc:LayoutItem>
                             <dxlc:LayoutGroup Orientation="Horizontal" Margin="0 10 0 0">
                                 <dxlc:LayoutItem HorizontalAlignment="Left" Width="70">
-                                    <dx:SimpleButton Content="Browse" Command="{Binding BrowseCommand}"/>
+                                    <dx:SimpleButton Content="Browse" Command="{Binding BrowseCommand}" Foreground="{StaticResource OrganeBrush}"/>
                                 </dxlc:LayoutItem>
                                 <dxlc:LayoutItem HorizontalAlignment="Left" Width="70">
-                                    <dx:SimpleButton Content="Remove" Command="{Binding RemoveCommand}"/>
+                                    <dx:SimpleButton Content="Remove" Command="{Binding RemoveCommand}" Foreground="{StaticResource RedBrush}"/>
                                 </dxlc:LayoutItem>
                                 <dxlc:LayoutItem HorizontalAlignment="Right" Width="70">
-                                    <dx:SimpleButton Content="Open" Command="{Binding OpenCommand}"/>
+                                    <dx:SimpleButton Content="Open" Command="{Binding OpenCommand}" Foreground="{StaticResource GreenBrush}"/>
                                 </dxlc:LayoutItem>
                             </dxlc:LayoutGroup>
                         </dxlc:LayoutControl>

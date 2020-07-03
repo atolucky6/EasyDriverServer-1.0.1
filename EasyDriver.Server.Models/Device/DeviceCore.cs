@@ -68,13 +68,7 @@ namespace EasyDriver.Server.Models
         [JsonProperty("Tags")]
         List<ITag> IDevice.Tags
         {
-            get
-            {
-                List<ITag> result = Childs.Select(x => x as ITag)?.ToList();
-                if (result == null)
-                    result = new List<ITag>();
-                return result;
-            }
+            get { return Childs.Select(x => x as ITag)?.ToList(); }
         }
 
         public T GetItem<T>(string pathToObject) where T : class, IPath

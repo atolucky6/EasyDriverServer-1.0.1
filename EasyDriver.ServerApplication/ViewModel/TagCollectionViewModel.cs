@@ -1,9 +1,12 @@
-﻿using DevExpress.Mvvm;
+﻿using DevExpress.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using EasyDriverPlugin;
 using EasyScada.ServerApplication.Workspace;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 
 namespace EasyScada.ServerApplication
 {
@@ -14,21 +17,24 @@ namespace EasyScada.ServerApplication
         public TagCollectionViewModel(
             IWorkspaceManagerService workspaceManagerService, 
             IReverseService reverseService,
-            IDriverManagerService driverManagerService) : base(null)
+            IDriverManagerService driverManagerService,
+            IProjectManagerService projectManagerService) : base(null, workspaceManagerService)
         {
+            IsDocument = true;
             WorkspaceName = WorkspaceRegion.DocumentHost;
             WorkspaceManagerService = workspaceManagerService;
             ReverseService = reverseService;
             DriverManagerService = driverManagerService;
+            ProjectManagerService = projectManagerService;
         }
 
         #endregion
 
         #region Injected members
 
-        protected IWorkspaceManagerService WorkspaceManagerService { get; set; }
         protected IReverseService ReverseService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
+        protected IProjectManagerService ProjectManagerService { get; set; }
 
         #endregion
 
@@ -40,6 +46,7 @@ namespace EasyScada.ServerApplication
         protected IOpenFileDialogService OpenFileDialogService { get => this.GetService<IOpenFileDialogService>(); }
         protected IWindowService WindowService { get => this.GetService<IWindowService>(); }
         protected IContextWindowService ContextWindowService { get => this.GetService<IContextWindowService>(); }
+        protected ITableViewUtilities TableViewUtilities { get => this.GetService<ITableViewUtilities>(); }
 
         #endregion
 
@@ -54,6 +61,8 @@ namespace EasyScada.ServerApplication
         public virtual ObservableCollection<object> SelectedItems { get; set; }
 
         public virtual IDeviceCore Parent => Token as IDeviceCore;
+
+        public virtual ObservableCollection<object> ProjectChilds { get => ProjectManagerService?.CurrentProject?.Childs; }
 
         public MainViewModel MainViewModel => ParentViewModel as MainViewModel;
 
@@ -87,6 +96,10 @@ namespace EasyScada.ServerApplication
             IsBusy = false;
         }
 
+        public virtual void OnLoaded()
+        {
+        }
+
         #endregion
 
         #region Commands
@@ -108,7 +121,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanAdd()
         {
-            return !IsBusy;
+            return !IsBusy && !Parent.IsReadOnly;
         }
 
         public void InsertAbove()
@@ -120,8 +133,12 @@ namespace EasyScada.ServerApplication
             {
                 if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITagCore newTag)
                 {
-                    int selectedIndex = Parent.Childs.IndexOf(SelectedItem as ICoreItem);
-                    Parent.Childs.Move(Parent.Childs.Count - 1, selectedIndex);
+                    if (newTag != null)
+                    {
+                        int selectedIndex = Parent.Childs.IndexOf(SelectedItem);
+                        if (selectedIndex >= 0)
+                            Parent.Childs.Move(Parent.Childs.Count - 1, selectedIndex);
+                    }
                 }
             }
             IsBusy = false;
@@ -129,7 +146,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanInsertAbove()
         {
-            return !IsBusy && SelectedItem != null;
+            return !IsBusy && SelectedItem != null && !Parent.IsReadOnly;
         }
 
         public void InsertBelow()
@@ -141,11 +158,20 @@ namespace EasyScada.ServerApplication
             {
                 if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITagCore newTag)
                 {
-                    int selectedIndex = Parent.Childs.IndexOf(SelectedItem as ICoreItem);
-                    Parent.Childs.Move(Parent.Childs.Count - 1, selectedIndex + 1);
+                    if (newTag != null)
+                    {
+                        int selectedIndex = Parent.Childs.IndexOf(SelectedItem);
+                        if (selectedIndex >= 0)
+                            Parent.Childs.Move(Parent.Childs.Count - 1, selectedIndex + 1);
+                    }
                 }
             }
             IsBusy = false;
+        }
+
+        public bool CanInsertBelow()
+        {
+            return !IsBusy && SelectedItem != null && !Parent.IsReadOnly;
         }
 
         public void Edit()
@@ -163,12 +189,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanEdit()
         {
-            return !IsBusy && SelectedItem != null;
-        }
-
-        public bool CanInsertBelow()
-        {
-            return !IsBusy && SelectedItem != null;
+            return !IsBusy && SelectedItem != null && !Parent.IsReadOnly;
         }
 
         public void Export()
@@ -176,29 +197,24 @@ namespace EasyScada.ServerApplication
 
         }
 
+        public bool CanExport()
+        {
+            return !IsBusy && !Parent.IsReadOnly;
+        }
+
         public void Import()
         {
 
         }
 
-        public void ExpandAll()
+        public bool CanImport()
         {
-            TreeListViewUtilities.ExpandAll();
+            return !IsBusy && !Parent.IsReadOnly;
         }
 
-        public bool CanExpandAll()
+        public void ShowSearchPanel()
         {
-            return !IsBusy;
-        }
-
-        public void CollapseAll()
-        {
-            TreeListViewUtilities.CollapseAll();
-        }
-
-        public bool CanCollapseAll()
-        {
-            return !IsBusy;
+            TableViewUtilities.ShowSearchPanel();
         }
 
         #endregion
@@ -233,20 +249,47 @@ namespace EasyScada.ServerApplication
             return false;
         }
 
+        /// <summary>
+        /// Lệnh xóa các <see cref="ITagCore"/> được chọn trên Table
+        /// </summary>
         public void Delete()
         {
+            try
+            {
+                // Nếu như số lượng các TagCore được chọn lớn hơn 0 thì mới cho phép xóa
+                if (SelectedItems.Count > 0)
+                {
+                    // Hỏi người dùng có muốn xóa đối tượng đang chọn hay không
+                    var mbr = MessageBoxService.ShowMessage($"Do you want to delete all selected items and all object associated with it?",
+                        "Easy Driver Server",
+                        MessageButton.YesNo, MessageIcon.Question);
+
+                    // Nếu người dùng chọn 'Yes' thì thực hiện việc xóa đối tượng
+                    if (mbr == MessageResult.Yes)
+                    {
+                        // Khóa luồng làm việc của chương trình
+                        IsBusy = true;
+                        Parent.Childs.RemoveRange(SelectedItems);
+                    }
+                }
+            }
+            catch { }
+            // Mở luồng làm việc
+            finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="Delete"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanDelete()
         {
-            if (SelectedItems == null)
-                return false;
-            if (SelectedItems.Count == 0)
-                return false;
-            if (SelectedItems.FirstOrDefault(x => !(x as ICoreItem).IsReadOnly) != null)
-                return true;
-            return false;
+            return !IsBusy && SelectedItems != null && !Parent.IsReadOnly && SelectedItems.Count > 0;
         }
+
+        #endregion
+
+        #region Methods
 
         #endregion
     }

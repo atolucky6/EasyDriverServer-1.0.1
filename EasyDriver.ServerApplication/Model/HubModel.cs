@@ -10,7 +10,7 @@ namespace EasyScada.ServerApplication
         public string Port { get; set; }
         public string CommunicationMode { get; set; }
         public string StationName { get; set; }
-        public string Name => $"{StationName} - {RemoteAddress}:{Port}";
+        public string Name => $"{RemoteAddress}:{Port}";
         public bool Checked { get; set; }
         public List<Station> Stations { get; set; }
     }

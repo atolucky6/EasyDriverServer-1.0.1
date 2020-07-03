@@ -45,6 +45,7 @@ namespace EasyDriver.Client.Models
             return null;
         }
 
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
         public void RaisePropertyChanged([CallerMemberName]string propertyName = null)
         {

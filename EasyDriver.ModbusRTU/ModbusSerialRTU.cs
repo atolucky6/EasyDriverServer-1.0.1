@@ -669,7 +669,9 @@ namespace EasyDriver.ModbusRTU
 
         public void Dispose()
         {
+            SerialPort?.Close();
             SerialPort?.Dispose();
+            GC.SuppressFinalize(SerialPort);
         }
         #endregion
     }

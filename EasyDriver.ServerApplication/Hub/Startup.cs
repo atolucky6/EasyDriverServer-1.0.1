@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Cors;
 using Owin;
+using System.Net;
 
 namespace EasyScada.ServerApplication
 {
@@ -10,6 +11,9 @@ namespace EasyScada.ServerApplication
         {
             app.UseCors(CorsOptions.AllowAll);
             app.MapSignalR("/easyScada", new HubConfiguration());
+            GlobalHost.Configuration.DefaultMessageBufferSize = 100 * 1024;
+            GlobalHost.Configuration.MaxIncomingWebSocketMessageSize = 100 * 1024;
+            ServicePointManager.DefaultConnectionLimit = int.MaxValue;
         }
     }
 }

@@ -11,6 +11,9 @@ namespace EasyDriver.Client.Models
         string Unsubscribe();
         Task<string> UnsubscribeAsync();
 
+        string GetSubscribedData();
+        Task<string> GetSubscribedDataAsync();
+
         string GetStation(string pathToStation = "Local Station");
         Task<string> GetStationAsync(string pathToStation = "Local Station");
 

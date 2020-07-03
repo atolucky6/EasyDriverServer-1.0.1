@@ -34,6 +34,10 @@ namespace EasyDriver.Server.Models
 
         [Browsable(false)]
         [JsonIgnore]
+        public string DriverName { get { return System.IO.Path.GetFileNameWithoutExtension(DriverPath); } }
+
+        [Browsable(false)]
+        [JsonIgnore]
         public Indexer<IDeviceCore> Devices { get; }
 
         [JsonIgnore]
@@ -66,7 +70,7 @@ namespace EasyDriver.Server.Models
         string IPath.Path => Path;
 
         [JsonProperty("DriverName")]
-        string IChannel.DriverName => System.IO.Path.GetFileNameWithoutExtension(DriverPath);
+        string IChannel.DriverName => DriverName;
 
         [JsonProperty("ConnectionType")]
         ConnectionType IChannel.ConnectionType => ConnectionType;
@@ -83,13 +87,7 @@ namespace EasyDriver.Server.Models
         [JsonProperty("Devices")]
         List<IDevice> IChannel.Devices
         {
-            get
-            {
-                List<IDevice> result = Childs.Select(x => x as IDevice)?.ToList();
-                if (result == null)
-                    result = new List<IDevice>();
-                return result;
-            }
+            get { return Childs.Select(x => x as IDevice)?.ToList(); }
         }
 
         public T GetItem<T>(string pathToObject) where T : class, IPath

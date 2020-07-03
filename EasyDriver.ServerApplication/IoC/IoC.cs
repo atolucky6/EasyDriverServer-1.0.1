@@ -22,6 +22,7 @@ namespace EasyScada.ServerApplication
         public IList<Type> RegisteredTypes { get; private set; } = new List<Type>();
         public IProjectManagerService ProjectManagerService => Get<IProjectManagerService>();
         public IServerBroadcastService ServerBroadcastService => Get<IServerBroadcastService>();
+        public ApplicationViewModel ApplicationViewModel => Get<ApplicationViewModel>();
         public string Key { get; set; }
 
         #endregion
@@ -39,18 +40,21 @@ namespace EasyScada.ServerApplication
 
         public void Setup()
         {
-            Kernel.Bind<IHubFactory>().ToConstant(new HubFactory("EasyDriverServerHub"));
-            Kernel.Bind<IServerBroadcastService>().ToConstant(new ServerBroadcastService());
-            Kernel.Bind<IHubConnectionManagerService>().ToConstant(new HubConnectionManagerService());
-            Kernel.Bind<IDriverManagerService>().ToConstant(new DriverManagerService());
             Kernel.Bind<IProjectManagerService>().ToConstant(new ProjectManagerService());
-            Kernel.Bind<IReverseService>().ToConstant(new ReverseService());
             Kernel.Bind<IWorkspaceManagerService>().ToConstant(new WorkspaceManagerService((token) =>
             {
                 if (token is IDeviceCore)
                     return Kernel.GetPOCOViewModel<TagCollectionViewModel>();
                 return null;
             }));
+            Kernel.BindPOCOViewModel<ApplicationViewModel>().InSingletonScope();
+            var applicationViewModel = Kernel.Get<ApplicationViewModel>();
+            Kernel.Bind<IHubFactory>().ToConstant(new HubFactory("EasyDriverServerHub"));
+            Kernel.Bind<IHubConnectionManagerService>().ToConstant(new HubConnectionManagerService());
+            Kernel.Bind<IDriverManagerService>().ToConstant(new DriverManagerService());
+            Kernel.Bind<IReverseService>().ToConstant(new ReverseService());
+
+            Kernel.Bind<IServerBroadcastService>().ToConstant(new ServerBroadcastService(this.Get<IProjectManagerService>(), applicationViewModel));
         }
 
         public T Get<T>()

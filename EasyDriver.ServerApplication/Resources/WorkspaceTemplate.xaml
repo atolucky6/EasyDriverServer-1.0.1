@@ -19,20 +19,27 @@
             <Setter.Value>
                 <DataTemplate>
                     <TextBlock Text="{Binding}" 
-                               VerticalAlignment="Top" 
-                               TextAlignment="Justify" Margin="0" Padding="0"
-                               FontSize="11" FontWeight="Medium"/>
+                               VerticalAlignment="Top" Foreground="{StaticResource OrganeBrush}"
+                               TextAlignment="Justify" Margin="0" Padding="1"
+                               FontSize="12" FontWeight="Bold" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     <Style TargetType="{x:Type dxdo:DocumentPanel}" >
         <Setter Property="Caption" Value="{Binding Token.Name}"/>
-        <Setter Property="CaptionImage" Value="{Binding Glyph}"/>
+        <!--<Setter Property="CaptionImage" Value="{Binding Glyph}"/>-->
         <Setter Property="Closed" Value="{Binding IsClosed, Mode=TwoWay}"/>
         <Setter Property="IsActive" Value="{Binding IsActive, Mode=TwoWay}"/>
         <Setter Property="ShowTabCaptionImage" Value="True"/>
         <Setter Property="AutoHidden" Value="{Binding AutoHidden, Mode=TwoWay}"/>
+        <Setter Property="CaptionTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" FontWeight="Bold" Foreground="{StaticResource OrganeBrush}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <DataTemplate DataType="{x:Type local:ProjectTreeWorkspaceViewModel}">

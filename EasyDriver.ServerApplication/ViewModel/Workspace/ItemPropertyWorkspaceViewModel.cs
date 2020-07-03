@@ -13,14 +13,13 @@ namespace EasyScada.ServerApplication
     {
         #region Injected services
 
-        private readonly IWorkspaceManagerService WorkspaceManagerService;
         private readonly IReverseService ReverseService;
 
         #endregion
 
         #region Constructors
 
-        public ItemPropertiesWorkspaceViewModel(IWorkspaceManagerService workspaceManagerService, IReverseService reverseService) : base(null)
+        public ItemPropertiesWorkspaceViewModel(IWorkspaceManagerService workspaceManagerService, IReverseService reverseService) : base(null, workspaceManagerService)
         {
             WorkspaceName = WorkspaceRegion.Properties;
             WorkspaceManagerService = workspaceManagerService;
@@ -46,7 +45,6 @@ namespace EasyScada.ServerApplication
         public virtual object Context { get; set; }
 
         #endregion
-
 
         #region Message handler
 

@@ -45,6 +45,7 @@
     <Compile Include="Channel.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="Enums\AccessPermission.cs" />
+    <Compile Include="Enums\ConnectionStatus.cs" />
     <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Enums\WritePiority.cs" />
     <Compile Include="Interfaces\IChannel.cs" />
