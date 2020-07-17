@@ -1,5 +1,4 @@
-﻿using EasyDriver.Client.Models;
-using System;
+﻿using System;
 
 namespace EasyDriverPlugin
 {

@@ -1,19 +1,14 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using EasyDriverPlugin;
-using EasyDriver.Client.Models;
-using EasyDriver.Server.Models;
 using Microsoft.AspNet.SignalR.Client;
 using Microsoft.AspNet.SignalR.Client.Transports;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Threading;
-using Newtonsoft.Json;
 
 namespace EasyScada.ServerApplication
 {

@@ -8,7 +8,6 @@
              d:DesignHeight="260" d:DesignWidth="600"
              MinWidth="400"
              DataContext="{local:ViewModelContainer local:RemoteStationViewModel}"
-             xmlns:api="clr-namespace:EasyDriver.Client.Models;assembly=EasyDriver.Client.Models"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"

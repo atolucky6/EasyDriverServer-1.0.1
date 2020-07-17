@@ -5,8 +5,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using DevExpress.Xpf.Core;
-using EasyDriver.Server.Models;
-using EasyDriver.Client.Models;
+using EasyDriver.Core;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -26,7 +25,7 @@ namespace EasyDriver.ModbusRTU
 
         #region Constructors
 
-        public CreateTagView(IEasyDriverPlugin driver, IDeviceCore device)
+        public CreateTagView(IEasyDriverPlugin driver, IDeviceCore device, ITagCore templateItem)
         {
             Driver = driver;
             Device = device;
@@ -42,7 +41,23 @@ namespace EasyDriver.ModbusRTU
             cobDataType.DisplayMember = "Name";
             cobDataType.SelectedIndex = 0;
 
-            txbName.Text = device.GetUniqueNameInGroup("Tag1");
+            if (templateItem == null)
+            {
+                txbName.Text = device.GetUniqueNameInGroup("Tag1");
+                txbAddress.Text = "1";
+            }
+            else
+            {
+                txbName.Text = device.GetUniqueNameInGroup(templateItem.Name);
+                cobDataType.SelectedItem = DataTypeSource.FirstOrDefault(x => x.Name == templateItem.DataTypeName);
+                if (cobDataType.SelectedItem == null)
+                    cobDataType.SelectedItem = DataTypeSource.FirstOrDefault();
+                txbAddress.Text = templateItem.Address;
+                spnGain.EditValue = templateItem.Gain;
+                spnOffset.EditValue = templateItem.Offset;
+                spnRefreshRate.EditValue = templateItem.RefreshRate;
+                cobPermission.SelectedItem = templateItem.AccessPermission;
+            }
 
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
@@ -67,33 +82,13 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            bool isBitAddress = false;
+            string address = txbAddress.Text?.Trim();
             AccessPermission accessPermission = (AccessPermission)cobPermission.SelectedItem;
-            if (uint.TryParse(txbAddress.Text?.Trim(), out uint address))
+            string error = address.IsValidAddress(accessPermission, out bool isBitAddress);
+            if (!string.IsNullOrEmpty(error))
             {
-                if (address > 0 && address < 10000)
-                {
-                    isBitAddress = true;
-                }
-                else if (address > 10000 && address < 20000)
-                {
-                    isBitAddress = true;
-                    accessPermission = AccessPermission.ReadOnly;
-                }
-                else if (address > 30000 && address < 40000)
-                {
-                    isBitAddress = false;
-                    accessPermission = AccessPermission.ReadOnly;
-                }
-                else if (address > 40000 && address < 50000)
-                {
-                    isBitAddress = false;
-                }
-                else
-                {
-                    DXMessageBox.Show($"The tag address was not in correct format.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
+                DXMessageBox.Show(error, "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
             if (isBitAddress)
@@ -109,19 +104,53 @@ namespace EasyDriver.ModbusRTU
                 }
             }
 
-            ITagCore tag = new TagCore(Device);
-            tag.Name = txbName.Text?.Trim();
-            tag.AccessPermission = accessPermission;
-            tag.DataType = (IDataType)cobDataType.SelectedItem;
-            tag.Address = address.ToString();
-            tag.RefreshRate = (int)spnScanRate.Value;
-            tag.Gain = isBitAddress ? 1 : (double)spnGain.Value;
-            tag.Offset = isBitAddress ? 0 : (double)spnOffset.Value;
-            tag.ByteOrder = Device.ByteOrder;
-            tag.ParameterContainer.DisplayName = "Tag Parameters";
-            tag.ParameterContainer.DisplayParameters = "Tag Parameters";
-            Device.Add(tag);
-            ((Parent as FrameworkElement).Parent as Window).Tag = tag;
+            List<ITagCore> createTags = new List<ITagCore>();
+            string currentTagName = txbName.Text?.Trim();
+            uint number = currentTagName.ExtractLastNumberFromString(out bool hasValue, out bool hasBracket);
+            if (!hasValue)
+                number = 1;
+            string name = currentTagName.RemoveLastNumberFromString();
+            string nameFormat = "";
+
+            if (hasBracket)
+            {
+                name = name.Remove(name.Length - 2, 2);
+                nameFormat = name + "({0})";
+            }
+            else
+            {
+                nameFormat = name + "{0}";
+            }
+
+            uint adrNumber = uint.Parse(txbAddress.Text?.Trim());
+            
+            for (int i = 0; i < spnAutoCreateCount.Value; i++)
+            {
+                string adrString = adrNumber.ToString();
+
+                if (!string.IsNullOrEmpty(adrString.IsValidAddress()))
+                    break;
+
+                ITagCore tag = new TagCore(Device)
+                {
+                    Name = Device.GetUniqueNameInGroup(string.Format(nameFormat, number)),
+                    AccessPermission = accessPermission,
+                    DataType = (IDataType)cobDataType.SelectedItem,
+                    Address = adrString,
+                    RefreshRate = (int)spnRefreshRate.Value,
+                    Gain = (double)spnGain.Value,
+                    Offset = (double)spnOffset.Value,
+                    ByteOrder = Device.ByteOrder
+                };
+                tag.ParameterContainer.DisplayName = "Tag Parameters";
+                tag.ParameterContainer.DisplayParameters = "Tag Parameters";
+                currentTagName = tag.Name;
+                createTags.Add(tag);
+                number++;
+                adrNumber++;
+            }
+
+            ((Parent as FrameworkElement).Parent as Window).Tag = createTags;
             ((Parent as FrameworkElement).Parent as Window).Close();
         }
 

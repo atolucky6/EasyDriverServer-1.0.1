@@ -1,4 +1,4 @@
-﻿using EasyDriver.Client.Models;
+﻿using EasyDriverPlugin;
 using System;
 using System.Globalization;
 using System.Windows.Data;

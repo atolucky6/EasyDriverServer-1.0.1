@@ -1,12 +1,12 @@
-﻿using DevExpress.Data;
-using DevExpress.Mvvm;
+﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using EasyDriver.Core;
 using EasyDriverPlugin;
+using EasyScada.ServerApplication.Reversible;
 using EasyScada.ServerApplication.Workspace;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 
 namespace EasyScada.ServerApplication
 {
@@ -84,14 +84,15 @@ namespace EasyScada.ServerApplication
 
         public virtual void OpenOnDoubleClick(object item)
         {
-            if (IsBusy)
+            if (IsBusy && !Parent.IsReadOnly)
                 return;
 
             IsBusy = true;
             if (item is ITagCore tag)
             {
                 IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
-                ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}");
+                if (driver != null)
+                    ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}");
             }
             IsBusy = false;
         }
@@ -104,6 +105,16 @@ namespace EasyScada.ServerApplication
 
         #region Commands
 
+        public void WriteTag()
+        {
+            WindowService.Show("WriteTagView", SelectedItem as ITagCore, this);
+        }
+
+        public bool CanWriteTag()
+        {
+            return SelectedItem is ITagCore;
+        }
+
         public void Add()
         {
             IsBusy = true;
@@ -111,9 +122,23 @@ namespace EasyScada.ServerApplication
             IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
             if (driver != null)
             {
-                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITagCore newTag)
+                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is List<ITagCore> newTags)
                 {
-                    CurrentItem = SelectedItem = newTag;
+                    if (newTags.Count > 0)
+                    {
+                        using (Transaction transaction = ReverseService.Begin("Add Tag"))
+                        {
+                            Parent.Childs.AsReversibleCollection().AddRange(newTags.ToArray());
+                            this.SetPropertyReversible(x => x.SelectedItems, new ObservableCollection<object>(newTags));
+
+                            transaction.Reversing += (s, e) =>
+                            {
+                                WorkspaceManagerService.OpenPanel(this);
+                            };
+
+                            transaction.Commit();
+                        }
+                    }
                 }
             }
             IsBusy = false;
@@ -131,13 +156,34 @@ namespace EasyScada.ServerApplication
             IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
             if (driver != null)
             {
-                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITagCore newTag)
+                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is List<ITagCore> newTags)
                 {
-                    if (newTag != null)
+                    if (newTags.Count > 0)
                     {
                         int selectedIndex = Parent.Childs.IndexOf(SelectedItem);
-                        if (selectedIndex >= 0)
-                            Parent.Childs.Move(Parent.Childs.Count - 1, selectedIndex);
+                        if (selectedIndex > -1)
+                        {
+                            using (Transaction transaction = ReverseService.Begin("Insert Tag"))
+                            {
+                                Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, true);
+                                ReversibleCollection<object> reversibleCollection = Parent.Childs.AsReversibleCollection();
+                                for (int i = newTags.Count - 1; i <= 0; i--)
+                                {
+                                    reversibleCollection.Insert(selectedIndex, newTags[i]);
+                                }
+                                Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, false);
+                                Parent.Childs.NotifyResetCollection();
+                                transaction.Reversing += (s, e) =>
+                                {
+                                    WorkspaceManagerService.OpenPanel(this);
+                                };
+                                transaction.Reversed += (s, e) =>
+                                {
+                                    Parent.Childs.NotifyResetCollection();
+                                };
+                                transaction.Commit();
+                            }
+                        }
                     }
                 }
             }
@@ -156,13 +202,34 @@ namespace EasyScada.ServerApplication
             IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
             if (driver != null)
             {
-                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is ITagCore newTag)
+                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is List<ITagCore> newTags)
                 {
-                    if (newTag != null)
+                    int selectedIndex = Parent.Childs.IndexOf(SelectedItem);
+                    if (selectedIndex > -1)
                     {
-                        int selectedIndex = Parent.Childs.IndexOf(SelectedItem);
-                        if (selectedIndex >= 0)
-                            Parent.Childs.Move(Parent.Childs.Count - 1, selectedIndex + 1);
+                        if (selectedIndex > -1)
+                        {
+                            using (Transaction transaction = ReverseService.Begin("Insert Tag"))
+                            {
+                                Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, true);
+                                ReversibleCollection<object> reversibleCollection = Parent.Childs.AsReversibleCollection();
+                                for (int i = newTags.Count - 1; i <= 0; i--)
+                                {
+                                    reversibleCollection.Insert(selectedIndex + 1, newTags[i]);
+                                }
+                                Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, false);
+                                Parent.Childs.NotifyResetCollection();
+                                transaction.Reversing += (s, e) =>
+                                {
+                                    WorkspaceManagerService.OpenPanel(this);
+                                };
+                                transaction.Reversed += (s, e) =>
+                                {
+                                    Parent.Childs.NotifyResetCollection();
+                                };
+                                transaction.Commit();
+                            }
+                        }
                     }
                 }
             }
@@ -181,7 +248,48 @@ namespace EasyScada.ServerApplication
             if (SelectedItem is ITagCore tag)
             {
                 IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
-                ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}");
+                string oldName = tag.Name;
+                string oldAddress = tag.Address;
+                double oldGain = tag.Gain;
+                double oldOffset = tag.Offset;
+                IDataType oldDataType = tag.DataType;
+
+                int oldRefreshRate = tag.RefreshRate;
+                ByteOrder oldByteOrder = tag.ByteOrder;
+                AccessPermission oldAccessPermission = tag.AccessPermission;
+
+                if (ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}") is ITagCore tagCore)
+                {
+                    if (tagCore.HasChanges())
+                    {
+                        using (Transaction transaction = ReverseService.Begin("Edit Tag"))
+                        { 
+                            if (oldName != tagCore.Name)
+                                tagCore.AddPropertyChangedReversible(x => x.Name, oldName, tagCore.Name);
+                            if (oldAddress != tagCore.Address)
+                                tagCore.AddPropertyChangedReversible(x => x.Address, oldAddress, tagCore.Address);
+                            if (oldGain != tagCore.Gain)
+                                tagCore.AddPropertyChangedReversible(x => x.Gain, oldGain, tagCore.Gain);
+                            if (oldOffset != tagCore.Offset)
+                                tagCore.AddPropertyChangedReversible(x => x.Offset, oldOffset, tagCore.Offset);
+                            if (oldDataType.Name != tagCore.DataType.Name)
+                                tagCore.AddPropertyChangedReversible(x => x.DataType, oldDataType, tagCore.DataType);
+                            if (oldRefreshRate != tagCore.RefreshRate)
+                                tagCore.AddPropertyChangedReversible(x => x.RefreshRate, oldRefreshRate, tagCore.RefreshRate);
+                            if (oldByteOrder != tagCore.ByteOrder)
+                                tagCore.AddPropertyChangedReversible(x => x.ByteOrder, oldByteOrder, tagCore.ByteOrder);
+                            if (oldAccessPermission != tagCore.AccessPermission)
+                                tagCore.AddPropertyChangedReversible(x => x.AccessPermission, oldAccessPermission, tagCore.AccessPermission);
+
+                            transaction.Reversing += (s, e) =>
+                            {
+                                WorkspaceManagerService.OpenPanel(this);
+                            };
+
+                            transaction.Commit();
+                        }
+                    }
+                }
             }
 
             IsBusy = false;
@@ -223,29 +331,97 @@ namespace EasyScada.ServerApplication
 
         public void Copy()
         {
+            ClipboardManager.CopyToClipboard(SelectedItems.ToList(), this);
         }
 
         public bool CanCopy()
         {
+            if (IsBusy)
+                return false;
+            if (Parent != null && SelectedItems != null)
+                return !Parent.IsReadOnly && SelectedItems.Count > 0;
             return false;
         }
 
         public void Cut()
         {
+            ClipboardManager.CopyToClipboard(SelectedItems.ToList(), this);
+            Parent.Childs.RemoveRange(SelectedItems.ToArray());
         }
 
         public bool CanCut()
         {
+            if (IsBusy)
+                return false;
+            if (Parent != null && SelectedItems != null)
+                return !Parent.IsReadOnly && SelectedItems.Count > 0;
             return false;
         }
 
         public void Paste()
         {
+            try
+            {
+                IsBusy = true;
+                if (ClipboardManager.ContainData())
+                {
+                    if (ClipboardManager.ObjectToCopy is List<object> tagsToCopy)
+                    {
+                        IEasyDriverPlugin driver = DriverManagerService.GetDriver(Parent.Parent);
+                        IEnumerable<IDataType> dataTypesSource = driver.GetSupportDataTypes();
+                        using (Transaction transaction = ReverseService.Begin("Paste Tags"))
+                        {
 
+                            Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, true);
+                            ReversibleCollection<object> reversibleCollection = Parent.Childs.AsReversibleCollection();
+                            foreach (var item in tagsToCopy)
+                            {
+                                if (item is ITagCore tagCore)
+                                {
+                                    ITagCore newTag = new TagCore(Parent);
+                                    newTag.Name = Parent.GetUniqueNameInGroup(tagCore.Name);
+                                    newTag.Address = tagCore.Address;
+                                    newTag.Offset = tagCore.Offset;
+                                    newTag.Gain = tagCore.Gain;
+                                    newTag.ByteOrder = tagCore.ByteOrder;
+                                    newTag.RefreshRate = tagCore.RefreshRate;
+                                    newTag.AccessPermission = tagCore.AccessPermission;
+                                    newTag.Description = tagCore.Description;
+                                    newTag.ParameterContainer = tagCore.ParameterContainer.DeepCopy();
+                                    newTag.DataType = dataTypesSource.FirstOrDefault(x => x.Name == tagCore.DataType.Name);
+                                    reversibleCollection.Add(newTag);
+                                }
+                            }
+                            Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, false);
+                            Parent.Childs.NotifyResetCollection();
+                            transaction.Reversing += (s, e) =>
+                            {
+                                WorkspaceManagerService.OpenPanel(this);
+                                
+                            };
+                            transaction.Reversed += (s, e) =>
+                            {
+                                Parent.Childs.NotifyResetCollection();
+                            };
+
+                            transaction.Commit();
+                        }
+                    }
+                }
+            }
+            catch { }
+            finally { IsBusy = false; }
         }
 
         public bool CanPaste()
         {
+            if (IsBusy || !ClipboardManager.ContainData() || Parent.IsReadOnly)
+                return false;
+            if (ClipboardManager.Context is TagCollectionViewModel context)
+            {
+                if (context.Parent.Parent is IChannelCore contextChannel && Parent.Parent is IChannelCore currentChannel)
+                    return contextChannel.DriverPath == currentChannel.DriverPath;
+            }
             return false;
         }
 
@@ -269,7 +445,17 @@ namespace EasyScada.ServerApplication
                     {
                         // Khóa luồng làm việc của chương trình
                         IsBusy = true;
-                        Parent.Childs.RemoveRange(SelectedItems);
+                        using (Transaction transaction = ReverseService.Begin("Delete Tags"))
+                        {
+                            List<object> itemsToRemove = SelectedItems.ToList();
+                            Parent.Childs.AsReversibleCollection().RemoveRange(itemsToRemove);
+
+                            transaction.Reversing += (s, e) =>
+                            {
+                                WorkspaceManagerService.OpenPanel(this);
+                            };
+                            transaction.Commit();
+                        }
                     }
                 }
             }

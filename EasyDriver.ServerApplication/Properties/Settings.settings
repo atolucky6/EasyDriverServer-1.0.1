@@ -11,5 +11,8 @@
     <Setting Name="RecentOpenProjects" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="ApplicationThemeName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Office2016White</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

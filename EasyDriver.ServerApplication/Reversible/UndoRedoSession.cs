@@ -85,7 +85,7 @@ namespace EasyScada.ServerApplication.Reversible
                     count--;
                 }
                 if (!failed)
-                    OnReversed(ReverseDirection.Redo);
+                    OnReversed(ReverseDirection.Undo);
                 Current = currentTransaction;
             }
         }
@@ -108,7 +108,7 @@ namespace EasyScada.ServerApplication.Reversible
                     count--;
                 }
                 if (!failed)
-                    OnReversed(ReverseDirection.Undo);
+                    OnReversed(ReverseDirection.Redo);
                 Current = currentTransaction;
             }
         }

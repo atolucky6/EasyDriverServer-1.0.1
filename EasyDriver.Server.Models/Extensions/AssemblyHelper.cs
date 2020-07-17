@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace EasyDriver.Server.Models
+namespace EasyDriver.Core
 {
     public static class AssemblyHelper
     {

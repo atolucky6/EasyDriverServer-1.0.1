@@ -1,11 +1,10 @@
 ﻿using DevExpress.Mvvm;
-using DevExpress.Mvvm.POCO;
 using EasyDriverPlugin;
-using EasyDriver.Server.Models;
 using EasyScada.ServerApplication.Reversible;
 using EasyScada.ServerApplication.Workspace;
 using System;
 using System.Collections.Generic;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {

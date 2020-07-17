@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Xml.Serialization;
 using EasyScada.Winforms.Connector;
 using Newtonsoft.Json;
 
@@ -19,19 +18,23 @@ namespace EasyScada.Winforms.Designer
         {
             try
             {
-                string debugPath = GetCurrentDesignPath(context) + "\\Debug\\TagFile.json";
-                string releasePath = GetCurrentDesignPath(context) + "\\Release\\TagFile.json";
-                DriverConnector driverConnector = null;
+                string debugPath = GetCurrentDesignPath(context) + "\\Debug\\ConnectionSchema.json";
+                string releasePath = GetCurrentDesignPath(context) + "\\Release\\ConnectionSchema.json";
+                ConnectionSchema driverConnector = null;
                 if (File.Exists(debugPath))
                 {
                     string resJson = File.ReadAllText(debugPath);
-                    driverConnector = JsonConvert.DeserializeObject<DriverConnector>(resJson);
+                    driverConnector = JsonConvert.DeserializeObject<ConnectionSchema>(resJson);
 
                 }
                 else if (File.Exists(releasePath))
                 {
                     string resJson = File.ReadAllText(releasePath);
-                    driverConnector = JsonConvert.DeserializeObject<DriverConnector>(resJson);
+                    driverConnector = JsonConvert.DeserializeObject<ConnectionSchema>(resJson);
+                }
+                else
+                {
+                    MessageBox.Show("Could not found the connection schema file", "Easy Driver Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 if (driverConnector != null)

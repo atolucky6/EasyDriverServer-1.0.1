@@ -1,63 +1,36 @@
-﻿using EasyDriverPlugin;
-using EasyDriver.Server.Models;
-using System.Windows;
-
+﻿using System.Windows;
 
 namespace EasyScada.ServerApplication
 {
     public static class ClipboardManager
     {
         public static object Context { get; private set; }
-        public static string CurrentFormat { get; private set; } = string.Empty;
-        public static bool IsDevice { get; private set; }
-        public static string DeviceType { get; private set; }
-
-        public static T GetDataFromClipboard<T>()
-            where T : class
-        {
-            IDataObject dataObj = Clipboard.GetDataObject();
-            if (dataObj.GetDataPresent(CurrentFormat))
-            {
-                var retriveObj = dataObj.GetData(CurrentFormat);
-                return (T)retriveObj;
-            }
-            return null;
-        }
+        public static object ObjectToCopy { get; private set; }
 
         public static void CopyToClipboard(object objectToCopy, object context)
         {
             Clear();
-            IsDevice = objectToCopy is IDeviceCore;
-
-            //if (objectToCopy is IComponent component)
-            //    ModuleType = component.Owner.ModuleType;
-
             Context = context;
-            CurrentFormat = objectToCopy.GetType().FullName;
-
-            IDataObject dataObj = new DataObject();
-            dataObj.SetData(CurrentFormat, objectToCopy, false);
-            Clipboard.SetDataObject(dataObj, false);
+            ObjectToCopy = objectToCopy;
         }
 
-        public static bool ContainData<T>()
-        {
-            return Clipboard.ContainsData(typeof(T).FullName);
-        }
-
+        /// <summary>
+        /// Hảm kiểm tra xem trong clipboard có chứa data hay không
+        /// </summary>
+        /// <returns></returns>
         public static bool ContainData()
         {
-            if (string.IsNullOrEmpty(CurrentFormat))
-                return false;
-            return Clipboard.ContainsData(CurrentFormat);
+            return Context != null && ObjectToCopy != null;
         }
 
-
+        /// <summary>
+        /// Xóa tất cả thông tin có trong clipboard
+        /// </summary>
         public static void Clear()
         {
-         //   ModuleType = ModuleType.None;
             Clipboard.Clear();
+            ObjectToCopy = null;
+            Context = null;
         }
     }
-
 }

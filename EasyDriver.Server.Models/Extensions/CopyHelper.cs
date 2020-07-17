@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace EasyDriver.Server.Models
+namespace EasyDriver.Core
 {
     /// <summary>
     /// Lớp hỗ trợ việc copy đối tượng

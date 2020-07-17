@@ -1,5 +1,4 @@
 ﻿using EasyDriverPlugin;
-using EasyDriver.Client.Models;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using System;
@@ -9,6 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.AspNet.SignalR.Client.Transports;
+using System.IO;
+using System.Collections;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {
@@ -35,6 +37,7 @@ namespace EasyScada.ServerApplication
             {
                 if (!ConnectionDictonary.ContainsKey(stationCore) && stationCore != null)
                 {
+                    Thread.Sleep(100);
                     ConnectionDictonary[stationCore] = new RemoteStationConnection(stationCore, hubConnection, hubPorxy);
                 }
             });
@@ -81,11 +84,11 @@ namespace EasyScada.ServerApplication
         public ushort Port { get; private set; }
         public bool IsDisposed { get; private set; }
         public bool IsSubscribed { get; set; }
+        public HubConnection hubConnection;
+        public IHubProxy hubProxy;
 
         private Task requestTask;
-        private HubConnection hubConnection;
-        private IHubProxy hubProxy;
-
+        readonly Hashtable cache;
         readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
 
         #endregion
@@ -97,12 +100,12 @@ namespace EasyScada.ServerApplication
             StationCore = stationCore;
             RemoteAddress = StationCore.RemoteAddress;
             Port = StationCore.Port;
+            cache = new Hashtable();
             InitializeConnection(hubConnection, hubPorxy);
         }
 
         ~RemoteStationConnection()
         {
-            Dispose();
         }
 
         #endregion
@@ -135,18 +138,16 @@ namespace EasyScada.ServerApplication
                         {
                             try
                             {
-                                this.hubConnection.TransportConnectTimeout = TimeSpan.FromSeconds(1);
                                 this.hubConnection.StateChanged -= OnStateChanged;
                                 this.hubConnection.Closed -= OnDisconnected;
                                 this.hubConnection.ConnectionSlow -= OnConnectionSlow;
                                 if (this.hubConnection.State == ConnectionState.Connected)
                                     this.hubConnection.Stop();
                                 this.hubConnection?.Dispose();
-                                this.hubConnection = null;
-                                this.hubProxy = null;
                             }
                             catch { }
                         }
+
                         this.hubConnection = new HubConnection($"http://{RemoteAddress}:{Port}/easyScada");
                         this.hubConnection.StateChanged += OnStateChanged;
                         this.hubConnection.Closed += OnDisconnected;
@@ -166,8 +167,8 @@ namespace EasyScada.ServerApplication
         /// <returns></returns>
         private bool Subscribe()
         {
-            string subscribeDataJson = JsonConvert.SerializeObject(StationCore.Childs.Select(x => x as IStation));
-            List<Station> subscribeData = JsonConvert.DeserializeObject<List<Station>>(subscribeDataJson);
+            string subscribeDataJson = JsonConvert.SerializeObject(StationCore.Childs.Select(x => x as IStationClient));
+            List<StationClient> subscribeData = JsonConvert.DeserializeObject<List<StationClient>>(subscribeDataJson);
             if (subscribeData != null)
             {
                 foreach (var station in subscribeData)
@@ -187,14 +188,33 @@ namespace EasyScada.ServerApplication
         public void Dispose()
         {
             IsDisposed = true;
-            Task.Factory.StartNew(async () =>
+        }
+
+        public async Task<WriteResponse> WriteTagValue(WriteCommand writeCommand)
+        {
+            WriteResponse response = new WriteResponse();
+            response.WriteCommand = writeCommand;
+            if (hubConnection != null && hubConnection.State == ConnectionState.Connected)
             {
-                await semaphore.WaitAsync();
-                hubConnection?.Dispose();
-                requestTask?.Dispose();
-                semaphore.Release();
-                semaphore.Dispose();
-            });
+                try
+                {
+                    await semaphore.WaitAsync();
+                    response.SendTime = DateTime.Now;
+                    response = await hubProxy.Invoke<WriteResponse>("writeTagValueAsync", writeCommand);
+                    return response;
+                }
+                catch (Exception ex)
+                {
+                    response.Error = "Some error occur when send write command to remote station.";
+                    return response;
+                }
+                finally { semaphore.Release(); }
+            }
+            else
+            {
+                response.Error = "The connection state of remote station was disconnected";
+            }
+            return response;
         }
 
         #endregion
@@ -205,7 +225,6 @@ namespace EasyScada.ServerApplication
         {
 
         }
-
 
         /// <summary>
         /// The method handler when hub connection is closed
@@ -232,10 +251,21 @@ namespace EasyScada.ServerApplication
             {
                 // Delay a little bit before subscribe to server
                 Thread.Sleep(1000);
-                IsSubscribed = true;
+                IsSubscribed = false;
                 // Initialize the request task if it null
                 if (requestTask == null)
                     requestTask = Task.Factory.StartNew(RefreshData, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+            else if (stateChanged.NewState == ConnectionState.Disconnected && !IsDisposed)
+            {
+                if (StationCore != null)
+                {
+                    foreach (var item in StationCore.Find(x => x is ITagCore, true))
+                    {
+                        if (item is ITagCore tagCore)
+                            tagCore.Quality = Quality.Bad;
+                    }
+                }
             }
         }
 
@@ -256,11 +286,17 @@ namespace EasyScada.ServerApplication
                 try
                 {
                     // Re subscribe if needed
-                    if (IsSubscribed && hubConnection != null && hubConnection.State == ConnectionState.Connected)
+                    if (!IsSubscribed && hubConnection != null && hubConnection.State == ConnectionState.Connected)
                     {
                         bool resSub = Subscribe();
                         if (resSub)
-                            IsSubscribed = false;
+                        {
+                            IsSubscribed = true;
+                            foreach (var item in GetAllChildItems(StationCore))
+                            {
+                                cache.Add(item.Path.Remove(0, StationCore.Name.Length + 1), item);
+                            }
+                        }
                         delay = 100;
                     }
 
@@ -279,19 +315,27 @@ namespace EasyScada.ServerApplication
                                 if (getDataTask.IsCompleted)
                                 {
                                     string resJson = getDataTask.Result;
-                                    if (!string.IsNullOrWhiteSpace(resJson))
+
+                                    using (StringReader sr = new StringReader(resJson))
                                     {
-                                        List<Station> resStations = JsonConvert.DeserializeObject<List<Station>>(resJson);
-                                        // Update current station with subscribed data we just get
-                                        foreach (var item in StationCore.Childs)
+                                        JsonTextReader reader = new JsonTextReader(sr);
+
+                                        if (reader.Read())
                                         {
-                                            if (item is IStationCore)
+                                            if (reader.TokenType == JsonToken.StartArray)
                                             {
-                                                Station sourceStation = resStations?.FirstOrDefault(x => x.Path == (item as ICoreItem).Path.Remove(0, StationCore.Name.Length + 1));
-                                                UpdateStationCore(sourceStation, item as IStationCore, $"{StationCore.Name}/"); // Method to update 
+                                                while (reader.Read())
+                                                {
+                                                    if (reader.TokenType == JsonToken.EndArray)
+                                                        break;
+                                                    else if (reader.TokenType == JsonToken.StartObject)
+                                                        UpdateStationManual(reader);
+                                                }
                                             }
                                         }
                                     }
+
+                                    StationCore.LastRefreshTime = DateTime.Now;
                                 }
                             }
                             catch { }
@@ -309,6 +353,9 @@ namespace EasyScada.ServerApplication
                     Thread.Sleep(delay);
                 }
             }
+
+            hubConnection?.Dispose();
+            semaphore.Dispose();
         }
 
         #endregion
@@ -334,31 +381,23 @@ namespace EasyScada.ServerApplication
                         !IsDisposed &&
                         StationCore.CommunicationMode == CommunicationMode.ReceiveFromServer)
                     {
-                        List<IStationCore> stationCores = StationCore.Childs.Select(x => x as IStationCore).ToList();
-                        List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(stationsJson);
-
-                        //byte[] byteBuffer = Convert.FromBase64String(stationsJson);
-                        //List<Station> stations;
-                        //using (MemoryStream ms = new MemoryStream(byteBuffer))
-                        //{
-                        //    var formatter = new BinaryFormatter();
-                        //    stations = (List<Station>)formatter.Deserialize(ms);
-                        //}
-
-                        if (stations != null && stations.Count > 0)
+                        using (StringReader sr = new StringReader(stationsJson))
                         {
-                            foreach (var station in stations)
+                            JsonTextReader reader = new JsonTextReader(sr);
+
+                            if (reader.Read())
                             {
-                                if (stationCores.FirstOrDefault(x => x.Name == station.Name) is IStationCore innerStation)
+                                if (reader.TokenType == JsonToken.StartArray)
                                 {
-                                    UpdateStationCore(station, innerStation, $"{StationCore.Path}/");
-                                    stationCores.Remove(innerStation);
+                                    while (reader.Read())
+                                    {
+                                        if (reader.TokenType == JsonToken.EndArray)
+                                            break;
+                                        else if (reader.TokenType == JsonToken.StartObject)
+                                            UpdateStationManual(reader);
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            stationCores.ForEach(x => x.CommunicationError = "This station could not be found on server.");
                         }
 
                         StationCore.LastRefreshTime = DateTime.Now;
@@ -381,7 +420,160 @@ namespace EasyScada.ServerApplication
 
         #region Utils
 
-        private void UpdateStationCore(Station station, IStationCore stationCore, string startPath)
+        private void UpdateStationManual(JsonTextReader reader)
+        {
+            reader.Read(); // Read property p (Path)
+            reader.Read(); // Read value of p
+            if (cache[reader.Value] is IStationCore station)
+            {
+                reader.Read(); // Read property r (LastRefreshTime)
+                reader.Read(); // Read value of r
+                station.LastRefreshTime = Convert.ToDateTime(reader.Value);
+
+                reader.Read(); // Read property s (ConnectionStatus)
+                reader.Read(); // Read value of s
+                if (Enum.TryParse((string)reader.Value, out ConnectionStatus status))
+                    station.ConnectionStatus = status;
+
+                reader.Read(); // Read property e (CommunicationError)
+                reader.Read(); // Read value of e
+                station.CommunicationError = (string)reader.Value;
+
+                reader.Read(); // Read property channels 
+                reader.Read(); // Read start array
+                while (reader.Read()) // Read start array
+                {
+                    if (reader.TokenType == JsonToken.EndArray)
+                        break;
+                    else if (reader.TokenType == JsonToken.StartObject)
+                        UpdateChannelManual(reader);
+                }
+
+                reader.Read(); // Read property stations 
+                reader.Read(); // Read start array
+                while (reader.Read()) // Read start array
+                {
+                    if (reader.TokenType == JsonToken.EndArray)
+                        break;
+                    else if (reader.TokenType == JsonToken.StartObject)
+                        UpdateStationManual(reader);
+                }
+
+                reader.Read(); // Read end object;
+            }
+            else
+            {
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.EndObject)
+                        break;
+            }
+        }
+
+        private void UpdateChannelManual(JsonTextReader reader)
+        {
+            reader.Read(); // Read property p (Path)
+            reader.Read(); // Read value of p
+
+            if (cache[reader.Value] is IChannelCore channel)
+            {
+                reader.Read(); // Read property r (LastRefreshTime)
+                reader.Read(); // Read value of r
+                channel.LastRefreshTime = Convert.ToDateTime(reader.Value);
+
+                reader.Read(); // Read property e (CommunicationError)
+                reader.Read(); // Read value of e
+                channel.CommunicationError = (string)reader.Value;
+
+                reader.Read(); // Read property devices array
+                reader.Read(); // Read start array
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonToken.EndArray)
+                        break;
+                    else if (reader.TokenType == JsonToken.StartObject)
+                        UpdateDeviceManual(reader);
+                }
+
+                reader.Read(); // Read end object;
+            }
+            else
+            {
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.EndObject)
+                        break;
+            }
+        }
+
+        private void UpdateDeviceManual(JsonTextReader reader)
+        {
+            reader.Read(); // Read property p (Path)
+            reader.Read(); // Read value of p
+
+            if (cache[reader.Value] is IDeviceCore device)
+            {
+                reader.Read(); // Read property r (LastRefreshTime)
+                reader.Read(); // Read value of r
+                device.LastRefreshTime = Convert.ToDateTime(reader.Value);
+
+                reader.Read(); // Read property e (CommunicationError)
+                reader.Read(); // Read value of e
+                device.CommunicationError = (string)reader.Value;
+
+                reader.Read(); // Read property tags array
+                reader.Read(); // Read start array
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonToken.EndArray)
+                        break;
+                    else if (reader.TokenType == JsonToken.StartObject)
+                        UpdateTagManual(reader);
+                }
+                reader.Read(); // Read end object
+            }
+            else
+            {
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.EndObject)
+                        break;
+            }
+
+        }
+
+        private void UpdateTagManual(JsonTextReader reader)
+        {
+            reader.Read(); // Read property p (Path)
+            reader.Read(); // Read value of p
+
+            if (cache[reader.Value] is ITagCore tag)
+            {
+                reader.Read(); // Read property v (Value)
+                reader.Read(); // Read value of v
+                tag.Value = (string)reader.Value;
+
+                reader.Read(); // Read property q (Quality)
+                reader.Read(); // Read value of q
+                if (Enum.TryParse(reader.Value.ToString(), out Quality quality))
+                    tag.Quality = quality;
+
+                reader.Read(); // Read property t (TimeStamp)
+                reader.Read(); // Read value of t
+                tag.TimeStamp = Convert.ToDateTime(reader.Value);
+
+                reader.Read(); // Read property e (CommunicationError)
+                reader.Read(); // Read value of e
+                tag.CommunicationError = (string)reader.Value;
+
+                reader.Read(); // Read end object
+            }
+            else
+            {
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.EndObject)
+                        break;
+            }
+        }
+
+        private void UpdateStationCore(StationClient station, IStationCore stationCore, string startPath)
         {
             if (station != null && stationCore != null)
             {
@@ -433,7 +625,7 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void UpdateChannelCore(Channel channel, IChannelCore channelCore, string startPath)
+        private void UpdateChannelCore(ChannelClient channel, IChannelCore channelCore, string startPath)
         {
             if (channel != null && channelCore != null)
             {
@@ -458,7 +650,7 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void UpdateDeviceCore(Device device, IDeviceCore deviceCore, string startPath)
+        private void UpdateDeviceCore(DeviceClient device, IDeviceCore deviceCore, string startPath)
         {
             if (device != null && deviceCore != null)
             {
@@ -488,7 +680,7 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void UpdateTagCore(Tag tag, ITagCore tagCore, string startPath)
+        private void UpdateTagCore(TagClient tag, ITagCore tagCore, string startPath)
         {
             if (tag != null && tagCore != null)
             {
@@ -505,7 +697,7 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void RemoveFirstStationPath(Station station, int length)
+        private void RemoveFirstStationPath(StationClient station, int length)
         {
             if (station != null)
             {
@@ -524,14 +716,14 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void RemoveFirstStationPath(Channel channel, int length)
+        private void RemoveFirstStationPath(ChannelClient channel, int length)
         {
             if (channel != null)
             {
                 channel.Path = channel.Path.Remove(0, length);
                 if (channel.Devices != null)
                 {
-                    foreach (Device device in channel.Devices)
+                    foreach (DeviceClient device in channel.Devices)
                     {
                         RemoveFirstStationPath(device, length);
                     }
@@ -539,7 +731,7 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void RemoveFirstStationPath(Device device, int length)
+        private void RemoveFirstStationPath(DeviceClient device, int length)
         {
             if (device != null)
             {
@@ -554,10 +746,29 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void RemoveFirstStationPath(Tag tag, int length)
+        private void RemoveFirstStationPath(TagClient tag, int length)
         {
             if (tag != null)
                 tag.Path = tag.Path.Remove(0, length);
+        }
+
+        private IEnumerable<ICoreItem> GetAllChildItems(IGroupItem groupItem)
+        {
+            if (groupItem != null)
+            {
+                if (groupItem.Childs != null)
+                {
+                    foreach (var item in groupItem.Childs)
+                    {
+                        if (item is IGroupItem childGroup)
+                        {
+                            yield return item as IGroupItem;
+                            foreach (var child in GetAllChildItems(childGroup))
+                                yield return child as ICoreItem;
+                        }
+                    }
+                }
+            }
         }
 
         #endregion

@@ -22,7 +22,7 @@ namespace EasyDriverPlugin
         /// <returns></returns>
         public override string ConvertToValue(byte[] buffer, double gain, double offset, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD)
         {
-            return ByteHelper.GetLIntAt(buffer, pos).ToString();
+            return (ByteHelper.GetLIntAt(buffer, pos) * gain + offset).ToString();
         }
 
         /// <summary>
@@ -36,10 +36,14 @@ namespace EasyDriverPlugin
             buffer = new byte[RequireByteLength];
             if (value == null)
                 return false;
-            if (long.TryParse(value.ToString(), out long result))
+            if (double.TryParse(value.ToString(), out double dResult))
             {
-                ByteHelper.SetLIntAt(buffer, 0, result);
-                return true;
+                dResult = (dResult - offset) / gain;
+                if (long.TryParse(dResult.ToString(), out long result))
+                {
+                    ByteHelper.SetLIntAt(buffer, 0, result);
+                    return true;
+                }
             }
             return false;
         }

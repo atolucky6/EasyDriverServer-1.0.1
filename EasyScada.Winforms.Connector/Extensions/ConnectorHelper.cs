@@ -1,12 +1,11 @@
-﻿using EasyDriver.Client.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace EasyScada.Winforms.Connector
 {
     public static class ConnectorHelper
     {
-        public static IEnumerable<string> GetAllTagPath(this DriverConnector connector)
+        public static IEnumerable<string> GetAllTagPath(this ConnectionSchema connector)
         {
             IEnumerable<Tag> result = GetAllTag(connector)?.ToList();
             if (result == null)
@@ -14,7 +13,7 @@ namespace EasyScada.Winforms.Connector
             return result.Select(x => x.Path);
         }
 
-        public static IEnumerable<Tag> GetAllTag(this DriverConnector connector)
+        public static IEnumerable<Tag> GetAllTag(this ConnectionSchema connector)
         {
             if (connector != null && connector.Stations != null)
             {

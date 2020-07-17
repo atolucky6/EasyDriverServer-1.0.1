@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace EasyDriver.Server.Models
+namespace EasyDriver.Core
 {
     [Serializable]
     public abstract class CoreItemBase : BindableCore, ICoreItem

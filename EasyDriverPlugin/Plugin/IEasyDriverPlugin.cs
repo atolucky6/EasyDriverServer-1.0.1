@@ -1,5 +1,4 @@
-﻿using EasyDriver.Client.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace EasyDriverPlugin
@@ -9,15 +8,17 @@ namespace EasyDriverPlugin
         IChannelCore Channel { get; set; }
         bool Connect();
         bool Disconnect();
-        Quality WriteSingle(ITagCore tag, string value);
-        void WriteMulti(ITagCore[] tags, string[] values);
+        Quality Write(ITagCore tag, string value);
         IEnumerable<IDataType> GetSupportDataTypes();
 
-        object GetCreateChannelControl();
-        object GetCreateDeviceControl();
-        object GetCreateTagControl(IDeviceCore parent);
+        object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null);
+        object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null);
+        object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null);
         object GetEditChannelControl(IChannelCore channel);
         object GetEditDeviceControl(IDeviceCore device);
         object GetEditTagControl(ITagCore tag);
+
+        event EventHandler Disposed;
+        event EventHandler Refreshed;
     }
 }

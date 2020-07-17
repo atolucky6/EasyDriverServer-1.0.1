@@ -5,8 +5,6 @@ using System;
 using System.Linq;
 using System.Windows;
 using DevExpress.Xpf.Core;
-using EasyDriver.Server.Models;
-using EasyDriver.Client.Models;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -41,7 +39,6 @@ namespace EasyDriver.ModbusRTU
             DataTypeSource = driver.GetSupportDataTypes().ToList();
             cobDataType.ItemsSource = DataTypeSource;
             cobDataType.DisplayMember = "Name";
-            cobDataType.SelectedIndex = 0;
 
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
@@ -63,6 +60,12 @@ namespace EasyDriver.ModbusRTU
                 spnScanRate.EditValue = TagEdit.RefreshRate;
                 spnGain.EditValue = TagEdit.Gain;
                 spnOffset.EditValue = TagEdit.Offset;
+
+                int dtIndex = DataTypeSource.FindIndex(x => x.Name == TagEdit.DataType.Name);
+                if (dtIndex > -1)
+                {
+                    cobDataType.EditValue = DataTypeSource[dtIndex];
+                }
             }
         }
 
@@ -81,31 +84,24 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            bool isBitAddress = false;
+            string address = txbAddress.Text?.Trim();
             AccessPermission accessPermission = (AccessPermission)cobPermission.SelectedItem;
-            if (uint.TryParse(txbAddress.Text?.Trim(), out uint address))
+            string error = address.IsValidAddress(accessPermission, out bool isBitAddress);
+            if (!string.IsNullOrEmpty(error))
             {
-                if (address > 0 && address < 10000)
+                DXMessageBox.Show(error, "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (isBitAddress)
+            {
+                cobDataType.SelectedItem = DataTypeSource.FirstOrDefault(x => x.Name == "Bool");
+            }
+            else
+            {
+                if (cobDataType.SelectedItem == DataTypeSource.FirstOrDefault(x => x.Name == "Bool"))
                 {
-                    isBitAddress = true;
-                }
-                else if (address > 10000 && address < 20000)
-                {
-                    isBitAddress = true;
-                    accessPermission = AccessPermission.ReadOnly;
-                }
-                else if (address > 30000 && address < 40000)
-                {
-                    isBitAddress = false;
-                    accessPermission = AccessPermission.ReadOnly;
-                }
-                else if (address > 40000 && address < 50000)
-                {
-                    isBitAddress = false;
-                }
-                else
-                {
-                    DXMessageBox.Show($"The tag address was not in correct format.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    DXMessageBox.Show($"The current address doesn't support read and write Bool data type.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
@@ -128,8 +124,8 @@ namespace EasyDriver.ModbusRTU
             TagEdit.DataType = (IDataType)cobDataType.SelectedItem;
             TagEdit.Address = address.ToString();
             TagEdit.RefreshRate = (int)spnScanRate.Value;
-            TagEdit.Gain = isBitAddress ? 1 : (double)spnGain.Value;
-            TagEdit.Offset = isBitAddress ? 0 : (double)spnOffset.Value;
+            TagEdit.Gain = (double)spnGain.Value;
+            TagEdit.Offset = (double)spnOffset.Value;
             TagEdit.ByteOrder = Device.ByteOrder;
             TagEdit.ParameterContainer.DisplayName = "Tag Parameters";
             TagEdit.ParameterContainer.DisplayParameters = "Tag Parameters";

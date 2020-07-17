@@ -11,7 +11,7 @@ namespace EasyScada.Winforms.Designer
     /// </summary>
     /// <typeparam name="TControl"></typeparam>
     public class ControlDesignerAcionList<TControl> : DesignerActionList
-        where TControl : Control, ISupportConnector, ISupportTag
+        where TControl : Control
     {
         #region Members
 
@@ -51,19 +51,29 @@ namespace EasyScada.Winforms.Designer
             actionItems.Add(new DesignerActionPropertyItem("Dock", "Dock", DesignerCategory.LAYOUT, "Selects the dock style."));
             actionItems.Add(new DesignerActionPropertyItem("Size", "Size", DesignerCategory.LAYOUT, "Size of the control"));
 
+            if (BaseControl is ISupportScale)
+            {
+                //Scale category
+                actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.SCALE));
+                actionItems.Add(new DesignerActionPropertyItem("EnableScale", "Enable Scale", DesignerCategory.SCALE, ""));
+                actionItems.Add(new DesignerActionPropertyItem("Gain", "Gain", DesignerCategory.SCALE, ""));
+                actionItems.Add(new DesignerActionPropertyItem("Offset", "Offset", DesignerCategory.SCALE, ""));
+            }
+
+            AddExtendActionItems();
+
             //EasyScada category
             if (BaseControl is ISupportConnector)
             {
                 actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.EASYSCADA));
                 actionItems.Add(new DesignerActionPropertyItem("Connector", "Connector", DesignerCategory.EASYSCADA, "Select connector for Easy Scada control"));
             }
+
             if (BaseControl is ISupportTag)
             {
                 actionItems.Add(new DesignerActionPropertyItem("PathToTag", "Path To Tag", "", "Select path to tag for Easy Scada control"));
                 actionItems.Add(new DesignerActionMethodItem(this, "SelectTag", "Select tag...", DesignerCategory.EASYSCADA, "Click here to select tag", true));
             }
-
-            AddExtendActionItems();
 
             return actionItems;
         }
@@ -115,6 +125,58 @@ namespace EasyScada.Winforms.Designer
         {
             get { return BaseControl.Size; }
             set { BaseControl.SetValue(value); }
+        }
+
+        #endregion
+
+        #region Scale category properties
+
+        [Browsable(true), Category(DesignerCategory.SCALE)]
+        public virtual bool EnableScale
+        {
+            get
+            {
+                if (BaseControl is ISupportScale)
+                    return (BaseControl as ISupportScale).EnableScale;
+                return false;
+            }
+            set
+            {
+                if (BaseControl is ISupportScale)
+                    (BaseControl as ISupportScale).SetValue(value);
+            }
+        }
+
+        [Browsable(true), Category(DesignerCategory.SCALE)]
+        public virtual double Gain
+        {
+            get
+            {
+                if (BaseControl is ISupportScale)
+                    return (BaseControl as ISupportScale).Gain;
+                return 1;
+            }
+            set
+            {
+                if (BaseControl is ISupportScale)
+                    (BaseControl as ISupportScale).SetValue(value);
+            }
+        }
+
+        [Browsable(true), Category(DesignerCategory.SCALE)]
+        public virtual double Offset
+        {
+            get
+            {
+                if (BaseControl is ISupportScale)
+                    return (BaseControl as ISupportScale).Offset;
+                return 0;
+            }
+            set
+            {
+                if (BaseControl is ISupportScale)
+                    (BaseControl as ISupportScale).SetValue(value);
+            }
         }
 
         #endregion

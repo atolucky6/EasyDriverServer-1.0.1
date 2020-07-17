@@ -8,7 +8,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="400"
              DataContext="{local:ViewModelContainer local:RemoteProjectTreeViewModel}"
-             xmlns:api="clr-namespace:EasyDriver.Client.Models;assembly=EasyDriver.Client.Models"
              xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"  
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"

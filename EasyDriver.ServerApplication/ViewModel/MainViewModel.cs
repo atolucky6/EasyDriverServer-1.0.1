@@ -1,19 +1,11 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using EasyDriver.Client.Models;
-using EasyDriver.Server.Models;
+using EasyDriver.Core;
 using EasyScada.ServerApplication.Workspace;
-using Microsoft.AspNet.SignalR.Client;
-using Microsoft.AspNet.SignalR.Client.Transports;
-using Newtonsoft.Json;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -53,6 +45,7 @@ namespace EasyScada.ServerApplication
         protected IWorkspaceManagerService WorkspaceManagerService { get; set; }
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IReverseService ReverseService { get; set; }
+        protected ApplicationViewModel ApplicationViewModel { get; set; }
 
         #endregion
 
@@ -72,11 +65,13 @@ namespace EasyScada.ServerApplication
         public MainViewModel(
             IWorkspaceManagerService workspaceManagerService,
             IReverseService reverseService,
-            IProjectManagerService projectManagerService)
+            IProjectManagerService projectManagerService,
+            ApplicationViewModel applicationViewModel)
         {
             WorkspaceManagerService = workspaceManagerService;
             ReverseService = reverseService;
             ProjectManagerService = projectManagerService;
+            ApplicationViewModel = applicationViewModel;
         }
 
         #endregion
@@ -239,27 +234,25 @@ namespace EasyScada.ServerApplication
                     // Mở luồng làm việc của chương trình
                     IsBusy = false;
                 }
-                else
+
+                // Khởi tạo thông tin của SaveFileDialog
+                SaveFileDialogService.Title = "Save as...";
+                SaveFileDialogService.Filter = "Easy Scada Project (*.esprj)|*.esprj";
+                // Mở SaveDialog để lấy thông tin đường dẫn và tên của project mới
+                if (SaveFileDialogService.ShowDialog())
                 {
-                    // Khởi tạo thông tin của SaveFileDialog
-                    SaveFileDialogService.Title = "Save as...";
-                    SaveFileDialogService.Filter = "Easy Scada Project (*.esprj)|*.esprj";
-                    // Mở SaveDialog để lấy thông tin đường dẫn và tên của project mới
-                    if (SaveFileDialogService.ShowDialog())
-                    {
-                        // Khóa luồng làm việc của chương trình
-                        IsBusy = true;
-                        // Lấy đường dẫn của project mới
-                        string projectPath = SaveFileDialogService.File.GetFullName();
-                        // Thay đổi tên của chương trình hiện tại bằng tên của file đã nhập trên SaveDialog
-                        CurrentProject.Name = Path.GetFileNameWithoutExtension(projectPath);
-                        // Thay đổi đường dẫn của chương trình hiện tại bằng đường dẫn ta đã chọn trên SaveDialog
-                        CurrentProject.ProjectPath = projectPath;
-                        // Xóa lịch sử hoạt động của dịch vụ Reverse
-                        ReverseService.ClearHistory();
-                        // Lưu lại project
-                        await ProjectManagerService.SaveAsync(CurrentProject);
-                    }
+                    // Khóa luồng làm việc của chương trình
+                    IsBusy = true;
+                    // Lấy đường dẫn của project mới
+                    string projectPath = SaveFileDialogService.File.GetFullName();
+                    // Thay đổi tên của chương trình hiện tại bằng tên của file đã nhập trên SaveDialog
+                    CurrentProject.Name = Path.GetFileNameWithoutExtension(projectPath);
+                    // Thay đổi đường dẫn của chương trình hiện tại bằng đường dẫn ta đã chọn trên SaveDialog
+                    CurrentProject.ProjectPath = projectPath;
+                    // Xóa lịch sử hoạt động của dịch vụ Reverse
+                    ReverseService.ClearHistory();
+                    // Lưu lại project
+                    await ProjectManagerService.SaveAsync(CurrentProject);
                 }
             }
             catch (Exception ex)
@@ -286,6 +279,7 @@ namespace EasyScada.ServerApplication
         /// <returns></returns>
         public async Task Close()
         {
+            bool needClose = true;
             // Kiểm tra xem có project nào đang được mở hay không
             if (CurrentProject != null)
             {
@@ -305,9 +299,39 @@ namespace EasyScada.ServerApplication
                         await ProjectManagerService.SaveAsync(CurrentProject);
                         // Mở luồng làm việc
                         IsBusy = false;
+                        // Xác nhận là thoát chương trình
+                        ApplicationViewModel.IsMainWindowExit = true;
                         // Tắt chương trình 
                         DispatcherService.BeginInvoke(() => Application.Current.MainWindow.Close());
+                        return;
                     }
+                    // Nếu người dùng chọn 'No' thì đóng chương trình
+                    else if (mbr == MessageResult.No)
+                    {
+                        IsBusy = true;
+                        // Xác nhận là thoát chương trình
+                        ApplicationViewModel.IsMainWindowExit = true;
+                        // Tắt chương trình 
+                        DispatcherService.BeginInvoke(() => Application.Current.MainWindow.Close());
+                        IsBusy = false;
+                        return;
+                    }
+                    else
+                    {
+                        needClose = false;
+                    }
+                }
+            }
+
+            if (needClose)
+            {
+                var mbr = MessageBoxService.ShowMessage("Do you want to exit Easy Driver Server?", "Easy Driver Server", MessageButton.YesNo, MessageIcon.Question);
+                if (mbr == MessageResult.Yes)
+                {
+                    // Xác nhận là thoát chương trình
+                    ApplicationViewModel.IsMainWindowExit = true;
+                    // Tắt chương trình 
+                    DispatcherService.BeginInvoke(() => Application.Current.MainWindow.Close());
                 }
             }
         }
@@ -410,7 +434,13 @@ namespace EasyScada.ServerApplication
         /// </summary>
         public void Undo()
         {
-
+            try
+            {
+                IsBusy = true;
+                ReverseService.Undo();
+            }
+            catch { }
+            finally { IsBusy = false; }
         }
 
         /// <summary>
@@ -419,7 +449,7 @@ namespace EasyScada.ServerApplication
         /// <returns></returns>
         public bool CanUndo()
         {
-            return !IsBusy;
+            return !IsBusy && ReverseService.CanUndo();
         }
 
         /// <summary>
@@ -427,7 +457,13 @@ namespace EasyScada.ServerApplication
         /// </summary>
         public void Redo()
         {
-
+            try
+            {
+                IsBusy = true;
+                ReverseService.Redo();
+            }
+            catch { }
+            finally { IsBusy = false; }
         }
 
         /// <summary>
@@ -436,7 +472,7 @@ namespace EasyScada.ServerApplication
         /// <returns></returns>
         public bool CanRedo()
         {
-            return !IsBusy;
+            return !IsBusy && ReverseService.CanRedo();
         }
 
         /// <summary>

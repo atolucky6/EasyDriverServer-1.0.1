@@ -1,8 +1,7 @@
 ﻿using DevExpress.Xpf.Grid;
 using EasyDriverPlugin;
-using EasyDriver.Client.Models;
-using EasyDriver.Server.Models;
 using System.Collections;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {
@@ -18,16 +17,16 @@ namespace EasyScada.ServerApplication
                     return groupItem.Childs;
                 if (item is HubModel hubModel)
                     return hubModel.Stations;
-                if (item is Station station)
+                if (item is StationClient station)
                 {
                     if (station.IsLocalStation)
                         return station.Channels;
                     else
                         return station.RemoteStations;
                 }
-                if (item is Channel channel)
+                if (item is ChannelClient channel)
                     return channel.Devices;
-                if (item is Device device)
+                if (item is DeviceClient device)
                     return device.Tags;
             }
             return null;

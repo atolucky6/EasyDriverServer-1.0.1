@@ -223,7 +223,7 @@ namespace EasyScada.ServerApplication.Reversible
         {
             if (Index > 0)
             {
-                var reversingArgs = new ReversingEventArgs(ReverseDirection.Redo);
+                var reversingArgs = new ReversingEventArgs(ReverseDirection.Undo);
                 Reversing?.Invoke(this, reversingArgs);
                 if ((Reversing != null && !reversingArgs.Handled) || Reversing == null)
                 {
@@ -233,14 +233,14 @@ namespace EasyScada.ServerApplication.Reversible
                             return false;
                     }
                     Index = 0;
-                    OnReversed(ReverseDirection.Redo);
+                    OnReversed(ReverseDirection.Undo);
                     return true;
                 }               
                 return false;
             }
             else
             {
-                var reversingArgs = new ReversingEventArgs(ReverseDirection.Undo);
+                var reversingArgs = new ReversingEventArgs(ReverseDirection.Redo);
                 Reversing?.Invoke(this, reversingArgs);
                 if ((Reversing != null && !reversingArgs.Handled) || Reversing == null)
                 {
@@ -250,7 +250,7 @@ namespace EasyScada.ServerApplication.Reversible
                             return false;
                     }
                     Index = Changes.Count;
-                    OnReversed(ReverseDirection.Undo);
+                    OnReversed(ReverseDirection.Redo);
                     return true;
                 }
                 return false;

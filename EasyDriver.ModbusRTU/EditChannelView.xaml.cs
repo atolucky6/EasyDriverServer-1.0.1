@@ -1,6 +1,5 @@
 ﻿using DevExpress.Xpf.Core;
 using EasyDriverPlugin;
-using EasyDriver.Server.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,6 +85,8 @@ namespace EasyDriver.ModbusRTU
                 cobDataBits.SelectedItem = Channel.ParameterContainer.Parameters["DataBits"];
                 cobParity.SelectedItem = Channel.ParameterContainer.Parameters["Parity"];
                 cobStopBits.SelectedItem = Channel.ParameterContainer.Parameters["StopBits"];
+                spnDelayPool.EditValue = Channel.ParameterContainer.Parameters["DelayBetweenPool"];
+                spnScanRate.EditValue = Channel.ParameterContainer.Parameters["ScanRate"];
             }
         }
 
@@ -105,7 +106,7 @@ namespace EasyDriver.ModbusRTU
             }
 
             string currentPort = Driver.Channel.ParameterContainer.Parameters["Port"].ToString();
-            if (CheckPortNotIsInUse(cobPort.SelectedItem?.ToString()) || cobPort.SelectedItem?.ToString() == currentPort)
+            if (cobPort.SelectedItem?.ToString() == currentPort || CheckPortNotIsInUse(cobPort.SelectedItem?.ToString()))
             {
                 Channel.Name = txbName.Text?.Trim();
                 Driver.Channel.ParameterContainer.DisplayName = "ModbusRTU Comunication Parameters";
@@ -115,6 +116,8 @@ namespace EasyDriver.ModbusRTU
                 Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem;
                 Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem;
                 Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem;
+                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value;
+                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value;
 
                 ((Parent as FrameworkElement).Parent as Window).Tag = Channel;
                 ((Parent as FrameworkElement).Parent as Window).Close();

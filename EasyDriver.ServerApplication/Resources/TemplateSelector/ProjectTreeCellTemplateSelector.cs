@@ -1,8 +1,8 @@
 ﻿using DevExpress.Xpf.Grid;
 using EasyDriverPlugin;
-using EasyDriver.Client.Models;
 using System.Windows;
 using System.Windows.Controls;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {
@@ -28,17 +28,17 @@ namespace EasyScada.ServerApplication
                         return LocalStationTemplate;
                     return RemoteStationTemplate;
                 }
-                if (row is Station station)
+                if (row is StationClient station)
                 {
                     if (station.IsLocalStation)
                         return LocalStationTemplate;
                     return RemoteStationTemplate;
                 }
-                if (row is IChannelCore || row is Channel)
+                if (row is IChannelCore || row is ChannelClient)
                     return ChannelTemplate;
-                if (row is IDeviceCore || row is Device)
+                if (row is IDeviceCore || row is DeviceClient)
                     return DeviceTemplate;
-                if (row is Tag)
+                if (row is TagClient)
                     return TagTemplate;
                 if (row is HubModel)
                     return HubTemplate;

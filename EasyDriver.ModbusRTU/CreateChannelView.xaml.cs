@@ -19,6 +19,7 @@ namespace EasyDriver.ModbusRTU
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
+        public IGroupItem ParentChannel { get; set; }
 
         public List<string> ComPortSource { get; set; }
         public List<int> BaudRateSource { get; set; }
@@ -30,9 +31,10 @@ namespace EasyDriver.ModbusRTU
 
         #region Constructors
 
-        public CreateChannelView(IEasyDriverPlugin driver) 
+        public CreateChannelView(IEasyDriverPlugin driver, IGroupItem parent, IChannelCore templateItem) 
         {
             Driver = driver;
+            ParentChannel = parent;
 
             InitializeComponent();
 
@@ -66,6 +68,24 @@ namespace EasyDriver.ModbusRTU
             cobStopBits.ItemsSource = StopBitsSource;
             cobStopBits.SelectedItem = StopBits.One;
 
+            if (templateItem != null)
+            {
+                if (templateItem.ParameterContainer.Parameters.ContainsKey("Port"))
+                    cobPort.SelectedItem = templateItem.ParameterContainer.Parameters["Port"];
+                if (templateItem.ParameterContainer.Parameters.ContainsKey("Baudrate"))
+                    cobBaudrate.SelectedItem = templateItem.ParameterContainer.Parameters["Baudrate"];
+                if (templateItem.ParameterContainer.Parameters.ContainsKey("Parity"))
+                    cobParity.SelectedItem = templateItem.ParameterContainer.Parameters["Parity"];
+                if (templateItem.ParameterContainer.Parameters.ContainsKey("DataBits"))
+                    cobDataBits.SelectedItem = templateItem.ParameterContainer.Parameters["DataBits"];
+                if (templateItem.ParameterContainer.Parameters.ContainsKey("StopBits"))
+                    cobStopBits.SelectedItem = templateItem.ParameterContainer.Parameters["StopBits"];
+                if (templateItem.ParameterContainer.Parameters.ContainsKey("ScanRate"))
+                    spnScanRate.EditValue = templateItem.ParameterContainer.Parameters["ScanRate"];
+                if (templateItem.ParameterContainer.Parameters.ContainsKey("DelayBetweenPool"))
+                    spnDelayPool.EditValue = templateItem.ParameterContainer.Parameters["DelayBetweenPool"];
+            }
+
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
         }
@@ -83,7 +103,8 @@ namespace EasyDriver.ModbusRTU
                 Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem;
                 Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem;
                 Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["RefreshRate"] = spnRefreshRate.Value;
+                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value;
+                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value;
 
                 Driver.Connect();
                 ((Parent as FrameworkElement).Parent as Window).Tag = Driver.Channel;
@@ -118,6 +139,17 @@ namespace EasyDriver.ModbusRTU
             }
             catch (IOException)
             {
+                foreach (var item in ParentChannel.Childs)
+                {
+                    if (item is ISupportParameters supportParameters)
+                    {
+                        foreach (var kvp in supportParameters.ParameterContainer.Parameters)
+                        {
+                            if (kvp.Value?.ToString() == cobPort.SelectedItem.ToString())
+                                return false;
+                        }
+                    }
+                }
                 return true;
             }
         }

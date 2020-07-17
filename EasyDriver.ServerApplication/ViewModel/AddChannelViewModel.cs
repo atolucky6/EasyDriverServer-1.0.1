@@ -1,13 +1,12 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using EasyDriverPlugin;
-using EasyDriver.Server.Models;
 using System;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {
@@ -94,7 +93,7 @@ namespace EasyScada.ServerApplication
                     {
                         CurrentWindowService.Hide();
                         driver.Channel = channel;
-                        if (ContextWindowService.Show(driver.GetCreateChannelControl(), "Add Channel") == channel)
+                        if (ContextWindowService.Show(driver.GetCreateChannelControl(ProjectManagerService.CurrentProject.Childs[0] as LocalStation), "Add Channel") == channel)
                         {
                             Parent.Add(channel);
                             DriverManagerService.AddDriver(channel, driver);

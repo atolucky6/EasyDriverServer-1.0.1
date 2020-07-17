@@ -1,12 +1,9 @@
-﻿using DevExpress.Mvvm.UI.Interactivity;
-using DevExpress.Xpf.Controls;
-using EasyDriver.Server.Models;
-using System.Drawing;
-using System.Windows;
+﻿using DevExpress.Xpf.Controls;
 using System.Windows.Media;
 using System.Windows.Data;
 using System;
 using System.Globalization;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {

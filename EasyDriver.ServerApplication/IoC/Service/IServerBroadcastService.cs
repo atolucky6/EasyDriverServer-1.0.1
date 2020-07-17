@@ -1,4 +1,4 @@
-﻿using EasyDriver.Client.Models;
+﻿using EasyDriver.Core;
 using EasyDriverPlugin;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,75 +15,118 @@ namespace EasyScada.ServerApplication
 {
     public interface IServerBroadcastService
     {
+        BroadcastMode BroadcastMode { get; set; }
+        int BroadcastRate { get; set; }
         IHubConnectionContext<dynamic> Clients { get; }
         List<BroadcastEndpoint> BroadcastEndpoints { get; }
-        void AddEndpoint(string connectionId, List<Station> subscribeData, CommunicationMode communicationMode, int refreshRate);
+        void AddEndpoint(string connectionId, List<StationClient> subscribeData, CommunicationMode communicationMode, int refreshRate);
         void RemoveEndpoint(string connectionId);
         long BroadcastExecuteInterval { get; }
     }
 
-    public class ServerBroadcastService : IServerBroadcastService
+    public class ServerBroadcastService : IServerBroadcastService, IDisposable
     {
         #region Members
 
-        readonly Timer broadcastTimer;
         readonly Stopwatch stopwatch;
         readonly IProjectManagerService projectManagerService;
         readonly ApplicationViewModel applicationViewModel;
         readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+        readonly Task broadcastTask;
 
         public IHubConnectionContext<dynamic> Clients { get; private set; }
 
         public List<BroadcastEndpoint> BroadcastEndpoints { get; private set; }
 
+        public bool IsDisposed { get; protected set; }
+
         public long BroadcastExecuteInterval { get; private set; }
+
+        public BroadcastMode BroadcastMode { get; set; }
+        public int BroadcastRate { get; set; }
 
         #endregion
 
         #region Constructors
 
-        public ServerBroadcastService(IProjectManagerService projectManagerService, ApplicationViewModel applicationViewModel)
+        public ServerBroadcastService(
+            IProjectManagerService projectManagerService, 
+            ApplicationViewModel applicationViewModel,
+            BroadcastMode broadcastMode,
+            int broadcastRate)
         {
+            BroadcastMode = broadcastMode;
+            BroadcastRate = broadcastRate;
             this.projectManagerService = projectManagerService;
             this.applicationViewModel = applicationViewModel;
             Clients = GlobalHost.ConnectionManager.GetHubContext<EasyDriverServerHub>().Clients;
             BroadcastEndpoints = new List<BroadcastEndpoint>();
             stopwatch = new Stopwatch();
-            broadcastTimer = new Timer(new TimerCallback(BroadcastCallback), Clients, 1000, applicationViewModel.ServerConfiguration.BroadcastRate);
+            broadcastTask = Task.Factory.StartNew(BroadcastToClients, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         #endregion
 
         #region Methods
 
-        private void BroadcastCallback(object state)
+        private void BroadcastToClients()
         {
-            stopwatch.Restart();
-            broadcastTimer.Change(Timeout.Infinite, Timeout.Infinite);
-            try
+            while (!IsDisposed)
             {
-                semaphore.Wait();
+                stopwatch.Restart();
+                try
+                {
+                    semaphore.Wait();
 
-                //string broadcastMessage = GetAllStationsJson();
-                //if (!string.IsNullOrEmpty(broadcastMessage))
-                //    Clients.All.broadcastSubscribeData(broadcastMessage);
-
-                foreach (var endpoint in BroadcastEndpoints)
-                    endpoint.Send();
-            }
-            catch { }
-            finally
-            {
-                stopwatch.Stop();
-                BroadcastExecuteInterval = stopwatch.ElapsedMilliseconds;
-                long delay = applicationViewModel.ServerConfiguration.BroadcastRate - stopwatch.ElapsedMilliseconds;
-                semaphore.Release();
-                Debug.WriteLine(BroadcastExecuteInterval);
-                broadcastTimer.Change(delay < 0 ? 10 : delay, 1000);
+                    if (projectManagerService.CurrentProject != null && BroadcastEndpoints.Count > 0)
+                    {
+                        switch (BroadcastMode)
+                        {
+                            case BroadcastMode.SendAskedData:
+                                foreach (var endpoint in BroadcastEndpoints)
+                                    endpoint.Send();
+                                break;
+                            case BroadcastMode.SendAllData:
+                                using (StringWriter sw = new StringWriter())
+                                {
+                                    JsonTextWriter writer = new JsonTextWriter(sw);
+                                    writer.WriteStartArray();
+                                    foreach (var item in projectManagerService.CurrentProject.Childs)
+                                    {
+                                        if (item is IStationCore station)
+                                            writer.WriteStationCoreJson(station);
+                                    }
+                                    writer.WriteEndArray();
+                                    List<string> receivedClients = new List<string>(BroadcastEndpoints.Select(x => x.ConnectionId));
+                                    Clients.Clients(receivedClients).broadcastSubscribeData(sw.ToString());
+                                    writer.Close();
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                catch { }
+                finally
+                {
+                    stopwatch.Stop();
+                    BroadcastExecuteInterval = stopwatch.ElapsedMilliseconds;
+                    long delay = BroadcastRate - stopwatch.ElapsedMilliseconds;
+                    if (projectManagerService.CurrentProject == null)
+                        delay = 100;
+                    semaphore.Release();
+                    Thread.Sleep((int)(delay < 0 ? 100 : delay));
+                }
             }
         }
 
-        public void AddEndpoint(string connectionId, List<Station> subscribeData, CommunicationMode communicationMode, int refreshRate)
+        private void BroadcastCallback(object state)
+        {
+            IsDisposed = true;
+        }
+
+        public void AddEndpoint(string connectionId, List<StationClient> subscribeData, CommunicationMode communicationMode, int refreshRate)
         {
             semaphore.Wait();
             try
@@ -128,7 +172,7 @@ namespace EasyScada.ServerApplication
         {
             if (IoC.Instance.ProjectManagerService.CurrentProject != null)
             {
-                var result = IoC.Instance.ProjectManagerService.CurrentProject.Childs?.Select(x => x as IStation)?.ToList();
+                var result = IoC.Instance.ProjectManagerService.CurrentProject.Childs?.Select(x => x as IStationClient)?.ToList();
                 return JsonConvert.SerializeObject(result);
             }
             return null;
@@ -139,9 +183,18 @@ namespace EasyScada.ServerApplication
             return await Task.Run(() => GetAllStationsJson());
         }
 
-        private async Task<List<Station>> GetListStationsAsync()
+        private async Task<List<StationClient>> GetListStationsAsync()
         {
-            return await Task.Run(() => JsonConvert.DeserializeObject<List<Station>>(GetAllStationsJson()));
+            return await Task.Run(() => JsonConvert.DeserializeObject<List<StationClient>>(GetAllStationsJson()));
+        }
+
+        public void Dispose()
+        {
+            IsDisposed = true;
+            semaphore.Wait();
+            broadcastTask?.Dispose();
+            semaphore.Release();
+            semaphore.Dispose();
         }
 
         #endregion
@@ -149,7 +202,7 @@ namespace EasyScada.ServerApplication
 
     public class BroadcastEndpoint
     {
-        public List<Station> SubscribeData { get; set; }
+        public List<StationClient> SubscribeData { get; set; }
         public CommunicationMode CommunicationMode { get; set; }
         public DateTime LastBroadcastTime { get; set; }
         public int RereshRate { get; set; }
@@ -197,29 +250,33 @@ namespace EasyScada.ServerApplication
 
         public string GetBroadcastResponse()
         {
-            string broadcastData = string.Empty;
-            if (ProjectManagerService.CurrentProject != null)
+            using (StringWriter sw = new StringWriter())
             {
+                JsonTextWriter writer = new JsonTextWriter(sw);
+                writer.WriteStartArray();
 
-                if (SubscribeData != null && SubscribeData.Count > 0)
+                if (ProjectManagerService.CurrentProject != null)
                 {
-                    foreach (var station in SubscribeData)
+                    if (SubscribeData != null && SubscribeData.Count > 0)
                     {
-                        if (station != null)
+                        foreach (var station in SubscribeData)
                         {
-                            IStationCore stationCore = ProjectManagerService.CurrentProject.FirstOrDefault(x => x.Path == station.Path) as IStationCore;
-                            UpdateStation(station, stationCore);
+                            if (station != null)
+                            {
+                                IStationCore stationCore = ProjectManagerService.CurrentProject.FirstOrDefault(x => x.Path == station.Path) as IStationCore;
+                                UpdateStation(station, stationCore);
+                            }
                         }
+                        foreach (var item in SubscribeData)
+                            JsonUtils.WriteStationClientJson(writer, item);
                     }
-
-                    broadcastData = JsonConvert.SerializeObject(SubscribeData);
                 }
+                writer.WriteEndArray();
+                return sw.ToString();
             }
-
-            return broadcastData;
         }
 
-        public void Update(CommunicationMode communicationMode, int refreshRate, List<Station> subscribeData)
+        public void Update(CommunicationMode communicationMode, int refreshRate, List<StationClient> subscribeData)
         {
             semaphore.Wait();
             CommunicationMode = communicationMode;
@@ -228,7 +285,7 @@ namespace EasyScada.ServerApplication
             semaphore.Release();
         }
 
-        private void UpdateStation(Station station, IStationCore stationCore)
+        private void UpdateStation(StationClient station, IStationCore stationCore)
         {
             if (stationCore != null)
             {
@@ -239,10 +296,11 @@ namespace EasyScada.ServerApplication
                 station.Port = stationCore.Port;
                 station.Parameters = stationCore.ParameterContainer.Parameters;
                 station.LastRefreshTime = stationCore.LastRefreshTime;
+                station.ConnectionStatus = stationCore.ConnectionStatus;
 
                 if (station.RemoteStations != null && station.RemoteStations.Count > 0)
                 {
-                    foreach (Station remoteStation in station.RemoteStations)
+                    foreach (StationClient remoteStation in station.RemoteStations)
                     {
                         if (remoteStation != null)
                         {
@@ -254,7 +312,7 @@ namespace EasyScada.ServerApplication
 
                 if (station.Channels != null && station.Channels.Count > 0)
                 {
-                    foreach (Channel channel in station.Channels)
+                    foreach (ChannelClient channel in station.Channels)
                     {
                         if (channel != null)
                         {
@@ -270,14 +328,13 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void UpdateChannel(Channel channel, IChannelCore channelCore)
+        private void UpdateChannel(ChannelClient channel, IChannelCore channelCore)
         {
             if (channelCore != null)
             {
                 channel.LastRefreshTime = channelCore.LastRefreshTime;
                 channel.Parameters = channelCore.ParameterContainer.Parameters;
                 channel.Error = channelCore.CommunicationError;
-                channel.ConnectionType = channelCore.ConnectionType;
 
                 if (channel.Devices != null && channel.Devices.Count > 0)
                 {
@@ -297,7 +354,7 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        private void UpdateDevice(Device device, IDeviceCore deviceCore)
+        private void UpdateDevice(DeviceClient device, IDeviceCore deviceCore)
         {
             if (deviceCore != null)
             {
@@ -327,7 +384,7 @@ namespace EasyScada.ServerApplication
 
         }
 
-        private void UpdateTag(Tag tag, ITagCore tagCore)
+        private void UpdateTag(TagClient tag, ITagCore tagCore)
         {
             if (tagCore != null)
             {

@@ -5,6 +5,7 @@ using Ninject.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace EasyScada.ServerApplication
 {
@@ -40,6 +41,7 @@ namespace EasyScada.ServerApplication
 
         public void Setup()
         {
+            Kernel.Bind<IDispatcherFacade>().ToConstant(new DispatcherFacade(Application.Current.Dispatcher));
             Kernel.Bind<IProjectManagerService>().ToConstant(new ProjectManagerService());
             Kernel.Bind<IWorkspaceManagerService>().ToConstant(new WorkspaceManagerService((token) =>
             {
@@ -54,7 +56,12 @@ namespace EasyScada.ServerApplication
             Kernel.Bind<IDriverManagerService>().ToConstant(new DriverManagerService());
             Kernel.Bind<IReverseService>().ToConstant(new ReverseService());
 
-            Kernel.Bind<IServerBroadcastService>().ToConstant(new ServerBroadcastService(this.Get<IProjectManagerService>(), applicationViewModel));
+            Kernel.Bind<IServerBroadcastService>().ToConstant(new ServerBroadcastService(
+                this.Get<IProjectManagerService>(), 
+                applicationViewModel, 
+                applicationViewModel.ServerConfiguration.BroadcastMode,
+                applicationViewModel.ServerConfiguration.BroadcastRate));
+            Kernel.Bind<ITagWriterService>().ToConstant(new TagWriterService(ProjectManagerService, Get<IDriverManagerService>(), Get<IHubConnectionManagerService>()));
         }
 
         public T Get<T>()

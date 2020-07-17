@@ -1,20 +1,14 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using EasyDriverPlugin;
-using EasyDriver.Client.Models;
-using EasyDriver.Server.Models;
 using Microsoft.AspNet.SignalR.Client;
-using Microsoft.AspNet.SignalR.Client.Transports;
 using Newtonsoft.Json;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {
@@ -96,8 +90,8 @@ namespace EasyScada.ServerApplication
                     if (hubConnection.State == ConnectionState.Connected)
                     {
                         string resJson = await hubProxy.Invoke<string>("getAllStationsAsync");
-                        List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(resJson);
-                        HubModel.Stations = new List<Station>(stations);
+                        List<StationClient> stations = JsonConvert.DeserializeObject<List<StationClient>>(resJson);
+                        HubModel.Stations = new List<StationClient>(stations);
                         Source = new List<HubModel>() { HubModel };
                         this.RaisePropertyChanged(x => x.Source);
                         IsBusy = false;
@@ -127,7 +121,7 @@ namespace EasyScada.ServerApplication
                 if (IsCreateStationMode)
                 {
                     IsBusy = true;
-                    List<Station> checkedStations = GetCheckedStations(HubModel);
+                    List<StationClient> checkedStations = GetCheckedStations(HubModel);
                     Messenger.Default.Send(new CreateRemoteStationSuccessMessage(checkedStations, HubModel, hubConnection, hubProxy));
                     CurrentWindowService.Close();
                     IsBusy = false;
@@ -140,7 +134,7 @@ namespace EasyScada.ServerApplication
                     if (SaveFileDialogService.ShowDialog())
                     {
                         IsBusy = true;
-                        List<Station> checkedStations = GetCheckedStations(HubModel);
+                        List<StationClient> checkedStations = GetCheckedStations(HubModel);
                         ConnectionSchema.Stations = checkedStations;
                         string savePath = SaveFileDialogService.File.GetFullName();
                         string connectionSchemaJson = JsonConvert.SerializeObject(ConnectionSchema, Formatting.Indented);
@@ -242,16 +236,16 @@ namespace EasyScada.ServerApplication
 
         #region Methods
 
-        public List<Station> GetCheckedStations(HubModel hubModel)
+        public List<StationClient> GetCheckedStations(HubModel hubModel)
         {
-            List<Station> checkedStations = new List<Station>();
+            List<StationClient> checkedStations = new List<StationClient>();
             if (!hubModel.Checked)
             {
                 foreach (var station in hubModel.Stations)
                 {
                     if (station != null)
                     {
-                        Station checkedStation = station.DeepCopy();
+                        StationClient checkedStation = station.DeepCopy();
                         checkedStation.Channels = GetCheckedChannels(station);
                         if (checkedStation.Channels.Count > 0)
                             checkedStations.Add(checkedStation);
@@ -265,16 +259,16 @@ namespace EasyScada.ServerApplication
             return checkedStations;
         }
 
-        public List<Channel> GetCheckedChannels(Station station)
+        public List<ChannelClient> GetCheckedChannels(StationClient station)
         {
-            List<Channel> checkedChannels = new List<Channel>();
+            List<ChannelClient> checkedChannels = new List<ChannelClient>();
             if (!station.Checked)
             {
                 foreach (var channel in station.Channels)
                 {
                     if (channel != null)
                     {
-                        Channel checkedChannel = channel.DeepCopy();
+                        ChannelClient checkedChannel = channel.DeepCopy();
                         checkedChannel.Devices = GetCheckedDevices(channel);
                         if (checkedChannel.Devices.Count > 0)
                             checkedChannels.Add(checkedChannel);
@@ -288,16 +282,16 @@ namespace EasyScada.ServerApplication
             return checkedChannels;
         }
 
-        public List<Device> GetCheckedDevices(Channel channel)
+        public List<DeviceClient> GetCheckedDevices(ChannelClient channel)
         {
-            List<Device> checkedDevices = new List<Device>();
+            List<DeviceClient> checkedDevices = new List<DeviceClient>();
             if (!channel.Checked)
             {
                 foreach (var device in channel.Devices)
                 {
                     if (device != null)
                     {
-                        Device checkedDevice = device.DeepCopy();
+                        DeviceClient checkedDevice = device.DeepCopy();
                         checkedDevice.Tags = GetCheckedTags(device);
                         if (checkedDevice.Tags.Count > 0)
                             checkedDevices.Add(checkedDevice);
@@ -311,16 +305,16 @@ namespace EasyScada.ServerApplication
             return checkedDevices;
         }
 
-        public List<Tag> GetCheckedTags(Device device)
+        public List<TagClient> GetCheckedTags(DeviceClient device)
         {
-            List<Tag> checkedTags = new List<Tag>();
+            List<TagClient> checkedTags = new List<TagClient>();
             if (!device.Checked)
             {
                 foreach (var tag in device.Tags.Where(x => x.Checked))
                 {
                     if (tag != null)
                     {
-                        Tag checkedTag = tag.DeepCopy();
+                        TagClient checkedTag = tag.DeepCopy();
                         checkedTags.Add(checkedTag);
                     }
                 }

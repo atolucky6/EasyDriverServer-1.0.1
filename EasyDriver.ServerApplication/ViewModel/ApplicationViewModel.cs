@@ -1,5 +1,5 @@
-﻿using DevExpress.Mvvm;
-using EasyDriver.Server.Models;
+﻿using DevExpress.Mvvm.POCO;
+using EasyDriver.Core;
 using EasyDriverPlugin;
 using System;
 using System.Collections.Generic;
@@ -7,8 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.AccessControl;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,11 +17,13 @@ namespace EasyScada.ServerApplication
         #region Constructors
 
         public ApplicationViewModel(IProjectManagerService projectManagerService,
-            IWorkspaceManagerService workspaceManagerService)
+            IWorkspaceManagerService workspaceManagerService,
+            IDispatcherFacade dispatcherFacade)
         {
             ProjectManagerService = projectManagerService;
             ProjectManagerService.ProjectChanged += OnProjectChanged;
             WorkspaceManagerService = workspaceManagerService;
+            DispatcherFacade = dispatcherFacade;
 
             ApplicationPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             DriverFolderPath = $"{ApplicationPath}\\Driver";
@@ -41,11 +41,13 @@ namespace EasyScada.ServerApplication
 
         protected IWorkspaceManagerService WorkspaceManagerService { get; set; }
         protected IProjectManagerService ProjectManagerService { get; set; }
+        protected IDispatcherFacade DispatcherFacade { get; set; }
 
         #endregion
 
         #region Public members
 
+        public bool IsMainWindowExit { get; set; }
         public List<string> ConnectedClients { get; set; } = new List<string>();
         public virtual List<string> DriverNameSource { get; set; }
         public virtual string DriverFolderPath { get; set; }
@@ -75,6 +77,7 @@ namespace EasyScada.ServerApplication
         private void OnProjectChanged(object sender, ProjectChangedEventArgs e)
         {
             CurrentOpenedProjectPath = ProjectManagerService.CurrentProject?.ProjectPath;
+            this.RaisePropertyChanged(x => x.CurrentOpenedProjectPath);
         }
 
         #endregion
@@ -102,22 +105,42 @@ namespace EasyScada.ServerApplication
                 {
                     Stopwatch sw = new Stopwatch();
                     sw.Restart();
-                    foreach (var panel in WorkspaceManagerService.GetAllDocumentPanel())
+                    foreach (var panel in WorkspaceManagerService.GetAllDocumentPanel().ToArray())
                     {
                         if (panel is TagCollectionViewModel tagCollectionVM)
                         {
                             if (tagCollectionVM.IsOpened && tagCollectionVM.Parent is IDeviceCore deviceCore)
                             {
-                                foreach (var item in deviceCore.Childs)
+                                foreach (var item in deviceCore.Childs.ToArray())
                                 {
-                                    if (item is EasyDriver.Server.Models.BindableCore tag)
+                                    if (item is TagCore tag)
                                     {
-                                        uiSyncContext.Post((s) =>
-                                        { 
-                                            tag.RaisePropertyChanged("Value");
-                                            tag.RaisePropertyChanged("TimeStamp");
-                                            tag.RaisePropertyChanged("Quality");
-                                        }, null);
+                                        if (tag.NeedToUpdateValue)
+                                        {
+                                            tag.NeedToUpdateValue = false;
+                                            DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                                            {
+                                                tag.RaisePropertyChanged("Value");
+                                            }));
+                                        }
+
+                                        if (tag.NeedToUpdateTimeStamp)
+                                        {
+                                            tag.NeedToUpdateTimeStamp = false;
+                                            DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                                            {
+                                                tag.RaisePropertyChanged("TimeStamp");
+                                            }));
+                                        }
+
+                                        if (tag.NeedToUpdateQuality)
+                                        {
+                                            tag.NeedToUpdateQuality = false;
+                                            DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                                            {
+                                                tag.RaisePropertyChanged("Quality");
+                                            }));
+                                        }
                                     }
                                 }
                             }
@@ -126,14 +149,14 @@ namespace EasyScada.ServerApplication
 
                     if (ProjectManagerService.CurrentProject != null)
                     {
-                        foreach (var item in ProjectManagerService.CurrentProject.Childs)
+                        foreach (var item in ProjectManagerService.CurrentProject.Childs.ToArray())
                         {
                             if (item is RemoteStation remoteStation)
                             {
-                                uiSyncContext.Post((s) =>
+                                DispatcherFacade.AddToDispatcherQueue(new Action(() =>
                                 {
                                     remoteStation.RaisePropertyChanged("ConnectionStatus");
-                                }, null);
+                                }));
                             }
                         }
                     }

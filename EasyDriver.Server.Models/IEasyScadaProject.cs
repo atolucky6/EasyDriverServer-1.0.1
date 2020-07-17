@@ -1,9 +1,7 @@
 ﻿using EasyDriverPlugin;
-using EasyDriver.Client.Models;
-using System;
 using System.Collections.Generic;
 
-namespace EasyDriver.Server.Models
+namespace EasyDriver.Core
 {
     public interface IEasyScadaProject : IGroupItem, ISupportParameters, ISupportSynchronization, IPath
     {

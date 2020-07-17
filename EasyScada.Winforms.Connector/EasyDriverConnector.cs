@@ -1,5 +1,5 @@
-﻿using EasyDriver.Client.Models;
-using Microsoft.AspNet.SignalR.Client;
+﻿using Microsoft.AspNet.SignalR.Client;
+using Microsoft.AspNet.SignalR.Client.Transports;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -21,7 +21,7 @@ namespace EasyScada.Winforms.Connector
 {
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     [Designer(typeof(EasyDriverConnectorDesigner))]
-    public sealed partial class EasyDriverConnector : Component
+    public sealed partial class EasyDriverConnector : Component, IDisposable
     {
         #region Singleton
 
@@ -32,14 +32,16 @@ namespace EasyScada.Winforms.Connector
         static bool isSetCommunicationMode = false;
         static bool isSetRefreshRate = false;
 
-        static DriverConnector driverConnector;
+        static ConnectionSchema connectionSchema;
         static HubConnection hubConnection;
         static IHubProxy hubProxy;
         static bool firstScan = false;
-        static System.Threading.Timer refreshTimer;
 
+        static Task requestTask;
         static Hashtable tagsCache;
+        static Hashtable cache;
         static EasyDriverConnector instance;
+        static SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         static EasyDriverConnector()
         {
             if (instance == null)
@@ -55,11 +57,6 @@ namespace EasyScada.Winforms.Connector
             InitializeComponent();
         }
 
-        ~EasyDriverConnector()
-        {
-            Dispose();
-        }
-
         public EasyDriverConnector(IContainer container)
         {
             container.Add(this);
@@ -72,6 +69,7 @@ namespace EasyScada.Winforms.Connector
 
         #region Public members
 
+        [Browsable(false)]
         public bool IsDisposed { get; private set; }
 
         static string serverAddress = "127.0.0.1";
@@ -154,21 +152,97 @@ namespace EasyScada.Winforms.Connector
             }
         }
 
+        private ConnectionStatus connectionStatus;
+        [Browsable(false)]
+        public ConnectionStatus ConnectionStatus
+        {
+            get { return connectionStatus; }
+            set
+            {
+                if (value != connectionStatus)
+                {
+                    ConnectionStatus oldValue = connectionStatus;
+                    connectionStatus = value;
+                    ConnectionStatusChaged?.Invoke(this, new ConnectionStatusChangedEventArgs(oldValue, value));
+                }
+            }
+        }
+
+        [Browsable(false)]
+        public bool IsSubscribed { get; private set; }
+
+        [Browsable(false)]
+        public bool IsStarted { get; private set; }
+
         #endregion
 
         #region Events
 
         public event EventHandler Started;
+        public event EventHandler<ConnectionStatusChangedEventArgs> ConnectionStatusChaged;
+        public event EventHandler ConnectionSlow;
 
         #endregion
 
         #region Public methods
 
         public ITag GetTag(string pathToTag)
-        {
-            if (tagsCache != null)
+        {          
+            if (tagsCache != null && !string.IsNullOrWhiteSpace(pathToTag))
                 return tagsCache[pathToTag] as ITag;
             return null;
+        }
+
+        public Quality WriteTag(string pathToTag, string value)
+        {
+            semaphore.Wait();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(pathToTag) || string.IsNullOrWhiteSpace(value) && hubConnection != null && hubConnection.State == ConnectionState.Connected)
+                {
+                    var writeTask = hubProxy.Invoke<WriteResponse>("writeTagValueAsync", new WriteCommand()
+                    {
+                        PathToTag = pathToTag,
+                        Value = value,
+                        SendTime = DateTime.Now,
+                        WriteMode = WriteMode.WriteAllValue,
+                        WritePiority = WritePiority.Highest
+                    });
+
+                    Task.WaitAll(writeTask);
+
+                    if (writeTask.IsCompleted)
+                    {
+                        WriteResponse response = writeTask.Result;
+                        if (response.IsSuccess)
+                            return Quality.Good;
+                    }
+                }
+            }
+            catch { }
+            finally { semaphore.Release(); }
+            return Quality.Bad;
+        }
+
+        public async Task<Quality> WriteTagAsync(string pathToTag, string value)
+        {
+            try
+            {
+                await semaphore.WaitAsync();
+                WriteResponse response = await hubProxy.Invoke<WriteResponse>("writeTagValueAsync", new WriteCommand()
+                {
+                    PathToTag = pathToTag,
+                    Value = value,
+                    SendTime = DateTime.Now,
+                    WriteMode = WriteMode.WriteAllValue,
+                    WritePiority = WritePiority.Highest
+                });
+                if (response.IsSuccess)
+                    return Quality.Good;
+            }
+            catch { }
+            finally { semaphore.Release(); }
+            return Quality.Bad;
         }
 
         #endregion
@@ -185,7 +259,7 @@ namespace EasyScada.Winforms.Connector
                     string resJson = string.Empty;
 
                     // Get tag file from application path
-                    string tagFilePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\TagFile.json";
+                    string tagFilePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\ConnectionSchema.json";
                     if (!File.Exists(tagFilePath))
                     {
                         MessageBox.Show($"The tag file doesn't exists. Please create tag file at '{tagFilePath}' and restart the application.", "Easy Driver Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -202,17 +276,23 @@ namespace EasyScada.Winforms.Connector
                         MessageBox.Show($"Some error occurs when open tag file '{tagFilePath}'.\nError: {ex.Message}", "Easy Driver Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    
+
                     // Deserialize tag file to DriverConnector
                     try
                     {
-                        driverConnector = JsonConvert.DeserializeObject<DriverConnector>(resJson);
+                        connectionSchema = JsonConvert.DeserializeObject<ConnectionSchema>(resJson);
+                        refreshRate = connectionSchema.RefreshRate;
+                        communicationMode = connectionSchema.CommunicationMode;
+                        serverAddress = connectionSchema.ServerAddress;
+                        port = connectionSchema.Port;
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Some error occurs when deserialize tag file 'tagFilePath'.\nError: {ex.Message}", "Easy Driver Server", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
+
+                    Started += OnStarted;
                 }
 
                 // Check all requires property is set
@@ -221,8 +301,16 @@ namespace EasyScada.Winforms.Connector
                     // If hub connection is initialized then unsubscribe all events
                     if (hubConnection != null)
                     {
-                        hubConnection.StateChanged -= OnStateChanged;
-                        hubConnection.Closed -= OnDisconnected;
+                        try
+                        {
+                            hubConnection.StateChanged -= OnStateChanged;
+                            hubConnection.Closed -= OnDisconnected;
+                            hubConnection.ConnectionSlow -= OnConnectionSlow;
+                            if (hubConnection.State == ConnectionState.Connected)
+                                await Task.Factory.StartNew(() => hubConnection.Stop());
+                            await Task.Factory.StartNew(() => hubConnection.Dispose());
+                        }
+                        catch { }
                     }
 
                     // Make a new connection
@@ -230,18 +318,22 @@ namespace EasyScada.Winforms.Connector
                     // Subscribe connection events
                     hubConnection.StateChanged += OnStateChanged;
                     hubConnection.Closed += OnDisconnected;
+                    hubConnection.ConnectionSlow += OnConnectionSlow;
                     // Create proxy
                     hubProxy = hubConnection.CreateHubProxy("EasyDriverServerHub");
                     // Handle all message received from server
-                    hubProxy.On<string>("broadcastStations", (x) => { OnReceivedStations(x, driverConnector); });
+                    hubProxy.On<string>("broadcastSubscribeData", OnReceivedBroadcastMessage);
                     // Start connection
-                    await hubConnection.Start();
+                    await hubConnection.Start(new LongPollingTransport());
                 }
+
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
+            catch (Exception) { }
+        }
+
+        private void OnConnectionSlow()
+        {
+            ConnectionSlow?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnDisconnected()
@@ -255,41 +347,51 @@ namespace EasyScada.Winforms.Connector
             }
         }
 
-        private async void OnStateChanged(StateChange stateChange)
+        private void OnStateChanged(StateChange stateChange)
         {
+            ConnectionStatus = (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), stateChange.NewState.ToString());
             if (stateChange.NewState == ConnectionState.Disconnected)
             {
                 Debug.WriteLine($"The easy driver connector was disconnected with server {serverAddress}:{port}");
+                if (connectionSchema != null && connectionSchema.Stations != null)
+                {
+                    foreach (var tag in connectionSchema.GetAllTag())
+                    {
+                        try
+                        {
+                            tag.Quality = Quality.Bad;
+                        }
+                        catch { }
+                    }
+                }
             }
-            else if (stateChange.NewState == ConnectionState.Connected)
+            else if (stateChange.NewState == ConnectionState.Connected && !IsDisposed)
             {
                 Debug.WriteLine($"The easy driver connector was connected to server {serverAddress}:{port}");
-                // Check requires condition before subscribe
-                if (isTagFileLoaded && driverConnector != null && driverConnector.Stations != null && driverConnector.Stations.Count > 0)
-                {
-                    // Delay a little bit before subscribe to server
-                    await Task.Delay(100); 
-                    // Subscribe to server 
-                    var res = await hubProxy.Invoke<string>("subscribe", JsonConvert.SerializeObject(driverConnector.Stations), driverConnector.CommunicationMode.ToString(), RefreshRate);
-                    Debug.WriteLine($"Easy driver connector subscribe to server: {res}");
-                }
-
                 // Create tag cache and start the refresh timer in the first load
                 if (!isFirstLoad)
                 {
                     // Create tag cache
                     tagsCache = new Hashtable();
-                    foreach (var tag in driverConnector.GetAllTag())
+                    foreach (var tag in connectionSchema.GetAllTag())
+                    {
+                        tag.quality = Quality.Uncertain;
+                        tag.value = string.Empty;
                         tagsCache.Add(tag.Path, tag);
-
-                    // Start a refresh timer 
-                    // The timer only work when working mode is RequestToServer
-                    // If working mode isn't RequestToServer the timer will turn to ildle state 
-                    // and it's will run when working mode change to RequestToServer
-                    refreshTimer = new System.Threading.Timer(new TimerCallback(RefreshTimerCallback), driverConnector, 0, refreshRate);
-
+                        tag.connector = this;
+                    }
                     // Set a first load flag to determine we are already loaded
                     isFirstLoad = true;
+                }
+
+                // Check requires condition before subscribe
+                if (isTagFileLoaded && connectionSchema != null && connectionSchema.Stations != null && connectionSchema.Stations.Count > 0)
+                {
+                    // Delay a little bit before subscribe to server
+                    Thread.Sleep(1000);
+                    IsSubscribed = false;
+                    if (requestTask == null)
+                        requestTask = Task.Factory.StartNew(RefreshData, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
                 }
             }
             else if (stateChange.NewState == ConnectionState.Reconnecting)
@@ -302,193 +404,377 @@ namespace EasyScada.Winforms.Connector
             }
         }
 
-        private async void RefreshTimerCallback(object state)
+        /// <summary>
+        /// Method to subscribe this connection to server
+        /// </summary>
+        /// <returns></returns>
+        private bool Subscribe()
         {
-            refreshTimer.Change(Timeout.Infinite, Timeout.Infinite); // Stop timer
-
-            if (!IsDisposed)
+            if (connectionSchema != null && connectionSchema.Stations != null)
             {
-                int nextPeriod = RefreshRate;
-                // Check requires condition before get data from server
-                if (state is DriverConnector driverConnector &&
-                    hubConnection != null &&
-                    hubProxy != null &&
-                    hubConnection.State == ConnectionState.Connected &&
-                    driverConnector.CommunicationMode == CommunicationMode.RequestToServer &&
-                    driverConnector.Stations != null && driverConnector.Stations.Count > 0)
+                string subscribeDataJson = JsonConvert.SerializeObject(connectionSchema.Stations);
+                if (hubConnection != null && hubConnection.State == ConnectionState.Connected)
                 {
-                    try
-                    {
-                        // Get data from server
-                        string resJson = await hubProxy.Invoke<string>("getSubscribedData");
-                        if (!string.IsNullOrWhiteSpace(resJson))
-                        {
-                            // Deserialize json result
-                            List<Station> resStations = JsonConvert.DeserializeObject<List<Station>>(resJson);
+                    var subTask = hubProxy.Invoke<string>("subscribe", subscribeDataJson, CommunicationMode.ToString(), RefreshRate);
+                    Task.WaitAll(subTask);
+                    if (subTask.IsCompleted)
+                        return subTask.Result == "Ok";
+                }
+            }          
+            return false;
+        }
 
-                            // Update value 
-                            foreach (var station in driverConnector.Stations)
+        private void RefreshData()
+        {
+            while (!IsDisposed)
+            {
+                int delay = 100;
+                try
+                {
+                    // Re subscribe if needed
+                    if (!IsSubscribed && hubConnection != null && hubConnection.State == ConnectionState.Connected)
+                    {
+                        bool resSub = Subscribe();
+                        if (resSub)
+                        {
+                            if (cache == null)
+                                cache = new Hashtable();
+
+                            IsSubscribed = true;
+                            foreach (var item in GetAllChildItems(connectionSchema))
                             {
-                                Station sourceStation = resStations?.FirstOrDefault(x => x.Path == station.Path);
-                                UpdateStation(station, sourceStation);
+                                if (item is IPath pathObj)
+                                    cache.Add(pathObj.Path, item);
                             }
                         }
+                        delay = 100;
                     }
-                    catch { }
-                }
-                else { nextPeriod = 100; }
 
-                // If this is first scan then raise an started event to notify to all controls
-                if (!firstScan && CommunicationMode == CommunicationMode.RequestToServer)
-                {
-                    firstScan = true;
-                    Started?.Invoke(this, new EventArgs());
-                }
+                    if (connectionSchema != null && connectionSchema.Stations != null && !IsDisposed)
+                    {
+                        if (CommunicationMode == CommunicationMode.RequestToServer && connectionSchema.Stations.Count > 0 &&
+                            hubConnection.State == ConnectionState.Connected && cache != null)
+                        {
+                            Task<string> getDataTask = null;
+                            try
+                            {
+                                semaphore.Wait();
+                                // Get subscribed data from server
+                                getDataTask = hubProxy.Invoke<string>("getSubscribedDataAsync");
+                                Task.WaitAll(getDataTask);
+                            }
+                            finally { semaphore.Release(); }
 
-                // Start timer again
-                refreshTimer.Change(nextPeriod, 0);
+                            try
+                            {
+                                if (getDataTask != null && getDataTask.IsCompleted)
+                                {
+                                    string resJson = getDataTask.Result;
+
+                                    using (StringReader sr = new StringReader(resJson))
+                                    {
+                                        JsonTextReader reader = new JsonTextReader(sr);
+
+                                        if (reader.Read())
+                                        {
+                                            if (reader.TokenType == JsonToken.StartArray)
+                                            {
+                                                while (reader.Read())
+                                                {
+                                                    if (reader.TokenType == JsonToken.EndArray)
+                                                        break;
+                                                    else if (reader.TokenType == JsonToken.StartObject)
+                                                        UpdateStationManual(reader);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // If this is first scan then raise an started event to notify to all controls
+                                if (!firstScan && CommunicationMode == CommunicationMode.RequestToServer)
+                                {
+                                    firstScan = true;
+                                    Started?.Invoke(this, new EventArgs());
+                                }
+                            }
+                            catch { }
+                        }
+                        delay = RefreshRate;
+                    }
+                }
+                catch { }
+                finally { Thread.Sleep(delay); }
             }
+
+            hubConnection?.Dispose();
         }
 
-        private void OnReceivedStations(string stationsJson, DriverConnector driverConnector)
-        {
-            if (driverConnector != null && 
-                driverConnector.Stations != null &&
-                driverConnector.CommunicationMode == CommunicationMode.ReceiveFromServer)
-            {
-                List<Station> resStations = JsonConvert.DeserializeObject<List<Station>>(stationsJson);
-                // Update value 
-                foreach (var station in driverConnector.Stations)
-                {
-                    Station sourceStation = resStations?.FirstOrDefault(x => x.Path == station.Path);
-                    UpdateStation(station, sourceStation);
-                }
-            }
-
-            // If this is first scan then raise an started event to notify to all controls
-            if (!firstScan && CommunicationMode == CommunicationMode.ReceiveFromServer)
-            {
-                firstScan = true;
-                Started?.Invoke(this, new EventArgs());
-            }
-        }
-
-        private void OnDisposed(object sender, EventArgs e)
+        private void OnReceivedBroadcastMessage(string resJson)
         {
             try
             {
-                IsDisposed = true;
-                if (hubConnection != null)
-                    hubConnection.Dispose();
-                if (refreshTimer != null)
-                    refreshTimer.Dispose();
+                if (connectionSchema != null &&
+                connectionSchema.Stations != null &&
+                connectionSchema.CommunicationMode == CommunicationMode.ReceiveFromServer)
+                {
+                    using (StringReader sr = new StringReader(resJson))
+                    {
+                        JsonTextReader reader = new JsonTextReader(sr);
+
+                        if (reader.Read())
+                        {
+                            if (reader.TokenType == JsonToken.StartArray)
+                            {
+                                while (reader.Read())
+                                {
+                                    if (reader.TokenType == JsonToken.EndArray)
+                                        break;
+                                    else if (reader.TokenType == JsonToken.StartObject)
+                                        UpdateStationManual(reader);
+                                }
+                            }
+                        }
+                    }
+
+                    // If this is first scan then raise an started event to notify to all controls
+                    if (!firstScan && CommunicationMode == CommunicationMode.ReceiveFromServer)
+                    {
+                        firstScan = true;
+                        Started?.Invoke(this, new EventArgs());
+                    }
+                }
             }
             catch { }
         }
 
-        private void UpdateStation(Station item, Station source)
+        private void OnDisposed(object sender, EventArgs e)
         {
-            if (source != null)
+            IsDisposed = true;
+        }
+
+        private void OnStarted(object sender, EventArgs e)
+        {
+            IsStarted = true;
+        }
+
+        private void UpdateStationManual(JsonTextReader reader)
+        {
+            reader.Read(); // Read property p (Path)
+            reader.Read(); // Read value of p
+            if (cache[reader.Value] is Station station)
             {
-                item.RefreshRate = source.RefreshRate;
-                item.LastRefreshTime = source.LastRefreshTime;
-                item.RemoteAddress = source.RemoteAddress;
-                item.Port = source.Port;
-                item.CommunicationMode = source.CommunicationMode;
-                item.Error = source.Error;
-                item.RefreshRate = source.RefreshRate;
-                item.Parameters = source.Parameters;
+                reader.Read(); // Read property r (LastRefreshTime)
+                reader.Read(); // Read value of r
+                station.LastRefreshTime = Convert.ToDateTime(reader.Value);
 
-                if (item.Channels != null && item.Channels.Count > 0 && source.Channels != null && source.Channels.Count > 0)
+                reader.Read(); // Read property s (ConnectionStatus)
+                reader.Read(); // Read value of s
+                if (Enum.TryParse((string)reader.Value, out ConnectionStatus status))
+                    station.ConnectionStatus = status;
+
+                reader.Read(); // Read property e (CommunicationError)
+                reader.Read(); // Read value of e
+                station.Error = (string)reader.Value;
+
+                reader.Read(); // Read property channels 
+                reader.Read(); // Read start array
+                while (reader.Read()) // Read start array
                 {
-                    foreach (var channel in item.Channels)
-                    {
-                        Channel sourceChannel = source.Channels.FirstOrDefault(x => x.Path == channel.Path);
-                        UpdateChannel(channel, sourceChannel);
-                    }
+                    if (reader.TokenType == JsonToken.EndArray)
+                        break;
+                    else if (reader.TokenType == JsonToken.StartObject)
+                        UpdateChannelManual(reader);
                 }
 
-                if (item.RemoteStations != null && item.RemoteStations.Count > 0 && source.RemoteStations != null && source.RemoteStations.Count > 0)
+                reader.Read(); // Read property stations 
+                reader.Read(); // Read start array
+                while (reader.Read()) // Read start array
                 {
-                    foreach (var station in item.RemoteStations)
-                    {
-                        Station sourceStation = source.RemoteStations.FirstOrDefault(x => x.Path == station.Path);
-                        UpdateStation(station, sourceStation);
-                    }
+                    if (reader.TokenType == JsonToken.EndArray)
+                        break;
+                    else if (reader.TokenType == JsonToken.StartObject)
+                        UpdateStationManual(reader);
                 }
+
+                reader.Read(); // Read end object;
             }
             else
             {
-                item.Error = "This station could not be found on server.";
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.EndObject)
+                        break;
             }
         }
 
-        private void UpdateChannel(Channel item, Channel source)
+        private void UpdateChannelManual(JsonTextReader reader)
         {
-            if (source != null)
-            {
-                item.Error = source.Error;
-                item.LastRefreshTime = source.LastRefreshTime;
-                item.Parameters = source.Parameters;
+            reader.Read(); // Read property p (Path)
+            reader.Read(); // Read value of p
 
-                if (item.Devices != null && item.Devices.Count > 0 && source.Devices != null && source.Devices.Count > 0)
+            if (cache[reader.Value] is Channel channel)
+            {
+                reader.Read(); // Read property r (LastRefreshTime)
+                reader.Read(); // Read value of r
+                channel.LastRefreshTime = Convert.ToDateTime(reader.Value);
+
+                reader.Read(); // Read property e (CommunicationError)
+                reader.Read(); // Read value of e
+                channel.Error = (string)reader.Value;
+
+                reader.Read(); // Read property devices array
+                reader.Read(); // Read start array
+                while (reader.Read())
                 {
-                    foreach (var device in item.Devices)
-                    {
-                        Device sourceDevice = source.Devices.FirstOrDefault(x => x.Path == device.Path);
-                        UpdateDevice(device, sourceDevice);
-                    }
+                    if (reader.TokenType == JsonToken.EndArray)
+                        break;
+                    else if (reader.TokenType == JsonToken.StartObject)
+                        UpdateDeviceManual(reader);
                 }
+
+                reader.Read(); // Read end object;
             }
             else
             {
-                item.Error = "This channel could not be found on server.";
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.EndObject)
+                        break;
             }
         }
 
-        private void UpdateDevice(Device item, Device source)
+        private void UpdateDeviceManual(JsonTextReader reader)
         {
-            if (source != null)
-            {
-                item.LastRefreshTime = source.LastRefreshTime;
-                item.Error = source.Error;
-                item.LastRefreshTime = source.LastRefreshTime;
-                item.Parameters = source.Parameters;
+            reader.Read(); // Read property p (Path)
+            reader.Read(); // Read value of p
 
-                if (item.Tags != null && item.Tags.Count > 0 && source.Tags != null && source.Tags.Count > 0)
+            if (cache[reader.Value] is Device device)
+            {
+                reader.Read(); // Read property r (LastRefreshTime)
+                reader.Read(); // Read value of r
+                device.LastRefreshTime = Convert.ToDateTime(reader.Value);
+
+                reader.Read(); // Read property e (CommunicationError)
+                reader.Read(); // Read value of e
+                device.Error = (string)reader.Value;
+
+                reader.Read(); // Read property tags array
+                reader.Read(); // Read start array
+                while (reader.Read())
                 {
-                    foreach (var tag in item.Tags)
-                    {
-                        Tag tagSource = source.Tags.FirstOrDefault(x => x.Path == tag.Path);
-                        UpdateTag(tag, tagSource);
-                    }
+                    if (reader.TokenType == JsonToken.EndArray)
+                        break;
+                    else if (reader.TokenType == JsonToken.StartObject)
+                        UpdateTagManual(reader);
                 }
+                reader.Read(); // Read end object
             }
             else
             {
-                item.Error = "This device could not be found on server.";
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.EndObject)
+                        break;
+            }
+
+        }
+
+        private void UpdateTagManual(JsonTextReader reader)
+        {
+            reader.Read(); // Read property p (Path)
+            reader.Read(); // Read value of p
+
+            if (cache[reader.Value] is Tag tag)
+            {
+                reader.Read(); // Read property v (Value)
+                reader.Read(); // Read value of v
+                tag.Value = (string)reader.Value;
+
+                reader.Read(); // Read property q (Quality)
+                reader.Read(); // Read value of q
+                if (Enum.TryParse(reader.Value.ToString(), out Quality quality))
+                    tag.Quality = quality;
+
+                reader.Read(); // Read property t (TimeStamp)
+                reader.Read(); // Read value of t
+                tag.TimeStamp = Convert.ToDateTime(reader.Value);
+
+                reader.Read(); // Read property e (CommunicationError)
+                reader.Read(); // Read value of e
+                tag.Error = (string)reader.Value;
+
+                reader.Read(); // Read end object
+            }
+            else
+            {
+                while (reader.Read())
+                    if (reader.TokenType == JsonToken.EndObject)
+                        break;
             }
         }
 
-        private void UpdateTag(Tag item, Tag source)
+        private List<object> GetAllChildItems(ConnectionSchema connectionSchema)
         {
-            if (source != null)
+            List<object> result = new List<object>();
+            if (connectionSchema != null && connectionSchema.Stations != null)
             {
-                item.Value = source.Value;
-                item.TimeStamp = source.TimeStamp;
-                item.Quality = source.Quality;
-                item.RefreshInterval = source.RefreshInterval;
-                item.RefreshRate = source.RefreshRate;
-                item.Address = source.Address;
-                item.DataType = source.DataType;
-                item.Error = source.Error;
-                item.Parameters = source.Parameters;
-                item.AccessPermission = source.AccessPermission;
+                foreach (var station in connectionSchema.Stations)
+                {
+                    result.Add(station);
+                    foreach (var channel in GetAllChildItems(station))
+                    {
+                        if (channel is Channel)
+                        {
+                            result.Add(channel);
+                            foreach (var device in GetAllChildItems(channel as Channel))
+                            {
+                                if (device is Device)
+                                {
+                                    result.Add(device);
+                                    foreach (var tag in GetAllChildItems(device as Device))
+                                    {
+                                        if (tag is Tag)
+                                        {
+                                            result.Add(tag);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            else
+            return result;
+        }
+
+        private IEnumerable<object> GetAllChildItems(Station station)
+        {
+            if (station != null && station.Channels != null)
             {
-                item.Quality = Quality.Bad;
-                item.Error = "This tag could not be found on server.";
+                foreach (var channel in station.Channels)
+                {
+                    yield return channel;
+                }
+            }
+        }
+
+        private IEnumerable<object> GetAllChildItems(Channel channel)
+        {
+            if (channel != null && channel.Devices != null)
+            {
+                foreach (var device in channel.Devices)
+                {
+                    yield return device;
+                }
+            }
+        }
+
+        private IEnumerable<object> GetAllChildItems(Device device)
+        {
+            if (device != null && device.Tags != null)
+            {
+                foreach (var tag in device.Tags)
+                {
+                    yield return tag;
+                }
             }
         }
 
@@ -540,8 +826,8 @@ namespace EasyScada.Winforms.Connector
             designerActionUIservice = GetService(typeof(DesignerActionUIService)) as DesignerActionUIService;
             BaseControl = component as EasyDriverConnector;
             projectPath = GetCurrentDesignPath();
-            debugPath = "\\Debug\\TagFile.json";
-            releasePath = "\\Release\\TagFile.json";
+            debugPath = "\\Debug\\ConnectionSchema.json";
+            releasePath = "\\Release\\ConnectionSchema.json";
         }
 
         #region Members
@@ -569,7 +855,7 @@ namespace EasyScada.Winforms.Connector
                     new DesignerActionPropertyItem("Port", "Port", "Easy Scada", "Set port number for connector"),
                     new DesignerActionPropertyItem("CommunicationMode", "Communication Mode", "Easy Scada", "Set communication mode for connector"),
                     new DesignerActionPropertyItem("RefreshRate", "Refresh Rate", "Easy Scada", "Set refresh rate for connector"),
-                    new DesignerActionMethodItem(this, "EditTagFile", "Edit Tag File", "Easy Scada", "Click here to update tag file", true)
+                    new DesignerActionMethodItem(this, "UpdateConnectionSchema", "Update Connection Schema", "Easy Scada", "Click here to update tag file", true)
                 };
             }
             return actionItems;
@@ -615,15 +901,15 @@ namespace EasyScada.Winforms.Connector
 
         #region Action methods
 
-        private void EditTagFile()
+        private void UpdateConnectionSchema()
         {
             try
             {
                 if (isBusy)
                     return;
                 isBusy = true;
-                FormTagFile formTagFile = new FormTagFile(this);
-                formTagFile.ShowDialog();
+                FormConnectionSchema formConnectionSchema = new FormConnectionSchema(this);
+                formConnectionSchema.ShowDialog();
                 isBusy = false;
             }
             catch (Exception ex)
@@ -642,7 +928,7 @@ namespace EasyScada.Winforms.Connector
                     string resJson = File.ReadAllText(debugPath);
                     if (!string.IsNullOrEmpty(resJson))
                     {
-                        DriverConnector driverConnector = JsonConvert.DeserializeObject<DriverConnector>(resJson);
+                        ConnectionSchema driverConnector = JsonConvert.DeserializeObject<ConnectionSchema>(resJson);
                         if (driverConnector != null)
                         {
                             driverConnector.CommunicationMode = CommunicationMode;
@@ -660,7 +946,7 @@ namespace EasyScada.Winforms.Connector
                     string resJson = File.ReadAllText(releasePath);
                     if (!string.IsNullOrEmpty(resJson))
                     {
-                        DriverConnector driverConnector = JsonConvert.DeserializeObject<DriverConnector>(resJson);
+                        ConnectionSchema driverConnector = JsonConvert.DeserializeObject<ConnectionSchema>(resJson);
                         if (driverConnector != null)
                         {
                             driverConnector.CommunicationMode = CommunicationMode;

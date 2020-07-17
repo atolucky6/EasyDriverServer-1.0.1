@@ -13,6 +13,12 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
+            double v = 1;
+            Console.WriteLine(v.ToString());
+            v = 0;
+            Console.WriteLine(v.ToString());
+
+
             timer = new Timer(new TimerCallback(Callback), null, 100, interval);
             while(true)
             {

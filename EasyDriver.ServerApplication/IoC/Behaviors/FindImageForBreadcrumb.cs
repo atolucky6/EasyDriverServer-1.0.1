@@ -1,7 +1,6 @@
 ﻿using DevExpress.Mvvm.UI.Interactivity;
 using DevExpress.Xpf.Controls;
-using EasyDriver.Server.Models;
-using System.Drawing;
+using EasyDriver.Core;
 using System.Windows;
 using System.Windows.Media;
 

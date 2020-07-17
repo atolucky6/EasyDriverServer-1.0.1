@@ -1,11 +1,7 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using EasyDriver.Server.Models;
-using System;
+using EasyDriver.Core;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace EasyScada.ServerApplication
@@ -14,7 +10,8 @@ namespace EasyScada.ServerApplication
     {
         #region Constructors
 
-        public OptionsViewModel(ApplicationViewModel applicationViewModel)
+        public OptionsViewModel(ApplicationViewModel applicationViewModel,
+            IServerBroadcastService serverBroadcastService)
         {
             Title = "Options";
             SizeToContent = SizeToContent.Manual;
@@ -28,6 +25,7 @@ namespace EasyScada.ServerApplication
             };
 
             ApplicationViewModel = applicationViewModel;
+            ServerBroadcastService = serverBroadcastService;
             RestoreGeneral();
         }
 
@@ -36,6 +34,7 @@ namespace EasyScada.ServerApplication
         #region Injected services
 
         protected ApplicationViewModel ApplicationViewModel { get; set; }
+        protected IServerBroadcastService ServerBroadcastService { get; set; }
 
         #endregion
 
@@ -76,6 +75,8 @@ namespace EasyScada.ServerApplication
                 ServerConfiguration.MaximumAllowConnection = MaximumAllowConnection;
                 if (ServerConfiguration.Save())
                 {
+                    ServerBroadcastService.BroadcastMode = ServerConfiguration.BroadcastMode;
+                    ServerBroadcastService.BroadcastRate = ServerConfiguration.BroadcastRate;
                     IsBusy = false;
                     MessageBoxService.ShowMessage("The configuration was saved successfully. Please restart the application to apply all these changes.", "Easy Driver Server", MessageButton.OK, MessageIcon.Information);
                 }

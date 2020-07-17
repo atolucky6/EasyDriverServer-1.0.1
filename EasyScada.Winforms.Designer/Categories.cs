@@ -13,6 +13,7 @@ namespace EasyScada.Winforms.Designer
         public const string LAYOUT = "Layout";
         public const string EASYSCADA = "Easy Scada";
         public const string EXPRESSION = "Expressions";
+        public const string SCALE = "Scale";
         public const string UNIT = "Unit";
     }
 }

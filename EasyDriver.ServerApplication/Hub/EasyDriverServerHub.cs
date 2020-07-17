@@ -1,5 +1,4 @@
 ﻿using EasyDriverPlugin;
-using EasyDriver.Client.Models;
 using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using System;
@@ -8,10 +7,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using DevExpress.Mvvm.POCO;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {
-    public class EasyDriverServerHub : Hub<IEasyDriverClientApi>, IEasyDriverClientApi
+    public class EasyDriverServerHub : Hub
     {
         #region Members
 
@@ -45,7 +45,7 @@ namespace EasyScada.ServerApplication
 
         public string Subscribe(string stationsJson, string communicationMode, int refreshRate)
         {
-            List<Station> stations = JsonConvert.DeserializeObject<List<Station>>(stationsJson);
+            List<StationClient> stations = JsonConvert.DeserializeObject<List<StationClient>>(stationsJson);
             if (stations != null && stations.Count > 0)
             {
                 if (Enum.TryParse(communicationMode, out CommunicationMode comMode))
@@ -92,7 +92,7 @@ namespace EasyScada.ServerApplication
         public string GetStation(string pathToStation = "Local Station")
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IStation>(pathToStation));
+                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IStationClient>(pathToStation));
             return null;
         }
         public async Task<string> GetStationAsync(string pathToStation = "Local Station")
@@ -104,7 +104,7 @@ namespace EasyScada.ServerApplication
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
             {
-                var result = ioc.ProjectManagerService.CurrentProject.Childs?.Select(x => x as IStation)?.ToList();
+                var result = ioc.ProjectManagerService.CurrentProject.Childs?.Select(x => x as IStationClient)?.ToList();
                 return JsonConvert.SerializeObject(result, Formatting.Indented);
             }
             return null;
@@ -118,10 +118,10 @@ namespace EasyScada.ServerApplication
         {
             if (pathToStations != null && ioc.ProjectManagerService.CurrentProject != null)
             {
-                List<IStation> stations = new List<IStation>();
+                List<IStationClient> stations = new List<IStationClient>();
                 foreach (var path in pathToStations)
                 {
-                    IStation station = ioc.ProjectManagerService.CurrentProject.GetItem<IStation>(path);
+                    IStationClient station = ioc.ProjectManagerService.CurrentProject.GetItem<IStationClient>(path);
                     if (station != null)
                         stations.Add(station);
                 }
@@ -141,7 +141,7 @@ namespace EasyScada.ServerApplication
         public string GetChannel(string pathToChannel)
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IChannel>(pathToChannel));
+                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IChannelClient>(pathToChannel));
             return null;
         }
         public async Task<string> GetChannelAsync(string pathToChannel)
@@ -153,7 +153,7 @@ namespace EasyScada.ServerApplication
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
             {
-                IStation station = ioc.ProjectManagerService.CurrentProject.GetItem<IStation>(pathToStation);
+                IStationClient station = ioc.ProjectManagerService.CurrentProject.GetItem<IStationClient>(pathToStation);
                 if (station != null)
                     return JsonConvert.SerializeObject(station.Channels);
             }
@@ -180,7 +180,7 @@ namespace EasyScada.ServerApplication
         public string GetDevice(string pathToDevice)
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IDevice>(pathToDevice));
+                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IDeviceClient>(pathToDevice));
             return null;
         }
         public async Task<string> GetDeviceAsync(string pathToDevice)
@@ -192,7 +192,7 @@ namespace EasyScada.ServerApplication
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
             {
-                IChannel channel = ioc.ProjectManagerService.CurrentProject.GetItem<IChannel>(pathToChannel);
+                IChannelClient channel = ioc.ProjectManagerService.CurrentProject.GetItem<IChannelClient>(pathToChannel);
                 if (channel != null)
                     return JsonConvert.SerializeObject(channel.Devices);
             }
@@ -219,7 +219,7 @@ namespace EasyScada.ServerApplication
         public string GetTag(string pathToTag)
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<ITag>(pathToTag));
+                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<ITagClient>(pathToTag));
             return null;
         }
         public async Task<string> GetTagAsync(string pathToTag)
@@ -231,9 +231,9 @@ namespace EasyScada.ServerApplication
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
             {
-                IDevice device = ioc.ProjectManagerService.CurrentProject.GetItem<IDevice>(pathToDevice);
+                IDeviceClient device = ioc.ProjectManagerService.CurrentProject.GetItem<IDeviceClient>(pathToDevice);
                 if (device != null)
-                    return JsonConvert.SerializeObject(device.Tags?.Select(x => x as ITag));
+                    return JsonConvert.SerializeObject(device.Tags?.Select(x => x as ITagClient));
             }
             return null;
         }
@@ -246,24 +246,9 @@ namespace EasyScada.ServerApplication
 
         #region Write
 
-        public WriteResponse WriteTagValue(string pathToTag, string value, WritePiority writePiority = WritePiority.Default, WriteMode writeMode = WriteMode.WriteAllValue)
+        public async Task<WriteResponse> WriteTagValueAsync(WriteCommand writeCommand)
         {
-            throw new NotImplementedException();
-        }
-        public WriteResponse WriteTagValue(WriteCommand writeCommand)
-        {
-            if (writeCommand != null)
-                return WriteTagValue(writeCommand.PathToTag, writeCommand.Value, writeCommand.WritePiority, writeCommand.WriteMode);
-            return null;
-        }
-
-        public Task<WriteResponse> WriteTagValueAsync(WriteCommand writeCommand)
-        {
-            return Task.Run(() => WriteTagValue(writeCommand));
-        }
-        public Task<WriteResponse> WriteTagValueAsync(string pathToTag, string value, WritePiority writePiority = WritePiority.Default, WriteMode writeMode = WriteMode.WriteAllValue)
-        {
-            return Task.Run(() => WriteTagValue(pathToTag, value, writePiority, writeMode));
+            return await ioc.Get<ITagWriterService>().WriteTag(writeCommand); 
         }
 
         #endregion

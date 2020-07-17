@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\AccessPermission.cs" />
     <Compile Include="Enums\ByteOrder.cs" />
     <Compile Include="DataTypes\Base\IDataType.cs" />
     <Compile Include="DataTypes\Base\IDataTypeIndex.cs" />
@@ -67,7 +68,13 @@
     <Compile Include="DataTypes\Integers\UInt.cs" />
     <Compile Include="DataTypes\Integers\ULInt.cs" />
     <Compile Include="DataTypes\Integers\USInt.cs" />
+    <Compile Include="Enums\CommunicationMode.cs" />
+    <Compile Include="Enums\ConnectionStatus.cs" />
+    <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Enums\ErrorMessageType.cs" />
+    <Compile Include="Enums\Quality.cs" />
+    <Compile Include="EventArgs\TagQualityChangedEventArgs.cs" />
+    <Compile Include="EventArgs\TagValueChangedEventArgs.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Core\IChannelCore.cs" />
     <Compile Include="Core\ICoreItem.cs" />
@@ -85,12 +92,6 @@
     <Compile Include="Core\ObservableCoreItems.cs" />
     <Compile Include="Plugin\IEasyDriverPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EasyDriver.Client.Models\EasyDriver.Client.Models.csproj">
-      <Project>{3762269d-2a9c-42d1-9384-52895320faa4}</Project>
-      <Name>EasyDriver.Client.Models</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

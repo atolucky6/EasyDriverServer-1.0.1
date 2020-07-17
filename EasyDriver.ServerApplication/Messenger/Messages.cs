@@ -1,4 +1,4 @@
-﻿using EasyDriver.Client.Models;
+﻿using EasyDriver.Core;
 using Microsoft.AspNet.SignalR.Client;
 using System.Collections.Generic;
 
@@ -29,12 +29,12 @@ namespace EasyScada.ServerApplication
 
     public class CreateRemoteStationSuccessMessage
     {
-        public List<Station> SelectedStations { get; private set; }
+        public List<StationClient> SelectedStations { get; private set; }
         public HubModel HubModel { get; private set; }
         public HubConnection HubConnection { get; private set; }
         public IHubProxy HubProxy { get; private set; }
 
-        public CreateRemoteStationSuccessMessage(List<Station> selectedStations, HubModel hubModel, HubConnection hubConnection, IHubProxy hubProxy)
+        public CreateRemoteStationSuccessMessage(List<StationClient> selectedStations, HubModel hubModel, HubConnection hubConnection, IHubProxy hubProxy)
         {
             SelectedStations = selectedStations;
             HubModel = hubModel;

@@ -94,6 +94,7 @@
         </dxb:BarManager.Items>
         <Border BorderThickness="0 1 0 0" BorderBrush="#44475a">
             <dxg:TreeListControl SelectionMode="Row"
+                                 ClipboardCopyMode="Default"
                                  ShowBorder="False"
                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  SelectedItems="{Binding SelectedItems, Mode=OneWayToSource}"
@@ -109,6 +110,8 @@
                             <dx:EventArgsToDataRowConverter/>
                         </dxmvvm:EventToCommand.EventArgsConverter>
                     </dxmvvm:EventToCommand>
+                    <local:CustomCopyPasteTreeListControl CopyCommand="{Binding CopyCommand}"
+                                                          PasteCommand="{Binding PasteCommand}"/>
                 </dxmvvm:Interaction.Behaviors>
                 <dxg:TreeListControl.View>
                     <dxg:TreeListView TreeColumnFieldName="Name"

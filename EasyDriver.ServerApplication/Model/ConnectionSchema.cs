@@ -1,4 +1,5 @@
-﻿using EasyDriver.Client.Models;
+﻿using EasyDriver.Core;
+using EasyDriverPlugin;
 using System;
 using System.Collections.Generic;
 
@@ -12,6 +13,6 @@ namespace EasyScada.ServerApplication
         public CommunicationMode CommunicationMode { get; set; }
         public int RefreshRate { get; set; }
         public DateTime CreatedDate { get; set; }
-        public List<Station> Stations { get; set; }
+        public List<StationClient> Stations { get; set; }
     }
 }

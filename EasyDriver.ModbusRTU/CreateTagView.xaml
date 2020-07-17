@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-nameSerialPortace:EasyDriver.ModbusRTU"
              mc:Ignorable="d" 
-             d:DesignHeight="470" d:DesignWidth="300"
-             MinWidth="300"
+             d:DesignHeight="400" d:DesignWidth="300"
+             MinWidth="400"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:plugin="clr-namespace:EasyDriverPlugin;assembly=EasyDriverPlugin"
              xmlns:serial="clr-nameSerialPortace:System.IO.Ports;assembly=System"
@@ -45,31 +45,35 @@
                                     <dxlc:LayoutItem Label="Name" AddColonToLabel="True">
                                         <dxe:TextEdit x:Name="txbName"/>
                                     </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem Label="Address" AddColonToLabel="True">
-                                        <dxe:TextEdit x:Name="txbAddress"/>
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem Label="Data Type" AddColonToLabel="True">
-                                        <dxe:ComboBoxEdit IsTextEditable="False" AllowNullInput="False" 
-                                                          SelectedIndex="0"
-                                                          x:Name="cobDataType"/>
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem Label="Scan Rate (ms)" AddColonToLabel="True">
-                                        <dxe:SpinEdit x:Name="spnScanRate" 
-                                                      Mask="d" 
-                                                      MaskUseAsDisplayFormat="True" 
-                                                      MinValue="10" 
-                                                      Value="100" 
-                                                      MaskCulture="en-US"
-                                                      MaxValue="2147483647"
-                                                      AllowSpinOnMouseWheel="True"
-                                                      Increment="100"
-                                                      AllowDefaultButton="True"/>
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem Label="Access Permission" AddColonToLabel="True">
-                                        <dxe:ComboBoxEdit IsTextEditable="False" AllowNullInput="False" 
-                                                          SelectedIndex="0"
-                                                          x:Name="cobPermission"/>
-                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem Label="Address" AddColonToLabel="True">
+                                            <dxe:TextEdit x:Name="txbAddress"/>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Data Type" AddColonToLabel="True">
+                                            <dxe:ComboBoxEdit IsTextEditable="False" AllowNullInput="False" 
+                                                              SelectedIndex="0" 
+                                                              x:Name="cobDataType"/>
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem Label="Refresh Rate (ms)" AddColonToLabel="True">
+                                            <dxe:SpinEdit x:Name="spnRefreshRate" 
+                                                          Mask="d" 
+                                                          MaskUseAsDisplayFormat="True" 
+                                                          MinValue="10" 
+                                                          Value="100" 
+                                                          MaskCulture="en-US"
+                                                          MaxValue="2147483647"
+                                                          AllowSpinOnMouseWheel="True"
+                                                          Increment="100"
+                                                          AllowDefaultButton="True"/>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Access Permission" AddColonToLabel="True">
+                                            <dxe:ComboBoxEdit IsTextEditable="False" AllowNullInput="False" 
+                                                              SelectedIndex="0"
+                                                              x:Name="cobPermission"/>
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
                             </dxlc:LayoutControl>
                         </dxdo:LayoutControlItem>
@@ -117,7 +121,17 @@
                         </dxdo:LayoutControlItem>
                     </dxdo:LayoutGroup>
                 </dxdo:LayoutGroup>
-                <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 4 0 0">
+                <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Horizontal" ItemWidth="*" HorizontalAlignment="Stretch" Margin="0 4 0 0">
+                    <dxdo:LayoutControlItem HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Auto create " VerticalAlignment="Center" Foreground="#FFB86C"/>
+                            <dxe:SpinEdit Mask="d" MinValue="1" MaxValue="10000" Value="1"
+                                          Width="40" Increment="1" HorizontalContentAlignment="Center" 
+                                          AllowDefaultButton="False" AllowNullInput="False"
+                                          x:Name="spnAutoCreateCount"/>
+                            <TextBlock Text=" tags" VerticalAlignment="Center" Foreground="#FFB86C"/>
+                        </StackPanel>
+                    </dxdo:LayoutControlItem>
                     <dxdo:LayoutControlItem ItemWidth="70">
                         <dx:SimpleButton Content="Ok" x:Name="btnOk" Foreground="#50FA7B"/>
                     </dxdo:LayoutControlItem>

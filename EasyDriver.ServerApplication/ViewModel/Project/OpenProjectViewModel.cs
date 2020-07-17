@@ -1,6 +1,6 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
-using EasyDriver.Server.Models;
+using EasyDriver.Core;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

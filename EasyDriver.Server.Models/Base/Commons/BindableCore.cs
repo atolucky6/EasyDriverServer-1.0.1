@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
-namespace EasyDriver.Server.Models
+namespace EasyDriver.Core
 {
     /// <summary>
     /// Lớp cung cấp các hàm Get và Set thuộc tính của Class.

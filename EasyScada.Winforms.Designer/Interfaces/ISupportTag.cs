@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using EasyScada.Winforms.Connector;
+using System.ComponentModel;
 
 namespace EasyScada.Winforms.Designer
 {
@@ -10,5 +11,7 @@ namespace EasyScada.Winforms.Designer
         [Description("Path to tag of the control")]
         [TypeConverter(typeof(EasyScadaTagPathConverter)), Category(DesignerCategory.EASYSCADA)]
         string PathToTag { get; set; }
+
+        ITag LinkedTag { get; }
     }
 }

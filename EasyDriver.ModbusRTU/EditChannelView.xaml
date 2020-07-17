@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-nameSerialPortace:EasyDriver.ModbusRTU"
              mc:Ignorable="d" 
-             d:DesignHeight="320" d:DesignWidth="400"
+             d:DesignHeight="380" d:DesignWidth="400"
              MinWidth="400"
              xmlns:serial="clr-nameSerialPortace:System.IO.Ports;assembly=System"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
@@ -51,6 +51,12 @@
                                                               SelectedIndex="0"
                                                               x:Name="cobPort"/>
                                         </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Scan Rate (ms)" AddColonToLabel="True">
+                                            <dxe:SpinEdit IsTextEditable="False" AllowNullInput="False" 
+                                                          MinValue="10" Value="1000" Mask="d" MaskUseAsDisplayFormat="True" 
+                                                          Increment="100"
+                                                          x:Name="spnScanRate"/>
+                                        </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                     <dxlc:LayoutGroup Orientation="Horizontal">
                                         <dxlc:LayoutItem Label="Baudrate" AddColonToLabel="True">
@@ -74,6 +80,14 @@
                                             <dxe:ComboBoxEdit IsTextEditable="False"
                                                               x:Name="cobStopBits">
                                             </dxe:ComboBoxEdit>
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup Orientation="Horizontal">
+                                        <dxlc:LayoutItem Label="Delay between pool" AddColonToLabel="True">
+                                            <dxe:SpinEdit IsTextEditable="False" AllowNullInput="False" 
+                                                          MinValue="0" MaxValue="50" Value="10" Mask="d" MaskUseAsDisplayFormat="True" 
+                                                          Increment="1"
+                                                          x:Name="spnDelayPool"/>
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>

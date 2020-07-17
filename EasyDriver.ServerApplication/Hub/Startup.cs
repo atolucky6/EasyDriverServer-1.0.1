@@ -10,9 +10,14 @@ namespace EasyScada.ServerApplication
         public void Configuration(IAppBuilder app)
         {
             app.UseCors(CorsOptions.AllowAll);
-            app.MapSignalR("/easyScada", new HubConfiguration());
-            GlobalHost.Configuration.DefaultMessageBufferSize = 100 * 1024;
-            GlobalHost.Configuration.MaxIncomingWebSocketMessageSize = 100 * 1024;
+            HubConfiguration configuration = new HubConfiguration()
+            {
+                EnableDetailedErrors = false,
+                EnableJavaScriptProxies = true,
+            };
+            app.MapSignalR("/easyScada", configuration);
+            GlobalHost.Configuration.DefaultMessageBufferSize = 50;
+            GlobalHost.Configuration.MaxIncomingWebSocketMessageSize = 20 * 1024;
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
         }
     }

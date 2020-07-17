@@ -55,6 +55,7 @@
     <Compile Include="DesignerHelper.cs" />
     <Compile Include="Helper\ControlHelper.cs" />
     <Compile Include="Interfaces\ISupportConnector.cs" />
+    <Compile Include="Interfaces\ISupportScale.cs" />
     <Compile Include="Interfaces\ISupportTag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeConverter\EasyScadaTagPathConverter.cs" />

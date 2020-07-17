@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EasyScada.Winforms.Designer
@@ -20,6 +21,15 @@ namespace EasyScada.Winforms.Designer
             {
                 setAction(control);
             }
+        }
+
+        public static async void SetInvokeAsync<T>(this T control, Action<T> setAction)
+            where T : Control
+        {
+            await Task.Run(() =>
+            {
+                SetInvoke(control, setAction);
+            });
         }
     }
 }

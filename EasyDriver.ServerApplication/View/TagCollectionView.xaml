@@ -51,6 +51,7 @@
                 <dxb:BarButtonItem x:Name="bEdit" Content="Edit" Command="{Binding EditCommand}" GlyphSize="Default" Glyph="/EasyScada.ServerApplication;component/Resources/Images/edit-48.png"/>
                 <dxb:BarButtonItem x:Name="bSearch" Content="Search" Command="{Binding ShowSearchPanelCommand}" GlyphSize="Default" Glyph="/EasyScada.ServerApplication;component/Resources/Images/search-48.png"/>
                 <dxb:BarCheckItem x:Name="bAllowDrag" Content="Allow Drag/Drop Tag" GlyphSize="Default" Glyph="/EasyScada.ServerApplication;component/Resources/Images/drag-48.png" />
+                <dxb:BarButtonItem x:Name="bWriteTag" Content="Write Tag" Command="{Binding WriteTagCommand}"/>
             </dxb:BarManager.Items>
             <dxb:BarManager.Bars>
                 <dxb:Bar Caption="Datablock Toolbox" UseWholeRow="True" AllowQuickCustomization="False" AllowCollapse="False"
@@ -124,6 +125,8 @@
                                     <dx:EventArgsToDataRowConverter/>
                                 </dxmvvm:EventToCommand.EventArgsConverter>
                             </dxmvvm:EventToCommand>
+                            <local:CustomCopyPasteGridControl CopyCommand="{Binding CopyCommand}"
+                                                              PasteCommand="{Binding PasteCommand}"/>
                         </dxmvvm:Interaction.Behaviors>
                         <!--#region TreeListView-->
                         <dxg:GridControl.View>
@@ -154,6 +157,8 @@
                                     </DataTemplate>
                                 </dxg:TableView.RowIndicatorContentTemplate>
                                 <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItemLink BarItemName="bWriteTag"/>
+                                    <dxb:BarItemSeparator/>
                                     <dxb:BarButtonItemLink BarItemName="bAdd"/>
                                     <dxb:BarSubItem Content="Insert tag" GlyphSize="Default">
                                         <dxb:BarSubItem.Items>

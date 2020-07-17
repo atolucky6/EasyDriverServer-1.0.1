@@ -1,11 +1,12 @@
 ﻿using DevExpress.Xpf.Core;
 using EasyDriverPlugin;
-using EasyDriver.Server.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
+using System.Text;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -20,6 +21,11 @@ namespace EasyDriver.ModbusRTU
         public List<ByteOrder> ByteOrderSource { get; set; }
         public IDeviceCore Device { get; set; }
         public IChannelCore Channel => Device?.Parent as IChannelCore;
+
+        public ObservableCollection<ReadBlockSetting> ReadInputContacts { get; set; }
+        public ObservableCollection<ReadBlockSetting> ReadOutputCoils { get; set; }
+        public ObservableCollection<ReadBlockSetting> ReadInputRegisters { get; set; }
+        public ObservableCollection<ReadBlockSetting> ReadHoldingRegisters { get; set; }
 
         #endregion
 
@@ -54,6 +60,107 @@ namespace EasyDriver.ModbusRTU
                 cobByteOrder.SelectedItem = (ByteOrder)Device.ParameterContainer.Parameters["ByteOrder"];
                 spnTryReadWrite.Value = (decimal)Device.ParameterContainer.Parameters["TryReadWriteTimes"];
                 spnDeviceId.Value = (decimal)Device.ParameterContainer.Parameters["DeviceId"];
+
+                if (Device.ParameterContainer.Parameters.ContainsKey("ReadInputContactsBlockSetting"))
+                {
+                    ObservableCollection<ReadBlockSetting> blockSettings = new ObservableCollection<ReadBlockSetting>();
+                    string readBlockStr = Device.ParameterContainer.Parameters["ReadInputContactsBlockSetting"].ToString();
+                    if (!string.IsNullOrWhiteSpace(readBlockStr))
+                    {
+                        string[] blockSplit = readBlockStr.Split('|');
+                        foreach (var item in blockSplit)
+                        {
+                            ReadBlockSetting block = ReadBlockSetting.Convert(item);
+                            if (block != null)
+                            {
+                                block.AddressType = AddressType.InputContact;
+                                blockSettings.Add(block);
+                            }
+                        }
+                    }
+                    ReadInputContacts = blockSettings;
+                }
+                else
+                {
+                    ReadInputContacts = new ObservableCollection<ReadBlockSetting>();
+                }
+
+                if (Device.ParameterContainer.Parameters.ContainsKey("ReadOutputCoilsBlockSetting"))
+                {
+                    ObservableCollection<ReadBlockSetting> blockSettings = new ObservableCollection<ReadBlockSetting>();
+                    string readBlockStr = Device.ParameterContainer.Parameters["ReadOutputCoilsBlockSetting"].ToString();
+                    if (!string.IsNullOrWhiteSpace(readBlockStr))
+                    {
+                        string[] blockSplit = readBlockStr.Split('|');
+                        foreach (var item in blockSplit)
+                        {
+                            ReadBlockSetting block = ReadBlockSetting.Convert(item);
+                            if (block != null)
+                            {
+                                block.AddressType = AddressType.OutputCoil;
+                                blockSettings.Add(block);
+                            }
+                        }
+                    }
+                    ReadOutputCoils = blockSettings;
+                }
+                else
+                {
+                    ReadOutputCoils = new ObservableCollection<ReadBlockSetting>();
+                }
+
+                if (Device.ParameterContainer.Parameters.ContainsKey("ReadInputRegistersBlockSetting"))
+                {
+                    ObservableCollection<ReadBlockSetting> blockSettings = new ObservableCollection<ReadBlockSetting>();
+                    string readBlockStr = Device.ParameterContainer.Parameters["ReadInputRegistersBlockSetting"].ToString();
+                    if (!string.IsNullOrWhiteSpace(readBlockStr))
+                    {
+                        string[] blockSplit = readBlockStr.Split('|');
+                        foreach (var item in blockSplit)
+                        {
+                            ReadBlockSetting block = ReadBlockSetting.Convert(item);
+                            if (block != null)
+                            {
+                                block.AddressType = AddressType.InputRegister;
+                                blockSettings.Add(block);
+                            }
+                        }
+                    }
+                    ReadInputRegisters = blockSettings;
+                }
+                else
+                {
+                    ReadInputRegisters = new ObservableCollection<ReadBlockSetting>();
+                }
+
+                if (Device.ParameterContainer.Parameters.ContainsKey("ReadHoldingRegistersBlockSetting"))
+                {
+                    ObservableCollection<ReadBlockSetting> blockSettings = new ObservableCollection<ReadBlockSetting>();
+                    string readBlockStr = Device.ParameterContainer.Parameters["ReadHoldingRegistersBlockSetting"].ToString();
+                    if (!string.IsNullOrWhiteSpace(readBlockStr))
+                    {
+                        string[] blockSplit = readBlockStr.Split('|');
+                        foreach (var item in blockSplit)
+                        {
+                            ReadBlockSetting block = ReadBlockSetting.Convert(item);
+                            if (block != null)
+                            {
+                                block.AddressType = AddressType.HoldingRegister;
+                                blockSettings.Add(block);
+                            }
+                        }
+                    }
+                    ReadHoldingRegisters = blockSettings;
+                }
+                else
+                {
+                    ReadHoldingRegisters = new ObservableCollection<ReadBlockSetting>();
+                }
+
+                blockInputContacts.InitBlockSettings(ReadInputContacts, AddressType.InputContact);
+                blockOutputCoils.InitBlockSettings(ReadOutputCoils, AddressType.OutputCoil);
+                blockInputRegisters.InitBlockSettings(ReadInputRegisters, AddressType.InputRegister);
+                blockHoldingRegisters.InitBlockSettings(ReadHoldingRegisters, AddressType.HoldingRegister);
             }
 
         }
@@ -70,6 +177,16 @@ namespace EasyDriver.ModbusRTU
                 Device.ParameterContainer.Parameters["ByteOrder"] = cobByteOrder.SelectedItem;
                 Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value;
                 Device.ParameterContainer.Parameters["DeviceId"] = spnDeviceId.Value;
+
+                DisableErrorBlockSettings(blockInputContacts.ReadBlockSettings);
+                DisableErrorBlockSettings(blockOutputCoils.ReadBlockSettings);
+                DisableErrorBlockSettings(blockInputRegisters.ReadBlockSettings);
+                DisableErrorBlockSettings(blockHoldingRegisters.ReadBlockSettings);
+
+                Device.ParameterContainer.Parameters["ReadInputContactsBlockSetting"] = ConvertBlockSettingsIntoString(blockInputContacts.ReadBlockSettings);
+                Device.ParameterContainer.Parameters["ReadOutputCoilsBlockSetting"] = ConvertBlockSettingsIntoString(blockOutputCoils.ReadBlockSettings);
+                Device.ParameterContainer.Parameters["ReadInputRegistersBlockSetting"] = ConvertBlockSettingsIntoString(blockInputRegisters.ReadBlockSettings);
+                Device.ParameterContainer.Parameters["ReadHoldingRegistersBlockSetting"] = ConvertBlockSettingsIntoString(blockHoldingRegisters.ReadBlockSettings);
 
                 ((Parent as FrameworkElement).Parent as Window).Tag = Device;
                 ((Parent as FrameworkElement).Parent as Window).Close();
@@ -107,6 +224,31 @@ namespace EasyDriver.ModbusRTU
             }
 
             return true;
+        }
+
+        private string ConvertBlockSettingsIntoString(ObservableCollection<ReadBlockSetting> readBlockSettings)
+        {
+            if (readBlockSettings.Count <= 0)
+                return string.Empty;
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var block in readBlockSettings)
+            {
+                sb.Append($"{block.ToString()}|");
+            }
+            string result = sb.ToString();
+            if (result.EndsWith("|"))
+                result = result.Remove(result.Length - 1, 1);
+            return result;
+        }
+
+        private void DisableErrorBlockSettings(ObservableCollection<ReadBlockSetting> readBlockSettings)
+        {
+            foreach (var item in readBlockSettings)
+            {
+                if (!string.IsNullOrWhiteSpace(item.Error))
+                    item.Enabled = false;
+            }
         }
 
         #endregion

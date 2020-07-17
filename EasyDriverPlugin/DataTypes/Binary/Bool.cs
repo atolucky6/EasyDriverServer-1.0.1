@@ -22,7 +22,7 @@ namespace EasyDriverPlugin
         /// <returns></returns>
         public override string ConvertToValue(byte[] buffer, double gain, double offset, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD)
         {
-            return ByteHelper.GetBitAt(buffer, pos, bit).ToString();
+            return ByteHelper.GetBitAt(buffer, pos, bit) ? (gain + offset).ToString() : offset.ToString();
         }
 
         /// <summary>
@@ -36,26 +36,16 @@ namespace EasyDriverPlugin
             buffer = new byte[RequireByteLength];
             if (value == null)
                 return false;
-            if (bool.TryParse(value.ToString(), out bool result))
+            if (double.TryParse(value.ToString(), out double dResult))
             {
-                ByteHelper.SetBitAt(ref buffer, 0, 0, result);
-                return true;
-            }
-            else
-            {
-                string valueAsString = value.ToString().ToUpper();
-                switch (valueAsString)
+                dResult = (dResult - offset) / gain;
+
+                switch (dResult)
                 {
-                    case "T":
+                    case 1:
                         ByteHelper.SetBitAt(ref buffer, 0, 0, true);
                         return true;
-                    case "F":
-                        ByteHelper.SetBitAt(ref buffer, 0, 0, false);
-                        return true;
-                    case "1":
-                        ByteHelper.SetBitAt(ref buffer, 0, 0, true);
-                        return true;
-                    case "0":
+                    case 0:
                         ByteHelper.SetBitAt(ref buffer, 0, 0, false);
                         return true;
                     default:

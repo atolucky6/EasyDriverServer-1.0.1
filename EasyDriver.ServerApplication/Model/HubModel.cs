@@ -1,6 +1,5 @@
-﻿using EasyDriver.Client.Models;
+﻿using EasyDriver.Core;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EasyScada.ServerApplication
 {
@@ -12,6 +11,6 @@ namespace EasyScada.ServerApplication
         public string StationName { get; set; }
         public string Name => $"{RemoteAddress}:{Port}";
         public bool Checked { get; set; }
-        public List<Station> Stations { get; set; }
+        public List<StationClient> Stations { get; set; }
     }
 }

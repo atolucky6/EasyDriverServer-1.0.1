@@ -1,19 +1,16 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using EasyDriverPlugin;
-using EasyDriver.Client.Models;
-using EasyDriver.Server.Models;
 using Microsoft.AspNet.SignalR.Client;
 using Microsoft.AspNet.SignalR.Client.Transports;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Threading;
-using Newtonsoft.Json;
+using EasyDriver.Core;
 
 namespace EasyScada.ServerApplication
 {
@@ -154,7 +151,7 @@ namespace EasyScada.ServerApplication
                                 StationName = Name,
                                 Port = Port.ToString(),
                                 RemoteAddress = RemoteAddress,
-                                Stations = new List<Station>(),
+                                Stations = new List<StationClient>(),
                                 CommunicationMode = CommunicationMode.ReceiveFromServer.ToString()
                             };
                             IsBusy = false;
@@ -216,7 +213,7 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        public IStationCore CreateRemoteStationCore(Station station, IGroupItem parent)
+        public IStationCore CreateRemoteStationCore(StationClient station, IGroupItem parent)
         {
             IStationCore stationCore = null;
             if (station.IsLocalStation)
@@ -246,12 +243,11 @@ namespace EasyScada.ServerApplication
             return stationCore;
         }
 
-        public IChannelCore CreateRemoteChannelCore(Channel channel, IStationCore parent)
+        public IChannelCore CreateRemoteChannelCore(ChannelClient channel, IStationCore parent)
         {
             IChannelCore channelCore = new ChannelCore(parent, true);
             channelCore.Name = channel.Name;
             channelCore.DriverPath = channel.DriverName;
-            channelCore.ConnectionType = channel.ConnectionType;
             channelCore.ParameterContainer.Parameters = channel.Parameters;
             foreach (var device in channel.Devices)
                 if (device != null)
@@ -259,7 +255,7 @@ namespace EasyScada.ServerApplication
             return channelCore;
         }
 
-        public IDeviceCore CreateRemoteDeviceCore(Device device, IChannelCore parent)
+        public IDeviceCore CreateRemoteDeviceCore(DeviceClient device, IChannelCore parent)
         {
             IDeviceCore deviceCore = new DeviceCore(parent, true);
             deviceCore.Name = device.Name;
@@ -271,7 +267,7 @@ namespace EasyScada.ServerApplication
             return deviceCore;
         }
 
-        public ITagCore CreateRemoteTagCore(Tag tag, IDeviceCore parent)
+        public ITagCore CreateRemoteTagCore(TagClient tag, IDeviceCore parent)
         {
             ITagCore tagCore = new TagCore(parent, true);
             tagCore.Name = tag.Name;

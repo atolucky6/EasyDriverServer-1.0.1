@@ -58,5 +58,17 @@ namespace EasyScada.ServerApplication.Properties {
                 this["RecentOpenProjects"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Office2016White")]
+        public string ApplicationThemeName {
+            get {
+                return ((string)(this["ApplicationThemeName"]));
+            }
+            set {
+                this["ApplicationThemeName"] = value;
+            }
+        }
     }
 }

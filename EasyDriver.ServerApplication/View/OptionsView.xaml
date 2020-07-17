@@ -71,6 +71,7 @@
                                                 </dxlc:LayoutItem>
                                                 <dxlc:LayoutItem Label="Broadcast Mode">
                                                     <dxe:ComboBoxEdit AllowNullInput="False"
+                                                                      IsTextEditable="False"
                                                                       SelectedItem="{Binding BroadcastMode, UpdateSourceTrigger=PropertyChanged}"
                                                                       ItemsSource="{Binding BroadcastModeSource}"/>
                                                 </dxlc:LayoutItem>

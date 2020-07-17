@@ -1,4 +1,4 @@
-﻿namespace EasyDriver.Server.Models
+﻿namespace EasyDriver.Core
 {
     public static class PropertyCategory
     {

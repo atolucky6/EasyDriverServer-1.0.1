@@ -38,8 +38,8 @@ namespace EasyDriver.ModbusRTU
             SerialPort.Parity = parity;
             if (stopBits != StopBits.None)
                 SerialPort.StopBits = stopBits;
-
         }
+
         public bool Open()
         {
             //Ensure port isn't already opened:
@@ -309,6 +309,70 @@ namespace EasyDriver.ModbusRTU
                 else
                     message[4] = 0;
 
+                message[5] = 0;
+
+                GetCRC(message, ref CRC);
+                message[message.Length - 2] = CRC[0];
+                message[message.Length - 1] = CRC[1];
+
+                //Send Modbus message to Serial Port:
+                try
+                {
+                    SerialPort.Write(message, 0, message.Length);
+                    GetResponse(ref response);
+                }
+                catch (Exception err)
+                {
+                    modbusStatus = "Error in write event: " + err.Message;
+                    return false;
+                }
+                //Evaluate message:
+                if (CheckResponse(response))
+                {
+                    for (int i = 0; i < response.Length; i++)
+                    {
+                        if (response[i] != message[i])
+                        {
+                            modbusStatus = "Wrong reSerialPortonse";
+                            return false;
+                        }
+                    }
+                    modbusStatus = "Good";
+                    return true;
+                }
+                else
+                {
+                    modbusStatus = "CRC error";
+                    return false;
+                }
+            }
+            else
+            {
+                modbusStatus = "Serial port not open";
+                return false;
+            }
+        }
+        public bool WriteSingleCoil(byte deviceId, ushort start, byte value)
+        {
+            //Ensure port is open:
+            if (SerialPort.IsOpen)
+            {
+                //Clear in/out buffers:
+                SerialPort.DiscardOutBuffer();
+                SerialPort.DiscardInBuffer();
+                //Message is 1 addr + 1 fcn + 2 start + 2 status to write + 2 CRC
+                byte[] message = new byte[8];
+                //Function 16 response is fixed at 8 bytes
+                byte[] response = new byte[8];
+
+                //Array to receive CRC bytes:
+                byte[] CRC = new byte[2];
+
+                message[0] = deviceId;
+                message[1] = 5;
+                message[2] = (byte)(start >> 8);
+                message[3] = (byte)start;
+                message[4] = value;
                 message[5] = 0;
 
                 GetCRC(message, ref CRC);

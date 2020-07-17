@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using EasyDriverPlugin;
-using EasyDriver.Client.Models;
 
-namespace EasyDriver.Server.Models
+namespace EasyDriver.Core
 {
     [Serializable]
     public class EasyScadaProject : GroupItemBase, IEasyScadaProject, IPath
