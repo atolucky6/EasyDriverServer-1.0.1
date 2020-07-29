@@ -45,6 +45,12 @@
     <StartupObject>EasyScada.ServerApplication.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Data.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Images.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
       <Private>True</Private>
@@ -107,6 +113,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Reactive, Version=1.0.2856.104, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.Cors, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -129,12 +136,205 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthenticateLicenseView.xaml.cs">
+      <DependentUpon>AuthenticateLicenseView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IoC\Behaviors\KeyDownBehavior.cs" />
+    <Compile Include="IoC\Service\ILicenseManagerService.cs" />
+    <Compile Include="IoC\Service\IOpcDaClientManagerService.cs" />
+    <Compile Include="OPC DA\OpcDaBootstrap.cs" />
+    <Compile Include="OPC DA\Common\ComProxyBlanket.cs" />
+    <Compile Include="OPC DA\Common\ComWrapper.cs" />
+    <Compile Include="OPC DA\Common\HRESULT.cs" />
+    <Compile Include="OPC DA\Common\IllegalType.cs" />
+    <Compile Include="OPC DA\Common\Internal\CategoryEnumerator.cs" />
+    <Compile Include="OPC DA\Common\Internal\ConnectionPoint.cs" />
+    <Compile Include="OPC DA\Common\Internal\IOpcServerListEnumerator.cs" />
+    <Compile Include="OPC DA\Common\Internal\IOpcServerShutdownHandler.cs" />
+    <Compile Include="OPC DA\Common\Internal\OpcServerList2Enumerator.cs" />
+    <Compile Include="OPC DA\Common\Internal\OpcServerListEnumerator.cs" />
+    <Compile Include="OPC DA\Common\Internal\StdComponentCategoriesMgr.cs" />
+    <Compile Include="OPC DA\Common\OpcClientException.cs" />
+    <Compile Include="OPC DA\Common\OpcServerCategory.cs" />
+    <Compile Include="OPC DA\Common\OpcServerDescription.cs" />
+    <Compile Include="OPC DA\Common\OpcServerEnumeratorAuto.cs" />
+    <Compile Include="OPC DA\Common\OpcShutdownEventArgs.cs" />
+    <Compile Include="OPC DA\Common\RpcFailedEventArgs.cs" />
+    <Compile Include="OPC DA\Common\UrlBuilder.cs" />
+    <Compile Include="OPC DA\Common\UrlParser.cs" />
+    <Compile Include="OPC DA\Common\UrlValidationResult.cs" />
+    <Compile Include="OPC DA\Common\UrlValidator.cs" />
+    <Compile Include="OPC DA\Common\Wrappers\EnumGuid.cs" />
+    <Compile Include="OPC DA\Common\Wrappers\IComWrapper.cs" />
+    <Compile Include="OPC DA\Common\Wrappers\OpcCommon.cs" />
+    <Compile Include="OPC DA\Common\Wrappers\OpcEnumGuid.cs" />
+    <Compile Include="OPC DA\Common\Wrappers\OpcServerList.cs" />
+    <Compile Include="OPC DA\Common\Wrappers\OpcServerList2.cs" />
+    <Compile Include="OPC DA\Common\Wrappers\OpcShutdown.cs" />
+    <Compile Include="OPC DA\Da\Browsing\Internal\OpcBrowseServerAddressSpaceExtensions.cs" />
+    <Compile Include="OPC DA\Da\Browsing\Internal\OpcItemPropertiesExtensions.cs" />
+    <Compile Include="OPC DA\Da\Browsing\IOpcDaBrowser.cs" />
+    <Compile Include="OPC DA\Da\Browsing\OpcDaBrowseDirection.cs" />
+    <Compile Include="OPC DA\Da\Browsing\OpcDaBrowseElement.cs" />
+    <Compile Include="OPC DA\Da\Browsing\OpcDaBrowseFilter.cs" />
+    <Compile Include="OPC DA\Da\Browsing\OpcDaBrowser1.cs" />
+    <Compile Include="OPC DA\Da\Browsing\OpcDaBrowser2.cs" />
+    <Compile Include="OPC DA\Da\Browsing\OpcDaBrowser3.cs" />
+    <Compile Include="OPC DA\Da\Browsing\OpcDaBrowserAuto.cs" />
+    <Compile Include="OPC DA\Da\Browsing\OpcDaBrowseType.cs" />
+    <Compile Include="OPC DA\Da\Internal\ArrayHelpers.cs" />
+    <Compile Include="OPC DA\Da\Internal\ExceptionHelper.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\AsyncRequestManager.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\IAsyncRequest.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\ReadAsyncRequest.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\ReadMaxAgeAsyncRequest.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\RefreshAsyncRequest.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\RefreshMaxAgeAsyncRequest.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\RequestHelpers.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\Slots.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\WriteAsyncRequest.cs" />
+    <Compile Include="OPC DA\Da\Internal\Requests\WriteVQTAsyncRequest.cs" />
+    <Compile Include="OPC DA\Da\IOpcDaGroup.cs" />
+    <Compile Include="OPC DA\Da\IOpcDaItem.cs" />
+    <Compile Include="OPC DA\Da\IOpcDaServer.cs" />
+    <Compile Include="OPC DA\Da\OpcDaAccessRights.cs" />
+    <Compile Include="OPC DA\Da\OpcDaDataSource.cs" />
+    <Compile Include="OPC DA\Da\OpcDaElementFilter.cs" />
+    <Compile Include="OPC DA\Da\OpcDaEnumScope.cs" />
+    <Compile Include="OPC DA\Da\OpcDaEUType.cs" />
+    <Compile Include="OPC DA\Da\OpcDaGroup.cs" />
+    <Compile Include="OPC DA\Da\OpcDaGroupFeatures.cs" />
+    <Compile Include="OPC DA\Da\OpcDaGroupState.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItem.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemAttributes.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemDefinition.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemProperties.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemProperty.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemPropertyIds.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemResult.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemsChangedEventArgs.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemValue.cs" />
+    <Compile Include="OPC DA\Da\OpcDaItemValuesChangedEventArgs.cs" />
+    <Compile Include="OPC DA\Da\OpcDaNamespaceType.cs" />
+    <Compile Include="OPC DA\Da\OpcDaPropertiesQuery.cs" />
+    <Compile Include="OPC DA\Da\OpcDaQuality.cs" />
+    <Compile Include="OPC DA\Da\OpcDaQualityLimit.cs" />
+    <Compile Include="OPC DA\Da\OpcDaQualityMaster.cs" />
+    <Compile Include="OPC DA\Da\OpcDaQualityStatus.cs" />
+    <Compile Include="OPC DA\Da\OpcDaServer.cs" />
+    <Compile Include="OPC DA\Da\OpcDaServerConnectionStateChangedEventArgs.cs" />
+    <Compile Include="OPC DA\Da\OpcDaServerGroupsChangedEventArgs.cs" />
+    <Compile Include="OPC DA\Da\OpcDaServerState.cs" />
+    <Compile Include="OPC DA\Da\OpcDaServerStatus.cs" />
+    <Compile Include="OPC DA\Da\OpcDaVQT.cs" />
+    <Compile Include="OPC DA\Da\OpcDaVQTE.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcAsyncIO2.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcAsyncIO3.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcBrowse.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcBrowseServerAddressSpace.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcDataCallback.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcGroupStateMgt.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcGroupStateMgt2.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcItemIO.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcItemMgt.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcItemProperties.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcItemSamplingMgt.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcServer.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcSyncIO.cs" />
+    <Compile Include="OPC DA\Da\Wrappers\OpcSyncIO2.cs" />
+    <Compile Include="OPC DA\Interop\Common\IConnectionPoint.cs" />
+    <Compile Include="OPC DA\Interop\Common\IEnumGUID.cs" />
+    <Compile Include="OPC DA\Interop\Common\IEnumString.cs" />
+    <Compile Include="OPC DA\Interop\Common\IEnumUnknown.cs" />
+    <Compile Include="OPC DA\Interop\Common\Interop.Interop.cs" />
+    <Compile Include="OPC DA\Interop\Common\IOPCCommon.cs" />
+    <Compile Include="OPC DA\Interop\Common\IOPCEnumGUID.cs" />
+    <Compile Include="OPC DA\Interop\Common\IOPCServerList.cs" />
+    <Compile Include="OPC DA\Interop\Common\IOPCServerList2.cs" />
+    <Compile Include="OPC DA\Interop\Common\IOPCShutdown.cs" />
+    <Compile Include="OPC DA\Interop\Common\RpcAuthnLevel.cs" />
+    <Compile Include="OPC DA\Interop\Common\RpcAuthService.cs" />
+    <Compile Include="OPC DA\Interop\Common\RpcAuthType.cs" />
+    <Compile Include="OPC DA\Interop\Common\RpcDwCapabilities.cs" />
+    <Compile Include="OPC DA\Interop\Common\RpcImpLevel.cs" />
+    <Compile Include="OPC DA\Interop\Da\IEnumOPCItemAttributes.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCAsyncIO.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCAsyncIO2.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCAsyncIO3.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCBrowse.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCBrowseServerAddressSpace.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCDataCallback.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOpcGroupStateMgt.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCGroupStateMgt2.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCItemIO.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCItemMgt.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCItemProperties.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCItemSamplingMgt.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCServer.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCSyncIO.cs" />
+    <Compile Include="OPC DA\Interop\Da\IOPCSyncIO2.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCACCESSRIGHTS.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCBROWSEDIRECTION.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCBROWSEELEMENT.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCBROWSEFILTER.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCBROWSETYPE.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCDATASOURCE.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCENUMSCOPE.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCEUTYPE.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCITEMATTRIBUTES.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCITEMDEF.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCITEMPROPERTIES.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCITEMPROPERTY.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCITEMRESULT.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCITEMSTATE.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCITEMVQT.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCNAMESPACETYPE.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCSERVERSTATE.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPCSERVERSTATUS.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPC_QUALITY_LIMIT.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPC_QUALITY_MASKS.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPC_QUALITY_MASTER.cs" />
+    <Compile Include="OPC DA\Interop\Da\OPC_QUALITY_STATUS.cs" />
+    <Compile Include="OPC DA\Interop\Helpers\CultureHelper.cs" />
+    <Compile Include="OPC DA\Interop\Helpers\EnumHelpers.cs" />
+    <Compile Include="OPC DA\Interop\Helpers\FileTimeConverter.cs" />
+    <Compile Include="OPC DA\Interop\Helpers\OpcDaQualityHelpers.cs" />
+    <Compile Include="OPC DA\Interop\Helpers\TypeConverter.cs" />
+    <Compile Include="OPC DA\Interop\System\COAUTHIDENTITY.cs" />
+    <Compile Include="OPC DA\Interop\System\COAUTHINFO.cs" />
+    <Compile Include="OPC DA\Interop\System\Com.cs" />
+    <Compile Include="OPC DA\Interop\System\ComConstants.cs" />
+    <Compile Include="OPC DA\Interop\System\COSERVERINFO.cs" />
+    <Compile Include="OPC DA\Interop\System\IClassFactory2.cs" />
+    <Compile Include="OPC DA\Interop\System\IClientSecurity.cs" />
+    <Compile Include="OPC DA\Interop\System\LICINFO.cs" />
+    <Compile Include="OPC DA\Interop\System\MULTI_QI.cs" />
+    <Compile Include="OPC DA\Interop\System\ServerInfo.cs" />
+    <Compile Include="OPC DA\Interop\System\SOLE_AUTHENTICATION_SERVICE.cs" />
+    <Compile Include="OPC DA\OpcConfiguration.cs" />
+    <Compile Include="Resources\Converters\OpcConnectionStatusToImageSourceConverter.cs" />
+    <Compile Include="Resources\Converters\StringEmptyToVisibilityConverter.cs" />
+    <Compile Include="ViewModel\RemoteOpcDaProjectTreeViewModel.cs" />
+    <Compile Include="View\RemoteOpcDaProjectTreeView.xaml.cs">
+      <DependentUpon>RemoteOpcDaProjectTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\RemoteOpcDaStationViewModel.cs" />
+    <Compile Include="View\RemoteOpcDaStationView.xaml.cs">
+      <DependentUpon>RemoteOpcDaStationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\WriteTagViewModel.cs" />
+    <Compile Include="View\WriteTagView.xaml.cs">
+      <DependentUpon>WriteTagView.xaml</DependentUpon>
+    </Compile>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Extensions\ApplicationExtensions.cs" />
     <Compile Include="IoC\Behaviors\CustomCopyPasteGridControl.cs" />
     <Compile Include="IoC\Behaviors\CustomCopyPasteTreeListControl.cs" />
+    <Compile Include="IoC\Service\IDispatcherFacade.cs" />
+    <Compile Include="IoC\Service\ITagWriterService.cs" />
     <Compile Include="Model\ConnectionSchema.cs" />
     <Compile Include="Model\ServerConfiguration.cs" />
     <Compile Include="SingleInstance.cs" />
@@ -232,6 +432,22 @@
     <Compile Include="Workspace\Base\WorkspacePanelViewModelBase.cs" />
     <Compile Include="Workspace\IWorkspaceManagerService.cs" />
     <Compile Include="Workspace\WorkspaceManagerService.cs" />
+    <Page Include="AuthenticateLicenseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RemoteOpcDaProjectTreeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RemoteOpcDaStationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\WriteTagView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="View\MainView.xaml.cs">
@@ -265,6 +481,8 @@
     </None>
     <Resource Include="Logo.ico" />
     <None Include="Resources\Logo.ico" />
+    <Resource Include="Resources\Images\opc_cloud_48px.png" />
+    <Resource Include="Resources\Images\key_96px.png" />
     <Content Include="server.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -343,17 +561,17 @@
     <Folder Include="View\Document\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EasyDriver.Client.Models\EasyDriver.Client.Models.csproj">
-      <Project>{3762269d-2a9c-42d1-9384-52895320faa4}</Project>
-      <Name>EasyDriver.Client.Models</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EasyDriverPlugin\EasyDriverPlugin.csproj">
       <Project>{5CBCE8B3-27A3-4D71-B38A-9CEEEF539F0A}</Project>
       <Name>EasyDriverPlugin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.Server.Models\EasyDriver.Server.Models.csproj">
+    <ProjectReference Include="..\EasyDriver.Server.Models\EasyDriver.Core.csproj">
       <Project>{67089d82-2fde-46c7-9264-ed5c066dc8ad}</Project>
-      <Name>EasyDriver.Server.Models</Name>
+      <Name>EasyDriver.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyScada.License\EasyScada.License.csproj">
+      <Project>{c05b67f4-39d7-4789-83d0-4b3ab1bdf8be}</Project>
+      <Name>EasyScada.License</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

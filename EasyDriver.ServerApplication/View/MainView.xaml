@@ -186,7 +186,7 @@
                 </dxb:Bar>
 
             </dxb:BarManager.Bars>
-            <Border BorderThickness="0 1 0 0" BorderBrush="#44475a">
+            <Border BorderThickness="0 1 0 1" BorderBrush="#44475a">
                 <Grid>
                     <dxdo:DockLayoutManager x:Name="dockContainer"
                                             FloatingMode="Desktop"

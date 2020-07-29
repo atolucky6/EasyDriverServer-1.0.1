@@ -103,11 +103,11 @@ namespace EasyScada.ServerApplication
 
         static App()
         {
-            // Load custom theme
-            var theme = new Theme("EasyDriverServerDarkTheme");
-            theme.AssemblyName = "DevExpress.Xpf.Themes.EasyDriverServerDarkTheme.v19.1";
-            Theme.RegisterTheme(theme);
-            ApplicationThemeHelper.ApplicationThemeName = "EasyDriverServerDarkTheme";
+            //// Load custom theme
+            //var theme = new Theme("EasyDriverServerDarkTheme");
+            //theme.AssemblyName = "DevExpress.Xpf.Themes.EasyDriverServerDarkTheme.v20.1";
+            //Theme.RegisterTheme(theme);
+            //ApplicationThemeHelper.ApplicationThemeName = "EasyDriverServerDarkTheme";
         }
 
         [STAThread]
