@@ -30,7 +30,7 @@ namespace EasyScada.ServerApplication
 
         private void MonitorDispatcherQueue(long l)
         {
-            if (operationsQueueCount > DispatcherQueueSize)
+            if (operationsQueueCount > DispatcherQueueSize || operations.Count > DispatcherQueueSize)
             {
                 Application.Current.DoEvents();
                 operations.Clear();

@@ -22,6 +22,10 @@ namespace EasyDriverPlugin
         /// <returns></returns>
         public override string ConvertToValue(byte[] buffer, double gain, double offset, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD)
         {
+            //string abcd = (ByteHelper.GetDWordAt(buffer, pos, ByteOrder.ABCD) * gain + offset).ToString();
+            //string badc = (ByteHelper.GetDWordAt(buffer, pos, ByteOrder.BADC) * gain + offset).ToString();
+            //string cdab = (ByteHelper.GetDWordAt(buffer, pos, ByteOrder.CDAB) * gain + offset).ToString();
+            //string dcba = (ByteHelper.GetDWordAt(buffer, pos, ByteOrder.DCBA) * gain + offset).ToString();
             return (ByteHelper.GetDWordAt(buffer, pos, byteOrder) * gain + offset).ToString();
         }
 

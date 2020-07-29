@@ -200,8 +200,10 @@ namespace EasyDriverPlugin
             switch (byteOrder)
             {
                 case ByteOrder.ABCD:
+                case ByteOrder.CDAB:
                     return (short)((Buffer[Pos] << 8) | Buffer[Pos + 1]);
                 case ByteOrder.DCBA:
+                case ByteOrder.BADC:
                     return (short)(Buffer[Pos] | Buffer[Pos + 1] << 8);
                 default:
                     return default;
@@ -212,10 +214,12 @@ namespace EasyDriverPlugin
             switch (byteOrder)
             {
                 case ByteOrder.ABCD:
+                case ByteOrder.CDAB:
                     Buffer[Pos] = (byte)(Value >> 8);
                     Buffer[Pos + 1] = (byte)(Value & 0x00FF);
                     break;
                 case ByteOrder.DCBA:
+                case ByteOrder.BADC:
                     Buffer[Pos + 1] = (byte)(Value >> 8);
                     Buffer[Pos] = (byte)(Value & 0x00FF);
                     break;
@@ -237,6 +241,24 @@ namespace EasyDriverPlugin
                         Result += Buffer[Pos + 1]; Result <<= 8;
                         Result += Buffer[Pos + 2]; Result <<= 8;
                         Result += Buffer[Pos + 3];
+                        return Result;
+                    }
+                case ByteOrder.BADC:
+                    {
+                        int Result;
+                        Result = Buffer[Pos + 1]; Result <<= 8;
+                        Result += Buffer[Pos]; Result <<= 8;
+                        Result += Buffer[Pos + 3]; Result <<= 8;
+                        Result += Buffer[Pos + 2];
+                        return Result;
+                    }
+                case ByteOrder.CDAB:
+                    {
+                        int Result;
+                        Result = Buffer[Pos + 2]; Result <<= 8;
+                        Result += Buffer[Pos + 3]; Result <<= 8;
+                        Result += Buffer[Pos]; Result <<= 8;
+                        Result += Buffer[Pos + 1];
                         return Result;
                     }
                 case ByteOrder.DCBA:
@@ -262,6 +284,18 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 2] = (byte)((Value >> 8) & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 16) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 24) & 0xFF);
+                    break;
+                case ByteOrder.BADC:
+                    Buffer[Pos + 2] = (byte)(Value & 0xFF);
+                    Buffer[Pos + 3] = (byte)((Value >> 8) & 0xFF);
+                    Buffer[Pos] = (byte)((Value >> 16) & 0xFF);
+                    Buffer[Pos + 1] = (byte)((Value >> 24) & 0xFF);
+                    break;
+                case ByteOrder.CDAB:
+                    Buffer[Pos + 1] = (byte)(Value & 0xFF);
+                    Buffer[Pos] = (byte)((Value >> 8) & 0xFF);
+                    Buffer[Pos + 3] = (byte)((Value >> 16) & 0xFF);
+                    Buffer[Pos + 2] = (byte)((Value >> 24) & 0xFF);
                     break;
                 case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
@@ -314,6 +348,7 @@ namespace EasyDriverPlugin
         {
             switch (byteOrder)
             {
+                // ABCD EFGH
                 case ByteOrder.ABCD:
                     Buffer[Pos + 7] = (byte)(Value & 0xFF);
                     Buffer[Pos + 6] = (byte)((Value >> 8) & 0xFF);
@@ -324,6 +359,29 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 1] = (byte)((Value >> 48) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 56) & 0xFF);
                     break;
+                // GHEF CDAB
+                case ByteOrder.CDAB:
+                    Buffer[Pos + 1] = (byte)(Value & 0xFF);
+                    Buffer[Pos + 0] = (byte)((Value >> 8) & 0xFF);
+                    Buffer[Pos + 3] = (byte)((Value >> 16) & 0xFF);
+                    Buffer[Pos + 2] = (byte)((Value >> 24) & 0xFF);
+                    Buffer[Pos + 5] = (byte)((Value >> 32) & 0xFF);
+                    Buffer[Pos + 4] = (byte)((Value >> 40) & 0xFF);
+                    Buffer[Pos + 7] = (byte)((Value >> 48) & 0xFF);
+                    Buffer[Pos + 6] = (byte)((Value >> 56) & 0xFF);
+                    break;
+                // BADC FEHG
+                case ByteOrder.BADC:
+                    Buffer[Pos + 6] = (byte)(Value & 0xFF);
+                    Buffer[Pos + 7] = (byte)((Value >> 8) & 0xFF);
+                    Buffer[Pos + 4] = (byte)((Value >> 16) & 0xFF);
+                    Buffer[Pos + 5] = (byte)((Value >> 24) & 0xFF);
+                    Buffer[Pos + 2] = (byte)((Value >> 32) & 0xFF);
+                    Buffer[Pos + 3] = (byte)((Value >> 40) & 0xFF);
+                    Buffer[Pos + 0] = (byte)((Value >> 48) & 0xFF);
+                    Buffer[Pos + 1] = (byte)((Value >> 56) & 0xFF);
+                    break;
+                // HGFE DCBA
                 case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
@@ -357,8 +415,10 @@ namespace EasyDriverPlugin
             switch (byteOrder)
             {
                 case ByteOrder.ABCD:
+                case ByteOrder.CDAB:
                     return (UInt16)((Buffer[Pos] << 8) | Buffer[Pos + 1]);
                 case ByteOrder.DCBA:
+                case ByteOrder.BADC:
                     return (UInt16)((Buffer[Pos + 1] << 8) | Buffer[Pos]);
                 default:
                     return default;
@@ -369,10 +429,12 @@ namespace EasyDriverPlugin
             switch (byteOrder)
             {
                 case ByteOrder.ABCD:
+                case ByteOrder.CDAB:
                     Buffer[Pos] = (byte)(Value >> 8);
                     Buffer[Pos + 1] = (byte)(Value & 0x00FF);
                     break;
                 case ByteOrder.DCBA:
+                case ByteOrder.BADC:
                     Buffer[Pos + 1] = (byte)(Value >> 8);
                     Buffer[Pos] = (byte)(Value & 0x00FF);
                     break;
@@ -387,6 +449,7 @@ namespace EasyDriverPlugin
         {
             switch (byteOrder)
             {
+                
                 case ByteOrder.ABCD:
                     {
                         UInt32 Result;
@@ -394,6 +457,24 @@ namespace EasyDriverPlugin
                         Result |= Buffer[Pos + 1]; Result <<= 8;
                         Result |= Buffer[Pos + 2]; Result <<= 8;
                         Result |= Buffer[Pos + 3];
+                        return Result;
+                    }
+                case ByteOrder.BADC:
+                    {
+                        UInt32 Result;
+                        Result = Buffer[Pos + 1]; Result <<= 8;
+                        Result |= Buffer[Pos]; Result <<= 8;
+                        Result |= Buffer[Pos + 3]; Result <<= 8;
+                        Result |= Buffer[Pos + 2];
+                        return Result;
+                    }
+                case ByteOrder.CDAB:
+                    {
+                        UInt32 Result;
+                        Result = Buffer[Pos + 2]; Result <<= 8;
+                        Result |= Buffer[Pos + 3]; Result <<= 8;
+                        Result |= Buffer[Pos + 0]; Result <<= 8;
+                        Result |= Buffer[Pos + 1];
                         return Result;
                     }
                 case ByteOrder.DCBA:
@@ -419,6 +500,18 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 1] = (byte)((Value >> 16) & 0xFF);
                     Buffer[Pos] = (byte)((Value >> 24) & 0xFF);
                     break;
+                case ByteOrder.BADC:
+                    Buffer[Pos + 2] = (byte)(Value & 0xFF);
+                    Buffer[Pos + 3] = (byte)((Value >> 8) & 0xFF);
+                    Buffer[Pos] = (byte)((Value >> 16) & 0xFF);
+                    Buffer[Pos + 1] = (byte)((Value >> 24) & 0xFF);
+                    break;
+                case ByteOrder.CDAB:
+                    Buffer[Pos + 1] = (byte)(Value & 0xFF);
+                    Buffer[Pos] = (byte)((Value >> 8) & 0xFF);
+                    Buffer[Pos + 3] = (byte)((Value >> 16) & 0xFF);
+                    Buffer[Pos + 2] = (byte)((Value >> 24) & 0xFF);
+                    break;
                 case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
@@ -436,6 +529,7 @@ namespace EasyDriverPlugin
         {
             switch (byteOrder)
             {
+                // ABCD EFGH
                 case ByteOrder.ABCD:
                     {
                         UInt64 Result;
@@ -449,6 +543,35 @@ namespace EasyDriverPlugin
                         Result |= Buffer[Pos + 7];
                         return Result;
                     }
+                // GHEF CDAB
+                case ByteOrder.CDAB:
+                    {
+                        UInt64 Result;
+                        Result = Buffer[Pos + 6]; Result <<= 8;
+                        Result |= Buffer[Pos + 7]; Result <<= 8;
+                        Result |= Buffer[Pos + 4]; Result <<= 8;
+                        Result |= Buffer[Pos + 5]; Result <<= 8;
+                        Result |= Buffer[Pos + 2]; Result <<= 8;
+                        Result |= Buffer[Pos + 3]; Result <<= 8;
+                        Result |= Buffer[Pos + 0]; Result <<= 8;
+                        Result |= Buffer[Pos + 1];
+                        return Result;
+                    }
+                // BADC FEHG
+                case ByteOrder.BADC:
+                    {
+                        UInt64 Result;
+                        Result = Buffer[Pos + 1]; Result <<= 8;
+                        Result |= Buffer[Pos + 0]; Result <<= 8;
+                        Result |= Buffer[Pos + 3]; Result <<= 8;
+                        Result |= Buffer[Pos + 2]; Result <<= 8;
+                        Result |= Buffer[Pos + 5]; Result <<= 8;
+                        Result |= Buffer[Pos + 4]; Result <<= 8;
+                        Result |= Buffer[Pos + 7]; Result <<= 8;
+                        Result |= Buffer[Pos + 6];
+                        return Result;
+                    }
+                // HGFE DCBA
                 case ByteOrder.DCBA:
                     {
                         UInt64 Result;
@@ -466,10 +589,11 @@ namespace EasyDriverPlugin
                     return default;
             }
         }
-        public static void SetULintAt(byte[] Buffer, int Pos, UInt64 Value, ByteOrder byteOrder = ByteOrder.ABCD)
+        public static void SetULIntAt(byte[] Buffer, int Pos, UInt64 Value, ByteOrder byteOrder = ByteOrder.ABCD)
         {
             switch (byteOrder)
             {
+                // ABCD EFGH
                 case ByteOrder.ABCD:
                     Buffer[Pos + 7] = (byte)(Value & 0xFF);
                     Buffer[Pos + 6] = (byte)((Value >> 8) & 0xFF);
@@ -478,8 +602,31 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 3] = (byte)((Value >> 32) & 0xFF);
                     Buffer[Pos + 2] = (byte)((Value >> 40) & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 48) & 0xFF);
-                    Buffer[Pos] = (byte)((Value >> 56) & 0xFF);
+                    Buffer[Pos + 0] = (byte)((Value >> 56) & 0xFF);
                     break;
+                // GHEF CDAB
+                case ByteOrder.CDAB:
+                    Buffer[Pos + 1] = (byte)(Value & 0xFF);
+                    Buffer[Pos + 0] = (byte)((Value >> 8) & 0xFF);
+                    Buffer[Pos + 3] = (byte)((Value >> 16) & 0xFF);
+                    Buffer[Pos + 2] = (byte)((Value >> 24) & 0xFF);
+                    Buffer[Pos + 5] = (byte)((Value >> 32) & 0xFF);
+                    Buffer[Pos + 4] = (byte)((Value >> 40) & 0xFF);
+                    Buffer[Pos + 7] = (byte)((Value >> 48) & 0xFF);
+                    Buffer[Pos + 6] = (byte)((Value >> 56) & 0xFF);
+                    break;
+                // BADC FEHG
+                case ByteOrder.BADC:
+                    Buffer[Pos + 6] = (byte)(Value & 0xFF);
+                    Buffer[Pos + 7] = (byte)((Value >> 8) & 0xFF);
+                    Buffer[Pos + 4] = (byte)((Value >> 16) & 0xFF);
+                    Buffer[Pos + 5] = (byte)((Value >> 24) & 0xFF);
+                    Buffer[Pos + 2] = (byte)((Value >> 32) & 0xFF);
+                    Buffer[Pos + 3] = (byte)((Value >> 40) & 0xFF);
+                    Buffer[Pos + 0] = (byte)((Value >> 48) & 0xFF);
+                    Buffer[Pos + 1] = (byte)((Value >> 56) & 0xFF);
+                    break;
+                // HGFE DCBA
                 case ByteOrder.DCBA:
                     Buffer[Pos] = (byte)(Value & 0xFF);
                     Buffer[Pos + 1] = (byte)((Value >> 8) & 0xFF);
@@ -536,7 +683,7 @@ namespace EasyDriverPlugin
         }
         public static void SetLWordAt(byte[] Buffer, int Pos, UInt64 Value, ByteOrder byteOrder = ByteOrder.ABCD)
         {
-            SetULintAt(Buffer, Pos, Value, byteOrder);
+            SetULIntAt(Buffer, Pos, Value, byteOrder);
         }
         #endregion
 
@@ -558,11 +705,23 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 2] = FloatArray[1];
                     Buffer[Pos + 3] = FloatArray[0];
                     break;
+                case ByteOrder.BADC:
+                    Buffer[Pos + 1] = FloatArray[3];
+                    Buffer[Pos] = FloatArray[2];
+                    Buffer[Pos + 3] = FloatArray[1];
+                    Buffer[Pos + 2] = FloatArray[0];
+                    break;
+                case ByteOrder.CDAB:
+                    Buffer[Pos + 2] = FloatArray[3];
+                    Buffer[Pos + 3] = FloatArray[2];
+                    Buffer[Pos] = FloatArray[1];
+                    Buffer[Pos + 1] = FloatArray[0];
+                    break;
                 case ByteOrder.DCBA:
                     Buffer[Pos + 3] = FloatArray[3];
                     Buffer[Pos + 2] = FloatArray[2];
                     Buffer[Pos + 1] = FloatArray[1];
-                    Buffer[Pos + 0] = FloatArray[0];
+                    Buffer[Pos] = FloatArray[0];
                     break;
                 default:
                     break;
@@ -582,8 +741,9 @@ namespace EasyDriverPlugin
             byte[] FloatArray = BitConverter.GetBytes(Value);
             switch (byteOrder)
             {
+                // ABCD EFGH
                 case ByteOrder.ABCD:
-                    Buffer[Pos] = FloatArray[7];
+                    Buffer[Pos + 0] = FloatArray[7];
                     Buffer[Pos + 1] = FloatArray[6];
                     Buffer[Pos + 2] = FloatArray[5];
                     Buffer[Pos + 3] = FloatArray[4];
@@ -592,6 +752,29 @@ namespace EasyDriverPlugin
                     Buffer[Pos + 6] = FloatArray[1];
                     Buffer[Pos + 7] = FloatArray[0];
                     break;
+                // GHEF CDAB
+                case ByteOrder.CDAB:
+                    Buffer[Pos + 6] = FloatArray[7];
+                    Buffer[Pos + 7] = FloatArray[6];
+                    Buffer[Pos + 4] = FloatArray[5];
+                    Buffer[Pos + 5] = FloatArray[4];
+                    Buffer[Pos + 2] = FloatArray[3];
+                    Buffer[Pos + 3] = FloatArray[2];
+                    Buffer[Pos + 0] = FloatArray[1];
+                    Buffer[Pos + 1] = FloatArray[0];
+                    break;
+                // BADC FEHG
+                case ByteOrder.BADC:
+                    Buffer[Pos + 1] = FloatArray[7];
+                    Buffer[Pos + 0] = FloatArray[6];
+                    Buffer[Pos + 3] = FloatArray[5];
+                    Buffer[Pos + 2] = FloatArray[4];
+                    Buffer[Pos + 5] = FloatArray[3];
+                    Buffer[Pos + 4] = FloatArray[2];
+                    Buffer[Pos + 7] = FloatArray[1];
+                    Buffer[Pos + 6] = FloatArray[0];
+                    break;
+                // HGFE DCBA
                 case ByteOrder.DCBA:
                     Buffer[Pos + 7] = FloatArray[7];
                     Buffer[Pos + 6] = FloatArray[6];

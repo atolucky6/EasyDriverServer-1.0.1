@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:EasyScada.ServerApplication"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="800"
+             MinWidth="700"
              DataContext="{local:ViewModelContainer local:WriteTagViewModel}"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
@@ -20,7 +21,10 @@
         </Style>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:CurrentWindowService/>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnLoadedCommand}"/>
+        <local:KeyDownBehavior Key="Enter" Command="{Binding WriteCommand}"/>
+        <local:KeyDownBehavior Key="Esc" Command="{Binding CloseCommand}"/>
     </dxmvvm:Interaction.Behaviors>
     <dx:BackgroundPanel>
         <dxdo:DockLayoutManager>
@@ -49,7 +53,11 @@
                                         <dxe:TextEdit IsReadOnly="True" Text="{Binding TagCore.Value}"/>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem Label="Value" Width="100">
-                                        <dxe:TextEdit Text="{Binding WriteValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                        <dxe:TextEdit Text="{Binding WriteValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:FocusBehavior />
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </dxe:TextEdit>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem Label="  " Width="70" >
                                         <dx:SimpleButton Content="Write" Height="22" Command="{Binding WriteCommand}" Foreground="{StaticResource GreenBrush}"/>

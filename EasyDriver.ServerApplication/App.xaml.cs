@@ -1,4 +1,5 @@
 ﻿using DevExpress.Xpf.Core;
+using EasyDriver.Opc.Client;
 using Microsoft.Owin.Hosting;
 using Microsoft.Shell;
 using System;
@@ -57,6 +58,7 @@ namespace EasyScada.ServerApplication
         {
             if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
             {
+                OpcDaBootstrap.Initialize();
                 var application = new App();
                 application.InitializeComponent();
                 application.Run();

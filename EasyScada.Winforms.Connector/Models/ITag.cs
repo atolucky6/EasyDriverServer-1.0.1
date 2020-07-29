@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EasyScada.Winforms.Connector
 {
-    public interface ITag : IPath, INotifyPropertyChanged
+    public interface ITag : IPath, INotifyPropertyChanged, IComposite
     {
         string Name { get; }
         string Address { get; }
@@ -31,11 +32,11 @@ namespace EasyScada.Winforms.Connector
     {
         internal EasyDriverConnector connector;
 
-        public string Name { get; internal set; }
+        public string Name { get; set; }
 
-        public string Address { get; internal set; }
+        public string Address { get; set; }
 
-        public string DataType { get; internal set; }
+        public string DataType { get; set; }
 
         internal string value;
         public string Value
@@ -143,6 +144,9 @@ namespace EasyScada.Winforms.Connector
                 return this as T;
             return null;
         }
+
+        [JsonIgnore]
+        public List<object> Childs { get { return new List<object>(); } }
 
         [field: NonSerialized]
         public event EventHandler<TagValueChangedEventArgs> ValueChanged;

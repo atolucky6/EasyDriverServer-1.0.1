@@ -2,6 +2,7 @@
 
 namespace EasyScada.Winforms.Connector
 {
+    [Serializable]
     public class WriteResponse
     {
         public bool IsSuccess { get; set; }

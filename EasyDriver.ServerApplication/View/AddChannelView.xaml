@@ -10,11 +10,14 @@
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-             xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking">
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"    
+             xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
+             >
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:CurrentWindowService/>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnLoadedCommand}"/>
+        <local:KeyDownBehavior Key="Enter" Command="{Binding SaveCommand}"/>
+        <local:KeyDownBehavior Key="Esc" Command="{Binding CloseCommand}"/>
     </dxmvvm:Interaction.Behaviors>
     <dx:BackgroundPanel>
         <Grid>

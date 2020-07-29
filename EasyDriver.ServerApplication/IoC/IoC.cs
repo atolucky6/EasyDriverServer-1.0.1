@@ -1,10 +1,12 @@
 ﻿using DevExpress.Mvvm.POCO;
+using EasyDriver.Opc.Client.Common;
 using EasyDriverPlugin;
 using Ninject;
 using Ninject.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace EasyScada.ServerApplication
@@ -24,6 +26,7 @@ namespace EasyScada.ServerApplication
         public IProjectManagerService ProjectManagerService => Get<IProjectManagerService>();
         public IServerBroadcastService ServerBroadcastService => Get<IServerBroadcastService>();
         public ApplicationViewModel ApplicationViewModel => Get<ApplicationViewModel>();
+        public List<string> OpcDaServerHosts { get; private set; }
         public string Key { get; set; }
 
         #endregion
@@ -32,7 +35,16 @@ namespace EasyScada.ServerApplication
 
         protected IoC()
         {
-
+            Task.Run(() =>
+            {
+                OpcDaServerHosts = new List<string>();
+                OpcServerEnumeratorAuto enumerator = new OpcServerEnumeratorAuto();
+                OpcServerDescription[] serverDescriptions = enumerator.Enumerate("", OpcServerCategory.OpcDaServers);
+                for (int i = 0; i < serverDescriptions.Length; i++)
+                {
+                    OpcDaServerHosts.Add(serverDescriptions[i].ProgId);
+                }
+            });
         }
 
         #endregion
@@ -53,6 +65,7 @@ namespace EasyScada.ServerApplication
             var applicationViewModel = Kernel.Get<ApplicationViewModel>();
             Kernel.Bind<IHubFactory>().ToConstant(new HubFactory("EasyDriverServerHub"));
             Kernel.Bind<IHubConnectionManagerService>().ToConstant(new HubConnectionManagerService());
+            Kernel.Bind<IOpcDaClientManagerService>().ToConstant(new OpcDaClientManagerService());
             Kernel.Bind<IDriverManagerService>().ToConstant(new DriverManagerService());
             Kernel.Bind<IReverseService>().ToConstant(new ReverseService());
 
@@ -61,7 +74,12 @@ namespace EasyScada.ServerApplication
                 applicationViewModel, 
                 applicationViewModel.ServerConfiguration.BroadcastMode,
                 applicationViewModel.ServerConfiguration.BroadcastRate));
-            Kernel.Bind<ITagWriterService>().ToConstant(new TagWriterService(ProjectManagerService, Get<IDriverManagerService>(), Get<IHubConnectionManagerService>()));
+            Kernel.Bind<ITagWriterService>().ToConstant(new TagWriterService(
+                ProjectManagerService, 
+                Get<IDriverManagerService>(), 
+                Get<IHubConnectionManagerService>(), 
+                Get<IOpcDaClientManagerService>()));
+            Kernel.Bind<ILicenseManagerService>().ToConstant(new LicenseManagerService("EasyScada", Get<IProjectManagerService>()));
         }
 
         public T Get<T>()

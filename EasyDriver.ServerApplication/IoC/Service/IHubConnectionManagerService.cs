@@ -155,7 +155,7 @@ namespace EasyScada.ServerApplication
                         hubProxy = this.hubConnection.CreateHubProxy("EasyDriverServerHub");
                         hubProxy.On<string>("broadcastSubscribeData", OnReceivedBroadcastMessage);
                         await this.hubConnection.Start(new LongPollingTransport());
-                    }
+                    }   
                 } 
             }
             catch { }

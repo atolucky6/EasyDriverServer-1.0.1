@@ -5225,9 +5225,16 @@ namespace EasyScada.Winforms.Controls
                     // Cache the size of the image
                     memento.ImageRect.Size = memento.Image.Size;
 
+                    //if (!(displayRect.Width >= memento.ImageRect.Width) ||
+                    //    !(displayRect.Height >= memento.ImageRect.Height))
+                    //{
+                    //    memento.ImageRect.Width = displayRect.Width;
+                    //    memento.ImageRect.Height = displayRect.Height;
+                    //}
+
                     // Check for enough space to show all of the image
                     if ((displayRect.Width >= memento.ImageRect.Width) &&
-                        (displayRect.Height >= memento.ImageRect.Height))
+                    (displayRect.Height >= memento.ImageRect.Height))
                     {
                         // Convert from alignment enums to integers
                         int alignHIndex = RightToLeftIndex(rtl, paletteContent.GetContentImageH(state));

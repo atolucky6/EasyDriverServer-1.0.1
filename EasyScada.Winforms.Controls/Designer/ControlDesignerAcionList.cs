@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Forms.Design.Behavior;
 
 namespace EasyScada.Winforms.Controls
 {

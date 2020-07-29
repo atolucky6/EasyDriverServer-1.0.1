@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using DevExpress.Xpf.Core;
+using System.Windows.Input;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -40,6 +41,8 @@ namespace EasyDriver.ModbusRTU
             cobDataType.ItemsSource = DataTypeSource;
             cobDataType.DisplayMember = "Name";
 
+            KeyDown += OnKeyDown;
+
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
             Loaded += EditTagView_Loaded;
@@ -48,6 +51,18 @@ namespace EasyDriver.ModbusRTU
         #endregion
 
         #region Event handlers
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                BtnOk_Click(null, null);
+            }
+            else if (e.Key == Key.Escape)
+            {
+                BtnCancel_Click(null, null);
+            }
+        }
 
         private void EditTagView_Loaded(object sender, RoutedEventArgs e)
         {

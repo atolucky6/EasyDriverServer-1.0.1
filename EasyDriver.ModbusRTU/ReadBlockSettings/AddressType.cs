@@ -2,8 +2,8 @@
 {
     public enum AddressType
     {
-        InputContact = 0,
-        OutputCoil = 1,
+        OutputCoil = 0,
+        InputContact = 1,
         InputRegister = 3,
         HoldingRegister = 4,
     }

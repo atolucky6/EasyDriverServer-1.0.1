@@ -34,6 +34,7 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -46,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\ByteOrderConverter.cs" />
+    <Compile Include="Converters\StringLookupConverrter.cs" />
     <Compile Include="Enums\AccessPermission.cs" />
     <Compile Include="Enums\ByteOrder.cs" />
     <Compile Include="DataTypes\Base\IDataType.cs" />
@@ -73,6 +76,7 @@
     <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Enums\ErrorMessageType.cs" />
     <Compile Include="Enums\Quality.cs" />
+    <Compile Include="Enums\StationType.cs" />
     <Compile Include="EventArgs\TagQualityChangedEventArgs.cs" />
     <Compile Include="EventArgs\TagValueChangedEventArgs.cs" />
     <Compile Include="Helper\ByteHelper.cs" />

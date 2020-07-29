@@ -13,10 +13,6 @@ namespace EasyDriver.ModbusRTU
         public ModbusSerialRTU()
         {
         }
-        ~ModbusSerialRTU()
-        {
-            SerialPort?.Dispose();
-        }
         #endregion
 
         #region Open / Close Procedures

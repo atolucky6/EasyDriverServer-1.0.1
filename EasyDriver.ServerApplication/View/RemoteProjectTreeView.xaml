@@ -32,6 +32,12 @@
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="RemoteOpcDaStationTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png" />
+                <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate x:Key="RemoteStationTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
                 <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png" />
@@ -54,6 +60,7 @@
                                                HubTemplate="{StaticResource HubTemplate}"
                                                LocalStationTemplate="{StaticResource LocalStationTemplate}"
                                                RemoteStationTemplate="{StaticResource RemoteStationTemplate}"
+                                               RemoteOpcDaStationTemplate="{StaticResource RemoteOpcDaStationTemplate}"
                                                ChannelTemplate="{StaticResource ChannelTemplate}"
                                                DeviceTemplate="{StaticResource DeviceTemplate}"
                                                TagTemplate="{StaticResource TagTemplate}"/>

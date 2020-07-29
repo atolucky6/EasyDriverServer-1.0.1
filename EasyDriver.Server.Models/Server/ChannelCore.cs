@@ -29,7 +29,15 @@ namespace EasyDriver.Core
 
         [Browsable(false)]
         [JsonIgnore]
-        public string DriverName { get { return System.IO.Path.GetFileNameWithoutExtension(DriverPath); } }
+        public string DriverName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(DriverPath))
+                    return string.Empty;
+                return System.IO.Path.GetFileNameWithoutExtension(DriverPath);
+            }
+        }
 
         [Browsable(false)]
         [JsonIgnore]

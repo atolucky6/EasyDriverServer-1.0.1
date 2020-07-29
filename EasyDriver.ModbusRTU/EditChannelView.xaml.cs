@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -68,12 +69,26 @@ namespace EasyDriver.ModbusRTU
             cobStopBits.ItemsSource = StopBitsSource;
             cobStopBits.SelectedItem = StopBits.One;
 
+            KeyDown += OnKeyDown;
+
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
             Loaded += EditChannelView_Loaded;
         }
 
         #endregion
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                BtnOk_Click(null, null);
+            }
+            else if (e.Key == Key.Escape)
+            {
+                BtnCancel_Click(null, null);
+            }
+        }
 
         private void EditChannelView_Loaded(object sender, RoutedEventArgs e)
         {

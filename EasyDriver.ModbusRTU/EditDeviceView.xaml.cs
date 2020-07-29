@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows.Input;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -42,6 +43,8 @@ namespace EasyDriver.ModbusRTU
             cobByteOrder.ItemsSource = ByteOrderSource;
             cobByteOrder.SelectedItem = ByteOrder.ABCD;
 
+            KeyDown += OnKeyDown;
+
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
             Loaded += EditDeviceView_Loaded;
@@ -51,13 +54,25 @@ namespace EasyDriver.ModbusRTU
 
         #region Event handlers
 
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                BtnOk_Click(null, null);
+            }
+            else if (e.Key == Key.Escape)
+            {
+                BtnCancel_Click(null, null);
+            }
+        }
+
         private void EditDeviceView_Loaded(object sender, RoutedEventArgs e)
         {
             if (Device != null)
             {
                 txbName.Text = Device.Name;
                 spnTimeout.Value = (decimal)Device.ParameterContainer.Parameters["Timeout"];
-                cobByteOrder.SelectedItem = (ByteOrder)Device.ParameterContainer.Parameters["ByteOrder"];
+                cobByteOrder.SelectedItem = Device.ByteOrder;
                 spnTryReadWrite.Value = (decimal)Device.ParameterContainer.Parameters["TryReadWriteTimes"];
                 spnDeviceId.Value = (decimal)Device.ParameterContainer.Parameters["DeviceId"];
 
@@ -174,7 +189,7 @@ namespace EasyDriver.ModbusRTU
                 Device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";
 
                 Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value;
-                Device.ParameterContainer.Parameters["ByteOrder"] = cobByteOrder.SelectedItem;
+                Device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
                 Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value;
                 Device.ParameterContainer.Parameters["DeviceId"] = spnDeviceId.Value;
 

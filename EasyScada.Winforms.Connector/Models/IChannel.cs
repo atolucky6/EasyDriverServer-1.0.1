@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace EasyScada.Winforms.Connector
 {
-    public interface IChannel : IPath, INotifyPropertyChanged
+    public interface IChannel : IPath, INotifyPropertyChanged, IComposite
     {
         string Name { get; }
         string DriverName { get; }
@@ -36,6 +37,17 @@ namespace EasyScada.Winforms.Connector
         public bool Checked { get; set; }
 
         List<IDevice> IChannel.Devices => Devices?.Select(x => x as IDevice)?.ToList();
+
+        [JsonIgnore]
+        public List<object> Childs
+        {
+            get
+            {
+                var res = new List<object>();
+                res.AddRange(Devices);
+                return res;
+            }
+        }
 
         T IPath.GetItem<T>(string pathToObject)
         {

@@ -15,6 +15,7 @@ namespace EasyDriver.Core
         public RemoteStation(IGroupItem parent) : base(parent, true)
         {
             SyncObject = new object();
+            StationType = StationType.Remote;
             ParameterContainer = new ParameterContainer();
         }
 
@@ -29,7 +30,10 @@ namespace EasyDriver.Core
         public string CommunicationError { get; set; }
 
         [JsonIgnore]
-        public bool IsLocalStation { get; set; }
+        public StationType StationType { get; set; }
+
+        [JsonIgnore]
+        public string OpcDaServerName { get; set; }
 
         [JsonIgnore]
         public ushort Port
@@ -79,11 +83,14 @@ namespace EasyDriver.Core
         [JsonProperty("Name")]
         string IStationClient.Name => Name;
 
-        [JsonProperty("IsLocalStation")]
-        bool IStationClient.IsLocalStation => IsLocalStation;
+        [JsonProperty("StationType")]
+        StationType IStationClient.StationType => StationType;
 
         [JsonProperty("RemoteAddress")]
         string IStationClient.RemoteAddress => RemoteAddress;
+
+        [JsonProperty("OpcDaServerName")]
+        string IStationClient.OpcDaServerName => OpcDaServerName;
 
         [JsonProperty("Path")]
         string IPath.Path => Path;

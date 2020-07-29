@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.Text;
 using EasyDriver.Core;
+using System.Windows.Input;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -55,13 +56,11 @@ namespace EasyDriver.ModbusRTU
 
                 if (templateItem.ParameterContainer.Parameters.ContainsKey("Timeout"))
                     spnTimeout.EditValue = templateItem.ParameterContainer.Parameters["Timeout"];
-                if (templateItem.ParameterContainer.Parameters.ContainsKey("ByteOrder"))
-                    cobByteOrder.SelectedItem = templateItem.ParameterContainer.Parameters["ByteOrder"];
                 if (templateItem.ParameterContainer.Parameters.ContainsKey("TryReadWriteTimes"))
                     spnTryReadWrite.EditValue = templateItem.ParameterContainer.Parameters["TryReadWriteTimes"];
                 if (templateItem.ParameterContainer.Parameters.ContainsKey("DeviceId"))
                     spnDeviceId.EditValue = templateItem.ParameterContainer.Parameters["DeviceId"];
-
+                cobByteOrder.SelectedItem = templateItem.ByteOrder;
                 if (templateItem.ParameterContainer.Parameters.ContainsKey("ReadInputContactsBlockSetting"))
                 {
                     ObservableCollection<ReadBlockSetting> blockSettings = new ObservableCollection<ReadBlockSetting>();
@@ -148,6 +147,8 @@ namespace EasyDriver.ModbusRTU
             blockInputRegisters.InitBlockSettings(ReadInputRegisters, AddressType.InputRegister);
             blockHoldingRegisters.InitBlockSettings(ReadHoldingRegisters, AddressType.HoldingRegister);
 
+            KeyDown += OnKeyDown;
+
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
         }
@@ -155,6 +156,18 @@ namespace EasyDriver.ModbusRTU
         #endregion
 
         #region Event handlers
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                BtnOk_Click(null, null);
+            }
+            else if (e.Key == Key.Escape)
+            {
+                BtnCancel_Click(null, null);
+            }
+        }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
@@ -183,7 +196,7 @@ namespace EasyDriver.ModbusRTU
             device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";
 
             device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value;
-            device.ParameterContainer.Parameters["ByteOrder"] = cobByteOrder.SelectedItem;
+            device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
             device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value;
             device.ParameterContainer.Parameters["DeviceId"] = spnDeviceId.Value;
 

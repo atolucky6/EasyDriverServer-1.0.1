@@ -22,7 +22,7 @@ namespace EasyDriverPlugin
         /// <returns></returns>
         public override string ConvertToValue(byte[] buffer, double gain, double offset, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD)
         {
-            return (ByteHelper.GetLRealAt(buffer, pos, byteOrder) * gain + offset).ToString();
+            return string.Format("{0:0.000}", ByteHelper.GetLRealAt(buffer, pos, byteOrder) * gain + offset);
         }
 
         /// <summary>

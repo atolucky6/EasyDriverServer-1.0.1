@@ -1560,6 +1560,24 @@ namespace EasyScada.Winforms.Controls
     }
     #endregion
 
+    #region Enum ImageFillMode
+    public enum ImageFillMode
+    {
+        Original,
+        Shaded,
+    }
+    #endregion
+
+    #region Enum ImageFilpMode
+    public enum ImageFlipMode
+    {
+        None,
+        Horizontal,
+        Vertical,
+        Both
+    }
+    #endregion
+
     #region Type ViewDockStyleLookup
     internal class ViewDockStyleLookup : Dictionary<ViewBase, ViewDockStyle> { }
     #endregion

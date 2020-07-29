@@ -153,10 +153,7 @@ namespace EasyScada.ServerApplication
                         {
                             if (item is RemoteStation remoteStation)
                             {
-                                DispatcherFacade.AddToDispatcherQueue(new Action(() =>
-                                {
-                                    remoteStation.RaisePropertyChanged("ConnectionStatus");
-                                }));
+                                UpdateRemoteStation(remoteStation);
                             }
                         }
                     }
@@ -166,6 +163,24 @@ namespace EasyScada.ServerApplication
                 Thread.Sleep(100);
             }
             syncUIUpdateTask.Dispose();
+        }
+
+        public void UpdateRemoteStation(RemoteStation remoteStation)
+        {
+            if (remoteStation != null)
+            {
+                DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                {
+                    remoteStation.RaisePropertyChanged("ConnectionStatus");
+                }));
+                foreach (var item in remoteStation.Childs)
+                {
+                    if (item is RemoteStation childRemoteStation)
+                    {
+                        UpdateRemoteStation(childRemoteStation);
+                    }
+                }
+            }
         }
 
         public void Dispose()

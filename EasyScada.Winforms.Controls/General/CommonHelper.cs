@@ -73,6 +73,251 @@ namespace EasyScada.Winforms.Controls
 
         #region Public static members
 
+        public static Bitmap CopyToSquareCanvas(this Bitmap sourceBitmap, int canvasWidthLenght)
+        {
+            float ratio = 1.0f;
+            int maxSide = sourceBitmap.Width > sourceBitmap.Height ?
+                          sourceBitmap.Width : sourceBitmap.Height;
+
+            ratio = (float)maxSide / (float)canvasWidthLenght;
+
+            Bitmap bitmapResult = (sourceBitmap.Width > sourceBitmap.Height ?
+                                    new Bitmap(canvasWidthLenght, (int)(sourceBitmap.Height / ratio))
+                                    : new Bitmap((int)(sourceBitmap.Width / ratio), canvasWidthLenght));
+
+            using (Graphics graphicsResult = Graphics.FromImage(bitmapResult))
+            {
+                graphicsResult.CompositingQuality = CompositingQuality.HighQuality;
+                graphicsResult.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphicsResult.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                graphicsResult.DrawImage(sourceBitmap,
+                                        new Rectangle(0, 0,
+                                            bitmapResult.Width, bitmapResult.Height),
+                                        new Rectangle(0, 0,
+                                            sourceBitmap.Width, sourceBitmap.Height),
+                                            GraphicsUnit.Pixel);
+                graphicsResult.Flush();
+            }
+
+            return bitmapResult;
+        }
+
+        public static Bitmap BitmapColorShade(Bitmap sourceBitmap, Color shadeColor)
+        {
+            BitmapData sourceData = sourceBitmap.LockBits(new Rectangle(0, 0,
+                                    sourceBitmap.Width, sourceBitmap.Height),
+                                    ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+            byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
+
+            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+            sourceBitmap.UnlockBits(sourceData);
+
+            for (int k = 0; k + 4 < pixelBuffer.Length; k += 4)
+            {
+
+                //int gray = (int)(pixelBuffer[k + 2] * 0.12) + (int)(pixelBuffer[k + 1] * 0.4032) + (int)(pixelBuffer[k] * 0.4768);
+                int gray = (int)(pixelBuffer[k + 2] * 0.33) + (int)(pixelBuffer[k + 1] * 0.33) + (int)(pixelBuffer[k] * 0.34);
+
+                double rScale = shadeColor.R * 2 / 255;
+                double gScale = shadeColor.G * 2 / 255;
+                double bScale = shadeColor.B * 2 / 255;
+
+                int r = (int)(gray * rScale);
+                int g = (int)(gray * gScale);
+                int b = (int)(gray * bScale);
+
+                var rgb = RGB.Scale(new RGB() { R = r, G = g, B = b });
+
+                pixelBuffer[k] = (byte)rgb.B;
+                pixelBuffer[k + 1] = (byte)rgb.G;
+                pixelBuffer[k + 2] = (byte)rgb.R;
+            }
+
+            Bitmap resultBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
+
+            BitmapData resultData = resultBitmap.LockBits(new Rectangle(0, 0,
+                                    resultBitmap.Width, resultBitmap.Height),
+                                    ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+            Marshal.Copy(pixelBuffer, 0, resultData.Scan0, pixelBuffer.Length);
+            resultBitmap.UnlockBits(resultData);
+
+            return resultBitmap;
+        }
+
+
+        // Adjust the image's brightness.
+        public static Bitmap AdjustBrightness(Image image, float brightness)
+        {
+            // Make the ColorMatrix.
+            float b = brightness;
+            ColorMatrix cm = new ColorMatrix(new float[][]
+            {
+                new float[] {b, 0, 0, 0, 0},
+                new float[] {0, b, 0, 0, 0},
+                new float[] {0, 0, b, 0, 0},
+                new float[] {0, 0, 0, 1, 0},
+                new float[] {0, 0, 0, 0, 1},
+            });
+            ImageAttributes attributes = new ImageAttributes();
+            attributes.SetColorMatrix(cm);
+
+            // Draw the image onto the new bitmap while applying
+            // the new ColorMatrix.
+            Point[] points =
+            {
+                new Point(0, 0),
+                new Point(image.Width, 0),
+                new Point(0, image.Height),
+            };
+            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
+
+            // Make the result bitmap.
+            Bitmap bm = new Bitmap(image.Width, image.Height);
+            using (Graphics gr = Graphics.FromImage(bm))
+            {
+                gr.DrawImage(image, points, rect,
+                    GraphicsUnit.Pixel, attributes);
+            }
+
+            // Return the result.
+            return bm;
+        }
+
+        public static Color GrayScale(this Color input, double rScale, double gScale, double bScale)
+        {
+            double r = input.R * rScale;
+            double g = input.G * gScale;
+            double b = input.B * bScale;
+            int gray = (int)((r + g + b));
+            return Color.FromArgb(gray, gray, gray);
+        }
+
+        public static Color ShadedColor(this Color input, Color shadeColor, double scale)
+        {
+            double rScale = shadeColor.R * scale / 255;
+            double gScale = shadeColor.G * scale / 255;
+            double bScale = shadeColor.B * scale / 255;
+
+            int r = (int)(input.R * rScale);
+            int g = (int)(input.G * gScale);
+            int b = (int)(input.B * bScale);
+
+            var rgb = RGB.Scale(new RGB() { R = r, G = g, B = b });
+
+            return Color.FromArgb(rgb.R, rgb.G, rgb.B);
+        }
+
+        // Return a bitmap rotated around its center.
+        public static Bitmap RotateBitmap(Bitmap bm, float angle)
+        {
+            // Make a Matrix to represent rotation
+            // by this angle.
+            Matrix rotate_at_origin = new Matrix();
+            rotate_at_origin.Rotate(angle);
+
+            // Rotate the image's corners to see how big
+            // it will be after rotation.
+            PointF[] points =
+            {
+                new PointF(0, 0),
+                new PointF(bm.Width, 0),
+                new PointF(bm.Width, bm.Height),
+                new PointF(0, bm.Height),
+            };
+            rotate_at_origin.TransformPoints(points);
+            float xmin, xmax, ymin, ymax;
+            GetPointBounds(points, out xmin, out xmax,
+                out ymin, out ymax);
+
+            // Make a bitmap to hold the rotated result.
+            int wid = (int)Math.Round(xmax - xmin);
+            int hgt = (int)Math.Round(ymax - ymin);
+            Bitmap result = new Bitmap(wid, hgt);
+
+            // Create the real rotation transformation.
+            Matrix rotate_at_center = new Matrix();
+            rotate_at_center.RotateAt(angle,
+                new PointF(wid / 2f, hgt / 2f));
+
+            // Draw the image onto the new bitmap rotated.
+            using (Graphics gr = Graphics.FromImage(result))
+            {
+                // Use smooth image interpolation.
+                gr.InterpolationMode = InterpolationMode.High;
+
+                // Clear with the color in the image's upper left corner.
+                gr.Clear(bm.GetPixel(0, 0));
+
+                //// For debugging. (It's easier to see the background.)
+                //gr.Clear(Color.LightBlue);
+
+                // Set up the transformation to rotate.
+                gr.Transform = rotate_at_center;
+
+                // Draw the image centered on the bitmap.
+                int x = (wid - bm.Width) / 2;
+                int y = (hgt - bm.Height) / 2;
+                gr.DrawImage(bm, x, y);
+            }
+
+            // Return the result bitmap.
+            return result;
+        }
+
+        // Find the bounding rectangle for an array of points.
+        private static void GetPointBounds(PointF[] points,
+            out float xmin, out float xmax,
+            out float ymin, out float ymax)
+        {
+            xmin = points[0].X;
+            xmax = xmin;
+            ymin = points[0].Y;
+            ymax = ymin;
+            foreach (PointF point in points)
+            {
+                if (xmin > point.X) xmin = point.X;
+                if (xmax < point.X) xmax = point.X;
+                if (ymin > point.Y) ymin = point.Y;
+                if (ymax < point.Y) ymax = point.Y;
+            }
+        }
+
+        /// <summary>
+        /// Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
         public static void SetInvoke<T>(this T control, Action<T> setAction)
             where T : Control
         {

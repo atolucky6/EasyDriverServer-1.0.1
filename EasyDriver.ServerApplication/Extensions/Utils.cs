@@ -134,6 +134,8 @@ namespace EasyScada.ServerApplication
         /// <returns></returns>
         public static bool IsIpAddress(this string str)
         {
+            if (str == "localhost")
+                return true;
             return Regex.IsMatch(str, IpAddressPattern);
         }
 

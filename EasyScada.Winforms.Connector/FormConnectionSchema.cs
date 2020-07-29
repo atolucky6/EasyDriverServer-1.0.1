@@ -171,27 +171,34 @@ namespace EasyScada.Winforms.Connector
 
         private void btnTransfer_Click(object sender, EventArgs e)
         {
-            btnSave.Enabled = true;
-            checkedConnector = new ConnectionSchema()
+            try
             {
-                RefreshRate = serverConnector.RefreshRate,
-                CommunicationMode = serverConnector.CommunicationMode,
-                CreatedDate = DateTime.Now,
-                Port = serverConnector.Port,
-                ServerAddress = serverConnector.ServerAddress,
-                Stations = new List<Station>()
-            };
-            foreach (TreeNode serverRoot in serverProjectTree.Nodes)
-            {
-                foreach (TreeNode serverNode in serverRoot.Nodes)
+                btnSave.Enabled = true;
+                checkedConnector = new ConnectionSchema()
                 {
-                    Station station = GetCheckedStation(serverNode);
-                    if (station != null)
-                        checkedConnector.Stations.Add(station);
+                    RefreshRate = serverConnector.RefreshRate,
+                    CommunicationMode = serverConnector.CommunicationMode,
+                    CreatedDate = DateTime.Now,
+                    Port = serverConnector.Port,
+                    ServerAddress = serverConnector.ServerAddress,
+                    Stations = new List<Station>()
+                };
+                foreach (TreeNode serverRoot in serverProjectTree.Nodes)
+                {
+                    foreach (TreeNode serverNode in serverRoot.Nodes)
+                    {
+                        Station station = GetCheckedStation(serverNode);
+                        if (station != null)
+                            checkedConnector.Stations.Add(station);
+                    }
                 }
+                projectConnector = checkedConnector;
+                RefreshProjectTreeView(localProjectTree, projectConnector, true);
             }
-            projectConnector = checkedConnector;
-            RefreshProjectTreeView(localProjectTree, projectConnector, true);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Easy Driver Server");
+            }
         }
 
         #endregion
@@ -328,10 +335,10 @@ namespace EasyScada.Winforms.Connector
             if (station == null)
                 return null;
             int imgIndex = 0;
-            if (station.IsLocalStation)
+            if (station.StationType == StationType.Local)
                 imgIndex = 1;
             string stationName = station.Name;
-            if (!station.IsLocalStation)
+            if (station.StationType == StationType.Remote)
                 stationName += $" - {station.RemoteAddress}:{station.Port}";
             TreeNode treeNode = new TreeNode(stationName, imgIndex, imgIndex);
             treeNode.Tag = station;

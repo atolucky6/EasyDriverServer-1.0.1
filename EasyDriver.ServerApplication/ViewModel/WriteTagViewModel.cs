@@ -3,6 +3,7 @@ using DevExpress.Mvvm.POCO;
 using EasyDriver.Core;
 using EasyDriverPlugin;
 using System.Windows;
+using System.Windows.Input;
 
 namespace EasyScada.ServerApplication
 {
@@ -32,9 +33,15 @@ namespace EasyScada.ServerApplication
 
         #endregion
 
+        #region UI services
+
+        protected ICurrentWindowService CurrentWindowService { get { return this.GetService<ICurrentWindowService>(); } }
+
+        #endregion
+
         #region Public members
 
-        public string Title { get; set; }
+        public string Title { get; set; } = "";
         public SizeToContent SizeToContent { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
@@ -42,7 +49,7 @@ namespace EasyScada.ServerApplication
         public object ParentViewModel { get; set; }
         public object Parameter { get; set; }
         public ITagCore TagCore { get; set; }
-        public virtual string WriteValue { get; set; }
+        public virtual string WriteValue { get; set; } = "";
         public virtual bool IsBusy { get; set; }
 
         #endregion
@@ -59,16 +66,18 @@ namespace EasyScada.ServerApplication
                 cmd.Value = WriteValue;
                 await TagWriterService.WriteTag(cmd);
             }
-            catch
-            {
-
-            }
+            catch { }
             finally { IsBusy = false; }
         }
 
         public bool CanWrite()
         {
             return !IsBusy && TagCore != null && TagWriterService != null;
+        }
+
+        public void Close()
+        {
+            CurrentWindowService.Close();
         }
 
         #endregion

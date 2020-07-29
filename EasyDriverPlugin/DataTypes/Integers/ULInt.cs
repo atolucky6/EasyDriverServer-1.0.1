@@ -41,7 +41,7 @@ namespace EasyDriverPlugin
                 dResult = (dResult - offset) / gain;
                 if (ulong.TryParse(dResult.ToString(), out ulong result))
                 {
-                    ByteHelper.SetULintAt(buffer, 0, result, byteOrder);
+                    ByteHelper.SetULIntAt(buffer, 0, result, byteOrder);
                     return true;
                 }
             }

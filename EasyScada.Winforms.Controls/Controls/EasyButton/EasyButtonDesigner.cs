@@ -33,9 +33,7 @@ namespace EasyScada.Winforms.Controls
 
             actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.APPEARANCE));
             actionItems.Add(new DesignerActionPropertyItem("Orientation", "Orientation", DesignerCategory.APPEARANCE, ""));
-            actionItems.Add(new DesignerActionPropertyItem("BackColor", "BackColor", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("ForeColor", "ForeColor", DesignerCategory.APPEARANCE, ""));
-            actionItems.Add(new DesignerActionPropertyItem("BorderColor", "BorderColor", DesignerCategory.APPEARANCE, ""));
 
             actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.VALUES));
             actionItems.Add(new DesignerActionPropertyItem("Text", "Text", DesignerCategory.VALUES, ""));
@@ -58,22 +56,10 @@ namespace EasyScada.Winforms.Controls
             set { BaseControl.SetValue(value); }
         }
 
-        public Color BackColor
-        {
-            get { return BaseControl.StateCommon.Back.Color1; }
-            set { BaseControl.StateCommon.Back.Color1 = value; }
-        }
-
         public Color ForeColor
         {
             get { return BaseControl.StateCommon.Content.ShortText.Color1; }
             set { BaseControl.StateCommon.Content.ShortText.Color1 = value; }
-        }
-
-        public Color BorderColor
-        {
-            get { return BaseControl.StateCommon.Border.Color1; }
-            set { BaseControl.StateCommon.Border.Color1 = value; }
         }
 
         public string Text

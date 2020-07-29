@@ -1,8 +1,11 @@
-﻿namespace EasyScada.Winforms.Connector
+﻿using System;
+
+namespace EasyScada.Winforms.Connector
 {
     /// <summary>
     /// Trạng thái kết nối của <see cref="IStation"/>
     /// </summary>
+    [Serializable]
     public enum ConnectionStatus
     {
         Connecting = 0,

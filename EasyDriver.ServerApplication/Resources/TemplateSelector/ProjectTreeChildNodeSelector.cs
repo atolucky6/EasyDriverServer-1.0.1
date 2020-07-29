@@ -19,10 +19,16 @@ namespace EasyScada.ServerApplication
                     return hubModel.Stations;
                 if (item is StationClient station)
                 {
-                    if (station.IsLocalStation)
-                        return station.Channels;
-                    else
-                        return station.RemoteStations;
+                    switch (station.StationType)
+                    {
+                        case StationType.Local:
+                        case StationType.OPC_DA:
+                            return station.Channels;
+                        case StationType.Remote:
+                            return station.RemoteStations;
+                        default:
+                            break;
+                    }                        
                 }
                 if (item is ChannelClient channel)
                     return channel.Devices;

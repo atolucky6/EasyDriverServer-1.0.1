@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EasyDriver.Core;
+using EasyDriverPlugin;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,8 +14,12 @@ namespace EasyScada.ServerApplication
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
-                return string.Empty;
+            if (value is IChannelClient channel)
+            {
+                if (string.IsNullOrEmpty(channel.DriverName))
+                    return string.Empty;
+                return " - " + channel.DriverName;
+            }
             return string.Empty;
         }
 

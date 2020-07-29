@@ -30,6 +30,7 @@ namespace EasyScada.ServerApplication
         protected IDriverManagerService DriverManagerService { get; set; }
         protected IHubFactory HubFactory { get; set; }
         protected IHubConnectionManagerService HubConnectionManagerService { get; set; }
+        protected IOpcDaClientManagerService OpcDaClientManagerService { get; set; }
 
         #endregion
 
@@ -50,7 +51,8 @@ namespace EasyScada.ServerApplication
             IProjectManagerService projectManagerService,
             IDriverManagerService driverManagerService,
             IHubFactory hubFactory,
-            IHubConnectionManagerService hubConnectionManagerService) : base(null, workspaceManagerService)
+            IHubConnectionManagerService hubConnectionManagerService,
+            IOpcDaClientManagerService opcDaClientManagerService) : base(null, workspaceManagerService)
         {
             WorkspaceName = WorkspaceRegion.ProjectTree;
             Caption = "Project Explorer";
@@ -60,6 +62,7 @@ namespace EasyScada.ServerApplication
             DriverManagerService = driverManagerService;
             HubFactory = hubFactory;
             HubConnectionManagerService = hubConnectionManagerService;
+            OpcDaClientManagerService = opcDaClientManagerService;
 
             ProjectManagerService.ProjectChanged += OnProjectChanged;
 
@@ -127,8 +130,16 @@ namespace EasyScada.ServerApplication
                     // Nếu đối tượng con là 1 RemoteStation
                     else if (item is RemoteStation remoteStation)
                     {
-                        // Xóa connection liên quan tới RemoteStation
-                        HubConnectionManagerService.RemoveConnection(remoteStation);
+                        if (remoteStation.StationType == StationType.OPC_DA)
+                        {
+                            // Xóa connection liên quan tới RemoteStation
+                            OpcDaClientManagerService.RemoveConnection(remoteStation);
+                        }
+                        else if (remoteStation.StationType == StationType.Remote)
+                        {
+                            // Xóa connection liên quan tới RemoteStation
+                            HubConnectionManagerService.RemoveConnection(remoteStation);
+                        }
                     }
                 }
             }
@@ -152,7 +163,6 @@ namespace EasyScada.ServerApplication
                                 {
                                     // Khởi động driver bằng hàm connect
                                     driver?.Connect();
-                                    //DriverManagerService.AddDriver(channel, driver);
                                 }
                             }
                         }
@@ -160,8 +170,16 @@ namespace EasyScada.ServerApplication
                     /// Nếu đối tượng là một RemoteStation thì khởi tạo các HubConnection tương ứng với các RemoteStation
                     else if (item is RemoteStation remoteStation)
                     {
-                        // Thêm Hubconnection vào HubConnectionManagerService
-                        HubConnectionManagerService.AddConnection(remoteStation);
+                        if (remoteStation.StationType == StationType.OPC_DA)
+                        {
+                            // Xóa connection liên quan tới RemoteStation
+                            OpcDaClientManagerService.AddConnection(remoteStation);
+                        }
+                        else if (remoteStation.StationType == StationType.Remote)
+                        {
+                            // Xóa connection liên quan tới RemoteStation
+                            HubConnectionManagerService.AddConnection(remoteStation);
+                        }
                     }
                 }
             }
@@ -184,6 +202,28 @@ namespace EasyScada.ServerApplication
         #endregion
 
         #region Commands
+
+        public void AddOpcDaStation()
+        {
+            try
+            {
+                IsBusy = true;
+                WindowService.Show("RemoteOpcDaStationView", ProjectManagerService.CurrentProject, this);
+                IsBusy = false;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally { IsBusy = false; }
+        }
+
+        public bool CanAddOpcDaStation()
+        {
+            if (ProjectManagerService.CurrentProject != null)
+                return !IsBusy;
+            return false;
+        }
 
         public void AddStation()
         {
@@ -308,7 +348,14 @@ namespace EasyScada.ServerApplication
                 }
                 else if (SelectedItem is RemoteStation remoteStation)
                 {
-                    WindowService.Show("RemoteStationView", SelectedItem, this);
+                    if (remoteStation.StationType == StationType.OPC_DA)
+                    {
+                        WindowService.Show("RemoteOpcDaStationView", SelectedItem, this);
+                    }
+                    else if (remoteStation.StationType == StationType.Remote)
+                    {
+                        WindowService.Show("RemoteStationView", SelectedItem, this);
+                    }
                 }
             }
             catch (Exception ex)
@@ -557,6 +604,8 @@ namespace EasyScada.ServerApplication
                                 {
                                     if (HubConnectionManagerService.ConnectionDictonary.ContainsKey(station))
                                         HubConnectionManagerService.RemoveConnection(station);
+                                    if (OpcDaClientManagerService.ConnectionDictonary.ContainsKey(station))
+                                        OpcDaClientManagerService.RemoveConnection(station);
                                 }
                             }
                             else if (e.Direction == ReverseDirection.Undo)
@@ -579,8 +628,16 @@ namespace EasyScada.ServerApplication
                                 }
                                 else if (itemToRemote is RemoteStation station)
                                 {
-                                    station.Name = station.Parent.GetUniqueNameInGroup(station.Name);
-                                    HubConnectionManagerService.AddConnection(station);
+                                    if (station.StationType == StationType.OPC_DA)
+                                    {
+                                        station.Name = station.Parent.GetUniqueNameInGroup(station.Name);
+                                        OpcDaClientManagerService.AddConnection(station);
+                                    }
+                                    else if (station.StationType == StationType.Remote)
+                                    {
+                                        station.Name = station.Parent.GetUniqueNameInGroup(station.Name);
+                                        HubConnectionManagerService.AddConnection(station);
+                                    }
                                 }
                             }
                         };

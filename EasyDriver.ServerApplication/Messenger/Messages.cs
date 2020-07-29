@@ -1,9 +1,23 @@
 ﻿using EasyDriver.Core;
+using EasyDriver.Opc.Client.Da;
 using Microsoft.AspNet.SignalR.Client;
 using System.Collections.Generic;
 
 namespace EasyScada.ServerApplication
-{
+{ 
+    public class AuthenticateLicenseMessage
+    {
+        public int LimitTagCount { get; private set; }
+        public bool IsAuthenticated { get; private set; }
+        public string Message { get; private set; }
+        public AuthenticateLicenseMessage(bool isAuthenticated, int limitTagCount, string message)
+        {
+            IsAuthenticated = isAuthenticated;
+            LimitTagCount = limitTagCount;
+            Message = message;
+        }
+    }
+
     public class ShowPropertiesMessage
     {
         public object Sender { get; private set; }
@@ -40,6 +54,18 @@ namespace EasyScada.ServerApplication
             HubModel = hubModel;
             HubConnection = hubConnection;
             HubProxy = hubProxy;
+        }
+    }
+
+    public class CreateRemoteOpcDaStationSuccessMessage
+    {
+        public OpcDaServer OpcServer { get; private set; }
+        public StationClient Station { get; private set; }
+
+        public CreateRemoteOpcDaStationSuccessMessage(OpcDaServer opcServer, StationClient station)
+        {
+            OpcServer = opcServer;
+            Station = station;
         }
     }
 

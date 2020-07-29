@@ -15,7 +15,7 @@ namespace EasyScada.ServerApplication
         public DataTemplate HubTemplate { get; set; }
         public DataTemplate LocalStationTemplate { get; set; }
         public DataTemplate RemoteStationTemplate { get; set; }
-
+        public DataTemplate RemoteOpcDaStationTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -24,15 +24,31 @@ namespace EasyScada.ServerApplication
                 var row = (item as GridCellData).Row;
                 if (row is IStationCore stationCore)
                 {
-                    if (stationCore.IsLocalStation)
-                        return LocalStationTemplate;
-                    return RemoteStationTemplate;
+                    switch (stationCore.StationType)
+                    {
+                        case StationType.Local:
+                            return LocalStationTemplate;
+                        case StationType.Remote:
+                            return RemoteStationTemplate;
+                        case StationType.OPC_DA:
+                            return RemoteOpcDaStationTemplate;
+                        default:
+                            break;
+                    }
                 }
                 if (row is StationClient station)
                 {
-                    if (station.IsLocalStation)
-                        return LocalStationTemplate;
-                    return RemoteStationTemplate;
+                    switch (station.StationType)
+                    {
+                        case StationType.Local:
+                            return LocalStationTemplate;
+                        case StationType.Remote:
+                            return RemoteStationTemplate;
+                        case StationType.OPC_DA:
+                            return RemoteOpcDaStationTemplate;
+                        default:
+                            break;
+                    }
                 }
                 if (row is IChannelCore || row is ChannelClient)
                     return ChannelTemplate;

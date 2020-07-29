@@ -10,14 +10,14 @@ namespace EasyScada.Winforms.Controls
         #region Public members
 
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        public bool Enabled { get; set; }
+        [DefaultValue(true)]
+        public bool Enabled { get; set; } = true;
 
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
         public string WriteValue { get; set; }
 
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
         public int WriteDelay { get; set; }
-
 
         #endregion
 

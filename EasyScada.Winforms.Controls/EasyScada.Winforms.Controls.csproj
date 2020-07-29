@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AccurateText\AccurateText.cs" />
     <Compile Include="AccurateText\AccurateTextMemento.cs" />
+    <Compile Include="Adorner\PinGlyph.cs" />
     <Compile Include="ButtonSpec\ButtonSpec.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -109,10 +110,13 @@
     <Compile Include="Controller\MonthCalendarController.cs" />
     <Compile Include="Controller\TooltipController.cs" />
     <Compile Include="Controls Visuals\VisualContextMenu.cs" />
+    <Compile Include="Controls Visuals\VisualControl.cs" />
     <Compile Include="Controls Visuals\VisualControlBase.cs" />
+    <Compile Include="Controls Visuals\VisualControlContainment.cs" />
     <Compile Include="Controls Visuals\VisualForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Controls Visuals\VisualPanel.cs" />
     <Compile Include="Controls Visuals\VisualPopup.cs" />
     <Compile Include="Controls Visuals\VisualPopupManager.cs" />
     <Compile Include="Controls Visuals\VisualPopupShadow.cs">
@@ -127,6 +131,9 @@
     <Compile Include="Controls\EasyForm\EasyForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Controls\EasyGroupBox\EasyGroupBox.cs" />
+    <Compile Include="Controls\EasyGroupBox\EasyGroupBoxDesigner.cs" />
+    <Compile Include="Controls\EasyGroupPanel\EasyGroupPanel.cs" />
     <Compile Include="Controls\EasyLabel\EasyLabel.cs" />
     <Compile Include="Controls\EasyLabel\EasyLabelDesigner.cs" />
     <Compile Include="Controls\EasyManager\EasyManager.cs">
@@ -134,6 +141,9 @@
     </Compile>
     <Compile Include="Controls\EasyMonthCalender\EasyMonthCalender.cs" />
     <Compile Include="Controls\EasyPalette\EasyPalette.cs" />
+    <Compile Include="Controls\EasyPanel\EasyPanel.cs" />
+    <Compile Include="Controls\EasyPictureBox\EasyPictureBox.cs" />
+    <Compile Include="Controls\EasyPictureBox\EasyPictureBoxDesigner.cs" />
     <Compile Include="Controls\EasyTextBox\EasyTextBox.cs" />
     <Compile Include="Controls\EasyTextBox\EasyTextBoxDesigner.cs" />
     <Compile Include="Controls\EasyWriteTagCommand\EasyWriteTagCommandDesigner.cs" />
@@ -167,8 +177,10 @@
     <Compile Include="Designer\ControlDesignerAcionList.cs" />
     <Compile Include="Designer\ControlDesignerBase.cs" />
     <Compile Include="Designer\DesignerCategory.cs" />
+    <Compile Include="EasyScada\AnimateCommandBase.cs" />
     <Compile Include="EasyScada\Definitations.cs" />
     <Compile Include="Controls\EasyWriteTagCommand\EasyWriteTagCommand.cs" />
+    <Compile Include="EasyScada\DiscreteAnimateCommand.cs" />
     <Compile Include="EasyScada\WriteTagCommand.cs" />
     <Compile Include="EventArgs\ButtonDragOffsetEventArgs.cs" />
     <Compile Include="EventArgs\ButtonDragRectangleEventArgs.cs" />
@@ -185,11 +197,18 @@
     <Compile Include="EventArgs\TooltipEventArgs.cs" />
     <Compile Include="EventArgs\TypedCollectionEventArgs.cs" />
     <Compile Include="EventArgs\TagWritedEventArgs.cs" />
+    <Compile Include="FormAnimateDesigner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnimateDesigner.Designer.cs">
+      <DependentUpon>FormAnimateDesigner.cs</DependentUpon>
+    </Compile>
     <Compile Include="General\AntiAlias.cs" />
     <Compile Include="General\BoolFlags31.cs" />
     <Compile Include="General\Clipping.cs" />
     <Compile Include="General\CommonHelper.cs" />
     <Compile Include="General\ContextMenuProvider.cs" />
+    <Compile Include="General\ControlObscurer.cs" />
     <Compile Include="General\Definitations.cs" />
     <Compile Include="General\DesktopWindowManager.cs" />
     <Compile Include="General\EasyControlCollection.cs" />
@@ -202,6 +221,7 @@
     <Compile Include="General\HSL.cs" />
     <Compile Include="General\OperationThread.cs" />
     <Compile Include="General\PlatformInvoke.cs" />
+    <Compile Include="General\RGB.cs" />
     <Compile Include="General\Storage.cs" />
     <Compile Include="General\TooltipManager.cs" />
     <Compile Include="General\TypedCollection.cs" />
@@ -417,6 +437,8 @@
     <Compile Include="Palette Control\PaletteDataGridViewTripleStates.cs" />
     <Compile Include="Palette Control\PaletteForm.cs" />
     <Compile Include="Palette Control\PaletteFormRedirect.cs" />
+    <Compile Include="Palette Control\PaletteGroupBox.cs" />
+    <Compile Include="Palette Control\PaletteGroupBoxRedirect.cs" />
     <Compile Include="Palette Control\PaletteHeaderButtonRedirect.cs" />
     <Compile Include="Palette Control\PaletteHeaderRedirect.cs" />
     <Compile Include="Palette Control\PaletteInputControlBackStates.cs" />
@@ -473,10 +495,13 @@
     </Compile>
     <Compile Include="Values\ButtonImageStates.cs" />
     <Compile Include="Values\ButtonValues.cs" />
+    <Compile Include="Values\CaptionValues.cs" />
     <Compile Include="Values\CheckBoxImages.cs" />
     <Compile Include="Values\CheckButtonImageStates.cs" />
     <Compile Include="Values\ContextMenuImages.cs" />
     <Compile Include="Values\FixedContentValue.cs" />
+    <Compile Include="Values\HeaderValuesBase.cs" />
+    <Compile Include="Values\ImageValues.cs" />
     <Compile Include="Values\LabelValues.cs" />
     <Compile Include="Values\RadioButtonImages.cs" />
     <Compile Include="View Base\ViewBase.cs" />
@@ -495,6 +520,8 @@
     <Compile Include="View Draw\ViewDrawDropDownButton.cs" />
     <Compile Include="View Draw\ViewDrawEmptyContent.cs" />
     <Compile Include="View Draw\ViewDrawForm.cs" />
+    <Compile Include="View Draw\ViewDrawGroupBoxDocker.cs" />
+    <Compile Include="View Draw\ViewDrawImage.cs" />
     <Compile Include="View Draw\ViewDrawMenuCheckBox.cs" />
     <Compile Include="View Draw\ViewDrawMenuCheckButton.cs" />
     <Compile Include="View Draw\ViewDrawMenuColorBlock.cs" />
@@ -546,6 +573,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FormAnimateDesigner.resx">
+      <DependentUpon>FormAnimateDesigner.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

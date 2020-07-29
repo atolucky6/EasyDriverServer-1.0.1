@@ -13,24 +13,39 @@
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm">
     <UserControl.Resources>
+        <local:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter"/>
         <local:ConnectionStatusToImageSourceConverter x:Key="ConnectionStatusToImageSourceConverter"
                                                       ConnectedImageSource="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png" 
+                                                      DisconnectedImageSource="/EasyScada.ServerApplication;component/Resources/Images/cloud_cross_48px.png"/>
+        <local:OpcConnectionStatusToImageSourceConverter x:Key="OpcConnectionStatusToImageSourceConverter"
+                                                      ConnectedImageSource="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png" 
                                                       DisconnectedImageSource="/EasyScada.ServerApplication;component/Resources/Images/cloud_cross_48px.png"/>
         <local:ChannelCoreToDriverNameConverter x:Key="ChannelCoreToDriverNameConverter"/>
         <DataTemplate x:Key="ChannelTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
                 <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
-                <TextBlock Foreground="{StaticResource CyanBrush}" VerticalAlignment="Center">
-                    <Run Text="-"/>
-                    <Run Text="{Binding Mode=OneWay, Path=Row.DriverName}"/>
+                <TextBlock Foreground="{StaticResource CyanBrush}" VerticalAlignment="Center" 
+                           Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ChannelCoreToDriverNameConverter}}"
+                           Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}"
+                           >
                 </TextBlock>
-            </StackPanel>
+           </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="DeviceTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
                 <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="RemoteOpcDaStationTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
+                <dx:DXImage Height="20" Width="24" Source="{Binding Row.ConnectionStatus, Converter={StaticResource OpcConnectionStatusToImageSourceConverter}}" />
+                <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
+                <TextBlock Foreground="{StaticResource CyanBrush}" VerticalAlignment="Center">
+                    <Run Text="-"/>
+                    <Run Text="{Binding Mode=OneWay, Path=Row.OpcDaServerName}"/>
+                </TextBlock>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="RemoteStationTemplate">
@@ -56,6 +71,7 @@
                                                RemoteStationTemplate="{StaticResource RemoteStationTemplate}"
                                                ChannelTemplate="{StaticResource ChannelTemplate}"
                                                DeviceTemplate="{StaticResource DeviceTemplate}"
+                                               RemoteOpcDaStationTemplate="{StaticResource RemoteOpcDaStationTemplate}"
                                                />
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
@@ -72,6 +88,10 @@
                                IsVisible="{Binding ElementName=bAddStation, Path=IsEnabled}" GlyphSize="Default"
                                Glyph="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"
                                Command="{Binding AddStationCommand}"/>
+            <dxb:BarButtonItem x:Name="bAddOpcDaStation" Content="Add Remote OPC DA Station" 
+                               IsVisible="{Binding ElementName=bAddOpcDaStation, Path=IsEnabled}" GlyphSize="Default"
+                               Glyph="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png"
+                               Command="{Binding AddOpcDaStationCommand}"/>
             <dxb:BarButtonItem x:Name="bAddChannel" Content="Add Channel" 
                                IsVisible="{Binding ElementName=bAddChannel, Path=IsEnabled}" GlyphSize="Default"
                                Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"
@@ -156,6 +176,7 @@
                 <dxb:BarManager.DXContextMenu>
                     <dxb:PopupMenu>
                         <dxb:BarButtonItemLink BarItemName="bAddStation"/>
+                        <dxb:BarButtonItemLink BarItemName="bAddOpcDaStation"/>
                         <dxb:BarItemSeparator/>
                         <dxb:BarButtonItemLink BarItemName="bCopy" IsEnabled="False"/>
                         <dxb:BarButtonItemLink BarItemName="bCut" IsEnabled="False"/>

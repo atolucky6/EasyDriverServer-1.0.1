@@ -53,6 +53,7 @@ namespace EasyScada.ServerApplication
 
         public IMessageBoxService MessageBoxService { get => this.GetService<IMessageBoxService>(); }
         public IWindowService WindowService { get => this.GetService<IWindowService>(); }
+        public IWindowService LicenseWindowService { get => this.GetService<IWindowService>("LicenseWindowService"); }
         public ISaveFileDialogService SaveFileDialogService { get => this.GetService<ISaveFileDialogService>(); }
         public IOpenFileDialogService OpenFileDialogService { get => this.GetService<IOpenFileDialogService>(); }
         public IDispatcherService DispatcherService { get => this.GetService<IDispatcherService>(); }
@@ -72,11 +73,26 @@ namespace EasyScada.ServerApplication
             ReverseService = reverseService;
             ProjectManagerService = projectManagerService;
             ApplicationViewModel = applicationViewModel;
+            Messenger.Default.Register<AuthenticateLicenseMessage>(this, OnAuthenticateLicenseMessage);
         }
 
         #endregion
 
         #region Event handlers
+
+        public virtual void OnAuthenticateLicenseMessage(AuthenticateLicenseMessage message)
+        {
+            if (message != null)
+            {
+                DispatcherService.BeginInvoke(() =>
+                {
+                    if (!message.IsAuthenticated)
+                    {
+                        LicenseWindowService.Show("AuthenticateLicenseView", null);
+                    }
+                });
+            }
+        }
 
         /// <summary>
         /// Sự kiện khi MainView được Load
@@ -348,6 +364,25 @@ namespace EasyScada.ServerApplication
         #endregion
 
         #region Edit category
+
+        /// <summary>
+        /// Lệnh thêm OPC DA <see cref="RemoteStation"/> vào <see cref="IEasyScadaProject"/>
+        /// </summary>
+        public void AddOpcDaStation()
+        {
+            // Gọi lệnh AddStation ở ProjectTreeWorkspace
+            ProjectTreeWorkspace.AddOpcDaStation();
+        }
+
+        /// <summary>
+        /// Điều kiện để thực thi lệnh <see cref="AddOpcDaStation"/>
+        /// </summary>
+        /// <returns></returns>
+        public bool CanAddOpcDaStation()
+        {
+            // Đảm bảo rằng ProjectTreeWorkspace không null và có thể thêm Station
+            return ProjectTreeWorkspace != null && ProjectTreeWorkspace.CanAddStation();
+        }
 
         /// <summary>
         /// Lệnh thêm <see cref="RemoteStation"/> vào <see cref="IEasyScadaProject"/>

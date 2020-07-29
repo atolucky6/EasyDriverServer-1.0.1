@@ -135,6 +135,8 @@ namespace EasyDriverPlugin
         /// <returns></returns>
         public static bool IsIpAddress(this string str)
         {
+            if (string.IsNullOrWhiteSpace(str))
+                return false;
             return Regex.IsMatch(str, IpAddressPattern);
         }
 

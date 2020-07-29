@@ -10,8 +10,9 @@ namespace EasyDriver.Core
     public interface IStationClient : IPath, INotifyPropertyChanged
     {
         string Name { get; }
-        bool IsLocalStation { get; }
         string RemoteAddress { get; }
+        string OpcDaServerName { get; }
+        StationType StationType { get; }
         CommunicationMode CommunicationMode { get; }
         ConnectionStatus ConnectionStatus { get; }
         int RefreshRate { get; }
@@ -28,13 +29,15 @@ namespace EasyDriver.Core
     {
         public string Name { get; set; }
 
-        public bool IsLocalStation { get; set; }
+        public string OpcDaServerName { get; set; }
 
         public string RemoteAddress { get; set; }
 
         public ushort Port { get; set; }
 
         public string Error { get; set; }
+
+        public StationType StationType { get; set; }
 
         public CommunicationMode CommunicationMode { get; set; }
 

@@ -813,6 +813,9 @@ namespace EasyScada.Winforms.Controls
 
             // Raise event to indicate it was a mouse activated click
             OnMouseClick(e);
+
+            // Execute write tag commands
+            OnWriteTags();
         }
 
         private void OnButtonSelect(object sender, MouseEventArgs e)
@@ -820,6 +823,15 @@ namespace EasyScada.Winforms.Controls
             // Take the focus if allowed
             if (CanFocus)
                 Focus();
+        }
+
+        private void OnWriteTags()
+        {
+            if (WriteTagCommands != null && WriteTagCommands.Count > 0)
+            {
+                foreach (var command in WriteTagCommands)
+                    command.Execute();
+            }
         }
         #endregion
     }

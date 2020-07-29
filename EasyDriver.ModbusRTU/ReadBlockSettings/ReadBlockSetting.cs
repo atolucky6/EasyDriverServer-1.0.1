@@ -77,7 +77,7 @@ namespace EasyDriver.ModbusRTU
                 }
             }
         }
-      
+
         string startAddress;
         public string StartAddress
         {

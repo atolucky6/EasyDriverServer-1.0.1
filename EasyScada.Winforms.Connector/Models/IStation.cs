@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -6,10 +7,10 @@ using System.Runtime.CompilerServices;
 
 namespace EasyScada.Winforms.Connector
 {
-    public interface IStation : IPath, INotifyPropertyChanged
+    public interface IStation : IPath, INotifyPropertyChanged, IComposite
     {
         string Name { get; }
-        bool IsLocalStation { get; }
+        StationType StationType { get; }
         string RemoteAddress { get; }
         CommunicationMode CommunicationMode { get; }
         ConnectionStatus ConnectionStatus { get; }
@@ -27,13 +28,13 @@ namespace EasyScada.Winforms.Connector
     {
         public string Name { get; set; }
 
-        public bool IsLocalStation { get; set; }
-
         public string RemoteAddress { get; set; }
 
         public ushort Port { get; set; }
 
         public string Error { get; set; }
+
+        public StationType StationType { get; }
 
         public CommunicationMode CommunicationMode { get; set; }
 
@@ -52,6 +53,18 @@ namespace EasyScada.Winforms.Connector
         public string Path { get; set; }
 
         public bool Checked { get; set; }
+
+        [JsonIgnore]
+        public List<object> Childs
+        {
+            get
+            {
+                var res = new List<object>();
+                res.AddRange(Channels);
+                res.AddRange(RemoteStations);
+                return res;
+            }
+        }
 
         List<IChannel> IStation.Channels => Channels?.Select(x => x as IChannel).ToList();
 

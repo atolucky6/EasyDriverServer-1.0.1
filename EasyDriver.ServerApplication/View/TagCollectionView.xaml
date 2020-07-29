@@ -16,6 +16,7 @@
     <UserControl.Resources>
         <local:TextToWidthConverter x:Key="TextToWidthConverter"/>
         <local:CoreItemToImageSourceConverter x:Key="CoreItemToImageSourceConverter"
+                                              RemoteOpcDaStationImageSource="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png"
                                               ChannelImageSource="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"
                                               DeviceImageSource="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"
                                               RemoteStationImageSource="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"

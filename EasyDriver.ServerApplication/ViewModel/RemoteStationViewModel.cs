@@ -103,6 +103,9 @@ namespace EasyScada.ServerApplication
                             RemoteStation.RefreshRate = RefreshRate;
                             RemoteStation.CommunicationMode = CommunicationMode;
                             HubConnectionManagerService.ReloadConnection(RemoteStation);
+                            RemoteStation.Parent.Childs.NotifyItemInCollectionChanged(RemoteStation);
+                            RemoteStation.RaisePropertyChanged("RemoteAddress");
+                            RemoteStation.RaisePropertyChanged("Port");
                             IsBusy = false;
                             CurrentWindowService.Close();
                         }
@@ -216,15 +219,17 @@ namespace EasyScada.ServerApplication
         public IStationCore CreateRemoteStationCore(StationClient station, IGroupItem parent)
         {
             IStationCore stationCore = null;
-            if (station.IsLocalStation)
+            if (station.StationType == StationType.Local)
                 stationCore = new LocalStation(parent);
-            else
+            else 
                 stationCore = new RemoteStation(parent);
+            stationCore.StationType = station.StationType;
             stationCore.Name = station.Name;
             stationCore.RemoteAddress = station.RemoteAddress;
             stationCore.Port = station.Port;
             stationCore.RefreshRate = station.RefreshRate;
             stationCore.CommunicationMode = station.CommunicationMode;
+            stationCore.OpcDaServerName = station.OpcDaServerName;
 
             if (station.Channels != null && station.Channels.Count > 0)
             {

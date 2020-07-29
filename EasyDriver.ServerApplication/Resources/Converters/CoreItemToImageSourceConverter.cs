@@ -11,6 +11,8 @@ namespace EasyScada.ServerApplication
     {
         public ImageSource LocalStationImageSource { get; set; }
 
+        public ImageSource RemoteOpcDaStationImageSource { get; set; }
+
         public ImageSource RemoteStationImageSource { get; set; }
 
         public ImageSource ChannelImageSource { get; set; }
@@ -23,8 +25,13 @@ namespace EasyScada.ServerApplication
             {
                 if (node.Item is LocalStation)
                     return LocalStationImageSource;
-                else if (node.Item is RemoteStation)
-                    return RemoteStationImageSource;
+                else if (node.Item is RemoteStation station)
+                {
+                    if (station.StationType == EasyDriverPlugin.StationType.Remote)
+                        return RemoteStationImageSource;
+                    else if (station.StationType == EasyDriverPlugin.StationType.OPC_DA)
+                        return RemoteOpcDaStationImageSource;
+                }
                 else if (node.Item is ChannelCore)
                     return ChannelImageSource;
                 else if (node.Item is DeviceCore)

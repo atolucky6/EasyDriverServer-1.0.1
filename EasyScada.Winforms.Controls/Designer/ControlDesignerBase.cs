@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using System.Windows.Forms.Design.Behavior;
 
 namespace EasyScada.Winforms.Controls
 {
@@ -20,10 +21,49 @@ namespace EasyScada.Winforms.Controls
         protected DesignerActionListCollection actionListCollection;
         protected ControlDesignerAcionList<TControl> actionList;
         protected TControl BaseControl { get { return Component as TControl; } }
+        protected ISelectionService SelectionService { get; set; }
+        internal Adorner LinkAdorner { get; set; }
 
         #endregion
 
         #region Methods
+
+        public override void Initialize(IComponent component)
+        {
+            base.Initialize(component);
+
+            SelectionService = GetService(typeof(ISelectionService)) as ISelectionService;
+            SelectionService.SelectionChanged += OnSelectionChanged;
+            if (BaseControl is ISupportLinkable)
+            {
+                LinkAdorner = new Adorner();
+                BehaviorService.Adorners.Add(LinkAdorner);
+                LinkAdorner.Glyphs.Add(new PinGlyph(BehaviorService, BaseControl, SelectionService, this, LinkAdorner));
+            }
+        }
+
+        private void OnSelectionChanged(object sender, System.EventArgs e)
+        {
+            if (object.ReferenceEquals(SelectionService.PrimarySelection, BaseControl))
+            {
+                if (LinkAdorner != null)
+                {
+                    LinkAdorner.Enabled = true;
+                }
+            }
+            else
+            {
+                if (LinkAdorner != null)
+                {
+                    LinkAdorner.Enabled = false;
+                }
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
 
         public override DesignerActionListCollection ActionLists
         {

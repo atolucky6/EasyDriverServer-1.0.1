@@ -16,7 +16,7 @@ namespace EasyDriver.Core
         {
             Name = "Local Station";
             SyncObject = new object();
-            IsLocalStation = true;
+            StationType = StationType.Local;
             ParameterContainer = new ParameterContainer();
         }
 
@@ -29,6 +29,9 @@ namespace EasyDriver.Core
 
         [JsonIgnore]
         public string CommunicationError { get; set; }
+
+        [JsonIgnore]
+        public string OpcDaServerName { get;set; }
 
         [JsonIgnore]
         public CommunicationMode CommunicationMode
@@ -47,7 +50,7 @@ namespace EasyDriver.Core
         }
 
         [JsonIgnore]
-        public bool IsLocalStation { get; set; }
+        public StationType StationType { get; set; }
 
         [JsonIgnore]
         public ushort Port
@@ -86,11 +89,14 @@ namespace EasyDriver.Core
         [JsonProperty("Name")]
         string IStationClient.Name => Name;
 
-        [JsonProperty("IsLocalStation")]
-        bool IStationClient.IsLocalStation => IsLocalStation;
+        [JsonProperty("StationType")]
+        StationType IStationClient.StationType => StationType;
 
         [JsonProperty("RemoteAddress")]
         string IStationClient.RemoteAddress => RemoteAddress;
+
+        [JsonProperty("OpcDaServerName")]
+        string IStationClient.OpcDaServerName => OpcDaServerName;
 
         [JsonProperty("RefreshRate")]
         int IStationClient.RefreshRate => RefreshRate;

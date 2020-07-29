@@ -34,6 +34,21 @@
                 </Style>
             </dxmvvm:WindowService.WindowStyle>
         </dxmvvm:WindowService>
+        <dxmvvm:WindowService x:Name="LicenseWindowService"
+                              WindowStartupLocation="CenterOwner"
+                              WindowShowMode="Dialog">
+            <dxmvvm:WindowService.WindowStyle>
+                <Style TargetType="Window">
+                    <Setter Property="Topmost" Value="False"/>
+                    <Setter Property="ResizeMode" Value="NoResize"/>
+                    <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+                    <Setter Property="WindowStyle" Value="ToolWindow"/>
+                    <Setter Property="Width" Value="600"/>
+                    <Setter Property="Height" Value="200"/>
+                    <Setter Property="Title" Value="Easy Driver Server License"/>
+                </Style>
+            </dxmvvm:WindowService.WindowStyle>
+        </dxmvvm:WindowService>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnLoadedCommand}"/>
     </dxmvvm:Interaction.Behaviors>
     <dx:BackgroundPanel>
@@ -51,6 +66,7 @@
                         <dxb:BarButtonItem x:Name="btnClose" Content="Close" KeyGesture="Alt + F4" Command="{Binding CloseCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/close-window-48.png"/>
                     </dxb:BarSubItem>
                     <dxb:BarSubItem x:Name="biEdit" Content="Edit">
+                        <dxb:BarButtonItem x:Name="btnAddOpcDaStation" Content="Add Remote OPC DA Station" Command="{Binding AddOpcDaStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png"/>
                         <dxb:BarButtonItem x:Name="btnAddStation" Content="Add Remote Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"/>
                         <dxb:BarButtonItem x:Name="btnAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"/>
                         <dxb:BarButtonItem x:Name="btnAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"/>
@@ -92,6 +108,7 @@
                     <dxb:BarButtonItem x:Name="tPaste" Content="Paste" KeyGesture="Ctrl + V" Command="{Binding PasteCommand}" Glyph="{dx:DXImage SvgImages/Edit/Paste.svg}"/>
                     <dxb:BarButtonItem x:Name="tDelete" Content="Delete" KeyGesture="Del" Command="{Binding DeleteCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/delete_48px.png"/>
                     <dxb:BarItemSeparator/>
+                    <dxb:BarButtonItem x:Name="tddStationOpcDa" Content="Add Remote OPC DA Station" Command="{Binding AddOpcDaStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png"/>
                     <dxb:BarButtonItem x:Name="tddStation" Content="Add Remote Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"/>
                     <dxb:BarButtonItem x:Name="tAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"/>
                     <dxb:BarButtonItem x:Name="tAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"/>

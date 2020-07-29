@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:EasyScada.ServerApplication"
              mc:Ignorable="d" 
              d:DesignHeight="260" d:DesignWidth="600"
-             MinWidth="400"
+             MinWidth="600"
              DataContext="{local:ViewModelContainer local:RemoteStationViewModel}"
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
@@ -24,6 +24,8 @@
         </Style>
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
+        <local:KeyDownBehavior Key="Enter" Command="{Binding SaveCommand}"/>
+        <local:KeyDownBehavior Key="Esc" Command="{Binding CloseCommand}"/>
         <dxmvvm:CurrentWindowService/>
         <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnLoadedCommand}"/>
         <dxmvvm:EventToCommand EventName="Unloaded" Command="{Binding OnUnloadedCommand}"/>

@@ -52,7 +52,7 @@
                                                               x:Name="cobPort"/>
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Scan Rate (ms)" AddColonToLabel="True">
-                                            <dxe:SpinEdit IsTextEditable="False" AllowNullInput="False" 
+                                            <dxe:SpinEdit IsTextEditable="True" AllowNullInput="False" 
                                                           MinValue="10" Value="1000" Mask="d" MaskUseAsDisplayFormat="True" 
                                                           Increment="100"
                                                           x:Name="spnScanRate"/>
@@ -84,7 +84,7 @@
                                     </dxlc:LayoutGroup>
                                     <dxlc:LayoutGroup Orientation="Horizontal">
                                         <dxlc:LayoutItem Label="Delay between pool" AddColonToLabel="True">
-                                            <dxe:SpinEdit IsTextEditable="False" AllowNullInput="False" 
+                                            <dxe:SpinEdit IsTextEditable="True" AllowNullInput="False" 
                                                           MinValue="0" MaxValue="50" Value="10" Mask="d" MaskUseAsDisplayFormat="True" 
                                                           Increment="1"
                                                           x:Name="spnDelayPool"/>

@@ -61,7 +61,7 @@ namespace EasyScada.Winforms.Connector
         {
             container.Add(this);
             InitializeComponent();
-            if (!Site.DesignMode)
+            if (!DesignMode)
                 Disposed += OnDisposed;
         }
 
@@ -81,7 +81,7 @@ namespace EasyScada.Winforms.Connector
             set
             {
                 serverAddress = value;
-                if (!Site.DesignMode)
+                if (!DesignMode)
                 {
                     if (!isSetServerAddress)
                     {
@@ -101,7 +101,7 @@ namespace EasyScada.Winforms.Connector
             set
             {
                 port = value;
-                if (!Site.DesignMode)
+                if (!DesignMode)
                 {
                     if (!isSetPort)
                     {
@@ -121,7 +121,7 @@ namespace EasyScada.Winforms.Connector
             set
             {
                 communicationMode = value;
-                if (!Site.DesignMode)
+                if (!DesignMode)
                 {
                     if (!isSetCommunicationMode)
                     {
@@ -141,7 +141,7 @@ namespace EasyScada.Winforms.Connector
             set
             {
                 refreshRate = value;
-                if (!Site.DesignMode)
+                if (!DesignMode)
                 {
                     if (!isSetRefreshRate)
                     {
@@ -719,61 +719,28 @@ namespace EasyScada.Winforms.Connector
                 foreach (var station in connectionSchema.Stations)
                 {
                     result.Add(station);
-                    foreach (var channel in GetAllChildItems(station))
-                    {
-                        if (channel is Channel)
-                        {
-                            result.Add(channel);
-                            foreach (var device in GetAllChildItems(channel as Channel))
-                            {
-                                if (device is Device)
-                                {
-                                    result.Add(device);
-                                    foreach (var tag in GetAllChildItems(device as Device))
-                                    {
-                                        if (tag is Tag)
-                                        {
-                                            result.Add(tag);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    AddAllChildItems(result, station as IComposite);
                 }
             }
             return result;
         }
 
-        private IEnumerable<object> GetAllChildItems(Station station)
+        private void AddAllChildItems(List<object> source, IComposite composite)
         {
-            if (station != null && station.Channels != null)
+            if (composite != null)
             {
-                foreach (var channel in station.Channels)
+                if (composite.Childs != null)
                 {
-                    yield return channel;
-                }
-            }
-        }
-
-        private IEnumerable<object> GetAllChildItems(Channel channel)
-        {
-            if (channel != null && channel.Devices != null)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    yield return device;
-                }
-            }
-        }
-
-        private IEnumerable<object> GetAllChildItems(Device device)
-        {
-            if (device != null && device.Tags != null)
-            {
-                foreach (var tag in device.Tags)
-                {
-                    yield return tag;
+                    foreach (var item in composite.Childs)
+                    {
+                        if (item != null)
+                            source.Add(item);
+                        if (item is IComposite childComposite)
+                        {
+                            if (childComposite.Childs.Count > 0)
+                                AddAllChildItems(source, childComposite);
+                        }
+                    }
                 }
             }
         }

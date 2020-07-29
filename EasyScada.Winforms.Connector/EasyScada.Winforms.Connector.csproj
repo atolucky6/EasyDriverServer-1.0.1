@@ -65,6 +65,7 @@
     <Compile Include="Enums\ConnectionStatus.cs" />
     <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Enums\Quality.cs" />
+    <Compile Include="Enums\StationType.cs" />
     <Compile Include="Enums\WriteMode.cs" />
     <Compile Include="Enums\WritePiority.cs" />
     <Compile Include="EventArgs\ConnectionStatusChangedEventArgs.cs" />
@@ -86,6 +87,7 @@
       <DependentUpon>FormConnectionSchema.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\IChannel.cs" />
+    <Compile Include="Models\IComposite.cs" />
     <Compile Include="Models\IDevice.cs" />
     <Compile Include="Models\IPath.cs" />
     <Compile Include="Models\IStation.cs" />

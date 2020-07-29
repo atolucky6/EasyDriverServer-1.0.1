@@ -16,11 +16,13 @@ namespace EasyScada.ServerApplication
         public TagWriterService(
             IProjectManagerService projectManagerService,
             IDriverManagerService driverManagerService,
-            IHubConnectionManagerService hubConnectionManagerService)
+            IHubConnectionManagerService hubConnectionManagerService,
+            IOpcDaClientManagerService opcDaClientManagerService)
         {
             ProjectManagerService = projectManagerService;
             DriverManagerService = driverManagerService;
             HubConnectionManagerService = hubConnectionManagerService;
+            OpcDaClientManagerService = opcDaClientManagerService;
         }
 
         #endregion
@@ -30,6 +32,7 @@ namespace EasyScada.ServerApplication
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
         protected IHubConnectionManagerService HubConnectionManagerService { get; set; }
+        protected IOpcDaClientManagerService OpcDaClientManagerService { get; set; }
 
         #endregion
 
@@ -57,6 +60,7 @@ namespace EasyScada.ServerApplication
                         {
                             Quality writeQuality = driver.Write(tagCore, writeCommand.Value);
                             respone.ExecuteTime = DateTime.Now;
+                            respone.WriteCommand = writeCommand;
                             respone.IsSuccess = writeQuality == Quality.Good;
                         }
                         else
@@ -74,13 +78,27 @@ namespace EasyScada.ServerApplication
                     {
                         if (ProjectManagerService.CurrentProject.FirstOrDefault(x => x.Name == pathSplit[0]) is IStationCore stationCore)
                         {
-                            if (HubConnectionManagerService.ConnectionDictonary.ContainsKey(stationCore))
+                            if (stationCore.StationType == StationType.Remote)
                             {
-                                string oldPath = writeCommand.PathToTag;
-                                RemoteStationConnection remoteConnection = HubConnectionManagerService.ConnectionDictonary[stationCore];
-                                writeCommand.PathToTag = writeCommand.PathToTag.Remove(0, pathSplit[0].Length + 1);
-                                respone = await remoteConnection.WriteTagValue(writeCommand);
-                                respone.WriteCommand.PathToTag = oldPath;
+                                if (HubConnectionManagerService.ConnectionDictonary.ContainsKey(stationCore))
+                                {
+                                    string oldPath = writeCommand.PathToTag;
+                                    RemoteStationConnection remoteConnection = HubConnectionManagerService.ConnectionDictonary[stationCore];
+                                    writeCommand.PathToTag = writeCommand.PathToTag.Remove(0, pathSplit[0].Length + 1);
+                                    respone = await remoteConnection.WriteTagValue(writeCommand);
+                                    respone.WriteCommand.PathToTag = oldPath;
+                                }
+                            }
+                            else if (stationCore.StationType == StationType.OPC_DA)
+                            {
+                                if (OpcDaClientManagerService.ConnectionDictonary.ContainsKey(stationCore))
+                                {
+                                    string oldPath = writeCommand.PathToTag;
+                                    OpcDaRemoteStationConnection remoteConnection = OpcDaClientManagerService.ConnectionDictonary[stationCore];
+                                    writeCommand.PathToTag = writeCommand.PathToTag.Remove(0, pathSplit[0].Length + 1);
+                                    respone = await remoteConnection.WriteTagValue(writeCommand);
+                                    respone.WriteCommand.PathToTag = oldPath;
+                                }
                             }
                         }
                     }
