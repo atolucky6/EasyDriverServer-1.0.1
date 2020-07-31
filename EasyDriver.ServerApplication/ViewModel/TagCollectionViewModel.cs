@@ -4,8 +4,10 @@ using EasyDriver.Core;
 using EasyDriverPlugin;
 using EasyScada.ServerApplication.Reversible;
 using EasyScada.ServerApplication.Workspace;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace EasyScada.ServerApplication
@@ -302,17 +304,76 @@ namespace EasyScada.ServerApplication
 
         public void Export()
         {
+            try
+            {
+                SaveFileDialogService.Title = "Export Csv";
+                SaveFileDialogService.Filter = "CSV Files (*.csv)|*.csv";
+                SaveFileDialogService.DefaultExt = ".csv";
+                SaveFileDialogService.DefaultFileName = Parent.Name;
+                if (SaveFileDialogService.ShowDialog())
+                {
+                    IsBusy = true;
+                    string filePath = SaveFileDialogService.File.GetFullName();
+                    CsvBuilder csv = new CsvBuilder();
+                    csv.AddColumn("Name").AddColumn("Address").
+                        AddColumn("DataType").AddColumn("RefreshRate").AddColumn("AccessPermission").
+                        AddColumn("Gain").AddColumn("Offset").AddColumn("Description");
+                    foreach (var item in Parent.Childs)
+                    {
+                        if (item is ITagCore tag)
+                        {
+                            csv.AddRow(
+                                tag.Name, tag.Address,
+                                tag.DataType.Name, tag.RefreshRate.ToString(), tag.AccessPermission.ToString(),
+                                tag.Gain.ToString(), tag.Offset.ToString(), tag.Description);
+                        }
+                    }
 
+                    try
+                    {
+                        File.WriteAllText(filePath, csv.ToString());
+                    }
+                    catch (PathTooLongException)
+                    {
+                        MessageBoxService.ShowMessage($"The specified path or file name exceed the maximun " +
+                            $"length. The path must be less than 248 characters, and file names must be less " +
+                            $"than 260 character", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        MessageBoxService.ShowMessage("The specified path file is read-only or you does " +
+                            "not have required permissions", "Easy DriverServer", MessageButton.OK, MessageIcon.Error);
+                    }
+                    catch (Exception)
+                    {
+                        MessageBoxService.ShowMessage("An error occurred while opening the file.",
+                            "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                    }
+                }
+            }
+            catch { }
+            finally { IsBusy = false; }
         }
 
         public bool CanExport()
         {
-            return !IsBusy && !Parent.IsReadOnly;
+            return !IsBusy;
         }
 
         public void Import()
         {
-
+            try
+            {
+                OpenFileDialogService.Title = "Import CSV...";
+                OpenFileDialogService.Filter = "CSV Files (*.csv)|*.csv";
+                if (OpenFileDialogService.ShowDialog())
+                {
+                    string csvPath = OpenFileDialogService.File.GetFullName();
+                    WindowService.Show("ImportTagView", new object[] { Parent, csvPath }, this);
+                }
+            }
+            catch { }
+            finally { IsBusy = false; }
         }
 
         public bool CanImport()
@@ -331,6 +392,20 @@ namespace EasyScada.ServerApplication
 
         public void Copy()
         {
+            var tagsToCopy = SelectedItems.ToList();
+            tagsToCopy.Sort((x1, x2) =>
+            {
+                if (x1 is ITagCore tag1 && x2 is ITagCore tag2)
+                {
+                    int index1 = tag1.Parent.Childs.IndexOf(tag1);
+                    int index2 = tag2.Parent.Childs.IndexOf(tag2);
+                    if (index1 > index2)
+                        return -1;
+                    else if (index1 < index2)
+                        return 1;
+                }
+                return 0;
+            });
             ClipboardManager.CopyToClipboard(SelectedItems.ToList(), this);
         }
 
@@ -379,7 +454,7 @@ namespace EasyScada.ServerApplication
                                 if (item is ITagCore tagCore)
                                 {
                                     ITagCore newTag = new TagCore(Parent);
-                                    newTag.Name = Parent.GetUniqueNameInGroup(tagCore.Name);
+                                    newTag.Name = Parent.GetUniqueNameInGroup(tagCore.Name, true);
                                     newTag.Address = tagCore.Address;
                                     newTag.Offset = tagCore.Offset;
                                     newTag.Gain = tagCore.Gain;

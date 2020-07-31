@@ -63,7 +63,6 @@
     <Compile Include="Enums\ByteOrder.cs" />
     <Compile Include="Enums\CommunicationMode.cs" />
     <Compile Include="Enums\ConnectionStatus.cs" />
-    <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Enums\Quality.cs" />
     <Compile Include="Enums\StationType.cs" />
     <Compile Include="Enums\WriteMode.cs" />
@@ -103,6 +102,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="TagStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

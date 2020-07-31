@@ -2,6 +2,7 @@
 
 namespace EasyScada.Winforms.Connector
 {
+    [Serializable]
     public class ConnectionStatusChangedEventArgs : EventArgs
     {
         public ConnectionStatus OldStatus { get; private set; }

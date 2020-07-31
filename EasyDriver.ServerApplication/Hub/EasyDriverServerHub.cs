@@ -311,7 +311,11 @@ namespace EasyScada.ServerApplication
 
         public override Task OnReconnected()
         {
-            ioc.ApplicationViewModel.RaisePropertyChanged(x => x.TotalConnectedClients);
+            if (ioc.ApplicationViewModel.ConnectedClients.Contains(Context.ConnectionId))
+            {
+                ioc.ApplicationViewModel.ConnectedClients.Remove(Context.ConnectionId);
+                ioc.ApplicationViewModel.RaisePropertyChanged(x => x.TotalConnectedClients);
+            }
             Debug.WriteLine($"Client {Context.ConnectionId} reconnected");
             return base.OnReconnected();
         }

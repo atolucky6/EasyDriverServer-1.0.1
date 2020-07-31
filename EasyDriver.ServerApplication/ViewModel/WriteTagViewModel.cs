@@ -21,7 +21,6 @@ namespace EasyScada.ServerApplication
             SizeToContent = SizeToContent.WidthAndHeight;
             Width = 600;
             Height = 120;
-
         }
 
         #endregion

@@ -5,6 +5,7 @@ namespace EasyScada.Winforms.Connector
     /// <summary>
     /// Tham số của sự kiện trạng thái Tag thay đổi
     /// </summary>
+    [Serializable]
     public class TagQualityChangedEventArgs : EventArgs
     {
         #region Members

@@ -74,7 +74,7 @@ namespace EasyScada.ServerApplication
                     // Do authenticate every 30 minutes
                     Thread.Sleep(30 * 60 * 1000);
 
-                    string url = $"http://45.119.212.41/EasyScadaLicsenceService/Authentication?" +
+                    string url = $"http://eslic.xyz/EasyScadaLicenseService/Authentication?" +
                         $"serialKey={SerialKey}&product={Product}&computerId={ComputerId}";
                     int limitTagCount = 0;
 
@@ -89,7 +89,7 @@ namespace EasyScada.ServerApplication
                         int tagCounts = projectManagerService.CurrentProject.LocalStation.Find(x => x is ITagCore, true).Count();
                         bool isAuthenticated = false;
                         string message = "";
-                        if (tagCounts <= limitTagCount && tagCounts > 256)
+                        if (tagCounts <= limitTagCount || tagCounts <= 256)
                             isAuthenticated = true;
                         Messenger.Default.Send(new AuthenticateLicenseMessage(isAuthenticated, limitTagCount, message));
                     }

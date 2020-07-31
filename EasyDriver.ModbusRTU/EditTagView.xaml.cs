@@ -110,7 +110,11 @@ namespace EasyDriver.ModbusRTU
 
             if (isBitAddress)
             {
-                cobDataType.SelectedItem = DataTypeSource.FirstOrDefault(x => x.Name == "Bool");
+                if (cobDataType.SelectedItem != DataTypeSource.FirstOrDefault(x => x.Name == "Bool"))
+                {
+                    DXMessageBox.Show($"The current address only support read and write Bool data type.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
             }
             else
             {

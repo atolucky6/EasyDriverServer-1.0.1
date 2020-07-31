@@ -75,6 +75,7 @@
                                                />
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:SaveFileDialogService/>
         <dxmvvm:DispatcherService/>
     </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
@@ -107,6 +108,12 @@
             <dxb:BarButtonItem x:Name="bOpen" Content="Open"
                                IsVisible="{Binding ElementName=bOpen, Path=IsEnabled}"
                                Command="{Binding OpenCommand}"/>
+            <dxb:BarButtonItem x:Name="bExport" Content="Export CSV..."
+                               IsVisible="{Binding ElementName=bExport, Path=IsEnabled}"
+                               Command="{Binding ExportCommand}"/>
+            <dxb:BarButtonItem x:Name="bImport" Content="Import CSV..."
+                               IsVisible="{Binding ElementName=bImport, Path=IsEnabled}"
+                               Command="{Binding ImportCommand}"/>
             <dxb:BarButtonItem x:Name="bCopy" Content="Copy" Command="{Binding CopyCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/copy_48px.png" GlyphSize="Default" KeyGesture="Ctrl+C"/>
             <dxb:BarButtonItem x:Name="bCut" Content="Cut" Command="{Binding CutCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cut_48px.png" GlyphSize="Default" KeyGesture="Ctrl+X"/>
             <dxb:BarButtonItem x:Name="bPaste" Content="Paste" Command="{Binding PasteCommand}" Glyph="{dx:DXImage SvgImages/Edit/Paste.svg}" GlyphSize="Default" KeyGesture="Ctrl+V"/>
@@ -164,6 +171,9 @@
                             <dxb:BarButtonItemLink BarItemName="bCut"/>
                             <dxb:BarButtonItemLink BarItemName="bPaste"/>
                             <dxb:BarButtonItemLink BarItemName="bDelete"/>
+                            <dxb:BarItemSeparator/>
+                            <dxb:BarButtonItemLink BarItemName="bImport"/>
+                            <dxb:BarButtonItemLink BarItemName="bExport"/>
                             <dxb:BarItemSeparator/>
                             <dxb:BarButtonItemLink BarItemName="bExpandAll"/>
                             <dxb:BarButtonItemLink BarItemName="bCollapseAll"/>

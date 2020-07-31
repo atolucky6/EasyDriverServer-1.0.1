@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace EasyScada.Winforms.Connector
 {
-    [Serializable]
-    public enum StationType
+    public class TagStore
     {
-        Local,
-        Remote,
-        OPC_DA
     }
 }

@@ -131,7 +131,7 @@ namespace EasyScada.ServerApplication
             //Initialize notify icon
             MainNotifyIcon = new NotifyIcon()
             {
-                Icon = EasyScada.ServerApplication.Properties.Resources.Logo,
+                Icon = EasyScada.ServerApplication.Properties.Resources.EasyScadaLogo,
                 Visible = true
             };
             MainNotifyIcon.DoubleClick += (s, args) => ShowMainWindow();

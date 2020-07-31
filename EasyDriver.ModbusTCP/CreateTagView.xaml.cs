@@ -108,9 +108,13 @@ namespace EasyDriver.ModbusTCP
 
             if (isBitAddress)
             {
-                cobDataType.SelectedItem = DataTypeSource.FirstOrDefault(x => x.Name == "Bool");
+                if (cobDataType.SelectedItem != DataTypeSource.FirstOrDefault(x => x.Name == "Bool"))
+                {
+                    DXMessageBox.Show($"The current address only support read and write Bool data type.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
             }
-            else
+            else 
             {
                 if (cobDataType.SelectedItem == DataTypeSource.FirstOrDefault(x => x.Name == "Bool"))
                 {
@@ -157,11 +161,14 @@ namespace EasyDriver.ModbusTCP
                     Offset = (double)spnOffset.Value,
                     ByteOrder = Device.ByteOrder
                 };
+                if (i == 0)
+                    tag.Name = currentTagName;
+                else
+                    number++;
                 tag.ParameterContainer.DisplayName = "Tag Parameters";
                 tag.ParameterContainer.DisplayParameters = "Tag Parameters";
                 currentTagName = tag.Name;
                 createTags.Add(tag);
-                number++;
                 adrNumber++;
             }
 

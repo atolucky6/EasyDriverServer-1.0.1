@@ -15,6 +15,7 @@ namespace WindowsFormsApp3
         public Form1()
         {
             InitializeComponent();
+            var s = easyDriverConnector1.Channels.tag.ToString();
         }
 
         private void easyLabel1_Paint(object sender, PaintEventArgs e)

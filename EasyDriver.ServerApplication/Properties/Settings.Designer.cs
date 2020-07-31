@@ -61,7 +61,7 @@ namespace EasyScada.ServerApplication.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Office2016White")]
+        [global::System.Configuration.DefaultSettingValueAttribute("VS2017Dark")]
         public string ApplicationThemeName {
             get {
                 return ((string)(this["ApplicationThemeName"]));

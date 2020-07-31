@@ -110,7 +110,7 @@
                 <Border BorderThickness="0,1,0,0" BorderBrush="#44475a">
                     <!--#region TreeListControl-->
                     <dxg:GridControl ShowBorder="False"                                        
-                                     SelectionMode="Row"                  
+                                     SelectionMode="Row"  
                                      ItemsSource="{Binding Parent.Childs}"
                                      CurrentItem="{Binding CurrentItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -234,6 +234,18 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="AccessPermission" Header="Access permission" Width="110" AllowSearchPanel="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings>
+                                    </dxe:TextEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Gain" Header="Gain" Width="50" AllowSearchPanel="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings>
+                                    </dxe:TextEditSettings>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Offset" Header="Offset" Width="50" AllowSearchPanel="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings>
                                     </dxe:TextEditSettings>

@@ -39,7 +39,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Logo.ico</ApplicationIcon>
+    <ApplicationIcon>EasyScadaLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>EasyScada.ServerApplication.App</StartupObject>
@@ -144,6 +144,10 @@
   <ItemGroup>
     <Compile Include="AuthenticateLicenseView.xaml.cs">
       <DependentUpon>AuthenticateLicenseView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\CsvBuilder.cs" />
+    <Compile Include="View\ImportTagView.xaml.cs">
+      <DependentUpon>ImportTagView.xaml</DependentUpon>
     </Compile>
     <Compile Include="IoC\Behaviors\KeyDownBehavior.cs" />
     <Compile Include="IoC\Service\ILicenseManagerService.cs" />
@@ -320,6 +324,7 @@
     <Compile Include="OPC DA\OpcConfiguration.cs" />
     <Compile Include="Resources\Converters\OpcConnectionStatusToImageSourceConverter.cs" />
     <Compile Include="Resources\Converters\StringEmptyToVisibilityConverter.cs" />
+    <Compile Include="ViewModel\ImportTagViewModel.cs" />
     <Compile Include="ViewModel\RemoteOpcDaProjectTreeViewModel.cs" />
     <Compile Include="View\RemoteOpcDaProjectTreeView.xaml.cs">
       <DependentUpon>RemoteOpcDaProjectTreeView.xaml</DependentUpon>
@@ -442,6 +447,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ImportTagView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\RemoteOpcDaProjectTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -485,10 +494,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Resource Include="Logo.ico" />
-    <None Include="Resources\Logo.ico" />
     <Resource Include="Resources\Images\opc_cloud_48px.png" />
     <Resource Include="Resources\Images\key_96px.png" />
+    <Resource Include="EasyScadaLogo.ico" />
+    <None Include="Resources\EasyScadaLogo.ico" />
     <Content Include="server.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

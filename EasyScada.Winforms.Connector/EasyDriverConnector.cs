@@ -55,6 +55,7 @@ namespace EasyScada.Winforms.Connector
         public EasyDriverConnector()
         {
             InitializeComponent();
+            Channels = new TagStore();
         }
 
         public EasyDriverConnector(IContainer container)
@@ -63,11 +64,15 @@ namespace EasyScada.Winforms.Connector
             InitializeComponent();
             if (!DesignMode)
                 Disposed += OnDisposed;
+            Channels = new TagStore();
         }
 
         #endregion
 
         #region Public members
+
+        [Browsable(false)]
+        public dynamic Channels { get; private set; }
 
         [Browsable(false)]
         public bool IsDisposed { get; private set; }

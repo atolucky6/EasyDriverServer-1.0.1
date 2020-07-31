@@ -63,9 +63,9 @@ namespace EasyScada.ServerApplication.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon Logo {
+        internal static System.Drawing.Icon EasyScadaLogo {
             get {
-                object obj = ResourceManager.GetObject("Logo", resourceCulture);
+                object obj = ResourceManager.GetObject("EasyScadaLogo", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

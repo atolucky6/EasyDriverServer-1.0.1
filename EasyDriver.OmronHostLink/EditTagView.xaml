@@ -42,7 +42,11 @@
                             <dxlc:LayoutControl>
                                 <dxlc:LayoutGroup Orientation="Vertical" ItemLabelsAlignment="Local">
                                     <dxlc:LayoutItem Label="Name" AddColonToLabel="True">
-                                        <dxe:TextEdit x:Name="txbName"/>
+                                        <dxe:TextEdit x:Name="txbName">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:FocusBehavior/>
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </dxe:TextEdit>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutGroup>
                                         <dxlc:LayoutItem Label="Address" AddColonToLabel="True">

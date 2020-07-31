@@ -16,7 +16,11 @@ namespace EasyDriverPlugin
         public static string GetUniqueNameInGroup(this IGroupItem group, string patternName, bool insertBrackets = false)
         {
             uint index = patternName.ExtractLastNumberFromString(out bool hasIndex, out bool hasBracketsSurround);
-            index = insertBrackets ? 0 : index;
+            index = insertBrackets ? 1 : index;
+            if (index == 0)
+                index++;
+            if (patternName.IsUniqueNameInGroup(group, null))
+                return patternName;
             patternName = insertBrackets ? hasBracketsSurround ? patternName.RemoveLastNumberFromString() : patternName?.Trim() : patternName.RemoveLastNumberFromString();
             string name = string.Format("{0}{1}", patternName, hasBracketsSurround || insertBrackets ? $"({index})" : $"{index}");
             while (!name.IsUniqueNameInGroup(group, null))

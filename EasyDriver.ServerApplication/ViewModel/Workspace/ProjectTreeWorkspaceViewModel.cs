@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using EasyScada.ServerApplication.Reversible;
 using EasyDriver.Core;
+using System.IO;
 
 namespace EasyScada.ServerApplication
 {
@@ -36,6 +37,7 @@ namespace EasyScada.ServerApplication
 
         #region UI services
 
+        protected ISaveFileDialogService SaveFileDialogService { get => this.GetService<ISaveFileDialogService>(); }
         protected ITreeListViewUtilities TreeListViewUtilities { get => this.GetService<ITreeListViewUtilities>(); }
         protected IMessageBoxService MessageBoxService { get => this.GetService<IMessageBoxService>(); }
         public IWindowService WindowService { get => this.GetService<IWindowService>(); }
@@ -398,6 +400,77 @@ namespace EasyScada.ServerApplication
         public bool CanCollapseAll()
         {
             return !IsBusy;
+        }
+
+        public void Export()
+        {
+            try
+            {
+                if (SelectedItem is IDeviceCore device)
+                {
+                    SaveFileDialogService.Title = "Export Csv";
+                    SaveFileDialogService.Filter = "CSV Files (*.csv)|*.csv";
+                    SaveFileDialogService.DefaultExt = ".csv";
+                    SaveFileDialogService.DefaultFileName = device.Name;
+                    if (SaveFileDialogService.ShowDialog())
+                    {
+                        IsBusy = true;
+                        string filePath = SaveFileDialogService.File.GetFullName();
+                        CsvBuilder csv = new CsvBuilder();
+                        csv.AddColumn("Name").AddColumn("Address").
+                            AddColumn("DataType").AddColumn("RefreshRate").AddColumn("AccessPermission").
+                            AddColumn("Gain").AddColumn("Offset").AddColumn("Description");
+                        foreach (var item in device.Childs)
+                        {
+                            if (item is ITagCore tag)
+                            {
+                                csv.AddRow(
+                                    tag.Name, tag.Address,
+                                    tag.DataType.Name, tag.RefreshRate.ToString(), tag.AccessPermission.ToString(),
+                                    tag.Gain.ToString(), tag.Offset.ToString(), tag.Description);
+                            }
+                        }
+
+                        try
+                        {
+                            File.WriteAllText(filePath, csv.ToString());
+                        }
+                        catch (PathTooLongException)
+                        {
+                            MessageBoxService.ShowMessage($"The specified path or file name exceed the maximun " +
+                                $"length. The path must be less than 248 characters, and file names must be less " +
+                                $"than 260 character", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            MessageBoxService.ShowMessage("The specified path file is read-only or you does " +
+                                "not have required permissions", "Easy DriverServer", MessageButton.OK, MessageIcon.Error);
+                        }
+                        catch (Exception)
+                        {
+                            MessageBoxService.ShowMessage("An error occurred while opening the file.",
+                                "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                        }
+                    }
+                }
+            }
+            catch { }
+            finally { IsBusy = false; }
+        }
+
+        public bool CanExport()
+        {
+            return !IsBusy && SelectedItem is IDeviceCore;
+        }
+
+        public void Import()
+        {
+
+        }
+
+        public bool CanImport()
+        {
+            return !IsBusy && SelectedItem is IDeviceCore;
         }
 
         #endregion
