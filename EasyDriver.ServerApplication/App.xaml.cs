@@ -53,16 +53,20 @@ namespace EasyScada.ServerApplication
             return true;
         }
 
-        [STAThread]
         public static void Main()
         {
             if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
             {
                 OpcDaBootstrap.Initialize();
-                var application = new App();
-                application.InitializeComponent();
-                application.Run();
-                SingleInstance<App>.Cleanup();
+                var staThread = new Thread(() =>
+                {
+                    var application = new App();
+                    application.InitializeComponent();
+                    application.Run();
+                    SingleInstance<App>.Cleanup();
+                });
+                staThread.SetApartmentState(ApartmentState.STA);
+                staThread.Start();
             }
             else
             {

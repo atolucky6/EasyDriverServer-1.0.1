@@ -57,33 +57,33 @@
                 <dxb:Bar Caption="MainMenu" IsMainMenu="True" dxb:MergingProperties.ElementMergingBehavior="All" AllowCustomizationMenu="False"
                          AllowCollapse="False" AllowHide="False" AllowRemove="False" AllowRename="False" AllowQuickCustomization="False">
                     <dxb:BarSubItem x:Name="biFile" Content="File">
-                        <dxb:BarButtonItem x:Name="btnNew" Content="New" KeyGesture="Ctrl + N" Command="{Binding NewCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/file_48px.png"/>
-                        <dxb:BarButtonItem x:Name="btnOpen" Content="Open" KeyGesture="Ctrl + O" Command="{Binding OpenCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/opened_folder_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnNew" Content="New" KeyGesture="Ctrl + N" Command="{Binding NewCommand}" Glyph="/EasyDriverServer;component/Resources/Images/file_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnOpen" Content="Open" KeyGesture="Ctrl + O" Command="{Binding OpenCommand}" Glyph="/EasyDriverServer;component/Resources/Images/opened_folder_48px.png"/>
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnSave" Content="Save" KeyGesture="Ctrl + S" Command="{Binding SaveCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/save_48px.png"/>
-                        <dxb:BarButtonItem x:Name="btnSaveAs" Content="Save as..." KeyGesture="" Command="{Binding SaveAsCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/save_as_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnSave" Content="Save" KeyGesture="Ctrl + S" Command="{Binding SaveCommand}" Glyph="/EasyDriverServer;component/Resources/Images/save_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnSaveAs" Content="Save as..." KeyGesture="" Command="{Binding SaveAsCommand}" Glyph="/EasyDriverServer;component/Resources/Images/save_as_48px.png"/>
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnClose" Content="Close" KeyGesture="Alt + F4" Command="{Binding CloseCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/close-window-48.png"/>
+                        <dxb:BarButtonItem x:Name="btnClose" Content="Close" KeyGesture="Alt + F4" Command="{Binding CloseCommand}" Glyph="/EasyDriverServer;component/Resources/Images/close-window-48.png"/>
                     </dxb:BarSubItem>
                     <dxb:BarSubItem x:Name="biEdit" Content="Edit">
-                        <dxb:BarButtonItem x:Name="btnAddOpcDaStation" Content="Add Remote OPC DA Station" Command="{Binding AddOpcDaStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png"/>
-                        <dxb:BarButtonItem x:Name="btnAddStation" Content="Add Remote Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"/>
-                        <dxb:BarButtonItem x:Name="btnAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"/>
-                        <dxb:BarButtonItem x:Name="btnAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"/>
-                        <dxb:BarButtonItem x:Name="btnAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/tag_48px.png" />
+                        <dxb:BarButtonItem x:Name="btnAddOpcDaStation" Content="Add Remote OPC DA Station" Command="{Binding AddOpcDaStationCommand}" Glyph="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddStation" Content="Add Remote Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" Glyph="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyDriverServer;component/Resources/Images/channel_24px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyDriverServer;component/Resources/Images/device_24px.png"/>
+                        <dxb:BarButtonItem x:Name="btnAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}" Glyph="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnUndo" Content="Undo" KeyGesture="Ctrl + Z" Command="{Binding SaveCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/undo-48.png"/>
-                        <dxb:BarButtonItem x:Name="btnRedo" Content="Redo" KeyGesture="Ctrl + Y" Command="{Binding SaveAsCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/redo-48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnUndo" Content="Undo" KeyGesture="Ctrl + Z" Command="{Binding SaveCommand}" Glyph="/EasyDriverServer;component/Resources/Images/undo-48.png"/>
+                        <dxb:BarButtonItem x:Name="btnRedo" Content="Redo" KeyGesture="Ctrl + Y" Command="{Binding SaveAsCommand}" Glyph="/EasyDriverServer;component/Resources/Images/redo-48px.png"/>
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnCut" Content="Cut" KeyGesture="Ctrl + X" Command="{Binding CutCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cut_48px.png"/>
-                        <dxb:BarButtonItem x:Name="btnCopy" Content="Copy" KeyGesture="Ctrl + C" Command="{Binding CopyCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/copy_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnCut" Content="Cut" KeyGesture="Ctrl + X" Command="{Binding CutCommand}" Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnCopy" Content="Copy" KeyGesture="Ctrl + C" Command="{Binding CopyCommand}" Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"/>
                         <dxb:BarButtonItem x:Name="btnPaste" Content="Paste" KeyGesture="Ctrl + V" Command="{Binding PasteCommand}" Glyph="{dx:DXImage SvgImages/Edit/Paste.svg}"/>
-                        <dxb:BarButtonItem x:Name="btnDelete" Content="Delete" KeyGesture="Del" Command="{Binding DeleteCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/delete_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnDelete" Content="Delete" KeyGesture="Del" Command="{Binding DeleteCommand}" Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"/>
                     </dxb:BarSubItem>
                     <dxb:BarSubItem x:Name="biTools" Content="Tools">
-                        <dxb:BarButtonItem x:Name="btnCreateConnectionSchemaFile" Content="Create Connection Schema File" Command="{Binding CreateConnectionSchemaFileCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cloud-file-48.png"/>
+                        <dxb:BarButtonItem x:Name="btnCreateConnectionSchemaFile" Content="Create Connection Schema File" Command="{Binding CreateConnectionSchemaFileCommand}" Glyph="/EasyDriverServer;component/Resources/Images/cloud-file-48.png"/>
                         <dxb:BarItemSeparator/>
-                        <dxb:BarButtonItem x:Name="btnOptions" Content="Options..." Command="{Binding ShowOptionsViewCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/settings_48px.png"/>
+                        <dxb:BarButtonItem x:Name="btnOptions" Content="Options..." Command="{Binding ShowOptionsViewCommand}" Glyph="/EasyDriverServer;component/Resources/Images/settings_48px.png"/>
                     </dxb:BarSubItem>
                 </dxb:Bar>
                 
@@ -95,24 +95,24 @@
                          AllowQuickCustomization="False"
                          ShowDragWidget="False"
                          AllowRemove="False">
-                    <dxb:BarButtonItem x:Name="tNew" Content="New" KeyGesture="Ctrl + N" Command="{Binding NewCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/file_48px.png"/>
-                    <dxb:BarButtonItem x:Name="tOpen" Content="Open" KeyGesture="Ctrl + O" Command="{Binding OpenCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/opened_folder_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tNew" Content="New" KeyGesture="Ctrl + N" Command="{Binding NewCommand}" Glyph="/EasyDriverServer;component/Resources/Images/file_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tOpen" Content="Open" KeyGesture="Ctrl + O" Command="{Binding OpenCommand}" Glyph="/EasyDriverServer;component/Resources/Images/opened_folder_48px.png"/>
                     <dxb:BarItemSeparator/>
-                    <dxb:BarButtonItem x:Name="tSave" Content="Save" KeyGesture="Ctrl + S" Command="{Binding SaveCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/save_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tSave" Content="Save" KeyGesture="Ctrl + S" Command="{Binding SaveCommand}" Glyph="/EasyDriverServer;component/Resources/Images/save_48px.png"/>
                     <dxb:BarItemSeparator/>
-                    <dxb:BarButtonItem x:Name="tUndo" Content="Undo" KeyGesture="Ctrl + Z" Command="{Binding UndoCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/undo-48.png"/>
-                    <dxb:BarButtonItem x:Name="tRedo" Content="Redo" KeyGesture="Ctrl + Y" Command="{Binding RedoCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/redo-48px.png"/>
+                    <dxb:BarButtonItem x:Name="tUndo" Content="Undo" KeyGesture="Ctrl + Z" Command="{Binding UndoCommand}" Glyph="/EasyDriverServer;component/Resources/Images/undo-48.png"/>
+                    <dxb:BarButtonItem x:Name="tRedo" Content="Redo" KeyGesture="Ctrl + Y" Command="{Binding RedoCommand}" Glyph="/EasyDriverServer;component/Resources/Images/redo-48px.png"/>
                     <dxb:BarItemSeparator/>
-                    <dxb:BarButtonItem x:Name="tCut" Content="Cut" KeyGesture="Ctrl + X" Command="{Binding CutCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cut_48px.png"/>
-                    <dxb:BarButtonItem x:Name="tCopy" Content="Copy" KeyGesture="Ctrl + C" Command="{Binding CopyCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/copy_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tCut" Content="Cut" KeyGesture="Ctrl + X" Command="{Binding CutCommand}" Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tCopy" Content="Copy" KeyGesture="Ctrl + C" Command="{Binding CopyCommand}" Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"/>
                     <dxb:BarButtonItem x:Name="tPaste" Content="Paste" KeyGesture="Ctrl + V" Command="{Binding PasteCommand}" Glyph="{dx:DXImage SvgImages/Edit/Paste.svg}"/>
-                    <dxb:BarButtonItem x:Name="tDelete" Content="Delete" KeyGesture="Del" Command="{Binding DeleteCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/delete_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tDelete" Content="Delete" KeyGesture="Del" Command="{Binding DeleteCommand}" Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"/>
                     <dxb:BarItemSeparator/>
-                    <dxb:BarButtonItem x:Name="tddStationOpcDa" Content="Add Remote OPC DA Station" Command="{Binding AddOpcDaStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png"/>
-                    <dxb:BarButtonItem x:Name="tddStation" Content="Add Remote Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"/>
-                    <dxb:BarButtonItem x:Name="tAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"/>
-                    <dxb:BarButtonItem x:Name="tAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"/>
-                    <dxb:BarButtonItem x:Name="tAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/tag_48px.png" />
+                    <dxb:BarButtonItem x:Name="tddStationOpcDa" Content="Add Remote OPC DA Station" Command="{Binding AddOpcDaStationCommand}" Glyph="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png"/>
+                    <dxb:BarButtonItem x:Name="tddStation" Content="Add Remote Station" KeyGesture="Ctrl + 1" Command="{Binding AddStationCommand}" Glyph="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"/>
+                    <dxb:BarButtonItem x:Name="tAddChannel" Content="Add Channel" KeyGesture="Ctrl + 2" Command="{Binding AddChannelCommand}" Glyph="/EasyDriverServer;component/Resources/Images/channel_24px.png"/>
+                    <dxb:BarButtonItem x:Name="tAddDevice" Content="Add Device" KeyGesture="Ctrl + 3" Command="{Binding AddDeviceCommand}" Glyph="/EasyDriverServer;component/Resources/Images/device_24px.png"/>
+                    <dxb:BarButtonItem x:Name="tAddTag" Content="Add Tag" KeyGesture="Ctrl + 4" Command="{Binding AddTagCommand}" Glyph="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
                 </dxb:Bar>
 
                 <dxb:Bar IsStatusBar="True"

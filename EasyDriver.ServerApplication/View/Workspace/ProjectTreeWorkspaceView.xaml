@@ -15,15 +15,15 @@
     <UserControl.Resources>
         <local:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter"/>
         <local:ConnectionStatusToImageSourceConverter x:Key="ConnectionStatusToImageSourceConverter"
-                                                      ConnectedImageSource="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png" 
-                                                      DisconnectedImageSource="/EasyScada.ServerApplication;component/Resources/Images/cloud_cross_48px.png"/>
+                                                      ConnectedImageSource="/EasyDriverServer;component/Resources/Images/remote_station_24px.png" 
+                                                      DisconnectedImageSource="/EasyDriverServer;component/Resources/Images/cloud_cross_48px.png"/>
         <local:OpcConnectionStatusToImageSourceConverter x:Key="OpcConnectionStatusToImageSourceConverter"
-                                                      ConnectedImageSource="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png" 
-                                                      DisconnectedImageSource="/EasyScada.ServerApplication;component/Resources/Images/cloud_cross_48px.png"/>
+                                                      ConnectedImageSource="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png" 
+                                                      DisconnectedImageSource="/EasyDriverServer;component/Resources/Images/cloud_cross_48px.png"/>
         <local:ChannelCoreToDriverNameConverter x:Key="ChannelCoreToDriverNameConverter"/>
         <DataTemplate x:Key="ChannelTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
-                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png" />
+                <dx:DXImage Height="20" Width="24" Source="/EasyDriverServer;component/Resources/Images/channel_24px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
                 <TextBlock Foreground="{StaticResource CyanBrush}" VerticalAlignment="Center" 
                            Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ChannelCoreToDriverNameConverter}}"
@@ -34,7 +34,7 @@
         </DataTemplate>
         <DataTemplate x:Key="DeviceTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
-                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png" />
+                <dx:DXImage Height="20" Width="24" Source="/EasyDriverServer;component/Resources/Images/device_24px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
@@ -62,7 +62,7 @@
         </DataTemplate>
         <DataTemplate x:Key="LocalStationTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,1,0,1">
-                <dx:DXImage Height="20" Width="24" Source="/EasyScada.ServerApplication;component/Resources/Images/local_station_16px.png" />
+                <dx:DXImage Height="20" Width="24" Source="/EasyDriverServer;component/Resources/Images/local_station_16px.png" />
                 <dxe:TextEdit x:Name="PART_Editor" ShowError="False" VerticalContentAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
@@ -82,28 +82,28 @@
         <dxb:BarManager.Items>
             <dxb:BarItemSeparator x:Name="bSeparator"/>
             <dxb:BarButtonItem x:Name="bExpandAll" Content="Expand all" 
-                               Command="{Binding ExpandAllCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/expand-arrow-48.png"/>
+                               Command="{Binding ExpandAllCommand}" Glyph="/EasyDriverServer;component/Resources/Images/expand-arrow-48.png"/>
             <dxb:BarButtonItem x:Name="bCollapseAll" Content="Collapse all" 
-                               Command="{Binding CollapseAllCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/collapse-arrow-48.png"/>
+                               Command="{Binding CollapseAllCommand}" Glyph="/EasyDriverServer;component/Resources/Images/collapse-arrow-48.png"/>
             <dxb:BarButtonItem x:Name="bAddStation" Content="Add Remote Station" 
                                IsVisible="{Binding ElementName=bAddStation, Path=IsEnabled}" GlyphSize="Default"
-                               Glyph="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"
+                               Glyph="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
                                Command="{Binding AddStationCommand}"/>
             <dxb:BarButtonItem x:Name="bAddOpcDaStation" Content="Add Remote OPC DA Station" 
                                IsVisible="{Binding ElementName=bAddOpcDaStation, Path=IsEnabled}" GlyphSize="Default"
-                               Glyph="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png"
+                               Glyph="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png"
                                Command="{Binding AddOpcDaStationCommand}"/>
             <dxb:BarButtonItem x:Name="bAddChannel" Content="Add Channel" 
                                IsVisible="{Binding ElementName=bAddChannel, Path=IsEnabled}" GlyphSize="Default"
-                               Glyph="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"
+                               Glyph="/EasyDriverServer;component/Resources/Images/channel_24px.png"
                                Command="{Binding AddChannelCommand}"/>
             <dxb:BarButtonItem x:Name="bAddDevice" Content="Add Device" 
                                IsVisible="{Binding ElementName=bAddDevice, Path=IsEnabled}" GlyphSize="Default"
-                               Glyph="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"
+                               Glyph="/EasyDriverServer;component/Resources/Images/device_24px.png"
                                Command="{Binding AddDeviceCommand}"/>
             <dxb:BarButtonItem x:Name="bEdit" Content="Edit" 
                                IsVisible="{Binding ElementName=bEdit, Path=IsEnabled}" GlyphSize="Default"
-                               Glyph="/EasyScada.ServerApplication;component/Resources/Images/edit-48.png"
+                               Glyph="/EasyDriverServer;component/Resources/Images/edit-48.png"
                                Command="{Binding EditCommand}"/>
             <dxb:BarButtonItem x:Name="bOpen" Content="Open"
                                IsVisible="{Binding ElementName=bOpen, Path=IsEnabled}"
@@ -114,10 +114,10 @@
             <dxb:BarButtonItem x:Name="bImport" Content="Import CSV..."
                                IsVisible="{Binding ElementName=bImport, Path=IsEnabled}"
                                Command="{Binding ImportCommand}"/>
-            <dxb:BarButtonItem x:Name="bCopy" Content="Copy" Command="{Binding CopyCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/copy_48px.png" GlyphSize="Default" KeyGesture="Ctrl+C"/>
-            <dxb:BarButtonItem x:Name="bCut" Content="Cut" Command="{Binding CutCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cut_48px.png" GlyphSize="Default" KeyGesture="Ctrl+X"/>
+            <dxb:BarButtonItem x:Name="bCopy" Content="Copy" Command="{Binding CopyCommand}" Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png" GlyphSize="Default" KeyGesture="Ctrl+C"/>
+            <dxb:BarButtonItem x:Name="bCut" Content="Cut" Command="{Binding CutCommand}" Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png" GlyphSize="Default" KeyGesture="Ctrl+X"/>
             <dxb:BarButtonItem x:Name="bPaste" Content="Paste" Command="{Binding PasteCommand}" Glyph="{dx:DXImage SvgImages/Edit/Paste.svg}" GlyphSize="Default" KeyGesture="Ctrl+V"/>
-            <dxb:BarButtonItem x:Name="bDelete" Content="Delete" Command="{Binding DeleteCommand}" Glyph="/EasyScada.ServerApplication;component/Resources/Images/delete_48px.png" GlyphSize="Default" KeyGesture="Delete"/>
+            <dxb:BarButtonItem x:Name="bDelete" Content="Delete" Command="{Binding DeleteCommand}" Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png" GlyphSize="Default" KeyGesture="Delete"/>
         </dxb:BarManager.Items>
         <Border BorderThickness="0 1 0 0" BorderBrush="#44475a">
             <dxg:TreeListControl SelectionMode="Row"

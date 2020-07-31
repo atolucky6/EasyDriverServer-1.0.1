@@ -3,7 +3,7 @@ using Microsoft.Owin.Cors;
 using Owin;
 using System.Net;
 
-namespace EasyScada.ServerApplication
+namespace EasyDriverServer
 {
     class Startup
     {

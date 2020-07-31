@@ -16,11 +16,11 @@
     <UserControl.Resources>
         <local:TextToWidthConverter x:Key="TextToWidthConverter"/>
         <local:CoreItemToImageSourceConverter x:Key="CoreItemToImageSourceConverter"
-                                              RemoteOpcDaStationImageSource="/EasyScada.ServerApplication;component/Resources/Images/opc_cloud_48px.png"
-                                              ChannelImageSource="/EasyScada.ServerApplication;component/Resources/Images/channel_24px.png"
-                                              DeviceImageSource="/EasyScada.ServerApplication;component/Resources/Images/device_24px.png"
-                                              RemoteStationImageSource="/EasyScada.ServerApplication;component/Resources/Images/remote_station_24px.png"
-                                              LocalStationImageSource="/EasyScada.ServerApplication;component/Resources/Images/local_station_16px.png"/>
+                                              RemoteOpcDaStationImageSource="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png"
+                                              ChannelImageSource="/EasyDriverServer;component/Resources/Images/channel_24px.png"
+                                              DeviceImageSource="/EasyDriverServer;component/Resources/Images/device_24px.png"
+                                              RemoteStationImageSource="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
+                                              LocalStationImageSource="/EasyDriverServer;component/Resources/Images/local_station_16px.png"/>
         <Style TargetType="dxe:TextEditSettings">
             <Setter Property="StyleSettings">
                 <Setter.Value>
@@ -43,15 +43,15 @@
                 <dxb:BarButtonItem x:Name="bAdd" Content="Add tag" Command="{Binding AddCommand}" GlyphSize="Default" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Add.svg}" />
                 <dxb:BarButtonItem x:Name="bInsertAbove" Content="Insert above" Command="{Binding InsertAboveCommand}" GlyphSize="Default" Glyph="{dx:DXImage SvgImages/Snap/InsertGroupHeader.svg}" />
                 <dxb:BarButtonItem x:Name="bInsertBelow" Content="Insert below" Command="{Binding InsertBelowCommand}" GlyphSize="Default" Glyph="{dx:DXImage SvgImages/Snap/InsertGroupFooter.svg}" />
-                <dxb:BarButtonItem x:Name="bExport" Content="Export" Command="{Binding ExportCommand}" GlyphSize="Default" Glyph="/EasyScada.ServerApplication;component/Resources/Images/export_48px.png" />
-                <dxb:BarButtonItem x:Name="bImport" Content="Import" Command="{Binding ImportCommand}" GlyphSize="Default" Glyph="/EasyScada.ServerApplication;component/Resources/Images/import_48px.png"/>
-                <dxb:BarButtonItem x:Name="bCopy" Content="Copy" Command="{Binding CopyCommand}" GlyphSize="Default" KeyGesture="Ctrl+C" Glyph="/EasyScada.ServerApplication;component/Resources/Images/copy_48px.png"/>
-                <dxb:BarButtonItem x:Name="bCut" Content="Cut" Command="{Binding CutCommand}" GlyphSize="Default" KeyGesture="Ctrl+X" Glyph="/EasyScada.ServerApplication;component/Resources/Images/cut_48px.png"/>
+                <dxb:BarButtonItem x:Name="bExport" Content="Export" Command="{Binding ExportCommand}" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/export_48px.png" />
+                <dxb:BarButtonItem x:Name="bImport" Content="Import" Command="{Binding ImportCommand}" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/import_48px.png"/>
+                <dxb:BarButtonItem x:Name="bCopy" Content="Copy" Command="{Binding CopyCommand}" GlyphSize="Default" KeyGesture="Ctrl+C" Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"/>
+                <dxb:BarButtonItem x:Name="bCut" Content="Cut" Command="{Binding CutCommand}" GlyphSize="Default" KeyGesture="Ctrl+X" Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"/>
                 <dxb:BarButtonItem x:Name="bPaste" Content="Paste" Command="{Binding PasteCommand}" GlyphSize="Default" KeyGesture="Ctrl+V" />
-                <dxb:BarButtonItem x:Name="bDelete" Content="Delete" Command="{Binding DeleteCommand}" GlyphSize="Default" KeyGesture="Delete" Glyph="/EasyScada.ServerApplication;component/Resources/Images/delete_48px.png"/>
-                <dxb:BarButtonItem x:Name="bEdit" Content="Edit" Command="{Binding EditCommand}" GlyphSize="Default" Glyph="/EasyScada.ServerApplication;component/Resources/Images/edit-48.png"/>
-                <dxb:BarButtonItem x:Name="bSearch" Content="Search" Command="{Binding ShowSearchPanelCommand}" GlyphSize="Default" Glyph="/EasyScada.ServerApplication;component/Resources/Images/search-48.png"/>
-                <dxb:BarCheckItem x:Name="bAllowDrag" Content="Allow Drag/Drop Tag" GlyphSize="Default" Glyph="/EasyScada.ServerApplication;component/Resources/Images/drag-48.png" />
+                <dxb:BarButtonItem x:Name="bDelete" Content="Delete" Command="{Binding DeleteCommand}" GlyphSize="Default" KeyGesture="Delete" Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"/>
+                <dxb:BarButtonItem x:Name="bEdit" Content="Edit" Command="{Binding EditCommand}" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/edit-48.png"/>
+                <dxb:BarButtonItem x:Name="bSearch" Content="Search" Command="{Binding ShowSearchPanelCommand}" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/search-48.png"/>
+                <dxb:BarCheckItem x:Name="bAllowDrag" Content="Allow Drag/Drop Tag" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/drag-48.png" />
                 <dxb:BarButtonItem x:Name="bWriteTag" Content="Write Tag" Command="{Binding WriteTagCommand}"/>
             </dxb:BarManager.Items>
             <dxb:BarManager.Bars>
@@ -154,7 +154,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:TableView.RowIndicatorContentTemplate>
                                     <DataTemplate>
-                                        <Image Height="16" Width="16" Source="/EasyScada.ServerApplication;component/Resources/Images/tag_48px.png"/>
+                                        <Image Height="16" Width="16" Source="/EasyDriverServer;component/Resources/Images/tag_48px.png"/>
                                     </DataTemplate>
                                 </dxg:TableView.RowIndicatorContentTemplate>
                                 <dxg:TableView.RowCellMenuCustomizations>
