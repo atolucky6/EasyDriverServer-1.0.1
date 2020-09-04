@@ -57,5 +57,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
+      <Project>{275e5d96-e78d-4fad-a87a-415dbf1d7b74}</Project>
+      <Name>EasyScada.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

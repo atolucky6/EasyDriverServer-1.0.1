@@ -1,17 +1,22 @@
-﻿<dx:ThemedWindow x:Class="EasyScada.ServerApplication.MainWindow"
-                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:local="clr-namespace:EasyScada.ServerApplication"
-                 xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-                 xmlns:dxt="http://schemas.devexpress.com/winfx/2008/xaml/core/themekeys"
-                 xmlns:dxcore="http://schemas.devexpress.com/winfx/2008/xaml/core"
-                 Icon="EasyScadaLogo.ico"
-                 xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" ShowInTaskbar="True" ShowIcon="True"
-                 ShowTitle="False"
-                 Title="Easy Driver Server" Height="700" Width="1100" Padding="0"
-                 >
+﻿<dx:ThemedWindow
+    x:Class="EasyScada.ServerApplication.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxcore="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxt="http://schemas.devexpress.com/winfx/2008/xaml/core/themekeys"
+    xmlns:local="clr-namespace:EasyScada.ServerApplication"
+    Title="Easy Driver Server"
+    Width="1100"
+    Height="700"
+    Padding="0"
+    Icon="EasyScadaLogo.ico"
+    ShowIcon="True"
+    ShowInTaskbar="True"
+    ShowTitle="False">
     <dx:ThemedWindow.ToolbarItems>
-        <dxb:MainMenuControl VerticalAlignment="Center" dxb:MergingProperties.AllowMerging="True"/>
+        <dxb:MainMenuControl VerticalAlignment="Center" dxb:MergingProperties.AllowMerging="True" />
     </dx:ThemedWindow.ToolbarItems>
-    <local:MainView/>
+    <local:MainView />
 </dx:ThemedWindow>

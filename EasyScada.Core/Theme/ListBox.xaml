@@ -1,0 +1,234 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vsm="clr-namespace:System.Windows;assembly=PresentationFramework"
+    mc:Ignorable="d">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/EasyScada.Core;component/Theme/Generic.xaml" />
+        <ResourceDictionary Source="/EasyScada.Core;component/Theme/ListBoxScrollViewer.xaml" />
+        <ResourceDictionary Source="/EasyScada.Core;component/Theme/ScrollViewer.xaml" />
+        <ResourceDictionary Source="/EasyScada.Core;component/Theme/CheckBox.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <Style x:Key="Office2010SilverListBoxStyle" TargetType="{x:Type ListBox}">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="Trebuchet MS" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="BorderBrush" Value="{StaticResource Office2010SilverListBoxControlBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="1" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Grid>
+                        <Border
+                            x:Name="Border"
+                            Background="{StaticResource Office2010SilverListBoxControlBackgroundBrush}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="1">
+                            <ScrollViewer
+                                Margin="1"
+                                Focusable="false"
+                                Foreground="{TemplateBinding Foreground}"
+                                Style="{StaticResource Office2010SilverListScrollViewerStyle}">
+                                <StackPanel Margin="2" IsItemsHost="true" />
+                            </ScrollViewer>
+                        </Border>
+                        <Border
+                            x:Name="DisabledVisualElement"
+                            Background="#A5FFFFFF"
+                            BorderBrush="#66FFFFFF"
+                            BorderThickness="1"
+                            IsHitTestVisible="false"
+                            Opacity="0" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="DisabledVisualElement" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <Trigger Property="IsGrouping" Value="true">
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style
+        x:Key="Office2010SilverListBoxItemStyle"
+        d:IsControlPart="True"
+        TargetType="{x:Type ListBoxItem}">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="HoverOn">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientOver"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1.0"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientInnerOver"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1.0"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="HoverOff">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientOver"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientInnerOver"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.0"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="SelectedOn">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelected"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1.0"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelectedShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1.0"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelectedInnerShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1.0"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelectedDisabled"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1.0"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="SelectedOff">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelected"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelectedDisabled"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelectedShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelectedInnerShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundGradientSelectedDisabled"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.0"
+                                Duration="00:00:00.2000000" />
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+                    <Grid SnapsToDevicePixels="true">
+                        <Rectangle
+                            x:Name="BackgroundGradientSelected"
+                            Fill="{StaticResource Office2010SilverListItemSelectedBrush}"
+                            Opacity="0"
+                            RadiusX="3"
+                            RadiusY="3"
+                            Stroke="{StaticResource Office2010SilverListItemPressedBorderBrush}"
+                            StrokeThickness="1" />
+                        <Rectangle
+                            x:Name="BackgroundGradientSelectedShadow"
+                            Margin="1"
+                            Fill="Transparent"
+                            Opacity="0"
+                            RadiusX="3"
+                            RadiusY="3"
+                            Stroke="{StaticResource Office2010SilverListItemPressedShadowBorderBrush}"
+                            StrokeThickness="1" />
+                        <Rectangle
+                            x:Name="BackgroundGradientSelectedInnerShadow"
+                            Margin="2"
+                            Fill="Transparent"
+                            Opacity="0"
+                            RadiusX="3"
+                            RadiusY="3"
+                            Stroke="{StaticResource Office2010SilverListItemPressedInnerShadowBorderBrush}"
+                            StrokeThickness="1" />
+                        <Rectangle
+                            x:Name="BackgroundGradientOver"
+                            Fill="{StaticResource Office2010SilverListItemMouseOverBrush}"
+                            Opacity="0"
+                            RadiusX="3"
+                            RadiusY="3"
+                            Stroke="{StaticResource Office2010SilverListItemMouseOverBorderBrush}" />
+                        <Rectangle
+                            x:Name="BackgroundGradientInnerOver"
+                            Margin="1"
+                            Fill="Transparent"
+                            Opacity="0"
+                            RadiusX="3"
+                            RadiusY="3"
+                            Stroke="{StaticResource Office2010SilverListItemMouseOverInnerBorderBrush}" />
+                        <Rectangle
+                            x:Name="BackgroundGradientSelectedDisabled"
+                            Opacity="0"
+                            RadiusX="3"
+                            RadiusY="3"
+                            Stroke="{StaticResource Office2010SilverListItemSelectedBorderBrush}" />
+                        <ContentPresenter
+                            x:Name="contentPresenter"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="SelectedOff_BeginStoryboard" Storyboard="{StaticResource SelectedOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="SelectedOn_BeginStoryboard" Storyboard="{StaticResource SelectedOn}" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="HoverOff_BeginStoryboard" Storyboard="{StaticResource HoverOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
+
+
+

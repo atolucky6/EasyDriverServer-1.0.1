@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using EasyScada.Winforms.Connector;
 using System.Security.Permissions;
 using System.Threading.Tasks;
+using EasyScada.Core;
 
 namespace EasyScada.Winforms.Controls
 {
@@ -42,10 +43,10 @@ namespace EasyScada.Winforms.Controls
     {
         #region ISupportConnector
 
-        EasyDriverConnector easyDriverConnector;
+        IEasyDriverConnector easyDriverConnector;
         [Description("Select driver connector for control")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        public EasyDriverConnector Connector
+        public IEasyDriverConnector Connector
         {
             get { return easyDriverConnector; }
             set
@@ -115,7 +116,7 @@ namespace EasyScada.Winforms.Controls
 
         [Description("Select path to tag for control")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        [TypeConverter(typeof(EasyScadaTagPathConverter))]
+        [TypeConverter(typeof(TagPathConverter))]
         public string PathToTag { get; set; }
 
         ITag linkedTag;
@@ -205,9 +206,9 @@ namespace EasyScada.Winforms.Controls
 
         #region ISupportWriteTag
 
-        [TypeConverter(typeof(WriteModeConverter))]
+        [TypeConverter(typeof(WriteTriggerConverter))]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        public WriteMode WriteMode { get; set; }
+        public WriteTrigger WriteTrigger { get; set; }
 
         int writeDelay;
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
@@ -2030,7 +2031,7 @@ namespace EasyScada.Winforms.Controls
                 TagWriting?.Invoke(this, new TagWritingEventArgs(LinkedTag, writeValue));
                 Quality writeQuality = Quality.Uncertain;
 
-                writeQuality = await LinkedTag.WriteAsync(writeValue);
+                //writeQuality = await LinkedTag.WriteAsync(writeValue);
 
                 TagWrited?.Invoke(this, new TagWritedEventArgs(LinkedTag, writeQuality, writeValue));
             }
@@ -2106,7 +2107,7 @@ namespace EasyScada.Winforms.Controls
         private void OnTextBoxTextChanged(object sender, EventArgs e)
         {
             OnTextChanged(e);
-            if (WriteMode == WriteMode.ValueChanged)
+            if (WriteTrigger == WriteTrigger.ValueChanged)
                 WriteTag(Text);
         }
 
@@ -2148,7 +2149,7 @@ namespace EasyScada.Winforms.Controls
             PerformNeedPaint(true);
             OnLostFocus(e);
 
-            if (WriteMode == WriteMode.LostFocus)
+            if (WriteTrigger == WriteTrigger.LostFocus)
                 WriteTag(Text);
 
             if (LinkedTag != null && LinkedTag.Value != Text)
@@ -2171,7 +2172,7 @@ namespace EasyScada.Winforms.Controls
 
             if (e.KeyCode == Keys.Enter)
             {
-                if (WriteMode == WriteMode.OnEnter)
+                if (WriteTrigger == WriteTrigger.OnEnter)
                     WriteTag(Text);
             }
             else if (e.KeyCode == Keys.Escape)

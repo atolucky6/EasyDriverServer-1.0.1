@@ -22,7 +22,6 @@ namespace EasyDriver.ModbusTCP
         }
 
         public IDeviceCore Device { get; private set; }
-
         private ModbusTCPClient mbClient;
         readonly Task refreshTask;
         readonly SemaphoreSlim semaphore;

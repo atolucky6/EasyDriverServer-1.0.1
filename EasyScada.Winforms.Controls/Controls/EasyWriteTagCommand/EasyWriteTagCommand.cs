@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using EasyScada.Winforms.Connector;
 using System.Threading.Tasks;
 using System.Security.Permissions;
+using EasyScada.Core;
 
 namespace EasyScada.Winforms.Controls
 {
@@ -26,10 +27,10 @@ namespace EasyScada.Winforms.Controls
     {
         #region ISupportConnector
 
-        EasyDriverConnector easyDriverConnector;
+        IEasyDriverConnector easyDriverConnector;
         [Description("Select driver connector for control")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        public EasyDriverConnector Connector
+        public IEasyDriverConnector Connector
         {
             get { return easyDriverConnector; }
             set
@@ -59,7 +60,7 @@ namespace EasyScada.Winforms.Controls
 
         [Description("Select path to tag for control")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        [TypeConverter(typeof(EasyScadaTagPathConverter))]
+        [TypeConverter(typeof(TagPathConverter))]
         public string PathToTag { get; set; }
 
         ITag linkedTag;
@@ -514,7 +515,7 @@ namespace EasyScada.Winforms.Controls
                 TagWriting?.Invoke(this, new TagWritingEventArgs(LinkedTag, writeValue));
                 Quality writeQuality = Quality.Uncertain;
 
-                writeQuality = await LinkedTag.WriteAsync(writeValue);
+                //writeQuality = await LinkedTag.WriteAsync(writeValue);
 
                 TagWrited?.Invoke(this, new TagWritedEventArgs(LinkedTag, writeQuality, writeValue));
             }

@@ -1,7 +1,9 @@
-﻿using EasyScada.Winforms.Connector;
+﻿using EasyScada.Core;
+using EasyScada.Winforms.Connector;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design.Behavior;
 
@@ -58,7 +60,7 @@ namespace EasyScada.Winforms.Controls
 
             if (BaseControl is ISupportWriteSingleTag)
             {
-                actionItems.Add(new DesignerActionPropertyItem("WriteMode", "Write Mode", DesignerCategory.EASYSCADA, ""));
+                actionItems.Add(new DesignerActionPropertyItem("WriteTrigger", "Write Trigger", DesignerCategory.EASYSCADA, ""));
                 actionItems.Add(new DesignerActionPropertyItem("WriteDelay", "Write Delay", DesignerCategory.EASYSCADA, ""));
             }
 
@@ -166,7 +168,7 @@ namespace EasyScada.Winforms.Controls
 
         [Description("The driver connector to Easy Driver Server")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        public virtual EasyDriverConnector Connector
+        public virtual IEasyDriverConnector Connector
         {
             get
             {
@@ -181,8 +183,9 @@ namespace EasyScada.Winforms.Controls
             }
         }
 
+        //[TypeConverter(typeof(TagPathConverter)), Category(DesignerCategory.EASYSCADA)]
         [Description("Path to tag of the control")]
-        [TypeConverter(typeof(EasyScadaTagPathConverter)), Category(DesignerCategory.EASYSCADA)]
+        [EditorAttribute(typeof(PathToTagPropertyEditor), typeof(UITypeEditor))]
         public virtual string PathToTag
         {
             get
@@ -198,13 +201,13 @@ namespace EasyScada.Winforms.Controls
             }
         }
 
-        public virtual WriteMode WriteMode
+        public virtual WriteTrigger WriteTrigger
         {
             get
             {
                 if (BaseControl is ISupportWriteSingleTag)
-                    return (BaseControl as ISupportWriteSingleTag).WriteMode;
-                return WriteMode.OnEnter;
+                    return (BaseControl as ISupportWriteSingleTag).WriteTrigger;
+                return WriteTrigger.OnEnter;
             }
             set
             {

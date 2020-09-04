@@ -40,5 +40,6 @@
         OPC_PROP_ALMLL = 310,
         OPC_PROP_ALMROC = 311,
         OPC_PROP_ALMDEV = 312,
+        OPC_PROP_ADRESS = 5005,
     }
 }

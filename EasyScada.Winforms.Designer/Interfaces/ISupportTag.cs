@@ -1,4 +1,5 @@
-﻿using EasyScada.Winforms.Connector;
+﻿using EasyScada.Core;
+using EasyScada.Winforms.Connector;
 using System.ComponentModel;
 
 namespace EasyScada.Winforms.Designer

@@ -39,6 +39,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
+    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -150,7 +151,6 @@
     <Compile Include="Converters\ButtonSpecFormFixedConverter.cs" />
     <Compile Include="Converters\ButtonStyleConverter.cs" />
     <Compile Include="Converters\EasyLinkBehaviorConverter.cs" />
-    <Compile Include="Converters\EasyScadaPathToTagConverter.cs" />
     <Compile Include="Converters\GridStyleConverter.cs" />
     <Compile Include="Converters\HeaderStyleConverter.cs" />
     <Compile Include="Converters\InputControlStyleConverter.cs" />
@@ -171,17 +171,15 @@
     <Compile Include="Converters\StringLookupConverter.cs" />
     <Compile Include="Converters\TabBorderStyleConverter.cs" />
     <Compile Include="Converters\TabStyleConverter.cs" />
-    <Compile Include="Converters\WriteModeConverter.cs" />
     <Compile Include="Designer\ComponentDesignerActionList.cs" />
     <Compile Include="Designer\ComponentDesignerBase.cs" />
     <Compile Include="Designer\ControlDesignerAcionList.cs" />
     <Compile Include="Designer\ControlDesignerBase.cs" />
     <Compile Include="Designer\DesignerCategory.cs" />
     <Compile Include="EasyScada\AnimateCommandBase.cs" />
-    <Compile Include="EasyScada\Definitations.cs" />
     <Compile Include="Controls\EasyWriteTagCommand\EasyWriteTagCommand.cs" />
+    <Compile Include="EasyScada\Definitations.cs" />
     <Compile Include="EasyScada\DiscreteAnimateCommand.cs" />
-    <Compile Include="EasyScada\WriteTagCommand.cs" />
     <Compile Include="EventArgs\ButtonDragOffsetEventArgs.cs" />
     <Compile Include="EventArgs\ButtonDragRectangleEventArgs.cs" />
     <Compile Include="EventArgs\ButtonSpecEventArgs.cs" />
@@ -193,10 +191,8 @@
     <Compile Include="EventArgs\PaletteLayoutEventArgs.cs" />
     <Compile Include="EventArgs\PointEventArgs.cs" />
     <Compile Include="EventArgs\PointEventCancelArgs.cs" />
-    <Compile Include="EventArgs\TagWritingEventArgs.cs" />
     <Compile Include="EventArgs\TooltipEventArgs.cs" />
     <Compile Include="EventArgs\TypedCollectionEventArgs.cs" />
-    <Compile Include="EventArgs\TagWritedEventArgs.cs" />
     <Compile Include="FormAnimateDesigner.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -458,12 +454,14 @@
     <Compile Include="Palette Control\PaletteTrackBarPositionStates.cs" />
     <Compile Include="Palette Control\PaletteTrackBarRedirect.cs" />
     <Compile Include="Palette Control\PaletteTrackBarStates.cs" />
+    <Compile Include="PathToTagPropertyEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="PropertyEditorBase.cs" />
     <Compile Include="Rendering\EasyOffice2007Renderer.cs" />
     <Compile Include="Rendering\EasyOffice2010Renderer.cs" />
     <Compile Include="Rendering\EasyProfessionalRenderer.cs" />
@@ -564,6 +562,10 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
+      <Project>{275e5d96-e78d-4fad-a87a-415dbf1d7b74}</Project>
+      <Name>EasyScada.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EasyScada.Winforms.Connector\EasyScada.Winforms.Connector.csproj">
       <Project>{4b95b838-26b8-4103-afb2-c13c1efa9fcf}</Project>
       <Name>EasyScada.Winforms.Connector</Name>

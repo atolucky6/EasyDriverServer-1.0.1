@@ -14,6 +14,8 @@ namespace EasyDriver.Opc.Client.Da.Browsing
         private readonly OpcDaBrowser1 _browser1 = new OpcDaBrowser1();
         private readonly OpcDaBrowser2 _browser2 = new OpcDaBrowser2();
         private readonly OpcDaBrowser3 _browser3 = new OpcDaBrowser3();
+        private readonly IOpcDaBrowser[] _browsers = new IOpcDaBrowser[3];
+        private int _browserIndex = 0;
         private OpcDaServer _server;
 
         /// <summary>
@@ -23,6 +25,10 @@ namespace EasyDriver.Opc.Client.Da.Browsing
         public OpcDaBrowserAuto(OpcDaServer server = null)
         {
             OpcDaServer = server;
+
+            _browsers[0] = _browser3;
+            _browsers[1] = _browser2;
+            _browsers[2] = _browser1;
         }
 
         /// <summary>
@@ -94,31 +100,64 @@ namespace EasyDriver.Opc.Client.Da.Browsing
         /// <exception cref="System.AggregateException"></exception>
         public OpcDaItemProperties[] GetProperties(IList<string> itemIds, OpcDaPropertiesQuery propertiesQuery = null)
         {
-            try
+            List<Exception> exceptions = new List<Exception>();
+            for (int i = 0; i < 3; i++)
             {
-                return _browser3.GetProperties(itemIds, propertiesQuery);
-            }
-            catch (Exception ex1)
-            {
-                Log.Warn("Failed to get properties using IOPCBrowse (OPC DA 3.x).", ex1);
                 try
                 {
-                    return _browser2.GetProperties(itemIds, propertiesQuery);
+                    OpcDaItemProperties[] result = _browsers[_browserIndex].GetProperties(itemIds, propertiesQuery);
+                    return result;
                 }
-                catch (Exception ex2)
+                catch (Exception ex)
                 {
-                    Log.Warn("Failed to get properties using IOPCItemProperties (OPC DA 2.x).", ex2);
-                    try
+                    switch (_browserIndex)
                     {
-                        return _browser1.GetProperties(itemIds, propertiesQuery);
+                        case 0:
+                            Log.Warn("Failed to get properties using IOPCBrowse (OPC DA 3.x).", ex);
+                            break;
+                        case 1:
+                            Log.Warn("Failed to get properties using IOPCItemProperties (OPC DA 2.x).", ex);
+                            break;
+                        case 2:
+                            Log.Warn("Failed to get properties using IOPCItemProperties (OPC DA 1.x).", ex);
+                            break;
+                        default:
+                            break;
                     }
-                    catch (Exception ex3)
-                    {
-                        Log.Warn("Failed to get properties using IOPCItemProperties (OPC DA 1.x).", ex2);
-                        throw new AggregateException(ex3, ex2, ex1);
-                    }
+                    _browserIndex++;
+                    if (_browserIndex > 2)
+                        _browserIndex = 0;
+                    exceptions.Add(ex);
                 }
             }
+            throw new AggregateException(exceptions.ToArray());
+
+            //try
+            //{
+            //    return _browser3.GetProperties(itemIds, propertiesQuery);
+            //}
+            //catch (Exception ex1)
+            //{
+            //    Log.Warn("Failed to get properties using IOPCBrowse (OPC DA 3.x).", ex1);
+            //    try
+            //    {
+            //        return _browser2.GetProperties(itemIds, propertiesQuery);
+            //    }
+            //    catch (Exception ex2)
+            //    {
+            //        Log.Warn("Failed to get properties using IOPCItemProperties (OPC DA 2.x).", ex2);
+            //        try
+            //        {
+            //            return _browser1.GetProperties(itemIds, propertiesQuery);
+            //        }
+            //        catch (Exception ex3)
+            //        {
+            //            Log.Warn("Failed to get properties using IOPCItemProperties (OPC DA 1.x).", ex2);
+            //            throw new AggregateException(ex3, ex2, ex1);
+            //        }
+            //    }
+            //}
         }
+
     }
 }

@@ -1,0 +1,500 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <ResourceDictionary.MergedDictionaries />
+    <!--  ScrollBar RepeatButtonBrushes  -->
+    <LinearGradientBrush x:Key="ScrollBarRepeatButtonBrush" StartPoint="0.5,0" EndPoint="0.5,1">
+        <GradientStop Offset="0" Color="#FFF2F2F2" />
+        <GradientStop Offset="0.5" Color="#FFEFEFEF" />
+        <GradientStop Offset="0.513" Color="#FFE9EAEA" />
+        <GradientStop Offset="1" Color="#FFE6E7E8" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ScrollBarRepeatButtonBorderBrush" Color="#FFAEB3B8" />
+    <LinearGradientBrush x:Key="Office2010SilverScrollBarRepeatButtonPressedBrush" StartPoint="0.5,1" EndPoint="0.5,0">
+        <GradientStop Offset="0.5" Color="#FFE1E2E3" />
+        <GradientStop Offset="0.513" Color="#FFE1E2E3" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="Office2010SilverScrollBarRepeatButtonPressedBorderBrush" Color="#FFB6BABF" />
+    <!--  ScrollBar ThumbBrushes  -->
+    <LinearGradientBrush x:Key="ScrollBarThumbBrush" StartPoint="0.0,0.5" EndPoint="1.0,0.5">
+        <GradientStop Offset="0" Color="#FFF2F2F2" />
+        <GradientStop Offset="0.5" Color="#FFEFEFEF" />
+        <GradientStop Offset="0.513" Color="#FFE9EAEA" />
+        <GradientStop Offset="1" Color="#FFE6E7E8" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ScrollBarThumbBorderBrush" Color="#FFB6BABF" />
+    <LinearGradientBrush x:Key="ScrollBarThumbMouseOverBrush" StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+        <GradientStop Offset="0" Color="#FFFFFFFF" />
+        <GradientStop Offset="0.5" Color="#FFF8F8F9" />
+        <GradientStop Offset="0.513" Color="#FFF8F8F9" />
+        <GradientStop Offset="1" Color="#FFF2F3F4" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ScrollBarThumbMouseOverBorderBrush" Color="#FFAEB3B8" />
+    <LinearGradientBrush x:Key="ScrollBarThumbPressedBrush" StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+        <GradientStop Offset="0" Color="#FFE1E2E3" />
+        <GradientStop Offset="0.5" Color="#FFE1E2E3" />
+        <GradientStop Offset="0.513" Color="#FFE1E2E3" />
+        <GradientStop Offset="1" Color="#FFE1E2E3" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ScrollBarThumbPressedBorderBrush" Color="#FFB6BABF" />
+    <Style
+        x:Key="NuclearRepeatButton"
+        d:IsControlPart="True"
+        BasedOn="{x:Null}"
+        TargetType="{x:Type RepeatButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="PressedOn">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressed"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="PressedOff">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressed"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="HoverOn">
+                            <DoubleAnimationUsingKeyFrames
+                                BeginTime="00:00:00"
+                                Storyboard.TargetName="Highlight"
+                                Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="HoverOff">
+                            <DoubleAnimationUsingKeyFrames
+                                BeginTime="00:00:00"
+                                Storyboard.TargetName="Highlight"
+                                Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+                    <Grid>
+                        <Rectangle
+                            x:Name="Background"
+                            Fill="{StaticResource ScrollBarRepeatButtonBrush}"
+                            Opacity="1"
+                            RadiusX="0.5"
+                            RadiusY="0.5"
+                            Stroke="{StaticResource ScrollBarRepeatButtonBorderBrush}"
+                            StrokeThickness="1" />
+                        <Rectangle
+                            x:Name="BackgroundPressed"
+                            Fill="{StaticResource Office2010SilverScrollBarRepeatButtonPressedBrush}"
+                            Opacity="0"
+                            RadiusX="0.5"
+                            RadiusY="0.5"
+                            Stroke="{StaticResource Office2010SilverScrollBarRepeatButtonPressedBorderBrush}"
+                            StrokeThickness="1" />
+                        <Rectangle
+                            x:Name="Highlight"
+                            Margin="1"
+                            IsHitTestVisible="false"
+                            Opacity="0"
+                            RadiusX="0.5"
+                            RadiusY="0.5"
+                            Stroke="#99FFFFFF"
+                            StrokeThickness="1" />
+                        <Rectangle
+                            x:Name="DisabledElement"
+                            Fill="{StaticResource DisabledBackgroundBrush}"
+                            Opacity="0"
+                            RadiusX="0"
+                            RadiusY="0" />
+                        <ContentPresenter
+                            x:Name="ContentPresenter"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="true" />
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="HoverOff_BeginStoryboard" Storyboard="{StaticResource HoverOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="HoverOn_BeginStoryboard" Storyboard="{StaticResource HoverOn}" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="PressedOff_BeginStoryboard" Storyboard="{StaticResource PressedOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource PressedOn}" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="#AAA" />
+                            <Setter TargetName="ContentPresenter" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style
+        x:Key="NuclearThumbStyle"
+        d:IsControlPart="True"
+        BasedOn="{x:Null}"
+        TargetType="{x:Type Thumb}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="HoverOn">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundMouseOver"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="HoverOff">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundMouseOver"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="PressedOn">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressed"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="PressedOff">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressed"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+                    <Grid x:Name="ThumbVisual" Margin="0,0,0,0">
+                        <Rectangle
+                            x:Name="Background"
+                            Fill="{StaticResource ScrollBarThumbBrush}"
+                            RadiusX="1.5"
+                            RadiusY="1.5"
+                            Stroke="{StaticResource ScrollBarThumbBorderBrush}"
+                            StrokeThickness="1" />
+                        <Rectangle
+                            x:Name="BackgroundMouseOver"
+                            Fill="{StaticResource ScrollBarThumbMouseOverBrush}"
+                            Opacity="0"
+                            RadiusX="1.5"
+                            RadiusY="1.5"
+                            Stroke="{StaticResource ScrollBarThumbMouseOverBorderBrush}"
+                            StrokeThickness="1" />
+                        <Rectangle
+                            x:Name="BackgroundPressed"
+                            Fill="{StaticResource ScrollBarThumbPressedBrush}"
+                            Opacity="0"
+                            RadiusX="1.5"
+                            RadiusY="1.5"
+                            Stroke="{StaticResource ScrollBarThumbPressedBorderBrush}"
+                            StrokeThickness="1" />
+                        <Path
+                            Width="11"
+                            Height="1"
+                            Margin="0,-6,0,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                            Stretch="Fill"
+                            Stroke="#FF848485"
+                            StrokeThickness="1">
+                            <Path.Fill>
+                                <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                    <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                    <GradientStop Offset="0.518" Color="#FFF0F0F0" />
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                        </Path>
+                        <Path
+                            Width="11"
+                            Height="1"
+                            Margin="0,-2,0,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                            Stretch="Fill"
+                            Stroke="#FF848485"
+                            StrokeThickness="1">
+                            <Path.Fill>
+                                <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                    <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                    <GradientStop Offset="0.518" Color="#FFF0F0F0" />
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                        </Path>
+                        <Path
+                            Width="11"
+                            Height="1"
+                            Margin="0,0,0,-2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                            Stretch="Fill"
+                            Stroke="#FF848485"
+                            StrokeThickness="1">
+                            <Path.Fill>
+                                <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                    <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                    <GradientStop Offset="0.518" Color="#FFF0F0F0" />
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                        </Path>
+                        <Path
+                            Width="11"
+                            Height="1"
+                            Margin="0,0,0,-6"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                            Stretch="Fill"
+                            Stroke="#FF848485"
+                            StrokeThickness="1">
+                            <Path.Fill>
+                                <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                    <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                    <GradientStop Offset="0.518" Color="#FFF0F0F0" />
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                        </Path>
+                        <Rectangle
+                            x:Name="Highlight"
+                            Margin="1"
+                            IsHitTestVisible="false"
+                            Opacity="0.6"
+                            RadiusX="0.5"
+                            RadiusY="0.5"
+                            Stroke="#00FFFFFF"
+                            StrokeThickness="1" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True" />
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="HoverOff_BeginStoryboard" Storyboard="{StaticResource HoverOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="ThumbVisual" Property="Opacity" Value="0" />
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="PressedOff_BeginStoryboard" Storyboard="{StaticResource PressedOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="PressedOn_BeginStoryboard" Storyboard="{StaticResource PressedOn}" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style
+        x:Key="NuclearScrollRepeatButtonStyle"
+        d:IsControlPart="True"
+        TargetType="{x:Type RepeatButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Grid>
+                        <Rectangle
+                            Fill="{TemplateBinding Background}"
+                            Stroke="{TemplateBinding BorderBrush}"
+                            StrokeThickness="{TemplateBinding BorderThickness}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="Office2010SilverListScrollBarStyle" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+        <Setter Property="Foreground" Value="{StaticResource {x:Static SystemColors.ControlTextBrushKey}}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid x:Name="GridRoot" Width="{StaticResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition MaxHeight="18" />
+                            <RowDefinition Height="0.00001*" />
+                            <RowDefinition MaxHeight="18" />
+                        </Grid.RowDefinitions>
+                        <Rectangle
+                            Grid.RowSpan="4"
+                            Opacity="1"
+                            RadiusX="0"
+                            RadiusY="0"
+                            StrokeThickness="1">
+                            <Rectangle.Stroke>
+                                <SolidColorBrush Color="#FFF0F0F0" />
+                            </Rectangle.Stroke>
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="#FFEFEFEF" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <RepeatButton
+                            x:Name="DecreaseRepeat"
+                            Command="ScrollBar.LineUpCommand"
+                            Style="{StaticResource NuclearRepeatButton}">
+                            <Grid>
+                                <Path
+                                    Width="10"
+                                    Height="6"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="F1 M 541.537,173.589L 531.107,173.589L 536.322,167.49L 541.537,173.589 Z "
+                                    IsHitTestVisible="False"
+                                    Stretch="Uniform">
+                                    <Path.Fill>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                            <GradientStop Color="#FF5E6D91" />
+                                            <GradientStop Offset="1" Color="#FF2B3B60" />
+                                        </LinearGradientBrush>
+                                    </Path.Fill>
+                                </Path>
+                            </Grid>
+                        </RepeatButton>
+                        <Track
+                            x:Name="PART_Track"
+                            Grid.Row="1"
+                            IsDirectionReversed="true"
+                            Orientation="Vertical">
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource NuclearThumbStyle}" />
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton
+                                    x:Name="PageUp"
+                                    Command="ScrollBar.PageDownCommand"
+                                    Style="{StaticResource NuclearScrollRepeatButtonStyle}" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton
+                                    x:Name="PageDown"
+                                    Command="ScrollBar.PageUpCommand"
+                                    Style="{StaticResource NuclearScrollRepeatButtonStyle}" />
+                            </Track.DecreaseRepeatButton>
+                        </Track>
+                        <RepeatButton
+                            x:Name="IncreaseRepeat"
+                            Grid.Row="2"
+                            Command="ScrollBar.LineDownCommand"
+                            Style="{StaticResource NuclearRepeatButton}">
+                            <Grid>
+                                <Path
+                                    Grid.Row="4"
+                                    Width="10"
+                                    Height="6"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="F1 M 531.107,321.943L 541.537,321.943L 536.322,328.042L 531.107,321.943 Z "
+                                    IsHitTestVisible="False"
+                                    Stretch="Uniform">
+                                    <Path.Fill>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                            <GradientStop Offset="0.004" Color="#FF5E6D91" />
+                                            <GradientStop Offset="0.996" Color="#FF2B3B60" />
+                                        </LinearGradientBrush>
+                                    </Path.Fill>
+                                </Path>
+                            </Grid>
+                        </RepeatButton>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="PART_Track" Property="Orientation" Value="Vertical" />
+                            <Setter TargetName="DecreaseRepeat" Property="Command" Value="ScrollBar.LineLeftCommand" />
+                            <Setter TargetName="IncreaseRepeat" Property="Command" Value="ScrollBar.LineRightCommand" />
+                            <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
+                            <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style
+        x:Key="Office2010SilverListScrollViewerStyle"
+        BasedOn="{x:Null}"
+        TargetType="{x:Type ScrollViewer}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ScrollContentPresenter
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="{TemplateBinding Padding}"
+                            CanContentScroll="{TemplateBinding CanContentScroll}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        <ScrollBar
+                            x:Name="PART_HorizontalScrollBar"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            AutomationProperties.AutomationId="HorizontalScrollBar"
+                            Maximum="{TemplateBinding ScrollableWidth}"
+                            Minimum="0"
+                            Orientation="Horizontal"
+                            Style="{StaticResource Office2010SilverListScrollBarStyle}"
+                            ViewportSize="{TemplateBinding ViewportWidth}"
+                            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                            Value="{Binding Path=HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                        <ScrollBar
+                            x:Name="PART_VerticalScrollBar"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            AutomationProperties.AutomationId="VerticalScrollBar"
+                            Maximum="{TemplateBinding ScrollableHeight}"
+                            Minimum="0"
+                            Orientation="Vertical"
+                            Style="{StaticResource Office2010SilverListScrollBarStyle}"
+                            ViewportSize="{TemplateBinding ViewportHeight}"
+                            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                            Value="{Binding Path=VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

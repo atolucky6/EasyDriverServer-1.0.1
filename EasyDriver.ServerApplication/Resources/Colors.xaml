@@ -1,24 +1,25 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:EasyScada.ServerApplication">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:EasyScada.ServerApplication">
     <Color x:Key="Red">#FF5555</Color>
-    <SolidColorBrush x:Key="RedBrush" Color="{StaticResource Red}"/>
+    <SolidColorBrush x:Key="RedBrush" Color="{StaticResource Red}" />
 
     <Color x:Key="Organe">#FFB86C</Color>
-    <SolidColorBrush x:Key="OrganeBrush" Color="{StaticResource Organe}"/>
+    <SolidColorBrush x:Key="OrganeBrush" Color="{StaticResource Organe}" />
 
     <Color x:Key="Yellow">#F1FA8C</Color>
-    <SolidColorBrush x:Key="YellowBrush" Color="{StaticResource Yellow}"/>
+    <SolidColorBrush x:Key="YellowBrush" Color="{StaticResource Yellow}" />
 
     <Color x:Key="Green">#50FA7B</Color>
-    <SolidColorBrush x:Key="GreenBrush" Color="{StaticResource Green}"/>
+    <SolidColorBrush x:Key="GreenBrush" Color="{StaticResource Green}" />
 
     <Color x:Key="Purple">#BD93F9</Color>
-    <SolidColorBrush x:Key="PurpleBrush" Color="{StaticResource Purple}"/>
+    <SolidColorBrush x:Key="PurpleBrush" Color="{StaticResource Purple}" />
 
     <Color x:Key="Cyan">#8BE9FD</Color>
-    <SolidColorBrush x:Key="CyanBrush" Color="{StaticResource Cyan}"/>
+    <SolidColorBrush x:Key="CyanBrush" Color="{StaticResource Cyan}" />
 
     <Color x:Key="Pink">#FF79C6</Color>
-    <SolidColorBrush x:Key="PinkBrush" Color="{StaticResource Pink}"/>
+    <SolidColorBrush x:Key="PinkBrush" Color="{StaticResource Pink}" />
 </ResourceDictionary>

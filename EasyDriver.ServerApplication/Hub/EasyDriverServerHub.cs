@@ -251,6 +251,10 @@ namespace EasyScada.ServerApplication
             return await ioc.Get<ITagWriterService>().WriteTag(writeCommand); 
         }
 
+        public async Task<List<WriteResponse>> WriteMultiTagAsync(List<WriteCommand> writeCommands)
+        {
+            return await ioc.Get<ITagWriterService>().WriteMultiTag(writeCommands);
+        }
         #endregion
 
         #region Utils

@@ -20,6 +20,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using EasyScada.Winforms.Connector;
+using EasyScada.Core;
 
 namespace EasyScada.Winforms.Controls
 {
@@ -40,10 +41,10 @@ namespace EasyScada.Winforms.Controls
     {
         #region ISupportConnector
 
-        EasyDriverConnector easyDriverConnector;
+        IEasyDriverConnector easyDriverConnector;
         [Description("Select driver connector for control")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        public EasyDriverConnector Connector
+        public IEasyDriverConnector Connector
         {
             get { return easyDriverConnector; }
             set
@@ -108,9 +109,10 @@ namespace EasyScada.Winforms.Controls
 
         #region ISupportTag
 
+        //[TypeConverter(typeof(TagPathConverter))]
         [Description("Select path to tag for control")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        [TypeConverter(typeof(EasyScadaTagPathConverter))]
+        [Editor(typeof(PathToTagPropertyEditor), typeof(UITypeEditor))]
         public string PathToTag { get; set; }
 
         ITag linkedTag;

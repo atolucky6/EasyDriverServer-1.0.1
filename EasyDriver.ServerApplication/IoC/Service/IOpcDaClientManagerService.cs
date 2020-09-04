@@ -13,6 +13,7 @@ using System.Collections;
 using EasyDriver.Core;
 using EasyDriver.Opc.Client.Da;
 using EasyDriver.Opc.Client.Common;
+using EasyDriver.Opc.Client.Da.Browsing;
 
 namespace EasyScada.ServerApplication
 {
@@ -84,6 +85,8 @@ namespace EasyScada.ServerApplication
         readonly Hashtable cache;
         readonly Hashtable opcDaItemCache;
         readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+        private IOpcDaBrowser browser;
+        private bool firstScan;
 
         #endregion
 
@@ -248,6 +251,23 @@ namespace EasyScada.ServerApplication
                         {
                             opcDaItemCache.Add(item.ItemId, item);
                         }
+
+                        if (browser == null)
+                            browser = new OpcDaBrowserAuto(OpcDaServer);
+
+                        List<string> itemIds = new List<string>();
+                        foreach (var item in cache.Keys)
+                            itemIds.Add(item.ToString());
+
+                        List<ITagCore> tags = new List<ITagCore>();
+                        foreach (var item in cache.Values)
+                        {
+                            if (item is ITagCore tag)
+                                tags.Add(tag);
+                        }
+
+                        RefreshTagItemProperties(browser, itemIds, tags);
+                        firstScan = false;
                         IsSubscribed = true;
                         delay = 100;
                     }
@@ -273,17 +293,29 @@ namespace EasyScada.ServerApplication
                                             {
                                                 if (itemValue.Error.Succeeded)
                                                 {
+                                                    if (!firstScan)
+                                                    {
+                                                        if (itemValue.Item != null)
+                                                        {
+                                                            tagCore.DataTypeName = itemValue.Item?.CanonicalDataType.Name;
+                                                            tagCore.AccessPermission = GetAccessPermission(itemValue.Item.AccessRights);
+                                                        }
+                                                    }
+
                                                     tagCore.Quality = GetOpcItemQuality((int)itemValue.Quality.Status);
                                                     tagCore.TimeStamp = itemValue.Timestamp.DateTime;
-                                                    Type valueType = itemValue.Value.GetType();
-                                                    if (valueType == typeof(bool))
+                                                    Type valueType = itemValue.Value?.GetType();
+                                                    if (valueType != null)
                                                     {
-                                                        string boolStr = itemValue.Value?.ToString();
-                                                        tagCore.Value = boolStr == "True" ? "1" : "0";
-                                                    }
-                                                    else
-                                                    {
-                                                        tagCore.Value = itemValue.Value?.ToString();
+                                                        if (valueType == typeof(bool))
+                                                        {
+                                                            string boolStr = itemValue.Value?.ToString();
+                                                            tagCore.Value = boolStr == "True" ? "1" : "0";
+                                                        }
+                                                        else
+                                                        {
+                                                            tagCore.Value = itemValue.Value?.ToString();
+                                                        }
                                                     }
                                                 }
                                                 else
@@ -293,6 +325,7 @@ namespace EasyScada.ServerApplication
                                                 }
                                             }
                                         }
+                                        firstScan = true;
                                     }
                                 }
                             }
@@ -328,6 +361,65 @@ namespace EasyScada.ServerApplication
                 OpcDaServer.Disconnect();
                 OpcDaServer?.Dispose();
             }
+        }
+
+        private void RefreshTagItemProperties(IOpcDaBrowser browser, List<string> itemIds, List<ITagCore> tags)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                if (itemIds.Count > 0 && itemIds.Count == tags.Count)
+                {
+                    OpcDaPropertiesQuery query = new OpcDaPropertiesQuery(
+                        true,                                           // Alllow get value
+                        (int)OpcDaItemPropertyIds.OPC_PROP_SCANRATE,    // Get scan rate
+                        (int)OpcDaItemPropertyIds.OPC_PROP_ADRESS);     // Get address property
+                    OpcDaItemProperties[] properties = browser.GetProperties(itemIds, query);
+                    Debug.WriteLine("Get OPC DA items properties success.");
+                    if (properties.Length == tags.Count)
+                    {
+                        for (int i = 0; i < tags.Count; i++)
+                        {
+                            ITagCore tag = tags[i];
+                            OpcDaItemProperties tagProperties = properties[i];
+                            foreach (var prop in tagProperties.Properties)
+                            {
+                                // DataType
+                                if (prop.PropertyId == (int)OpcDaItemPropertyIds.OPC_PROP_CDT)
+                                {
+                                    if (prop.ErrorId.Succeeded && prop.Value != null)
+                                        tag.DataTypeName = GetOpcItemDataType(prop.Value.ToString());
+                                }
+                                // AccessRights
+                                else if (prop.PropertyId == (int)OpcDaItemPropertyIds.OPC_PROP_RIGHTS)
+                                {
+                                    if (prop.ErrorId.Succeeded && prop.Value != null)
+                                    {
+                                        AccessPermission permission = AccessPermission.ReadOnly;
+                                        if (int.TryParse(prop.Value.ToString(), out int value))
+                                        {
+                                            if (value == 3)
+                                                permission = AccessPermission.ReadAndWrite;
+                                        }
+                                        tag.AccessPermission = permission;
+                                    }
+                                }
+                                // ScanRate
+                                else if (prop.PropertyId == (int)OpcDaItemPropertyIds.OPC_PROP_SCANRATE)
+                                {
+                                    if (prop.ErrorId.Succeeded && prop.Value != null)
+                                        tag.RefreshRate = int.Parse(prop.Value.ToString());
+                                }
+                                // Address
+                                else if (prop.PropertyId == (int)OpcDaItemPropertyIds.OPC_PROP_ADRESS)
+                                {
+                                    if (prop.ErrorId.Succeeded && prop.Value != null)
+                                        tag.Address = prop.Value.ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         public void Dispose()
@@ -392,6 +484,22 @@ namespace EasyScada.ServerApplication
 
         #region Utils
 
+        private AccessPermission GetAccessPermission(OpcDaAccessRights accessRight)
+        {
+            switch (accessRight)
+            {
+                case OpcDaAccessRights.Read:
+                    return AccessPermission.ReadOnly;
+                case OpcDaAccessRights.Ignore:
+                case OpcDaAccessRights.ReadWrite:
+                case OpcDaAccessRights.Write:
+                    return AccessPermission.ReadAndWrite;
+                default:
+                    break;
+            } 
+            return AccessPermission.ReadOnly;
+        }
+
         private Quality GetOpcItemQuality(int value)
         {
             // For more information https://www.opcsupport.com/s/article/What-are-the-OPC-Quality-Codes
@@ -403,6 +511,63 @@ namespace EasyScada.ServerApplication
             else if (value >= 65536 && value <= 65564)
                 quality = Quality.Bad;
             return quality;
+        }
+
+        private string GetOpcItemDataType(string value)
+        {
+            string dataType = "Unknown";
+            switch (value)
+            {
+                case "11":
+                    return "Bool";
+                case "8230":
+                    return "Bool Array";
+                case "17":
+                    return "Byte";
+                case "8209":
+                    return "Byte Array";
+                case "2":
+                    return "Short";
+                case "8194":
+                    return "Short Array";
+                case "18+":
+                    return "BCD";
+                case "18":
+                    return "Word";
+                case "8210":
+                    return "Word Array";
+                case "3":
+                    return "Long";
+                case "8195":
+                    return "Long Array";
+                case "19":
+                    return "DWord";
+                case "8211":
+                    return "DWord";
+                case "4":
+                    return "Float";
+                case "8196":
+                    return "Float Array";
+                case "5":
+                    return "Double";
+                case "8197":
+                    return "Double Array";
+                case "20":
+                    return "LLong";
+                case "8212":
+                    return "LLong Array";
+                case "21":
+                    return "QWord";
+                case "8213":
+                    return "QWord Array";
+                case "16":
+                    return "Char";
+                case "8":
+                    return "String";
+                default:
+                    break;
+            }
+            return dataType;
         }
 
         private IEnumerable<ICoreItem> GetAllChildItems(IGroupItem groupItem)

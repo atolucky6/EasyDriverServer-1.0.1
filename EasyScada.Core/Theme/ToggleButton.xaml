@@ -1,0 +1,306 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:utilities="clr-namespace:VIBlend.WPF.Controls;assembly=VIBlend.WPF.Utilities"
+    xmlns:viblend="clr-namespace:VIBlend.WPF.Controls;assembly=VIBlend.WPF.Editors"
+    xmlns:vsm="clr-namespace:System.Windows;assembly=PresentationFramework">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/EasyScada.Core;component/Theme/Generic.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <Style x:Key="Office2010SilverToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource Office2010SilverOutsideFontColor}" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="1" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="HoverOn">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundOver"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundOver_Highlight"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="HoverOff">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundOver"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundOver_Highlight"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="CheckedOn">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundChecked"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.84"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgoundChecked_Highlight"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressedShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.84"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressedInnerShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1.0"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="CheckedOff">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundChecked"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgoundChecked_Highlight"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressedShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.0"
+                                Duration="00:00:00.2000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressedInnerShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.0"
+                                Duration="00:00:00.2000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="PressedOn">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressed"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.84"
+                                Duration="00:00:00.0010000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgoundPressed_Highlight"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="00:00:00.0010000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressedShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.84"
+                                Duration="00:00:00.1000000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressedInnerShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1.0"
+                                Duration="00:00:00.1000000" />
+                        </Storyboard>
+                        <Storyboard x:Key="PressedOff">
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressed"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.0010000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgoundPressed_Highlight"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="00:00:00.0010000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressedShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.0"
+                                Duration="00:00:00.0010000" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BackgroundPressedInnerShadow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.0"
+                                Duration="00:00:00.0010000" />
+                        </Storyboard>
+                        <Storyboard x:Key="FocusedOn">
+                            <DoubleAnimationUsingKeyFrames
+                                BeginTime="00:00:00"
+                                Storyboard.TargetName="FocusVisualElement"
+                                Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="FocusedOff">
+                            <DoubleAnimationUsingKeyFrames
+                                BeginTime="00:00:00"
+                                Storyboard.TargetName="FocusVisualElement"
+                                Storyboard.TargetProperty="(UIElement.Opacity)">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+                    <Grid
+                        x:Name="grid1"
+                        SnapsToDevicePixels="True"
+                        UseLayoutRounding="True">
+                        <Border
+                            x:Name="BackgroundNorm"
+                            Background="{StaticResource Office2010SilverButtonNormalBrush}"
+                            BorderBrush="{StaticResource Office2010SilverButtonNormalBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1.75" />
+                        <Border
+                            x:Name="BackgroundNorm_highlight"
+                            Margin="1"
+                            BorderBrush="{StaticResource Office2010SilverButtonNormalHighlightBrush}"
+                            BorderThickness="1,1,1,1"
+                            CornerRadius="1"
+                            Opacity="0.65" />
+                        <Border
+                            x:Name="BackgroundChecked"
+                            Background="{StaticResource Office2010SilverButtonPressedBrush}"
+                            BorderBrush="{StaticResource Office2010SilverButtonPressedBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1.75"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgoundChecked_Highlight"
+                            Margin="1"
+                            BorderBrush="{StaticResource Office2010SilverButtonPressedHighlightBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgroundOver"
+                            Background="{StaticResource Office2010SilverButtonMouseOverBrush}"
+                            BorderBrush="{StaticResource Office2010SilverButtonMouseOverBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1.75"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgroundOver_Highlight"
+                            Margin="1"
+                            BorderBrush="{StaticResource Office2010SilverButtonMouseOverHighlightBrush}"
+                            BorderThickness="1,1,1,1"
+                            CornerRadius="1"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgroundPressed"
+                            Background="{StaticResource Office2010SilverButtonPressedBrush}"
+                            BorderBrush="{StaticResource Office2010SilverButtonPressedBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1.75"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgoundPressed_Highlight"
+                            Margin="1"
+                            BorderBrush="{StaticResource Office2010SilverButtonPressedHighlightBrush}"
+                            BorderThickness="1,1,1,1"
+                            CornerRadius="1"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgroundPressedShadow"
+                            Margin="1"
+                            Background="Transparent"
+                            BorderBrush="{StaticResource Office2010SilverButtonPressedShadowBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1.75"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgroundPressedInnerShadow"
+                            Margin="2"
+                            Background="Transparent"
+                            BorderBrush="{StaticResource Office2010SilverButtonPressedInnerShadowBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1.75"
+                            Opacity="0" />
+                        <Border
+                            x:Name="DisabledVisualElement"
+                            Background="{StaticResource Office2010SilverButtonDisabledBackgroundBrush}"
+                            BorderBrush="{StaticResource Office2010SilverButtonDisabledBorderBrush}"
+                            BorderThickness="1"
+                            IsHitTestVisible="false"
+                            Opacity="0" />
+                        <ContentPresenter
+                            x:Name="contentPresenter"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        <TextBlock
+                            x:Name="DisabledOverlay"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Panel.ZIndex="1"
+                            Foreground="#FF8E96A2"
+                            Text="{TemplateBinding Content}"
+                            Visibility="Collapsed" />
+                        <Border
+                            x:Name="FocusVisualElement"
+                            Grid.RowSpan="2"
+                            Margin="-1"
+                            BorderBrush="{StaticResource ButtonFocusBrush}"
+                            BorderThickness="1"
+                            CornerRadius="2.75"
+                            IsHitTestVisible="false"
+                            Opacity="0" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="HoverOff_BeginStoryboard" Storyboard="{StaticResource HoverOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
+                            </Trigger.EnterActions>
+                            <Setter Property="Foreground" Value="Black" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="PressedOff_BeginStoryboard" Storyboard="{StaticResource PressedOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="PressedOn_BeginStoryboard" Storyboard="{StaticResource PressedOn}" />
+                            </Trigger.EnterActions>
+                            <Setter Property="Foreground" Value="Black" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="true">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="FocusedOff_BeginStoryboard" Storyboard="{StaticResource FocusedOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="FocusedOn_BeginStoryboard" Storyboard="{StaticResource FocusedOn}" />
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="CheckedOff_BeginStoryboard" Storyboard="{StaticResource CheckedOff}" />
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="CheckedOn_BeginStoryboard" Storyboard="{StaticResource CheckedOn}" />
+                            </Trigger.EnterActions>
+                            <Setter Property="Foreground" Value="Black" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="true">
+                            <Setter Property="Foreground" Value="{StaticResource VIBlendOffice2010SilverButtonForegroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{StaticResource VIBlendOffice2010SilverButtonDisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

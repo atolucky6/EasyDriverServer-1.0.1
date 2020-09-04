@@ -1,4 +1,5 @@
-﻿using EasyScada.Winforms.Connector;
+﻿using EasyScada.Core;
+using EasyScada.Winforms.Connector;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
@@ -160,7 +161,7 @@ namespace EasyScada.Winforms.Controls
 
         [Description("The driver connector to Easy Driver Server")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        public virtual EasyDriverConnector Connector
+        public virtual IEasyDriverConnector Connector
         {
             get
             {
@@ -176,7 +177,7 @@ namespace EasyScada.Winforms.Controls
         }
 
         [Description("Path to tag of the control")]
-        [TypeConverter(typeof(EasyScadaTagPathConverter)), Category(DesignerCategory.EASYSCADA)]
+        [TypeConverter(typeof(TagPathConverter)), Category(DesignerCategory.EASYSCADA)]
         public virtual string PathToTag
         {
             get
@@ -192,13 +193,13 @@ namespace EasyScada.Winforms.Controls
             }
         }
 
-        public virtual WriteMode WriteMode
+        public virtual WriteTrigger WriteTrigger
         {
             get
             {
                 if (BaseComponent is ISupportWriteSingleTag)
-                    return (BaseComponent as ISupportWriteSingleTag).WriteMode;
-                return WriteMode.OnEnter;
+                    return (BaseComponent as ISupportWriteSingleTag).WriteTrigger;
+                return WriteTrigger.OnEnter;
             }
             set
             {

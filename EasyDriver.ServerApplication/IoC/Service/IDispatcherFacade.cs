@@ -18,7 +18,7 @@ namespace EasyScada.ServerApplication
         readonly ConcurrentDictionary<DispatcherOperation, object> operations;
         long operationsQueueCount;
 
-        public int DispatcherQueueSize { get; set; } = 250;
+        public int DispatcherQueueSize { get; set; } = 2500;
         public int DispatcherMonitorRate { get; set; } = 5000;
 
         public DispatcherFacade(Dispatcher dispatcher)
@@ -30,24 +30,31 @@ namespace EasyScada.ServerApplication
 
         private void MonitorDispatcherQueue(long l)
         {
-            if (operationsQueueCount > DispatcherQueueSize || operations.Count > DispatcherQueueSize)
+            try
             {
-                Application.Current.DoEvents();
-                operations.Clear();
-                Interlocked.Exchange(ref operationsQueueCount, 0);
+                if (operationsQueueCount > DispatcherQueueSize
+                  || operations.Count > DispatcherQueueSize)
+                {
+                    Application.Current.DoEvents();
+                    operations.Clear();
+                    Interlocked.Exchange(ref operationsQueueCount, 0);
+                }
             }
+            catch { }
         }
 
         public void AddToDispatcherQueue(Delegate workItem)
         {
             Interlocked.Increment(ref operationsQueueCount);
             var operation = dispatcher.BeginInvoke(DispatcherPriority.Background, workItem);
-            operations.TryAdd(operation, null);
             operation.Completed += (s, e) =>
             {
                 Interlocked.Decrement(ref operationsQueueCount);
                 operations.TryRemove((DispatcherOperation)s, out object t);
             };
+            operations.TryAdd(operation, null);
         }
     }
+
+
 }

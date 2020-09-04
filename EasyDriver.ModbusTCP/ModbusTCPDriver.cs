@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO.Ports;
 using EasyDriverPlugin;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Specialized;

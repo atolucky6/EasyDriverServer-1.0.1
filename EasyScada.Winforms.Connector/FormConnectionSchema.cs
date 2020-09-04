@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR.Client;
+﻿using EasyScada.Core;
+using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -416,7 +417,9 @@ namespace EasyScada.Winforms.Connector
         {
             if (treeNode.Checked && treeNode.Tag is Station station)
             {
-                Station result = DeepCopy(station);
+                Station result = JsonConvert.DeserializeObject<Station>(JsonConvert.SerializeObject(station));
+                if (result == null)
+                    MessageBox.Show("Station null");
                 result.Checked = true;
                 List<Channel> channels = new List<Channel>();
                 List<Station> stations = new List<Station>();
@@ -446,7 +449,7 @@ namespace EasyScada.Winforms.Connector
         {
             if (treeNode.Checked && treeNode.Tag is Channel channel)
             {
-                Channel result = DeepCopy(channel);
+                Channel result = JsonConvert.DeserializeObject<Channel>(JsonConvert.SerializeObject(channel));
                 result.Checked = true;
                 List<Device> devices = new List<Device>();
                 foreach (TreeNode childNode in treeNode.Nodes)
@@ -465,7 +468,7 @@ namespace EasyScada.Winforms.Connector
         {
             if (treeNode.Checked && treeNode.Tag is Device device)
             {
-                Device result = DeepCopy(device);
+                Device result = JsonConvert.DeserializeObject<Device>(JsonConvert.SerializeObject(device));
                 result.Checked = true;
                 List<Tag> tags = new List<Tag>();
                 foreach (TreeNode childNode in treeNode.Nodes)
@@ -484,7 +487,7 @@ namespace EasyScada.Winforms.Connector
         {
             if (treeNode.Checked && treeNode.Tag is Tag tag)
             {
-                Tag result = DeepCopy(tag);
+                Tag result = JsonConvert.DeserializeObject<Tag>(JsonConvert.SerializeObject(tag));
                 result.Checked = true;
                 return result;
             }
@@ -500,7 +503,7 @@ namespace EasyScada.Winforms.Connector
                 formatter.Serialize(stream, item);
                 stream.Seek(0, SeekOrigin.Begin);
 
-                return formatter.Deserialize(stream) as T;
+                return (T)formatter.Deserialize(stream);
             }
         }
 

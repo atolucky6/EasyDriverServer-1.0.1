@@ -1,0 +1,716 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/EasyScada.Core;component/Theme/Generic.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <!--  Horizontal Thumb  -->
+    <Style x:Key="Office2010SilverHorizontalThumbStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundMouseOver"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundMouseOver"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="00:00:00.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="ThumbVisual"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="ThumbVisual"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundPressed"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundPressed"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                    <Grid>
+                        <Grid.LayoutTransform>
+                            <RotateTransform Angle="90" />
+                        </Grid.LayoutTransform>
+                        <Grid x:Name="ThumbVisual">
+                            <Rectangle
+                                x:Name="Background"
+                                Fill="{StaticResource Office2010SilverVerticalThumbBackgroundBrush}"
+                                RadiusX="1.5"
+                                RadiusY="1.5"
+                                Stroke="{StaticResource Office2010SilverVerticalThumbBorderBrush}"
+                                StrokeThickness="1" />
+                            <Rectangle
+                                x:Name="BackgroundMouseOver"
+                                Fill="{StaticResource Office2010SilverVerticalThumbHighlightBackgroundBrush}"
+                                Opacity="0"
+                                RadiusX="1.5"
+                                RadiusY="1.5"
+                                Stroke="{StaticResource Office2010SilverVerticalThumbHighlightBorderBrush}"
+                                StrokeThickness="1" />
+                            <Rectangle
+                                x:Name="BackgroundPressed"
+                                Fill="{StaticResource Office2010SilverVerticalThumbPressedBackgroundBrush}"
+                                Opacity="0"
+                                RadiusX="1.5"
+                                RadiusY="1.5"
+                                Stroke="{StaticResource Office2010SilverVerticalThumbPressedBorderBrush}"
+                                StrokeThickness="1" />
+                            <Path
+                                Width="11"
+                                Height="1"
+                                Margin="0,-6,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                                Stretch="Fill"
+                                Stroke="#FF848485"
+                                StrokeThickness="1">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                        <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                        <GradientStop Offset="0.518" Color="#FFF0F0F0" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
+                            <Path
+                                Width="11"
+                                Height="1"
+                                Margin="0,-2,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                                Stretch="Fill"
+                                Stroke="#FF848485"
+                                StrokeThickness="1">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                        <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                        <GradientStop Offset="0.518" Color="#FFF0F0F0" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
+                            <Path
+                                Width="11"
+                                Height="1"
+                                Margin="0,0,0,-2"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                                Stretch="Fill"
+                                Stroke="#FF848485"
+                                StrokeThickness="1">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                        <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                        <GradientStop Offset="0.518" Color="#FFF0F0F0" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
+                            <Path
+                                Width="11"
+                                Height="1"
+                                Margin="0,0,0,-6"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                                Stretch="Fill"
+                                Stroke="#FF848485"
+                                StrokeThickness="1">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                        <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                        <GradientStop Offset="0.518" Color="#FFF0F0F0" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
+                            <Rectangle
+                                x:Name="Highlight"
+                                Margin="1"
+                                Fill="Transparent"
+                                IsHitTestVisible="false"
+                                Opacity="0.6"
+                                RadiusX="0.5"
+                                RadiusY="0.5"
+                                Stroke="#00FFFFFF"
+                                StrokeThickness="1" />
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--  ScrollBar RepeatButton  -->
+    <Style x:Key="Office2010SilverScrollBarRepeatButtonStyle" TargetType="{x:Type RepeatButton}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Foreground" Value="#FF042271" />
+        <Setter Property="FontFamily" Value="Trebuchet MS" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundOver"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="00:00:00.2" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundOver_Highlight"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0.65"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundOver"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="00:00:00.2" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundOver_Highlight"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0.0"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="DisabledVisualElement"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="DisabledVisualElement"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundPressed"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundPressed"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                    <Grid>
+                        <Border
+                            x:Name="BackgroundNorm"
+                            Background="{StaticResource Office2010SilverScrollBarRepeatButtonNormalBrush}"
+                            BorderBrush="{StaticResource Office2010SilverScrollBarRepeatButtonNormalBorderBrush}"
+                            BorderThickness="0"
+                            CornerRadius="1.75" />
+                        <Border
+                            x:Name="BackgroundNorm_highlight"
+                            Margin="0"
+                            BorderBrush="{StaticResource Office2010SilverScrollBarRepeatButtonHighlightBorderBrush}"
+                            BorderThickness="0"
+                            CornerRadius="1"
+                            Opacity="0.65" />
+                        <Border
+                            x:Name="BackgroundOver"
+                            Background="{StaticResource Office2010SilverScrollBarRepeatButtonHighlightBrush}"
+                            BorderBrush="{StaticResource Office2010SilverScrollBarRepeatButtonHighlightBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1.75"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgroundOver_Highlight"
+                            Margin="0"
+                            BorderBrush="{StaticResource Office2010SilverScrollBarRepeatButtonHighlightOverBorderBrush}"
+                            BorderThickness="1,1,1,1"
+                            CornerRadius="1"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgroundPressed"
+                            Background="{StaticResource Office2010SilverScrollBarRepeatButtonPressedBrush}"
+                            BorderBrush="{StaticResource Office2010SilverScrollBarRepeatButtonPressedBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="1.75"
+                            Opacity="0" />
+                        <Border
+                            x:Name="BackgoundPressed_Highlight"
+                            Margin="0"
+                            BorderBrush="{StaticResource Office2010SilverScrollBarRepeatButtonPressedHighlightBorderBrush}"
+                            BorderThickness="1,1,1,1"
+                            CornerRadius="1"
+                            Opacity="0" />
+                        <Border
+                            x:Name="DisabledVisualElement"
+                            Background="#3FFFFFFF"
+                            BorderBrush="#D8FFFFFF"
+                            CornerRadius="1.75"
+                            IsHitTestVisible="false"
+                            Visibility="Collapsed" />
+                        <Border
+                            x:Name="FocusVisualElement"
+                            Margin="-1"
+                            BorderBrush="#FFE99862"
+                            BorderThickness="1"
+                            CornerRadius="2.75"
+                            IsHitTestVisible="false"
+                            Visibility="Collapsed" />
+                        <Path
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"
+                            Fill="Black" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--  Thumb  -->
+    <Style x:Key="Office2010SilverThumbStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundMouseOver"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundMouseOver"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="00:00:00.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="ThumbVisual"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="ThumbVisual"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundPressed"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="BackgroundPressed"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="00:00:00.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                    <Grid>
+                        <Grid x:Name="ThumbVisual">
+                            <Rectangle
+                                x:Name="Background"
+                                Fill="{StaticResource Office2010SilverVerticalThumbBackgroundBrush}"
+                                RadiusX="1.5"
+                                RadiusY="1.5"
+                                Stroke="{StaticResource Office2010SilverVerticalThumbPressedBorderBrush}"
+                                StrokeThickness="1" />
+                            <Rectangle
+                                x:Name="BackgroundMouseOver"
+                                Fill="{StaticResource Office2010SilverVerticalThumbHighlightBackgroundBrush}"
+                                Opacity="0"
+                                RadiusX="1.5"
+                                RadiusY="1.5"
+                                Stroke="{StaticResource Office2010SilverVerticalThumbHighlightBorderBrush}"
+                                StrokeThickness="1" />
+                            <Rectangle
+                                x:Name="BackgroundPressed"
+                                Fill="{StaticResource Office2010SilverVerticalThumbPressedBackgroundBrush}"
+                                Opacity="0"
+                                RadiusX="1.5"
+                                RadiusY="1.5"
+                                Stroke="{StaticResource Office2010SilverVerticalThumbPressedBorderBrush}"
+                                StrokeThickness="1" />
+                            <Path
+                                Width="11"
+                                Height="1"
+                                Margin="0,-6,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                                Stretch="Fill"
+                                Stroke="#FF848485"
+                                StrokeThickness="1">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                        <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                        <GradientStop Offset="0.518" Color="#FFEFEFF0" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
+                            <Path
+                                Width="11"
+                                Height="1"
+                                Margin="0,-2,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                                Stretch="Fill"
+                                Stroke="#FF848485"
+                                StrokeThickness="1">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                        <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                        <GradientStop Offset="0.518" Color="#FFEFEFF0" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
+                            <Path
+                                Width="11"
+                                Height="1"
+                                Margin="0,0,0,-2"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                                Stretch="Fill"
+                                Stroke="#FF848485"
+                                StrokeThickness="1">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                        <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                        <GradientStop Offset="0.518" Color="#FFEFEFF0" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
+                            <Path
+                                Width="11"
+                                Height="1"
+                                Margin="0,0,0,-6"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M4.8333325,7.2499995 L12.012101,7.2499995"
+                                Stretch="Fill"
+                                Stroke="#FF848485"
+                                StrokeThickness="1">
+                                <Path.Fill>
+                                    <LinearGradientBrush StartPoint="1.062,0.5" EndPoint="-0.062,0.5">
+                                        <GradientStop Offset="0.487" Color="#FFC8C9CC" />
+                                        <GradientStop Offset="0.518" Color="#FFEFEFF0" />
+                                    </LinearGradientBrush>
+                                </Path.Fill>
+                            </Path>
+                            <Rectangle
+                                x:Name="Highlight"
+                                Margin="1"
+                                Fill="Transparent"
+                                IsHitTestVisible="false"
+                                Opacity="0.6"
+                                RadiusX="0.5"
+                                RadiusY="0.5"
+                                Stroke="#00FFFFFF"
+                                StrokeThickness="1" />
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--  PageButton  -->
+    <Style x:Key="ScrollBarPageButton" TargetType="{x:Type RepeatButton}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Border Background="Transparent" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Border Background="{StaticResource Office2010SilverVerticalTrackLayerBrush}" BorderBrush="{StaticResource Office2010SilverVerticalTrackLayerBorderBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition MaxHeight="18" />
+                    <RowDefinition Height="0.00001*" />
+                    <RowDefinition MaxHeight="18" />
+                </Grid.RowDefinitions>
+                <Border Grid.RowSpan="3" CornerRadius="0" />
+                <RepeatButton
+                    Grid.Row="0"
+                    Height="18"
+                    Command="ScrollBar.LineUpCommand"
+                    Content="M 0 4 L 8 4 L 4 0 Z"
+                    Style="{StaticResource Office2010SilverScrollBarRepeatButtonStyle}" />
+                <Track
+                    Name="PART_Track"
+                    Grid.Row="1"
+                    IsDirectionReversed="true">
+                    <Track.DecreaseRepeatButton>
+                        <RepeatButton Command="ScrollBar.PageUpCommand" Style="{StaticResource ScrollBarPageButton}" />
+                    </Track.DecreaseRepeatButton>
+                    <Track.Thumb>
+                        <Thumb Margin="0,0,0,0" Style="{StaticResource Office2010SilverThumbStyle}" />
+                    </Track.Thumb>
+                    <Track.IncreaseRepeatButton>
+                        <RepeatButton Command="ScrollBar.PageDownCommand" Style="{StaticResource ScrollBarPageButton}" />
+                    </Track.IncreaseRepeatButton>
+                </Track>
+                <RepeatButton
+                    Grid.Row="3"
+                    Height="18"
+                    Command="ScrollBar.LineDownCommand"
+                    Content="M 0 0 L 4 4 L 8 0 Z"
+                    Style="{StaticResource Office2010SilverScrollBarRepeatButtonStyle}" />
+            </Grid>
+        </Border>
+    </ControlTemplate>
+    <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Border Background="{StaticResource Office2010SilverHorizontalTrackLayerBrush}" BorderBrush="{StaticResource Office2010SilverHorizontalTrackLayerBorderBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MaxWidth="18" />
+                    <ColumnDefinition Width="0.00001*" />
+                    <ColumnDefinition MaxWidth="18" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.ColumnSpan="3" CornerRadius="0" />
+                <RepeatButton
+                    Grid.Column="0"
+                    Width="18"
+                    Command="ScrollBar.LineLeftCommand"
+                    Content="M 4 0 L 4 8 L 0 4 Z"
+                    Style="{StaticResource Office2010SilverScrollBarRepeatButtonStyle}" />
+                <Track
+                    Name="PART_Track"
+                    Grid.Column="1"
+                    IsDirectionReversed="False">
+                    <Track.DecreaseRepeatButton>
+                        <RepeatButton Command="ScrollBar.PageLeftCommand" Style="{StaticResource ScrollBarPageButton}" />
+                    </Track.DecreaseRepeatButton>
+                    <Track.Thumb>
+                        <Thumb Margin="0,0,0,0" Style="{StaticResource Office2010SilverHorizontalThumbStyle}" />
+                    </Track.Thumb>
+                    <Track.IncreaseRepeatButton>
+                        <RepeatButton Command="ScrollBar.PageRightCommand" Style="{StaticResource ScrollBarPageButton}" />
+                    </Track.IncreaseRepeatButton>
+                </Track>
+                <RepeatButton
+                    Grid.Column="3"
+                    Width="18"
+                    Command="ScrollBar.LineRightCommand"
+                    Content="M 0 0 L 4 4 L 0 8 Z"
+                    Style="{StaticResource Office2010SilverScrollBarRepeatButtonStyle}" />
+            </Grid>
+        </Border>
+    </ControlTemplate>
+    <Style x:Key="Office2010SilverScrollBarStyle" TargetType="{x:Type ScrollBar}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto" />
+                <Setter Property="Height" Value="18" />
+                <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
+            </Trigger>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Width" Value="18" />
+                <Setter Property="Height" Value="Auto" />
+                <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!--  ScrollViewer  -->
+    <Style x:Key="Office2010SilverScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Border
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="1">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ScrollContentPresenter
+                                x:Name="PART_ScrollContentPresenter"
+                                Margin="{TemplateBinding Padding}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                Cursor="{TemplateBinding Cursor}" />
+                            <ScrollBar
+                                x:Name="PART_VerticalScrollBar"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Width="16"
+                                IsEnabled="True"
+                                IsTabStop="False"
+                                Maximum="{TemplateBinding ScrollableHeight}"
+                                Minimum="0"
+                                Orientation="Vertical"
+                                Style="{StaticResource Office2010SilverScrollBarStyle}"
+                                ViewportSize="{TemplateBinding ViewportHeight}"
+                                Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                Value="{TemplateBinding VerticalOffset}" />
+                            <ScrollBar
+                                x:Name="PART_HorizontalScrollBar"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Height="16"
+                                IsTabStop="False"
+                                Maximum="{TemplateBinding ScrollableWidth}"
+                                Minimum="0"
+                                Orientation="Horizontal"
+                                Style="{StaticResource Office2010SilverScrollBarStyle}"
+                                ViewportSize="{TemplateBinding ViewportWidth}"
+                                Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                Value="{TemplateBinding HorizontalOffset}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

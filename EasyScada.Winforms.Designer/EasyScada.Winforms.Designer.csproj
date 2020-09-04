@@ -66,6 +66,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
+      <Project>{275E5D96-E78D-4FAD-A87A-415DBF1D7B74}</Project>
+      <Name>EasyScada.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EasyScada.Winforms.Connector\EasyScada.Winforms.Connector.csproj">
       <Project>{4b95b838-26b8-4103-afb2-c13c1efa9fcf}</Project>
       <Name>EasyScada.Winforms.Connector</Name>

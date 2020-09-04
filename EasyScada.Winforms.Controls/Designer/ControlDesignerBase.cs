@@ -34,12 +34,12 @@ namespace EasyScada.Winforms.Controls
 
             SelectionService = GetService(typeof(ISelectionService)) as ISelectionService;
             SelectionService.SelectionChanged += OnSelectionChanged;
-            if (BaseControl is ISupportLinkable)
-            {
-                LinkAdorner = new Adorner();
-                BehaviorService.Adorners.Add(LinkAdorner);
-                LinkAdorner.Glyphs.Add(new PinGlyph(BehaviorService, BaseControl, SelectionService, this, LinkAdorner));
-            }
+            //if (BaseControl is ISupportLinkable)
+            //{
+            //    LinkAdorner = new Adorner();
+            //    BehaviorService.Adorners.Add(LinkAdorner);
+            //    LinkAdorner.Glyphs.Add(new PinGlyph(BehaviorService, BaseControl, SelectionService, this, LinkAdorner));
+            //}
         }
 
         private void OnSelectionChanged(object sender, System.EventArgs e)

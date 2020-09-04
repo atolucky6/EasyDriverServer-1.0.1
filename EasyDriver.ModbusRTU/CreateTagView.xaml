@@ -95,7 +95,6 @@
                                     <dxlc:LayoutGroup Orientation="Horizontal">
                                         <dxlc:LayoutItem Label="Gain" AddColonToLabel="True">
                                             <dxe:SpinEdit x:Name="spnGain" 
-                                                          Mask="d" 
                                                           MaskUseAsDisplayFormat="True" 
                                                           IsFloatValue="True"
                                                           Value="1" 
@@ -106,7 +105,6 @@
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem Label="Offset" AddColonToLabel="True">
                                             <dxe:SpinEdit x:Name="spnOffset" 
-                                                          Mask="d" 
                                                           MaskCulture="en-US"
                                                           IsFloatValue="True"
                                                           MaskUseAsDisplayFormat="True" 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR.Client;
+﻿using EasyScada.Core.Evaluate;
+using Microsoft.AspNet.SignalR.Client;
 using Microsoft.AspNet.SignalR.Client.Transports;
 using System;
 using System.Collections.Generic;
@@ -11,48 +12,23 @@ namespace TestClient
 {
     class Program
     {
-        static IHubProxy hubProxy;
-        static HubConnection hubConnection;
-        static bool isConnected;
         static void Main(string[] args)
         {
-            hubConnection = new HubConnection("http://localhost:9090/easyScada/");
-            hubConnection.StateChanged += HubConnection_StateChanged;
-            hubProxy = hubConnection.CreateHubProxy("EasyScadaServerHub");
+            TokenExpression token = new TokenExpression($"3 > tag[{'"'}222abc{'"'}]");
+            if (token.AnyErrors)
+                Console.WriteLine("Error");
+            if (token.Variables.Count == 0)
+            {
+                Evaluator eval = new Evaluator(token);
 
-            hubConnection.Start(new LongPollingTransport());
-            Thread.Sleep(1000);
-            Start();
+                eval.Evaluate(out string value, out string error);
+                Console.WriteLine($"Value: {value} - Error: {error}");
+            }
+            else
+            {
+                Console.WriteLine("Error");
+            }
             Console.ReadLine();
-        }
-
-        private static void HubConnection_StateChanged(StateChange obj)
-        {
-            if (obj.NewState == ConnectionState.Connected)
-            {
-                Console.WriteLine("Connected");
-                isConnected = true;            
-
-            }
-            else if (obj.NewState == ConnectionState.Disconnected)
-            {
-                Console.WriteLine("Disconnected");
-            }
-        }
-
-        private static async void Start()
-        {
-            while (true)
-            {
-                if (isConnected)
-                {
-                    string tagFile = await hubProxy.Invoke<string>("GetTagFile");
-                    Console.WriteLine(tagFile);
-
-                  
-                }
-                Thread.Sleep(1000);
-            }
         }
     }
 }

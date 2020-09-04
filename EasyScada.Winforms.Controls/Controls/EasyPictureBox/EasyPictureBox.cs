@@ -40,10 +40,6 @@ namespace EasyScada.Winforms.Controls
         private ImageFlipMode _flipMode;
         private Color _shadedColor = Color.Gray;
 
-        public List<PinInfo> PinInfos { get; private set; }
-
-        public PinInfo SelectedPinInfo { get; set; } = new PinInfo() { Position = new Point(0, 0) };
-
         #endregion
 
         #region Public members
@@ -144,7 +140,7 @@ namespace EasyScada.Winforms.Controls
         #region Constructors
         public EasyPictureBox()
         {
-            PinInfos = new List<PinInfo>();
+           
         }
         #endregion
 
