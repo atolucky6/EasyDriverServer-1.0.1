@@ -13,6 +13,8 @@ namespace EasyScada.ServerApplication
         public CommunicationMode CommunicationMode { get; set; }
         public int RefreshRate { get; set; }
         public DateTime CreatedDate { get; set; }
-        public List<StationClient> Stations { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public List<IClientObject> Childs { get; set; }
     }
 }

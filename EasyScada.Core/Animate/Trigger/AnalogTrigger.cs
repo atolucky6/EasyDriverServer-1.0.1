@@ -19,21 +19,9 @@ namespace EasyScada.Core.Animate
 
         #region Public properties
         
-        private string analogRangeString;
-        public string AnalogRangeString
-        {
-            get { return analogRangeString; }
-            set
-            {
-                if (value != analogRangeString)
-                {
-                    analogRangeString = value;
-                    AnalogRange = AnalogRange.Parse(value);
-                }
-            }
-        }
-        public AnalogRange AnalogRange { get; private set; }
-        public string TagName { get; set; }
+        public string MinValue { get; set; }
+        public string MaxValue { get; set; }
+        public string TriggerTagPath { get; set; }
 
         #endregion
 
@@ -41,21 +29,12 @@ namespace EasyScada.Core.Animate
 
         protected override bool CanExecute(object parameter = null)
         {
-            if (string.IsNullOrWhiteSpace(AnalogRangeString))
+            if (string.IsNullOrWhiteSpace(TriggerTagPath))
                 return false;
 
-            if (AnalogRange == null)
-                return false;
-
-            if (!AnalogRange.IsValid)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(TagName))
-                return false;
-
-            string expression = $"Tag[{'"'}{TagName}{'"'}] >= {AnalogRange.MinValue}";
-            if (AnalogRange.MinValue != AnalogRange.MaxValue)
-                expression += $" and Tag[{'"'}{TagName}{'"'}] <= {AnalogRange.MaxValue}";
+            string expression = $"Tag[{'"'}{TriggerTagPath}{'"'}] >= {MinValue}";
+            if (MinValue != MaxValue)
+                expression += $" and Tag[{'"'}{TriggerTagPath}{'"'}] <= {MaxValue}";
             TokenExpressionString = expression;
             return base.CanExecute(parameter);
         }

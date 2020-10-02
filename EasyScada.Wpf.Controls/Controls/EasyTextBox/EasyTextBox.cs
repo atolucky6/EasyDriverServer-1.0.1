@@ -29,12 +29,12 @@ namespace EasyScada.Wpf.Controls
         #region Public members
 
         [TypeConverter(typeof(TagPathConverter))]
-        public string PathToTag
+        public string TagPath
         {
             get { return (string)GetValue(PathToTagProperty); }
             set
             {
-                if (value != PathToTag)
+                if (value != TagPath)
                 {
                     SetValue(PathToTagProperty, value);
                     OnPathToTagPropertyChanged();
@@ -179,11 +179,11 @@ namespace EasyScada.Wpf.Controls
                 }
 
                 if (LinkedTag == null)
-                    LinkedTag = Connector.GetTag(PathToTag);
+                    LinkedTag = Connector.GetTag(TagPath);
 
                 if (LinkedTag != null)
                 {
-                    OnValueChanged(LinkedTag, new TagValueChangedEventArgs("", LinkedTag.Value));
+                    OnValueChanged(LinkedTag, new TagValueChangedEventArgs(LinkedTag, "", LinkedTag.Value));
                     LinkedTag.ValueChanged += OnValueChanged;
                     LinkedTag.QualityChanged += OnQualityChanged;
                 }

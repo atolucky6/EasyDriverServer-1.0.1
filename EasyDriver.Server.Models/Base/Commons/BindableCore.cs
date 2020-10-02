@@ -39,6 +39,7 @@ namespace EasyDriver.Core
         {
             if (!Equals(storage, value))
             {
+                var oldValue = storage;
                 storage = value;
                 RaisePropertyChanged(propertyName);
                 propertyChangedCallback?.Invoke(propertyName, storage, value);

@@ -18,9 +18,9 @@ namespace EasyDriverPlugin
         string DisplayParameters { get; set; }
 
         /// <summary>
-        /// Hàm lấy thông số
+        /// Dictionary lưuu trữ các thông số
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, object> Parameters { get; set; }
+        Dictionary<string, string> Parameters { get; set; }
     }
 }

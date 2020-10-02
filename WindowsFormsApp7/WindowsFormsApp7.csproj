@@ -114,10 +114,6 @@
       <Project>{4b95b838-26b8-4103-afb2-c13c1efa9fcf}</Project>
       <Name>EasyScada.Winforms.Connector</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EasyScada.Winforms.Controls\EasyScada.Winforms.Controls.csproj">
-      <Project>{5a05938f-e169-46ff-922a-b13ca841164a}</Project>
-      <Name>EasyScada.Winforms.Controls</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Motor 14.png">

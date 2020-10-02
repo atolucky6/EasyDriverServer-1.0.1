@@ -29,19 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.easyDriverConnector1 = new EasyScada.Winforms.Connector.EasyDriverConnector(this.components);
             this.easyPalette1 = new EasyScada.Winforms.Controls.EasyPalette(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            ((System.ComponentModel.ISupportInitialize)(this.easyDriverConnector1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // easyDriverConnector1
-            // 
-            this.easyDriverConnector1.CommunicationMode = EasyScada.Core.CommunicationMode.ReceiveFromServer;
-            this.easyDriverConnector1.Port = ((ushort)(8800));
-            this.easyDriverConnector1.RefreshRate = 1000;
-            this.easyDriverConnector1.ServerAddress = "127.0.0.1";
             // 
             // easyPalette1
             // 
@@ -70,14 +61,11 @@
             this.Controls.Add(this.flowLayoutPanel1);
             this.Name = "Form1";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.easyDriverConnector1)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private EasyScada.Winforms.Connector.EasyDriverConnector easyDriverConnector1;
         private EasyScada.Winforms.Controls.EasyPalette easyPalette1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;

@@ -95,10 +95,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WpfApp1\WpfApp1.csproj">
-      <Project>{c77014a1-cc11-4e1b-9d69-68da39157d33}</Project>
-      <Name>WpfApp1</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WpfCustomControlLibrary1\WpfCustomControlLibrary1.csproj">
       <Project>{4ada4944-b118-4437-8734-853bb0119051}</Project>
       <Name>WpfCustomControlLibrary1</Name>

@@ -1,71 +1,111 @@
-﻿<UserControl x:Class="EasyDriver.ModbusTCP.ReadBlockSettingView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:EasyDriver.ModbusTCP"
-             mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="500"
-             Height="200"
-             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-             >
+﻿<UserControl
+    x:Class="EasyDriver.ModbusTCP.ReadBlockSettingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:local="clr-namespace:EasyDriver.ModbusTCP"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Height="200"
+    d:DesignHeight="200"
+    d:DesignWidth="500"
+    mc:Ignorable="d">
     <UserControl.Resources>
         <Style TargetType="dxg:GridColumnHeader">
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#F1FA8C"/>
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#F1FA8C" />
         </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <dxg:GridControl x:Name="grcBlock"
-                         DockPanel.Dock="Left"
-                         ShowBorder="True"        
-                         SelectionMode="Row">
+        <dxg:GridControl
+            x:Name="grcBlock"
+            DockPanel.Dock="Left"
+            SelectionMode="Row"
+            ShowBorder="True">
             <dxg:GridControl.View>
-                <dxg:TableView HorizontalScrollbarVisibility="Auto"
-                               VerticalScrollbarVisibility="Auto"
-                               ShowIndicator="False"
-                               EditorShowMode="MouseDown"
-                               ValidatesOnNotifyDataErrors="True"
-                               AllowEditing="True"
-                               AllowFilterEditor="False"
-                               AllowSorting="False"
-                               ShowSelectionRectangle="False"
-                               AllowColumnMoving="False"
-                               AllowScrollToFocusedRow="True"
-                               ShowGroupPanel="False" 
-                               ShowAutoFilterRow="False"
-                               AllowFixedColumnMenu="False" 
-                               AllowDragDrop="True" 
-                               SearchPanelHighlightResults="True" 
-                               SearchPanelFindFilter="Default" 
-                               SearchDelay="100"                                        
-                               >
-                </dxg:TableView>
+                <dxg:TableView
+                    AllowColumnMoving="False"
+                    AllowDragDrop="True"
+                    AllowEditing="True"
+                    AllowFilterEditor="False"
+                    AllowFixedColumnMenu="False"
+                    AllowScrollToFocusedRow="True"
+                    AllowSorting="False"
+                    EditorShowMode="MouseDown"
+                    HorizontalScrollbarVisibility="Auto"
+                    SearchDelay="100"
+                    SearchPanelFindFilter="Default"
+                    SearchPanelHighlightResults="True"
+                    ShowAutoFilterRow="False"
+                    ShowGroupPanel="False"
+                    ShowIndicator="False"
+                    ShowSelectionRectangle="False"
+                    ValidatesOnNotifyDataErrors="True"
+                    VerticalScrollbarVisibility="Auto" />
             </dxg:GridControl.View>
             <dxg:GridControl.Columns>
-                <dxg:GridColumn FieldName="Enabled" Width="55">
+                <dxg:GridColumn Width="55" FieldName="Enabled">
                     <dxg:GridColumn.EditSettings>
-                        <dxe:CheckEditSettings/>
+                        <dxe:CheckEditSettings />
                     </dxg:GridColumn.EditSettings>
                 </dxg:GridColumn>
-                <dxg:GridColumn FieldName="StartAddress" Header="Start Address" Width="*"/>
-                <dxg:GridColumn FieldName="EndAddress" Header="End Address" Width="*"/>
+                <dxg:GridColumn
+                    Width="*"
+                    FieldName="StartAddress"
+                    Header="Start Address" />
+                <dxg:GridColumn
+                    Width="*"
+                    FieldName="EndAddress"
+                    Header="End Address" />
             </dxg:GridControl.Columns>
         </dxg:GridControl>
 
-        <Grid HorizontalAlignment="Right" Grid.Column="1" Margin="12 0 0 0">
-            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                <dx:SimpleButton x:Name="btnAdd" Click="BtnAdd_Click" Margin="0 8 0 0" Width="24" Height="24" Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Add.svg'}"/>
-                <dx:SimpleButton x:Name="btnRemove" Click="BtnRemove_Click" Margin="0 8 0 0" Width="24" Height="24" Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Remove.svg'}"/>
-                <dx:SimpleButton x:Name="btnMoveUp" Click="BtnMoveUp_Click" Margin="0 8 0 0" Width="24" Height="24" Glyph="{dx:DXImage 'SvgImages/Arrows/MoveUp.svg'}"/>
-                <dx:SimpleButton x:Name="btnMoveDown" Click="BtnMoveDown_Click" Margin="0 8 0 0" Width="24" Height="24" Glyph="{dx:DXImage 'SvgImages/Arrows/MoveDown.svg'}"/>
-                <dx:SimpleButton x:Name="btnClear" Click="BtnClear_Click" Margin="0 8 0 0" Width="24" Height="24" Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Delete.svg'}"/>
+        <Grid
+            Grid.Column="1"
+            Margin="12,0,0,0"
+            HorizontalAlignment="Right">
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                <dx:SimpleButton
+                    x:Name="btnAdd"
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0"
+                    Click="BtnAdd_Click"
+                    Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Add.svg'}" />
+                <dx:SimpleButton
+                    x:Name="btnRemove"
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0"
+                    Click="BtnRemove_Click"
+                    Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Remove.svg'}" />
+                <dx:SimpleButton
+                    x:Name="btnMoveUp"
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0"
+                    Click="BtnMoveUp_Click"
+                    Glyph="{dx:DXImage 'SvgImages/Arrows/MoveUp.svg'}" />
+                <dx:SimpleButton
+                    x:Name="btnMoveDown"
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0"
+                    Click="BtnMoveDown_Click"
+                    Glyph="{dx:DXImage 'SvgImages/Arrows/MoveDown.svg'}" />
+                <dx:SimpleButton
+                    x:Name="btnClear"
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0"
+                    Click="BtnClear_Click"
+                    Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Delete.svg'}" />
             </StackPanel>
         </Grid>
     </Grid>

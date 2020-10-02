@@ -114,10 +114,10 @@ namespace EasyScada.ServerApplication
                     if (i < WriteQueue.Count)
                     {
                         count++;
-                        if ((Channel as IChannelClient).GetItem<ITagClient>(WriteQueue[i].PathToTag) is ITagCore tagCore)
-                        {
-                            Driver.Write(tagCore, WriteQueue[i].PathToTag);
-                        }
+                        //if ((Channel as IChannelClient).GetItem<IClientTag>(WriteQueue[i].PathToTag) is ITagCore tagCore)
+                        //{
+                        //    Driver.Write(tagCore, WriteQueue[i].PathToTag);
+                        //}
                     }
                     else
                     {
@@ -139,10 +139,10 @@ namespace EasyScada.ServerApplication
 
                 if (writeCommand.WritePiority == WritePiority.Highest)
                 {
-                    if ((Channel as IChannelClient).GetItem<ITagClient>(writeCommand.PathToTag) is ITagCore tagCore)
-                    {
-                        return Driver.Write(tagCore, writeCommand.PathToTag);
-                    }
+                    //if ((Channel as IChannelClient).GetItem<IClientTag>(writeCommand.PathToTag) is ITagCore tagCore)
+                    //{
+                    //    return Driver.Write(tagCore, writeCommand.PathToTag);
+                    //}
                 }
                 else if (writeCommand.WritePiority == WritePiority.High)
                 {

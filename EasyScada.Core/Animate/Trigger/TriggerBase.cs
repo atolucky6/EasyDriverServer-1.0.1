@@ -24,11 +24,14 @@ namespace EasyScada.Core
 
         public virtual bool Enabled { get; set; }
         public virtual object Target { get; set; }
-        public virtual PropertyInfo PropertyInfo { get; set; }
+        public virtual AnimatePropertyWrapper AnimatePropertyWrapper { get; set; }
         public virtual object SetValue { get; set; }
         public virtual Evaluator Evaluator { get; protected set; }
         public virtual TokenExpression TokenExpression { get; private set; }
         public virtual string LastErrorMessage { get; protected set; }
+        public virtual int Delay { get; set; }
+        public CompareMode CompareMode { get; set; }
+        public virtual string Description { get; set; }
 
         #endregion
 
@@ -51,7 +54,7 @@ namespace EasyScada.Core
             try
             {
                 if (CanExecute(parameter))
-                    PropertyInfo.SetValue(Target, SetValue);
+                    AnimatePropertyWrapper.UpdateValue();
             }
             catch (Exception ex)
             {
@@ -65,7 +68,7 @@ namespace EasyScada.Core
         /// <returns>Trả về True nếu cho phép thực hiện và ngược lại</returns>
         protected virtual bool CanExecute(object parameter = null)
         {
-            if (Enabled && Target != null && PropertyInfo != null)
+            if (Enabled && Target != null && AnimatePropertyWrapper != null)
             {
                 if (string.IsNullOrEmpty(TokenExpressionString))
                     return false;

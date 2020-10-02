@@ -34,8 +34,8 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -48,6 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\ClientTag.cs" />
+    <Compile Include="Clients\ICheckable.cs" />
+    <Compile Include="Clients\IClientTag.cs" />
+    <Compile Include="Clients\ItemType.cs" />
+    <Compile Include="Clients\IClientObject.cs" />
     <Compile Include="Enum\BroadcastMode.cs" />
     <Compile Include="Server\ChannelCore.cs" />
     <Compile Include="Base\Commons\BindableCore.cs" />
@@ -63,27 +68,28 @@
     <Compile Include="Extensions\CopyHelper.cs" />
     <Compile Include="IEasyScadaProject.cs" />
     <Compile Include="Base\Commons\ParameterContainer.cs" />
-    <Compile Include="Clients\IChannelClient.cs" />
-    <Compile Include="Clients\IDeviceClient.cs" />
-    <Compile Include="Clients\IPath.cs" />
-    <Compile Include="Clients\IStationClient.cs" />
-    <Compile Include="Clients\ITagClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server\GroupCore.cs" />
     <Compile Include="Server\LocalStation.cs" />
     <Compile Include="Server\RemoteStation.cs" />
     <Compile Include="Server\TagCore.cs" />
-    <Compile Include="Utils\JsonUtils.cs" />
+    <Compile Include="Utils\CoreItemJsonConverter.cs" />
+    <Compile Include="Utils\EasyScadaProjectJsonConverter.cs" />
+    <Compile Include="Utils\Helper.cs" />
     <Compile Include="Clients\WriteCommand.cs" />
     <Compile Include="Clients\WriteResponse.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyDriverPlugin\EasyDriverPlugin.csproj">
       <Project>{5cbce8b3-27a3-4d71-b38a-9ceeef539f0a}</Project>
       <Name>EasyDriverPlugin</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Attribute\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

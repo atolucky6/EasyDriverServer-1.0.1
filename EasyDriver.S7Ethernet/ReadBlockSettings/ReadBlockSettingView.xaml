@@ -1,0 +1,99 @@
+﻿<UserControl
+    x:Class="EasyDriver.S7Ethernet.ReadBlockSettingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:local="clr-namespace:EasyDriver.S7Ethernet"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Height="200"
+    d:DesignHeight="200"
+    d:DesignWidth="500"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style TargetType="dxg:GridColumnHeader">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#F1FA8C" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <dxg:GridControl
+            x:Name="grcBlock"
+            DockPanel.Dock="Left"
+            SelectionMode="Row"
+            ShowBorder="True">
+            <dxg:GridControl.View>
+                <dxg:TableView
+                    AllowColumnMoving="False"
+                    AllowDragDrop="True"
+                    AllowEditing="True"
+                    AllowFilterEditor="False"
+                    AllowFixedColumnMenu="False"
+                    AllowScrollToFocusedRow="True"
+                    AllowSorting="False"
+                    EditorShowMode="MouseDown"
+                    HorizontalScrollbarVisibility="Auto"
+                    SearchDelay="100"
+                    SearchPanelFindFilter="Default"
+                    SearchPanelHighlightResults="True"
+                    ShowAutoFilterRow="False"
+                    ShowGroupPanel="False"
+                    ShowIndicator="False"
+                    ShowSelectionRectangle="False"
+                    ValidatesOnNotifyDataErrors="True"
+                    VerticalScrollbarVisibility="Auto" />
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn
+                    FieldName="AddressType"
+                    GroupIndex="0"
+                    Header="Area" />
+                <dxg:GridColumn Width="55" FieldName="Enabled">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:CheckEditSettings />
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn
+                    Width="*"
+                    FieldName="StartAddress"
+                    Header="Start Address" />
+                <dxg:GridColumn
+                    Width="*"
+                    FieldName="EndAddress"
+                    Header="End Address" />
+            </dxg:GridControl.Columns>
+        </dxg:GridControl>
+
+        <Grid
+            Grid.Column="1"
+            Margin="12,0,0,0"
+            HorizontalAlignment="Right">
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                <dx:SimpleButton
+                    x:Name="btnAdd"
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0"
+                    Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Add.svg'}" />
+                <dx:SimpleButton
+                    x:Name="btnRemove"
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0"
+                    Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Remove.svg'}" />
+                <dx:SimpleButton
+                    x:Name="btnClear"
+                    Width="24"
+                    Height="24"
+                    Margin="0,8,0,0"
+                    Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Delete.svg'}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

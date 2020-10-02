@@ -129,6 +129,12 @@
                             Content="Add Tag"
                             Glyph="/EasyDriverServer;component/Resources/Images/tag_48px.png"
                             KeyGesture="Ctrl + 4" />
+                        <dxb:BarButtonItem
+                            x:Name="btnAddGroup"
+                            Command="{Binding AddGroupCommand}"
+                            Content="Add Group"
+                            Glyph="/EasyDriverServer;component/Resources/Images/folder_48px.png"
+                            KeyGesture="Ctrl + 5" />
                         <dxb:BarItemSeparator />
                         <dxb:BarButtonItem
                             x:Name="btnUndo"
@@ -279,6 +285,12 @@
                         Content="Add Tag"
                         Glyph="/EasyDriverServer;component/Resources/Images/tag_48px.png"
                         KeyGesture="Ctrl + 4" />
+                    <dxb:BarButtonItem
+                        x:Name="tAddGroup"
+                        Command="{Binding AddGroupCommand}"
+                        Content="Add Group"
+                        Glyph="/EasyDriverServer;component/Resources/Images/folder_48px.png"
+                        KeyGesture="Ctrl + 5" />
                 </dxb:Bar>
 
                 <dxb:Bar

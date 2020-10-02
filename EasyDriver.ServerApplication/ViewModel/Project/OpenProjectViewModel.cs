@@ -238,7 +238,7 @@ namespace EasyScada.ServerApplication
             {
                 //Set title and filter for browse dialog
                 OpenFileDialogService.Title = "Open project";
-                OpenFileDialogService.Filter = "Easy Scada Project (*.esprj)|*.esprj";
+                OpenFileDialogService.Filter = "Easy Scada Project (*.json)|*.json";
 
                 //Show browse dialog 
                 if (OpenFileDialogService.ShowDialog())

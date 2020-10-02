@@ -133,11 +133,13 @@ namespace EasyDriver.OmronHostLink
             if (Channel.ParameterContainer.Parameters.Count >= 6)
             {
                 var port = Channel.ParameterContainer.Parameters["Port"].ToString();
-                var baudRate = (int)Channel.ParameterContainer.Parameters["Baudrate"];
-                var dataBits = (int)Channel.ParameterContainer.Parameters["DataBits"];
-                var stopBits = (StopBits)Channel.ParameterContainer.Parameters["StopBits"];
-                var parity = (Parity)Channel.ParameterContainer.Parameters["Parity"];
-                hostLink.Init(port, baudRate, dataBits, parity, stopBits);
+                if (int.TryParse(Channel.ParameterContainer.Parameters["Baudrate"], out int baudRate) &&
+                    int.TryParse(Channel.ParameterContainer.Parameters["DataBits"], out int dataBits) &&
+                    Enum.TryParse(Channel.ParameterContainer.Parameters["StopBits"], out StopBits stopBits) &&
+                    Enum.TryParse(Channel.ParameterContainer.Parameters["Parity"], out Parity parity))
+                {
+                    hostLink.Init(port, baudRate, dataBits, parity, stopBits);
+                }
             }
         }
 
@@ -152,7 +154,7 @@ namespace EasyDriver.OmronHostLink
 
                     if (hostLink.Open())
                     {
-                        foreach (var channelChild in Channel.Childs.ToArray())
+                        foreach (var channelChild in Channel.GetAllDevices().ToArray())
                         {
                             IDeviceCore device = channelChild as IDeviceCore;
 
@@ -223,11 +225,9 @@ namespace EasyDriver.OmronHostLink
 
                             #endregion
 
-                            foreach (var childDevice in device.Childs.ToArray())
+                            foreach (var childDevice in device.GetAllTags().ToArray())
                             {
-                                ITagCore tag = childDevice as ITagCore;
-
-                                if (tag == null)
+                                if (!(childDevice is ITagCore tag))
                                     continue;
 
                                 if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
@@ -238,19 +238,19 @@ namespace EasyDriver.OmronHostLink
                                 {
                                     if (tag.Address.DecomposeAddress(out AddressType addressType, out ushort wordOffset, out ushort bitOffset))
                                     {
-                                        tag.ParameterContainer.Parameters["AddressType"] = (int)addressType;
-                                        tag.ParameterContainer.Parameters["WordOffset"] = wordOffset;
-                                        tag.ParameterContainer.Parameters["BitOffset"] = bitOffset;
-                                        tag.ParameterContainer.Parameters["IsValid"] = true;
+                                        tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
+                                        tag.ParameterContainer.Parameters["WordOffset"] = wordOffset.ToString();
+                                        tag.ParameterContainer.Parameters["BitOffset"] = bitOffset.ToString();
+                                        tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
                                         tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
                                     }
                                     else
                                     {
-                                        tag.ParameterContainer.Parameters["IsValid"] = false;
+                                        tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
                                     }
                                 }
 
-                                if ((bool)tag.ParameterContainer.Parameters["IsValid"])
+                                if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString)
                                 {
                                     if ((DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
                                     {
@@ -258,51 +258,59 @@ namespace EasyDriver.OmronHostLink
                                         bool containInBlock = false;
                                         foreach (var block in DeviceToReadBlockSettings[device])
                                         {
-                                            if (block.AddressType == (AddressType)tag.ParameterContainer.Parameters["AddressType"])
+                                            if (Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
                                             {
-                                                if (block.CheckTagIsInReadBlockRange(
-                                                    tag,
-                                                    block.AddressType,
-                                                    (ushort)tag.ParameterContainer.Parameters["WordOffset"],
-                                                    (ushort)tag.ParameterContainer.Parameters["BitOffset"],
-                                                    tag.DataType.RequireByteLength,
-                                                    out int byteIndex, 
-                                                    out int bitIndex))
+                                                if (block.AddressType == addressType)
                                                 {
-                                                    containInBlock = true;
-                                                    readSuccess = block.ReadResult;
-                                                    if (readSuccess)
+                                                    if (ushort.TryParse(tag.ParameterContainer.Parameters["WordOffset"], out ushort wordOffset) &&
+                                                        ushort.TryParse(tag.ParameterContainer.Parameters["BitOffset"], out ushort bitOffset))
                                                     {
-                                                        if (tag.DataType.BitLength == 1)
+                                                        if (block.CheckTagIsInReadBlockRange(
+                                                        tag,
+                                                        block.AddressType,
+                                                        wordOffset,
+                                                        bitOffset,
+                                                        tag.DataType.RequireByteLength,
+                                                        out int byteIndex,
+                                                        out int bitIndex))
                                                         {
-                                                            switch (byteOrder)
+                                                            containInBlock = true;
+                                                            readSuccess = block.ReadResult;
+                                                            if (readSuccess)
                                                             {
-                                                                case ByteOrder.ABCD:
-                                                                case ByteOrder.CDAB:
-                                                                    if (byteIndex % 2 == 1)
-                                                                        byteIndex--;
-                                                                    else
-                                                                        byteIndex++;
-                                                                    break;
-                                                                case ByteOrder.BADC:
-                                                                case ByteOrder.DCBA:
-                                                                    break;
-                                                                default:
-                                                                    break;
-                                                            }
-                                                        }
+                                                                if (tag.DataType.BitLength == 1)
+                                                                {
+                                                                    switch (byteOrder)
+                                                                    {
+                                                                        case ByteOrder.ABCD:
+                                                                        case ByteOrder.CDAB:
+                                                                            if (byteIndex % 2 == 1)
+                                                                                byteIndex--;
+                                                                            else
+                                                                                byteIndex++;
+                                                                            break;
+                                                                        case ByteOrder.BADC:
+                                                                        case ByteOrder.DCBA:
+                                                                            break;
+                                                                        default:
+                                                                            break;
+                                                                    }
+                                                                }
 
-                                                        tag.Value = tag.DataType.ConvertToValue(
-                                                            block.ByteBuffer, 
-                                                            tag.Gain, 
-                                                            tag.Offset, 
-                                                            byteIndex, 
-                                                            bitIndex, 
-                                                            byteOrder);
+                                                                tag.Value = tag.DataType.ConvertToValue(
+                                                                    block.ByteBuffer,
+                                                                    tag.Gain,
+                                                                    tag.Offset,
+                                                                    byteIndex,
+                                                                    bitIndex,
+                                                                    byteOrder);
+                                                            }
+                                                            break;
+                                                        }
                                                     }
-                                                    break;
                                                 }
                                             }
+                                           
                                         }
 
                                         if (!containInBlock)
@@ -314,18 +322,24 @@ namespace EasyDriver.OmronHostLink
                                             semaphore.Wait();
                                             try
                                             {
-                                                readSuccess = hostLink.Read(
-                                                unitNo,
-                                                Extensions.GetReadCommand((AddressType)tag.ParameterContainer.Parameters["AddressType"]),
-                                                (ushort)tag.ParameterContainer.Parameters["WordOffset"],
-                                                wordLen,
-                                                ref buffer);
+                                                if (Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
+                                                {
+                                                    if (ushort.TryParse(tag.ParameterContainer.Parameters["WordOffset"], out ushort wordOffset))
+                                                    {
+                                                        readSuccess = hostLink.Read(
+                                                            unitNo,
+                                                            Extensions.GetReadCommand(addressType),
+                                                            wordOffset,
+                                                            wordLen,
+                                                            ref buffer);
+                                                    }
+                                                }
                                             }
                                             finally { Thread.Sleep(DelayBetweenPool); semaphore.Release(); }
                                             if (readSuccess)
                                             {
                                                 int byteIndex = 0;
-                                                int bitIndex = (ushort)tag.ParameterContainer.Parameters["BitOffset"];
+                                                int.TryParse(tag.ParameterContainer.Parameters["BitOffset"], out int bitIndex);
                                                 if (bitIndex / 8 == 1)
                                                 {
                                                     byteIndex++;
@@ -376,12 +390,10 @@ namespace EasyDriver.OmronHostLink
                     }
                     else
                     {
-                        for (int i = 0; i < Channel.Childs.Count; i++)
+                        foreach (var device in Channel.GetAllDevices().ToArray())
                         {
-                            IDeviceCore device = Channel.Childs[i] as IDeviceCore;
-                            for (int k = 0; k < device.Childs.Count; k++)
+                            foreach (var tag in device.GetAllTags().ToArray())
                             {
-                                ITagCore tag = device.Childs[k] as ITagCore;
                                 tag.TimeStamp = DateTime.Now;
                                 tag.Quality = Quality.Bad;
                                 tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
@@ -432,7 +444,7 @@ namespace EasyDriver.OmronHostLink
                 try
                 {
                     // Kiểm tra các điều kiện cần để thực hiện việc ghi
-                    if (tag != null && tag.DataType != null && tag.Parent is IDeviceCore device && tag.AccessPermission == AccessPermission.ReadAndWrite)
+                    if (tag != null && tag.DataType != null && tag.FindParent<IDeviceCore>(x => x is IDeviceCore) is IDeviceCore device && tag.AccessPermission == AccessPermission.ReadAndWrite)
                     {
                         // Lấy thông tin của địa chỉ Tag như kiểu địa chỉ và vị trí bắt đầu của thanh ghi
                         if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
@@ -443,15 +455,15 @@ namespace EasyDriver.OmronHostLink
                         {
                             if (tag.Address.DecomposeAddress(out AddressType addressType, out ushort wordOffset, out ushort bitOffset))
                             {
-                                tag.ParameterContainer.Parameters["AddressType"] = addressType;
-                                tag.ParameterContainer.Parameters["WordOffset"] = wordOffset;
-                                tag.ParameterContainer.Parameters["BitOffset"] = bitOffset;
-                                tag.ParameterContainer.Parameters["IsValid"] = true;
+                                tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
+                                tag.ParameterContainer.Parameters["WordOffset"] = wordOffset.ToString();
+                                tag.ParameterContainer.Parameters["BitOffset"] = bitOffset.ToString();
+                                tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
                                 tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
                             }
-                            tag.ParameterContainer.Parameters["IsValid"] = false;
+                            tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
                         }
-                        if ((bool)tag.ParameterContainer.Parameters["IsValid"])
+                        if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString)
                         {
                             // Lấy thông tin byte order của device parent
                             ByteOrder byteOrder = device.ByteOrder;
@@ -482,15 +494,20 @@ namespace EasyDriver.OmronHostLink
                                             {
                                                 byte[] buffer = new byte[tag.DataType.RequireByteLength];
                                                 tag.DataType.TryParseToByteArray(value, tag.Gain, tag.Offset, out buffer, byteOrder);
-                                                WriteCommand writeCommand = Extensions.GetWriteCommand((AddressType)tag.ParameterContainer.Parameters["AddressType"]);
+                                                if (!Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
+                                                    break;
+
+                                                WriteCommand writeCommand = Extensions.GetWriteCommand(addressType);
                                                 try
                                                 {
-
-                                                    writeResult = hostLink.Write(
+                                                    if (ushort.TryParse(tag.ParameterContainer.Parameters["WordOffset"], out ushort writeValue))
+                                                    {
+                                                        writeResult = hostLink.Write(
                                                         unitNo,
                                                         writeCommand,
-                                                        (ushort)tag.ParameterContainer.Parameters["WordOffset"],
+                                                        writeValue,
                                                         buffer);
+                                                    }
                                                 }
                                                 finally { Thread.Sleep(DelayBetweenPool); }
                                                 if (writeResult) // Nếu ghi thành công thì thoát khỏi vòng lặp
@@ -524,12 +541,12 @@ namespace EasyDriver.OmronHostLink
 
         public object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
         {
-            return new CreateDeviceView(this, parent as IChannelCore, templateItem);
+            return new CreateDeviceView(this, parent, templateItem);
         }
 
         public object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
         {
-            return new CreateTagView(this, parent as IDeviceCore, templateItem);
+            return new CreateTagView(this, parent, templateItem);
         }
 
         public object GetEditChannelControl(IChannelCore channel)
@@ -545,6 +562,21 @@ namespace EasyDriver.OmronHostLink
         public object GetEditTagControl(ITagCore tag)
         {
             return new EditTagView(this, tag);
+        }
+
+        public IChannelCore ConvertToChannel(IChannelCore baseChannel)
+        {
+            return baseChannel;
+        }
+
+        public IDeviceCore ConverrtToDevice(IDeviceCore baseDevice)
+        {
+            return baseDevice;
+        }
+
+        public ITagCore ConvertToTag(ITagCore tagCore)
+        {
+            return tagCore;
         }
 
         #endregion

@@ -336,10 +336,10 @@ namespace EasyScada.Winforms.Connector
             if (station == null)
                 return null;
             int imgIndex = 0;
-            if (station.StationType == StationType.Local)
+            if (station.StationType == "Local")
                 imgIndex = 1;
             string stationName = station.Name;
-            if (station.StationType == StationType.Remote)
+            if (station.StationType == "Remote")
                 stationName += $" - {station.RemoteAddress}:{station.Port}";
             TreeNode treeNode = new TreeNode(stationName, imgIndex, imgIndex);
             treeNode.Tag = station;

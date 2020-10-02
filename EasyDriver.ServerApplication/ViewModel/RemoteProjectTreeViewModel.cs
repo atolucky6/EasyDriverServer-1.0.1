@@ -23,7 +23,7 @@ namespace EasyScada.ServerApplication
             Title = "Easy Driver Server";
             SizeToContent = SizeToContent.Manual;
             Height = 600;
-            Width = 400;
+            Width = 800;
             HubConnectionManagerService = hubConnectionManagerService;
             HubFactory = hubFactory;
         }
@@ -49,6 +49,8 @@ namespace EasyScada.ServerApplication
 
         #region Public members
 
+        int tagCount = 0;
+        public virtual string TotalTags { get => $"Total tags: {tagCount}"; }
         public string Title { get; set; }
         public SizeToContent SizeToContent { get; set; }
         public double Width { get; set; }
@@ -62,6 +64,7 @@ namespace EasyScada.ServerApplication
         public ConnectionSchema ConnectionSchema { get; private set; }
         public bool IsCreateStationMode { get; private set; }
         public List<HubModel> Source { get; set; }
+        public List<IClientObject> TagsSource { get; set; }
 
         HubConnection hubConnection;
         IHubProxy hubProxy;
@@ -89,9 +92,11 @@ namespace EasyScada.ServerApplication
 
                     if (hubConnection.State == ConnectionState.Connected)
                     {
-                        string resJson = await hubProxy.Invoke<string>("getAllStationsAsync");
-                        List<StationClient> stations = JsonConvert.DeserializeObject<List<StationClient>>(resJson);
-                        HubModel.Stations = new List<StationClient>(stations);
+                        string resJson = await hubProxy.Invoke<string>("getAllElementsAsync");
+                        List<ClientObject> clientObjects = JsonConvert.DeserializeObject<List<ClientObject>>(resJson);
+                        HubModel.Childs = new List<IClientObject>(clientObjects);
+                        HubModel.IsChecked = true;
+                        HubModel.Childs.ForEach(x => CheckAllChildItems(x));
                         Source = new List<HubModel>() { HubModel };
                         this.RaisePropertyChanged(x => x.Source);
                         IsBusy = false;
@@ -121,8 +126,8 @@ namespace EasyScada.ServerApplication
                 if (IsCreateStationMode)
                 {
                     IsBusy = true;
-                    List<StationClient> checkedStations = GetCheckedStations(HubModel);
-                    Messenger.Default.Send(new CreateRemoteStationSuccessMessage(checkedStations, HubModel, hubConnection, hubProxy));
+                    RemoveUncheckedItem(HubModel);
+                    Messenger.Default.Send(new CreateRemoteStationSuccessMessage(HubModel, hubConnection, hubProxy));
                     CurrentWindowService.Close();
                     IsBusy = false;
                 }
@@ -134,8 +139,8 @@ namespace EasyScada.ServerApplication
                     if (SaveFileDialogService.ShowDialog())
                     {
                         IsBusy = true;
-                        List<StationClient> checkedStations = GetCheckedStations(HubModel);
-                        ConnectionSchema.Stations = checkedStations;
+                        RemoveUncheckedItem(HubModel);
+                        ConnectionSchema.Childs = HubModel.Childs;
                         string savePath = SaveFileDialogService.File.GetFullName();
                         string connectionSchemaJson = JsonConvert.SerializeObject(ConnectionSchema, Formatting.Indented);
                         try
@@ -232,100 +237,121 @@ namespace EasyScada.ServerApplication
                 TreeListViewUtilities.ToggleCurrentNode();
         }
 
+        public virtual void OnSelectedItemChanged()
+        {
+            TagsSource = new List<IClientObject>();
+            if (SelectedItem is IClientObject clientObject)
+            {
+                if (clientObject.Childs != null)
+                {
+                    TagsSource.AddRange(clientObject.Childs.Where(x => x.ItemType == ItemType.Tag));
+                }
+            }
+            this.RaisePropertyChanged(x => x.TagsSource);
+        }
+
         #endregion
 
         #region Methods
-
-        public List<StationClient> GetCheckedStations(HubModel hubModel)
+        private void RemoveUncheckedItem(HubModel hubModel)
         {
-            List<StationClient> checkedStations = new List<StationClient>();
-            if (!hubModel.Checked)
+            if (hubModel != null && hubModel.Childs != null)
             {
-                foreach (var station in hubModel.Stations)
+                foreach (var item in hubModel.Childs.ToList())
                 {
-                    if (station != null)
+                    if (item.ItemType != ItemType.Tag)
                     {
-                        StationClient checkedStation = station.DeepCopy();
-                        checkedStation.Channels = GetCheckedChannels(station);
-                        if (checkedStation.Channels.Count > 0)
-                            checkedStations.Add(checkedStation);
+                        if (item is ICheckable checkObj)
+                        {
+                            if (checkObj.IsChecked.HasValue && !checkObj.IsChecked.Value)
+                            {
+                                hubModel.Childs.Remove(item);
+                            }
+                            else
+                            {
+                                RemoveUncheckedItem(item);
+                            }
+                        }
+                        else
+                        {
+                            hubModel.Childs.Remove(item);
+                        }
                     }
                 }
             }
-            else
-            {
-                checkedStations.AddRange(HubModel.Stations);
-            }
-            return checkedStations;
         }
 
-        public List<ChannelClient> GetCheckedChannels(StationClient station)
+        private void RemoveUncheckedItem(IClientObject clientObject)
         {
-            List<ChannelClient> checkedChannels = new List<ChannelClient>();
-            if (!station.Checked)
+            if (clientObject != null && clientObject.Childs != null)
             {
-                foreach (var channel in station.Channels)
+                foreach (var item in clientObject.Childs.ToList())
                 {
-                    if (channel != null)
+                    if (item.ItemType != ItemType.Tag)
                     {
-                        ChannelClient checkedChannel = channel.DeepCopy();
-                        checkedChannel.Devices = GetCheckedDevices(channel);
-                        if (checkedChannel.Devices.Count > 0)
-                            checkedChannels.Add(checkedChannel);
+                        if (item is ICheckable checkObj && item.ItemType != ItemType.Tag)
+                        {
+                            if (checkObj.IsChecked.HasValue && !checkObj.IsChecked.Value)
+                            {
+                                clientObject.Childs.Remove(item);
+                            }
+                            else
+                            {
+                                RemoveUncheckedItem(item);
+                            }
+                        }
+                        else
+                        {
+                            clientObject.Childs.Remove(item);
+                        }
                     }
                 }
             }
-            else
-            {
-                checkedChannels.AddRange(station.Channels);
-            }
-            return checkedChannels;
         }
 
-        public List<DeviceClient> GetCheckedDevices(ChannelClient channel)
+        private void CheckAllChildItems(IClientObject clientObject)
         {
-            List<DeviceClient> checkedDevices = new List<DeviceClient>();
-            if (!channel.Checked)
+            if (clientObject != null)
             {
-                foreach (var device in channel.Devices)
+                if (clientObject is ICheckable checkObj)
                 {
-                    if (device != null)
+                    checkObj.IsChecked = true;
+                    if (clientObject.Childs != null)
                     {
-                        DeviceClient checkedDevice = device.DeepCopy();
-                        checkedDevice.Tags = GetCheckedTags(device);
-                        if (checkedDevice.Tags.Count > 0)
-                            checkedDevices.Add(checkedDevice);
+                        foreach (var item in clientObject.Childs)
+                            CheckAllChildItems(item);
                     }
                 }
             }
-            else
-            {
-                checkedDevices.AddRange(channel.Devices);
-            }
-            return checkedDevices;
         }
 
-        public List<TagClient> GetCheckedTags(DeviceClient device)
+        private void CountTags()
         {
-            List<TagClient> checkedTags = new List<TagClient>();
-            if (!device.Checked)
+            tagCount = 0;
+            if (Source.Count > 0)
             {
-                foreach (var tag in device.Tags.Where(x => x.Checked))
+                foreach (var item in Source[0].Childs)
                 {
-                    if (tag != null)
+                    CountTags(item);
+                }
+            }
+            this.RaisePropertyChanged(x => x.TotalTags);
+        }
+
+        private void CountTags(IClientObject clientObject)
+        {
+            if (clientObject != null)
+            {
+                if (clientObject.Childs != null)
+                {
+                    tagCount += clientObject.Childs.Count(x => x.ItemType == ItemType.Tag);
+                    foreach (var item in clientObject.Childs)
                     {
-                        TagClient checkedTag = tag.DeepCopy();
-                        checkedTags.Add(checkedTag);
+                        CountTags(item);
                     }
                 }
             }
-            else
-            {
-                checkedTags.AddRange(device.Tags);
-            }
-            return checkedTags;
         }
-
         #endregion
     }
 }

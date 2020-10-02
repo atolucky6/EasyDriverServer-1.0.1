@@ -28,7 +28,7 @@ namespace EasyScada.ServerApplication
             Height = 500;
             DriverManagerService = driverManagerService;
             ReverseService = reverseService;
-            Tags = new List<ITagCore>();
+            Tags = new ObservableCollection<object>();
         }
 
         #endregion
@@ -55,8 +55,8 @@ namespace EasyScada.ServerApplication
         public double Width { get; set; }
         public double Height { get; set; }
         public virtual string CsvPath { get; set; }
-        public virtual IDeviceCore Device { get; set; }
-        public virtual List<ITagCore> Tags { get; set; }
+        public virtual IGroupItem Parent { get; set; }
+        public virtual ObservableCollection<object> Tags { get; set; }
         public virtual ObservableCollection<object> SelectedItems { get; set; }
         public virtual bool IsBusy { get; set; }
         public object ParentViewModel { get; set; }
@@ -84,7 +84,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanBrowse()
         {
-            return !IsBusy && Device != null;
+            return !IsBusy && Parent != null;
         }
 
         public void Import()
@@ -93,22 +93,25 @@ namespace EasyScada.ServerApplication
             {
                 IsBusy = true;
                 List<ITagCore> tags = SelectedItems.Select(x => x as ITagCore).ToList();
-                using (Transaction transaction = ReverseService.Begin("Import tags"))
+                if (Parent is IHaveTag haveTagObj)
                 {
-                    Device.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, true);
-                    ReversibleCollection<object> reversibleCollection = Device.Childs.AsReversibleCollection();
-                    tags.ForEach(x =>
+                    using (Transaction transaction = ReverseService.Begin("Import tags"))
                     {
-                        x.Name = Device.GetUniqueNameInGroup(x.Name, false);
-                        reversibleCollection.Add(x);
-                    });
-                    Device.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, false);
-                    Device.Childs.NotifyResetCollection();
-                    transaction.Reversed += (s, e) =>
-                    {
-                        Device.Childs.NotifyResetCollection();
-                    };
-                    transaction.Commit();
+                        haveTagObj.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, true);
+                        ReversibleCollection<object> reversibleCollection = haveTagObj.Tags.AsReversibleCollection();
+                        tags.ForEach(x =>
+                        {
+                            x.Name = haveTagObj.GetUniqueNameInGroupTags(x.Name, false);
+                            reversibleCollection.Add(x);
+                        });
+                        haveTagObj.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, false);
+                        haveTagObj.Tags.NotifyResetCollection();
+                        transaction.Reversed += (s, e) =>
+                        {
+                            haveTagObj.Tags.NotifyResetCollection();
+                        };
+                        transaction.Commit();
+                    }
                 }
 
                 CurrentWindowService.Close();
@@ -119,7 +122,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanImport()
         {
-            return !IsBusy && Device != null && SelectedItems != null && SelectedItems.Count > 0;
+            return !IsBusy && Parent != null && SelectedItems != null && SelectedItems.Count > 0;
         }
 
         private void Refresh()
@@ -129,7 +132,7 @@ namespace EasyScada.ServerApplication
                 Tags.Clear();
                 if (File.Exists(CsvPath))
                 {
-                    IChannelCore channel = Device.Parent as IChannelCore;
+                    IChannelCore channel = Parent.FindParent<IChannelCore>(x => x is IChannelCore);
                     var driver = DriverManagerService.GetDriver(channel);
                     if (driver == null)
                         return;
@@ -223,7 +226,7 @@ namespace EasyScada.ServerApplication
                                     continue;
                                 if (rowValues.Length == 8)
                                 {
-                                    ITagCore tag = new TagCore(Device);
+                                    ITagCore tag = new TagCore(Parent);
                                     tag.Name = name;
                                     tag.DataType = driver.GetSupportDataTypes().FirstOrDefault(x => x.Name == dataType);
                                     tag.Address = address;
@@ -254,7 +257,7 @@ namespace EasyScada.ServerApplication
                 IsBusy = true;
                 if (Parameter is object[] array)
                 {
-                    Device = array[0] as IDeviceCore;
+                    Parent = array[0] as IGroupItem;
                     CsvPath = array[1].ToString();
                     Refresh();
                 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Collections.Generic;
 using EasyDriver.Core;
+using System.Text.RegularExpressions;
 
 namespace EasyScada.ServerApplication
 {

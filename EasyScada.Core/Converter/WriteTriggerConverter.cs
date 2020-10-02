@@ -12,9 +12,9 @@ namespace EasyScada.Core
     public class WriteTriggerConverter : StringLookupConverter
     {
         #region Static Fields
-        private Pair[] _pairs = new Pair[] { new Pair(WriteTrigger.OnEnter,         "Write when press enter"),
-                                             new Pair(WriteTrigger.LostFocus,       "Write when lost focus"),
-                                             new Pair(WriteTrigger.ValueChanged,    "Write when value changed")
+        private Pair[] _pairs = new Pair[] { new Pair(WriteTrigger.OnEnter,         "On Press Enter"),
+                                             new Pair(WriteTrigger.LostFocus,       "On Lost Focus"),
+                                             new Pair(WriteTrigger.ValueChanged,    "On Value Changed"),
         };
         #endregion
 

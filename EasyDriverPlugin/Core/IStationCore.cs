@@ -8,7 +8,7 @@ namespace EasyDriverPlugin
         ushort Port { get; set; }
         CommunicationMode CommunicationMode { get; set; }
         ConnectionStatus ConnectionStatus { get; set; }
-        StationType StationType { get; set; }
+        string StationType { get; set; }
         int RefreshRate { get; set; }
         string CommunicationError { get; set; }
         DateTime LastRefreshTime { get; set; }

@@ -18,7 +18,8 @@ namespace EasyDriver.ModbusRTU
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
-        public IDeviceCore Device { get; set; }
+        public IGroupItem ParentItem { get; set; }
+        public IHaveTag HaveTagObj { get => ParentItem as IHaveTag; }
         public List<AccessPermission> AccessPermissionSource { get; set; }
         public List<IDataType> DataTypeSource { get; set; }
 
@@ -26,10 +27,10 @@ namespace EasyDriver.ModbusRTU
 
         #region Constructors
 
-        public CreateTagView(IEasyDriverPlugin driver, IDeviceCore device, ITagCore templateItem)
+        public CreateTagView(IEasyDriverPlugin driver, IGroupItem parent, ITagCore templateItem)
         {
             Driver = driver;
-            Device = device;
+            ParentItem = parent;
 
             InitializeComponent();
 
@@ -44,12 +45,12 @@ namespace EasyDriver.ModbusRTU
 
             if (templateItem == null)
             {
-                txbName.Text = device.GetUniqueNameInGroup("Tag1");
+                txbName.Text = HaveTagObj.GetUniqueNameInGroupTags("Tag1");
                 txbAddress.Text = "1";
             }
             else
             {
-                txbName.Text = device.GetUniqueNameInGroup(templateItem.Name);
+                txbName.Text = HaveTagObj.GetUniqueNameInGroupTags(templateItem.Name);
                 cobDataType.SelectedItem = DataTypeSource.FirstOrDefault(x => x.Name == templateItem.DataTypeName);
                 if (cobDataType.SelectedItem == null)
                     cobDataType.SelectedItem = DataTypeSource.FirstOrDefault();
@@ -91,7 +92,7 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            if (Device.Childs.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
+            if (HaveTagObj.Tags.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The tag name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -150,26 +151,26 @@ namespace EasyDriver.ModbusRTU
                 if (!string.IsNullOrEmpty(adrString.IsValidAddress()))
                     break;
 
-                ITagCore tag = new TagCore(Device)
+                ITagCore tag = new TagCore(ParentItem)
                 {
-                    Name = Device.GetUniqueNameInGroup(string.Format(nameFormat, number)),
+                    Name = HaveTagObj.GetUniqueNameInGroupTags(string.Format(nameFormat, number)),
                     AccessPermission = accessPermission,
                     DataType = (IDataType)cobDataType.SelectedItem,
                     Address = adrString,
                     RefreshRate = (int)spnRefreshRate.Value,
                     Gain = (double)spnGain.Value,
                     Offset = (double)spnOffset.Value,
-                    ByteOrder = Device.ByteOrder
+                    ByteOrder = ParentItem.FindParent<IDeviceCore>(x => x is IDeviceCore).ByteOrder
                 };
-                if (i == 0)
+
+                if (i == 0 && !hasValue && spnAutoCreateCount.Value == 1)
                     tag.Name = currentTagName;
-                else
-                    number++;
+
+                number++;
                 tag.ParameterContainer.DisplayName = "Tag Parameters";
                 tag.ParameterContainer.DisplayParameters = "Tag Parameters";
                 currentTagName = tag.Name;
                 createTags.Add(tag);
-                number++;
                 adrNumber++;
             }
 

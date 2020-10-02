@@ -2,38 +2,25 @@
 using EasyDriverPlugin;
 using System.Collections;
 using EasyDriver.Core;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace EasyScada.ServerApplication
 {
     public class ProjectTreeChildNodeSelector : IChildNodesSelector
     {
+        public bool IncludeTags { get; set; } = false;
+
         public IEnumerable SelectChildren(object item)
         {
             if (item != null)
-            {               
-                if (item is IDeviceCore)
-                    return null;
+            {
                 if (item is IGroupItem groupItem)
                     return groupItem.Childs;
-                if (item is HubModel hubModel)
-                    return hubModel.Stations;
-                if (item is StationClient station)
-                {
-                    switch (station.StationType)
-                    {
-                        case StationType.Local:
-                        case StationType.OPC_DA:
-                            return station.Channels;
-                        case StationType.Remote:
-                            return station.RemoteStations;
-                        default:
-                            break;
-                    }                        
-                }
-                if (item is ChannelClient channel)
-                    return channel.Devices;
-                if (item is DeviceClient device)
-                    return device.Tags;
+                else if (item is IClientObject clientObject)
+                    return new List<IClientObject>(clientObject.Childs.Where(x => x.ItemType != ItemType.Tag));
+                else if (item is HubModel hubModel)
+                    return hubModel.Childs;
             }
             return null;
         }

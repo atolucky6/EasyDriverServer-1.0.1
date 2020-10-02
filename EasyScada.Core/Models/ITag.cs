@@ -1,19 +1,13 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace EasyScada.Core
 {
-    public interface ITag : IPath, INotifyPropertyChanged, IComposite
+    public interface ITag : INotifyPropertyChanged, ICoreItem
     {
-        IDevice DeviceParent { get; }
-        string StationPath { get; }
-        string ChannelName { get; }
-        string DeviceName { get; }
-        string Name { get; }
         string Address { get; }
         string DataType { get; }
         string Value { get; set; }
@@ -21,43 +15,20 @@ namespace EasyScada.Core
         int RefreshRate { get; }
         int RefreshInterval { get; }
         AccessPermission AccessPermission { get; }
-        string Error { get; }
         DateTime TimeStamp { get; }
-        Dictionary<string, string> Parameters { get; }
-        string Description { get; }
         WriteResponse Write(string value);
         Task<WriteResponse> WriteAsync(string value);
 
-        event EventHandler<TagValueChangedEventArgs> ValueChanged;
-        event EventHandler<TagQualityChangedEventArgs> QualityChanged;
+        bool GetValue<T>(out T value) where T : IConvertible;
     }
 
     [Serializable]
-    public sealed class Tag : ITag
+    internal class Tag : CoreItem, ITag
     {
-        [field: NonSerialized]
-        [JsonIgnore]
-        public IDevice DeviceParent { get; internal set; }
-
-        [JsonIgnore]
-        public string StationPath
+        public Tag() : base()
         {
-            get => DeviceParent?.StationPath;
+            ItemType = ItemType.Tag;
         }
-
-        [JsonIgnore]
-        public string ChannelName
-        {
-            get => DeviceParent?.ChannelName;
-        }
-
-        [JsonIgnore]
-        public string DeviceName
-        {
-            get => DeviceParent?.Name;
-        }
-
-        public string Name { get; set; }
 
         public string Address { get; set; }
 
@@ -76,9 +47,7 @@ namespace EasyScada.Core
                         string oldValue = this.value;
                         this.value = value;
                         var args = new TagValueChangedEventArgs(this, oldValue, value);
-                        ValueChanged?.Invoke(this, args);
-                        if (DeviceParent is Device device)
-                            device.RaiseTagValueChanged(this, args);
+                        RaiseValueChanged(this, args);
                     }
                 }
                 catch { }
@@ -98,9 +67,7 @@ namespace EasyScada.Core
                         Quality oldValue = quality;
                         quality = value;
                         var args = new TagQualityChangedEventArgs(this, oldValue, value);
-                        QualityChanged?.Invoke(this, args);
-                        if (DeviceParent is Device device)
-                            device.RaiseTagQualityChanged(this, args);
+                        RaiseQualityChanged(this, args);
                     }
                 }
                 catch { }
@@ -129,20 +96,6 @@ namespace EasyScada.Core
 
         public AccessPermission AccessPermission { get; internal set; }
 
-        string error;
-        public string Error
-        {
-            get { return error; }
-            set
-            {
-                if (error != value)
-                {
-                    error = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
         DateTime timeStamp;
         public DateTime TimeStamp
         {
@@ -161,30 +114,6 @@ namespace EasyScada.Core
             }
         }
 
-        public Dictionary<string, string> Parameters { get; internal set; }
-
-        public string Description { get; set; }
-
-        public string Path { get; set; }
-
-        public bool Checked { get; set; }
-
-        T IPath.GetItem<T>(string pathToObject)
-        {
-            if (Path == pathToObject)
-                return this as T;
-            return null;
-        }
-
-        [JsonIgnore]
-        public List<object> Childs { get { return new List<object>(); } }
-
-        [field: NonSerialized]
-        public event EventHandler<TagValueChangedEventArgs> ValueChanged;
-
-        [field: NonSerialized]
-        public event EventHandler<TagQualityChangedEventArgs> QualityChanged;
-
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
         public void RaisePropertyChanged([CallerMemberName]string propertyName = null)
@@ -202,9 +131,55 @@ namespace EasyScada.Core
             return EasyDriverConnectorProvider.GetEasyDriverConnector().WriteTagAsync(Path, value);
         }
 
-        internal void SetParentForChild(IDevice parent)
+        public bool GetValue<T>(out T value) where T : IConvertible
         {
-            DeviceParent = parent;
+            bool result = false;
+            value = default;
+            try
+            {
+                value = (T)Convert.ChangeType(Value, typeof(T));
+            }
+            catch { }
+            return result;
+        }
+
+        internal void UpdateValue(ClientTag clientTag)
+        {
+            if (clientTag == null)
+            {
+                Quality = Quality.Bad;
+                TimeStamp = DateTime.Now;
+                Error = "Tag was not found on server.";
+
+                if (Childs != null)
+                {
+                    foreach (var item in Childs)
+                    {
+                        if (item is Tag childTag)
+                            childTag.UpdateValue(null);
+                    }
+                }
+            }
+            else
+            {
+                Value = clientTag.Value;
+                Quality = clientTag.Quality;
+                TimeStamp = clientTag.TimeStamp;
+                Error = clientTag.Error;
+
+                if (clientTag.Childs != null && Childs != null)
+                {
+                    foreach (var item in Childs)
+                    {
+                        if (item is Tag childTag)
+                        {
+                            var childClientTag = clientTag.Childs.FirstOrDefault(x => x.Path == childTag.Path);
+                            if (childClientTag != null)
+                                childTag.UpdateValue(childClientTag);
+                        }
+                    }
+                }
+            }
         }
     }
 }

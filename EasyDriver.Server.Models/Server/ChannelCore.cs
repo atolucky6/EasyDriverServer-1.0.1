@@ -3,20 +3,20 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace EasyDriver.Core
 {
     [Serializable]
-    public class ChannelCore : GroupItemBase, IChannelCore, IChannelClient
+    public class ChannelCore : GroupItemBase, IChannelCore, IClientObject
     {
         #region IChannelCore
 
         public ChannelCore(IGroupItem parent, bool isReadOnly = false) : base(parent, isReadOnly)
         {
-            Devices = new Indexer<IDeviceCore>(this);
             SyncObject = new object();
             ParameterContainer = new ParameterContainer();
+            HaveTags = false;
+            Tags = new TagCollection(this);
         }
 
         [Browsable(false)]
@@ -39,19 +39,18 @@ namespace EasyDriver.Core
             }
         }
 
-        [Browsable(false)]
-        [JsonIgnore]
-        public Indexer<IDeviceCore> Devices { get; }
-
         [JsonIgnore]
         public DateTime LastRefreshTime { get; set; }
 
         [JsonIgnore]
         public string CommunicationError { get; set; }
 
-        [Category(PropertyCategory.General), DisplayName("Parameters")]
         [JsonIgnore]
+        [Category(PropertyCategory.General), DisplayName("Parameters")]
         public IParameterContainer ParameterContainer { get; set; }
+
+        [JsonIgnore]
+        public ConnectionStatus ConnectionStatus { get; set; }
 
         public override string GetErrorOfProperty(string propertyName)
         {
@@ -64,50 +63,52 @@ namespace EasyDriver.Core
 
         #endregion
 
-        #region IChannel
+        #region IHaveTags
+
+        [JsonIgnore]
+        public bool HaveTags { get; set; }
+
+        [JsonIgnore]
+        public TagCollection Tags { get; protected set; }
+
+        #endregion
+
+        #region IClientObject
 
         [JsonProperty("Name")]
-        string IChannelClient.Name => Name;
+        string IClientObject.Name => Name;
 
         [JsonProperty("Path")]
-        string IPath.Path => Path;
+        string IClientObject.Path => Path;
 
-        [JsonProperty("DriverName")]
-        string IChannelClient.DriverName => DriverName;
-
-        [JsonProperty("LastRefreshTime")]
-        DateTime IChannelClient.LastRefreshTime => LastRefreshTime;
+        [JsonProperty("Description")]
+        string IClientObject.Description => Description;
 
         [JsonProperty("Error")]
-        string IChannelClient.Error => CommunicationError;
+        string IClientObject.Error => CommunicationError;
 
-        [JsonProperty("Parameters")]
-        Dictionary<string, object> IChannelClient.Parameters => ParameterContainer.Parameters;
+        [JsonProperty("ItemType")]
+        ItemType IClientObject.ItemType => ItemType.Channel;
 
-        [JsonProperty("Devices")]
-        List<IDeviceClient> IChannelClient.Devices
+        [JsonProperty("Childs")]
+        List<IClientObject> IClientObject.Childs => this.GetClientObjects();
+
+        [JsonProperty("ConnectionStatus")]
+        ConnectionStatus IClientObject.ConnectionStatus => ConnectionStatus;
+
+        [JsonProperty("DisplayInfo")]
+        string IClientObject.DisplayInfo => string.IsNullOrEmpty(DriverPath) ? "" : System.IO.Path.GetFileNameWithoutExtension(DriverPath);
+
+        [field: NonSerialized]
+        private Dictionary<string, string> properties;
+        public Dictionary<string, string> Properties
         {
-            get { return Childs.Select(x => x as IDeviceClient)?.ToList(); }
-        }
-
-        public T GetItem<T>(string pathToObject) where T : class, IPath
-        {
-            if (string.IsNullOrWhiteSpace(pathToObject))
-                return null;
-            if (Path == pathToObject)
-                return this as T;
-            if (pathToObject.StartsWith(Path))
+            get
             {
-                foreach (var child in Childs)
-                {
-                    if (child is IPath item)
-                    {
-                        if (pathToObject.StartsWith(item.Path))
-                            return item.GetItem<T>(pathToObject);
-                    }
-                }
+                if (properties == null)
+                    properties = new Dictionary<string, string>();
+                return properties;
             }
-            return null;
         }
 
         #endregion

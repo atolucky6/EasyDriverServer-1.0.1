@@ -31,6 +31,24 @@ namespace EasyDriverPlugin
             return name;
         }
 
+        public static string GetUniqueNameInGroupTags(this IHaveTag group, string patternName, bool insertBrackets = false)
+        {
+            uint index = patternName.ExtractLastNumberFromString(out bool hasIndex, out bool hasBracketsSurround);
+            index = insertBrackets ? 1 : index;
+            if (index == 0)
+                index++;
+            if (patternName.IsUniqueNameInGroupTags(group, null))
+                return patternName;
+            patternName = insertBrackets ? hasBracketsSurround ? patternName.RemoveLastNumberFromString() : patternName?.Trim() : patternName.RemoveLastNumberFromString();
+            string name = string.Format("{0}{1}", patternName, hasBracketsSurround || insertBrackets ? $"({index})" : $"{index}");
+            while (!name.IsUniqueNameInGroupTags(group, null))
+            {
+                index++;
+                name = string.Format("{0}{1}", patternName, hasBracketsSurround || insertBrackets ? $"({index})" : $"{index}");
+            }
+            return name;
+        }
+
         /// <summary>
         /// Kiểm tra tên có phải là duy nhất trong group không
         /// </summary>
@@ -41,6 +59,18 @@ namespace EasyDriverPlugin
         public static bool IsUniqueNameInGroup(this string name, IGroupItem item, ICoreItem ignoreItem, bool findAllLevel = false)
         {
             if (item.Childs.FirstOrDefault(x => {
+                if (x is ICoreItem coreItem)
+                    return coreItem.Name == name && x != ignoreItem;
+                return false;
+            }) == null)
+                return true;
+            return false;
+        }
+
+        public static bool IsUniqueNameInGroupTags(this string name, IHaveTag item, ICoreItem ignoreItem, bool findAllLevel = false)
+        {
+            if (item.Tags.FirstOrDefault(x =>
+            {
                 if (x is ICoreItem coreItem)
                     return coreItem.Name == name && x != ignoreItem;
                 return false;

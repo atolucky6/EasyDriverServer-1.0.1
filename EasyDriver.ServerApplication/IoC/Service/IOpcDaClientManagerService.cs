@@ -152,10 +152,13 @@ namespace EasyScada.ServerApplication
             }
             catch
             {
-                foreach (var item in GetAllChildItems(StationCore))
+                foreach (var item in StationCore.GetAllTags())
                 {
                     if (item is ITagCore tag)
+                    {
+                        tag.TimeStamp = DateTime.Now;
                         tag.Quality = Quality.Bad;
+                    }
                 }
 
                 StationCore.ConnectionStatus = ConnectionStatus.Disconnected;
@@ -193,10 +196,13 @@ namespace EasyScada.ServerApplication
                     if (StationCore != null)
                     {
                         StationCore.ConnectionStatus = ConnectionStatus.Disconnected;
-                        foreach (var item in GetAllChildItems(StationCore))
+                        foreach (var item in StationCore.GetAllTags())
                         {
                             if (item is ITagCore tag)
+                            {
                                 tag.Quality = Quality.Bad;
+                                tag.TimeStamp = DateTime.Now;
+                            }
                         }
                     }
 
@@ -235,21 +241,26 @@ namespace EasyScada.ServerApplication
                         OpcDaGroup group = OpcDaServer.AddGroup(Guid.NewGuid().ToString());
                         group.IsActive = true;
                         List<OpcDaItemDefinition> definitions = new List<OpcDaItemDefinition>();
-                        foreach (var item in GetAllChildItems(StationCore))
+
+                        foreach (var item in StationCore.GetAllTags())
                         {
                             if (item is ITagCore tagCore)
                             {
-                                cache.Add(item.Path.Remove(0, StationCore.Name.Length + 1).Replace('/', '.'), item);
-                                OpcDaItemDefinition itemDefinition = new OpcDaItemDefinition();
-                                itemDefinition.ItemId = tagCore.ParameterContainer.Parameters["ItemId"].ToString();
-                                itemDefinition.IsActive = true;
+                                string groupName = item.Parent.Path.Remove(0, StationCore.Name.Length + 1).Replace('/', '.');
+                                string itemId = groupName + "." + tagCore.Name;
+                                cache.Add(itemId, item);
+                                OpcDaItemDefinition itemDefinition = new OpcDaItemDefinition
+                                {
+                                    ItemId = tagCore.ParameterContainer.Parameters["ItemId"].ToString(),
+                                    IsActive = true
+                                };
                                 definitions.Add(itemDefinition);
                             }
                         }
-                        OpcDaItemResult[] results = group.AddItems(definitions.ToArray());
-                        foreach (OpcDaItem item in group.Items)
+
+                        if (definitions.Count > 0)
                         {
-                            opcDaItemCache.Add(item.ItemId, item);
+                            OpcDaItemResult[] results = group.AddItems(definitions.ToArray());
                         }
 
                         if (browser == null)
@@ -266,6 +277,9 @@ namespace EasyScada.ServerApplication
                                 tags.Add(tag);
                         }
 
+                        foreach (var item in group.Items)
+                            opcDaItemCache.Add(item.ItemId, item);
+                        
                         RefreshTagItemProperties(browser, itemIds, tags);
                         firstScan = false;
                         IsSubscribed = true;
@@ -286,46 +300,49 @@ namespace EasyScada.ServerApplication
                                 {
                                     if (group.IsActive)
                                     {
-                                        OpcDaItemValue[] itemValues = group.Read(group.Items, OpcDaDataSource.Device);
-                                        foreach (OpcDaItemValue itemValue in itemValues)
+                                        if (group.Items.Count > 0)
                                         {
-                                            if (cache[itemValue.Item.ItemId] is ITagCore tagCore)
+                                            OpcDaItemValue[] itemValues = group.Read(group.Items, OpcDaDataSource.Cache);
+                                            foreach (OpcDaItemValue itemValue in itemValues)
                                             {
-                                                if (itemValue.Error.Succeeded)
+                                                if (cache[itemValue.Item.ItemId] is ITagCore tagCore)
                                                 {
-                                                    if (!firstScan)
+                                                    if (itemValue.Error.Succeeded)
                                                     {
-                                                        if (itemValue.Item != null)
+                                                        if (!firstScan)
                                                         {
-                                                            tagCore.DataTypeName = itemValue.Item?.CanonicalDataType.Name;
-                                                            tagCore.AccessPermission = GetAccessPermission(itemValue.Item.AccessRights);
+                                                            if (itemValue.Item != null)
+                                                            {
+                                                                tagCore.DataTypeName = itemValue.Item?.CanonicalDataType.Name;
+                                                                tagCore.AccessPermission = GetAccessPermission(itemValue.Item.AccessRights);
+                                                            }
                                                         }
-                                                    }
 
-                                                    tagCore.Quality = GetOpcItemQuality((int)itemValue.Quality.Status);
-                                                    tagCore.TimeStamp = itemValue.Timestamp.DateTime;
-                                                    Type valueType = itemValue.Value?.GetType();
-                                                    if (valueType != null)
-                                                    {
-                                                        if (valueType == typeof(bool))
+                                                        tagCore.Quality = GetOpcItemQuality((int)itemValue.Quality.Status);
+                                                        tagCore.TimeStamp = itemValue.Timestamp.DateTime;
+                                                        Type valueType = itemValue.Value?.GetType();
+                                                        if (valueType != null)
                                                         {
-                                                            string boolStr = itemValue.Value?.ToString();
-                                                            tagCore.Value = boolStr == "True" ? "1" : "0";
-                                                        }
-                                                        else
-                                                        {
-                                                            tagCore.Value = itemValue.Value?.ToString();
+                                                            if (valueType == typeof(bool))
+                                                            {
+                                                                string boolStr = itemValue.Value?.ToString();
+                                                                tagCore.Value = boolStr == "True" ? "1" : "0";
+                                                            }
+                                                            else
+                                                            {
+                                                                tagCore.Value = itemValue.Value?.ToString();
+                                                            }
                                                         }
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    tagCore.Quality = Quality.Bad;
-                                                    tagCore.TimeStamp = DateTime.Now;
+                                                    else
+                                                    {
+                                                        tagCore.Quality = Quality.Bad;
+                                                        tagCore.TimeStamp = DateTime.Now;
+                                                    }
                                                 }
                                             }
+                                            firstScan = true;
                                         }
-                                        firstScan = true;
                                     }
                                 }
                             }
@@ -340,10 +357,10 @@ namespace EasyScada.ServerApplication
                     if (OpcDaServer != null && OpcDaServer.IsConnected)
                         StationCore.ConnectionStatus = ConnectionStatus.Connected;
                 }
-                catch
+                catch (Exception)
                 {
                     StationCore.ConnectionStatus = ConnectionStatus.Disconnected;
-                    foreach (var item in GetAllChildItems(StationCore))
+                    foreach (var item in StationCore.GetAllTags())
                     {
                         if (item is ITagCore tag)
                             tag.Quality = Quality.Bad;
@@ -427,9 +444,8 @@ namespace EasyScada.ServerApplication
             IsDisposed = true;
         }
 
-        public async Task<WriteResponse> WriteTagValue(WriteCommand writeCommand)
+        public async Task<WriteResponse> WriteTagValue(WriteCommand writeCommand, WriteResponse response)
         {
-            WriteResponse response = new WriteResponse();
             response.WriteCommand = writeCommand;
             if (OpcDaServer != null && OpcDaServer.IsConnected)
             {
@@ -443,16 +459,15 @@ namespace EasyScada.ServerApplication
                         OpcDaGroup group = OpcDaServer.Groups[0];
                         if (opcDaItemCache[tagId] is OpcDaItem opcDaItem)
                         {
+                            response.ExecuteTime = DateTime.Now;
                             HRESULT[] results = group.Write(new OpcDaItem[] { opcDaItem }, new object[] { writeCommand.Value });
                             if (results != null && results.Length > 0)
                             {
-                                response.ExecuteTime = DateTime.Now;
                                 response.IsSuccess = results[0].Succeeded;
                                 response.WriteCommand = writeCommand;
                             }
                             else
                             {
-                                response.ExecuteTime = DateTime.Now;
                                 response.IsSuccess = false;
                                 response.WriteCommand = writeCommand;
                                 response.Error = "The OPC DA server doesn't response the write result.";
@@ -466,7 +481,7 @@ namespace EasyScada.ServerApplication
                     
                     return response;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     response.Error = "Some error occur when send write command to OPC DA server.";
                     return response;
@@ -568,25 +583,6 @@ namespace EasyScada.ServerApplication
                     break;
             }
             return dataType;
-        }
-
-        private IEnumerable<ICoreItem> GetAllChildItems(IGroupItem groupItem)
-        {
-            if (groupItem != null)
-            {
-                if (groupItem.Childs != null)
-                {
-                    foreach (var item in groupItem.Childs)
-                    {
-                        if (item is IGroupItem childGroup)
-                        {
-                            yield return item as IGroupItem;
-                            foreach (var child in GetAllChildItems(childGroup))
-                                yield return child as ICoreItem;
-                        }
-                    }
-                }
-            }
         }
 
         #endregion

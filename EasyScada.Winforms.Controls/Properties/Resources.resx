@@ -298,38 +298,38 @@
   <data name="informationSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\informationSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonCheckBox" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonCheckBox.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyCheckBox" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyCheckBox.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonCheckButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonCheckButton.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyCheckButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyCheckButton.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonContextMenuColorColumns" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonContextMenuColorColumns.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyContextMenuColorColumns" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyContextMenuColorColumns.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonContextMenuHeading" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonContextMenuHeading.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyContextMenuHeading" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyContextMenuHeading.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonContextMenuImageSelect" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonContextMenuImageSelect.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyContextMenuImageSelect" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyContextMenuImageSelect.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonContextMenuItem" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonContextMenuItem.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyContextMenuItem" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyContextMenuItem.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonContextMenuItems" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonContextMenuItems.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyContextMenuItems" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyContextMenuItems.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonContextMenuSeparator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonContextMenuSeparator.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyContextMenuSeparator" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyContextMenuSeparator.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonLinkLabel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonLinkLabel.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyLinkLabel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyLinkLabel.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonMonthCalendar" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonMonthCalendar.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyMonthCalendar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyMonthCalendar.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="KryptonRadioButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\KryptonRadioButton.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="EasyRadioButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EasyRadioButton.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="MdiClose" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\MdiClose.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -843,5 +843,44 @@
   </data>
   <data name="_2010ButtonRestoreBlack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\2010ButtonRestoreBlack.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SplitHorizontal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SplitHorizontal.cur;System.Windows.Forms.Cursor, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SplitVertical" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SplitVertical.cur;System.Windows.Forms.Cursor, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BlueDown1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BlueDown1.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BlueUp1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BlueUp1.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CF_Logo1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CF_Logo1.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="check21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\check21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="delete22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\delete22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DocumentInvalid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DocumentInvalid1.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DocumentValid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DocumentValid1.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="help22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\help22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PageLarge1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PageLarge1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PageMedium1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PageMedium1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PageSmall1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PageSmall1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

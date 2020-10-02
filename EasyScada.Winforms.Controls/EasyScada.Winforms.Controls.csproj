@@ -4,8 +4,9 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5A05938F-E169-46FF-922A-B13CA841164A}</ProjectGuid>
+    <ProjectGuid>{BA53E923-5BAD-443C-A8F0-B191EAB9CA25}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EasyScada.Winforms.Controls</RootNamespace>
     <AssemblyName>EasyScada.Winforms.Controls</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
@@ -20,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,1289 +31,1524 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.4.1\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="MySql.Data, Version=6.7.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.7.9\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
-    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccurateText\AccurateText.cs" />
-    <Compile Include="AccurateText\AccurateTextMemento.cs" />
-    <Compile Include="Adorner\PinGlyph.cs" />
-    <Compile Include="ButtonSpec\ButtonSpec.cs">
+    <Compile Include="Base\ISupportWriteMultiTag.cs" />
+    <Compile Include="Base\WriteTagCommand.cs" />
+    <Compile Include="Charts\Controls\HistoricalTrend\HistoricalTrendDesigner.cs" />
+    <Compile Include="Charts\Controls\TrendLine.cs" />
+    <Compile Include="Charts\Controls\TrendLineCollection.cs" />
+    <Compile Include="Connector\EasyDriverConnector.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ButtonSpec\ButtonSpecAny.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Connector\EasyDriverConnector.Designer.cs">
+      <DependentUpon>EasyDriverConnector.cs</DependentUpon>
     </Compile>
-    <Compile Include="ButtonSpec\ButtonSpecCalendar.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ButtonSpec\ButtonSpecCollection.cs" />
-    <Compile Include="ButtonSpec\ButtonSpecFormFixed.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ButtonSpec\ButtonSpecFormWindowClose.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ButtonSpec\ButtonSpecFormWindowMax.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ButtonSpec\ButtonSpecFormWindowMin.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ButtonSpec\ButtonSpecManagerBase.cs" />
-    <Compile Include="ButtonSpec\ButtonSpecManagerDraw.cs" />
-    <Compile Include="ButtonSpec\ButtonSpecManagerLayout.cs" />
-    <Compile Include="ButtonSpec\ButtonSpecRemapByContentView.cs" />
-    <Compile Include="ButtonSpec\ButtonSpecToContent.cs" />
-    <Compile Include="ButtonSpec\ButtonSpecView.cs" />
-    <Compile Include="ButtonSpec\ButtonSpecViewControllers.cs" />
-    <Compile Include="ButtonSpec\ButtonSpecRemapByContentBase.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuCheckBox.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuCheckButton.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuCollection.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuColorColumns.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuHeading.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuImageSelect.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuItem.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuItemBase.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ContextMenu\EasyContextMenuItems.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuLinkLabel.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuMonthCalendar.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuRadioButton.cs" />
-    <Compile Include="ContextMenu\EasyContextMenuSeparator.cs" />
-    <Compile Include="Controller\ButtonController.cs" />
-    <Compile Include="Controller\ContextMenuController.cs" />
-    <Compile Include="Controller\ControllerDefinitions.cs" />
-    <Compile Include="Controller\MenuCheckBoxController.cs" />
-    <Compile Include="Controller\MenuCheckButtonController.cs" />
-    <Compile Include="Controller\MenuColorBlockController.cs" />
-    <Compile Include="Controller\MenuImageSelectController.cs" />
-    <Compile Include="Controller\MenuItemController.cs" />
-    <Compile Include="Controller\MenuLinkLabelController.cs" />
-    <Compile Include="Controller\MenuRadioButtonController.cs" />
-    <Compile Include="Controller\MonthCalendarController.cs" />
-    <Compile Include="Controller\TooltipController.cs" />
-    <Compile Include="Controls Visuals\VisualContextMenu.cs" />
-    <Compile Include="Controls Visuals\VisualControl.cs" />
-    <Compile Include="Controls Visuals\VisualControlBase.cs" />
-    <Compile Include="Controls Visuals\VisualControlContainment.cs" />
-    <Compile Include="Controls Visuals\VisualForm.cs">
+    <Compile Include="Controls\EasyPictureBox\ImageAnimatePropertyWrapper.cs" />
+    <Compile Include="Designer\Animate\AnimateDesignerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls Visuals\VisualPanel.cs" />
-    <Compile Include="Controls Visuals\VisualPopup.cs" />
-    <Compile Include="Controls Visuals\VisualPopupManager.cs" />
-    <Compile Include="Controls Visuals\VisualPopupShadow.cs">
+    <Compile Include="Designer\Animate\AnimateDesignerForm.Designer.cs">
+      <DependentUpon>AnimateDesignerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\Connector\ConnectionSchemeDesignerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls Visuals\VisualPopupTooltip.cs" />
-    <Compile Include="Controls Visuals\VisualSimpleBase.cs" />
-    <Compile Include="Controls\EasyButton\EasyButton.cs" />
-    <Compile Include="Controls\EasyButton\EasyButtonDesigner.cs" />
-    <Compile Include="Controls\EasyCommand\EasyCommand.cs" />
-    <Compile Include="Controls\EasyContextMenu\EasyContextMenu.cs" />
-    <Compile Include="Controls\EasyForm\EasyForm.cs">
+    <Compile Include="Designer\Connector\ConnectionSchemeDesignerForm.Designer.cs">
+      <DependentUpon>ConnectionSchemeDesignerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\Connector\GetConnectionSchemaForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\EasyGroupBox\EasyGroupBox.cs" />
-    <Compile Include="Controls\EasyGroupBox\EasyGroupBoxDesigner.cs" />
-    <Compile Include="Controls\EasyGroupPanel\EasyGroupPanel.cs" />
-    <Compile Include="Controls\EasyLabel\EasyLabel.cs" />
-    <Compile Include="Controls\EasyLabel\EasyLabelDesigner.cs" />
-    <Compile Include="Controls\EasyManager\EasyManager.cs">
+    <Compile Include="Designer\Connector\GetConnectionSchemaForm.Designer.cs">
+      <DependentUpon>GetConnectionSchemaForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\Connector\HieraticalTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\EasyMonthCalender\EasyMonthCalender.cs" />
-    <Compile Include="Controls\EasyPalette\EasyPalette.cs" />
-    <Compile Include="Controls\EasyPanel\EasyPanel.cs" />
-    <Compile Include="Controls\EasyPictureBox\EasyPictureBox.cs" />
+    <Compile Include="Designer\DatabaseConfig\ColumnsConfigDesignerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Designer\DatabaseConfig\ColumnsConfigDesignerForm.Designer.cs">
+      <DependentUpon>ColumnsConfigDesignerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\DatabaseConfig\LogProfileConfigDesignerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Designer\DatabaseConfig\LogProfileConfigDesignerForm.Designer.cs">
+      <DependentUpon>LogProfileConfigDesignerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\DatabaseConfig\LogProfilePropertyEditor.cs" />
+    <Compile Include="Designer\Alarm\AlarmGroupSettingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Designer\Alarm\AlarmGroupSettingView.Designer.cs">
+      <DependentUpon>AlarmGroupSettingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\Alarm\AlarnClassSettingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Designer\Alarm\AlarnClassSettingView.Designer.cs">
+      <DependentUpon>AlarnClassSettingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\Alarm\AnalogAlarmSettingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Designer\Alarm\AnalogAlarmSettingView.Designer.cs">
+      <DependentUpon>AnalogAlarmSettingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Charts\Axis.cs" />
+    <Compile Include="Charts\AxisCollection.cs" />
+    <Compile Include="Charts\AxisFormat.cs" />
+    <Compile Include="Charts\AxisLabel.cs" />
+    <Compile Include="Charts\AxisPosition.cs" />
+    <Compile Include="Charts\AxisType.cs" />
+    <Compile Include="Charts\ChartHelper.cs" />
+    <Compile Include="Charts\ChartPoint.cs" />
+    <Compile Include="Charts\ChartPointCollection.cs" />
+    <Compile Include="Charts\ChartPointEventArgs.cs" />
+    <Compile Include="Charts\ChartPointEventHandler.cs" />
+    <Compile Include="Charts\Controls\EasyChart.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Charts\Controls\HistoricalTrend\HistoricalTrend.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Charts\Controls\RealtimeTrend.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Charts\Curve\AuxiliaryLabel.cs" />
+    <Compile Include="Charts\Curve\AuxiliaryLine.cs" />
+    <Compile Include="Charts\Curve\CurveItem.cs" />
+    <Compile Include="Charts\Curve\MarkBackSection.cs" />
+    <Compile Include="Charts\Curve\MarkForeSection.cs" />
+    <Compile Include="Charts\Curve\MarkLine.cs" />
+    <Compile Include="Charts\Curve\MarkSectionBase.cs" />
+    <Compile Include="Charts\Curve\MarkText.cs" />
+    <Compile Include="Charts\Curve\MarkTextPositionStyle.cs" />
+    <Compile Include="Charts\GarphDirection.cs" />
+    <Compile Include="Charts\SelectMode.cs" />
+    <Compile Include="Charts\SeriesBase.cs" />
+    <Compile Include="Charts\SeriesCollection.cs" />
+    <Compile Include="Charts\SeriesCollectionEditor.cs" />
+    <Compile Include="Charts\SeriesFormat.cs" />
+    <Compile Include="Charts\Series\BezierSeries.cs" />
+    <Compile Include="Charts\Series\ColumnSeries.cs" />
+    <Compile Include="Charts\Series\LabelSeries.cs" />
+    <Compile Include="Charts\Series\LineSeries.cs" />
+    <Compile Include="Charts\Series\PointSeries.cs" />
+    <Compile Include="Charts\Series\StandardLineSeries.cs" />
+    <Compile Include="Charts\ZoomType.cs" />
+    <Compile Include="Controls\EasyAlarmLogger\EasyAlarmLogger.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyAlarmLogger\EasyAlarmLogger.Designer.cs">
+      <DependentUpon>EasyAlarmLogger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyDataLogger\EasyDataLogger.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyDataLogger\EasyDataLogger.Designer.cs">
+      <DependentUpon>EasyDataLogger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyDataLogger\EasyDataLoggerDesigner.cs" />
+    <Compile Include="Controls\EasyDataUpdater\EasyDataUpdater.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyDataUpdater\EasyDataUpdater.Designer.cs">
+      <DependentUpon>EasyDataUpdater.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyDataUpdater\ResetTrigger.cs" />
+    <Compile Include="Controls\EasyDataUpdater\UpdateUnit.cs" />
+    <Compile Include="Controls\EasyPictureBox\EasyPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\EasyPictureBox\EasyPictureBoxDesigner.cs" />
-    <Compile Include="Controls\EasyTextBox\EasyTextBox.cs" />
-    <Compile Include="Controls\EasyTextBox\EasyTextBoxDesigner.cs" />
-    <Compile Include="Controls\EasyWriteTagCommand\EasyWriteTagCommandDesigner.cs" />
-    <Compile Include="Converters\ButtonSpecFormFixedConverter.cs" />
-    <Compile Include="Converters\ButtonStyleConverter.cs" />
-    <Compile Include="Converters\EasyLinkBehaviorConverter.cs" />
-    <Compile Include="Converters\GridStyleConverter.cs" />
-    <Compile Include="Converters\HeaderStyleConverter.cs" />
-    <Compile Include="Converters\InputControlStyleConverter.cs" />
-    <Compile Include="Converters\LabelStyleConverter.cs" />
-    <Compile Include="Converters\PaletteBackStyleConverter.cs" />
-    <Compile Include="Converters\PaletteBorderStyleConverter.cs" />
-    <Compile Include="Converters\PaletteButtonOrientationConverter.cs" />
-    <Compile Include="Converters\PaletteButtonSpecStyleConverter.cs" />
-    <Compile Include="Converters\PaletteButtonStyleConverter.cs" />
-    <Compile Include="Converters\PaletteContentStyleConverter.cs" />
-    <Compile Include="Converters\PaletteDrawBordersConverter.cs" />
-    <Compile Include="Converters\PaletteImageEffectConverter.cs" />
-    <Compile Include="Converters\PaletteImageStyleConverter.cs" />
-    <Compile Include="Converters\PaletteModeConverter.cs" />
-    <Compile Include="Converters\PaletteModeManagerConverter.cs" />
-    <Compile Include="Converters\PaletteTextTrimConverter.cs" />
-    <Compile Include="Converters\SeparatorStyleConverter.cs" />
-    <Compile Include="Converters\StringLookupConverter.cs" />
-    <Compile Include="Converters\TabBorderStyleConverter.cs" />
-    <Compile Include="Converters\TabStyleConverter.cs" />
-    <Compile Include="Designer\ComponentDesignerActionList.cs" />
-    <Compile Include="Designer\ComponentDesignerBase.cs" />
-    <Compile Include="Designer\ControlDesignerAcionList.cs" />
-    <Compile Include="Designer\ControlDesignerBase.cs" />
-    <Compile Include="Designer\DesignerCategory.cs" />
-    <Compile Include="EasyScada\AnimateCommandBase.cs" />
-    <Compile Include="Controls\EasyWriteTagCommand\EasyWriteTagCommand.cs" />
-    <Compile Include="EasyScada\Definitations.cs" />
-    <Compile Include="EasyScada\DiscreteAnimateCommand.cs" />
-    <Compile Include="EventArgs\ButtonDragOffsetEventArgs.cs" />
-    <Compile Include="EventArgs\ButtonDragRectangleEventArgs.cs" />
-    <Compile Include="EventArgs\ButtonSpecEventArgs.cs" />
-    <Compile Include="EventArgs\CloseReasonEventArgs.cs" />
-    <Compile Include="EventArgs\ColorEventArgs.cs" />
-    <Compile Include="EventArgs\DragStartEventCancelArgs.cs" />
-    <Compile Include="EventArgs\ImageSelectEventArgs.cs" />
-    <Compile Include="EventArgs\NeedLayoutEventArgs.cs" />
-    <Compile Include="EventArgs\PaletteLayoutEventArgs.cs" />
-    <Compile Include="EventArgs\PointEventArgs.cs" />
-    <Compile Include="EventArgs\PointEventCancelArgs.cs" />
-    <Compile Include="EventArgs\TooltipEventArgs.cs" />
-    <Compile Include="EventArgs\TypedCollectionEventArgs.cs" />
-    <Compile Include="FormAnimateDesigner.cs">
+    <Compile Include="Controls\EasyPictureBox\ImageFillMode.cs" />
+    <Compile Include="Controls\EasyPictureBox\ImageFlipMode.cs" />
+    <Compile Include="Designer\Base\ComponentDesignerActionList.cs" />
+    <Compile Include="Designer\Base\ComponentDesignerBase.cs" />
+    <Compile Include="Designer\Base\ControlDesignerAcionList.cs" />
+    <Compile Include="Designer\Base\ControlDesignerBase.cs" />
+    <Compile Include="Designer\Base\DesignerCategory.cs" />
+    <Compile Include="Designer\TagPath\SearchTagControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Designer\TagPath\SearchTagControl.Designer.cs">
+      <DependentUpon>SearchTagControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\TagPath\SelectTagPathDesignerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormAnimateDesigner.Designer.cs">
-      <DependentUpon>FormAnimateDesigner.cs</DependentUpon>
+    <Compile Include="Designer\TagPath\SelectTagPathDesignerForm.Designer.cs">
+      <DependentUpon>SelectTagPathDesignerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="General\AntiAlias.cs" />
-    <Compile Include="General\BoolFlags31.cs" />
-    <Compile Include="General\Clipping.cs" />
-    <Compile Include="General\CommonHelper.cs" />
-    <Compile Include="General\ContextMenuProvider.cs" />
-    <Compile Include="General\ControlObscurer.cs" />
-    <Compile Include="General\Definitations.cs" />
-    <Compile Include="General\DesktopWindowManager.cs" />
-    <Compile Include="General\EasyControlCollection.cs" />
-    <Compile Include="General\EasyDefaultColorAttribute.cs" />
-    <Compile Include="General\EasyReadOnlyControls.cs" />
-    <Compile Include="General\GlobalId.cs" />
-    <Compile Include="General\GlobalStrings.cs" />
-    <Compile Include="General\GraphicsHint.cs" />
-    <Compile Include="General\GraphicsTextHint.cs" />
-    <Compile Include="General\HSL.cs" />
-    <Compile Include="General\OperationThread.cs" />
-    <Compile Include="General\PlatformInvoke.cs" />
-    <Compile Include="General\RGB.cs" />
-    <Compile Include="General\Storage.cs" />
-    <Compile Include="General\TooltipManager.cs" />
-    <Compile Include="General\TypedCollection.cs" />
-    <Compile Include="General\TypedRestrictCollection.cs" />
-    <Compile Include="General\ModelWaitDialog.cs">
+    <Compile Include="Designer\TagPath\PathToTagPropertyEditor.cs" />
+    <Compile Include="Designer\Base\PropertyEditorBase.cs" />
+    <Compile Include="Designer\SupportInterface\ISupportPallet.cs" />
+    <Compile Include="Designer\Alarm\DiscreteAlarmSettingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Designer\Alarm\DiscreteAlarmSettingView.Designer.cs">
+      <DependentUpon>DiscreteAlarmSettingView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.Designer.cs">
+      <DependentUpon>HistoricalTrendToolbox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\CsvBuilder.cs" />
+    <Compile Include="Extensions\Helper.cs" />
+    <Compile Include="Extensions\RGB.cs" />
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavClose.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavContext.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavFixed.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavFixedConverter.cs" />
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavigator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavManagerLayoutBar.cs" />
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavManagerLayoutHeaderBar.cs" />
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavNext.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavPrevious.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavRemap.cs" />
+    <Compile Include="Navigator\Controller\DragViewController.cs" />
+    <Compile Include="Navigator\Controller\OutlookMiniController.cs" />
+    <Compile Include="Navigator\Controller\PageButtonController.cs" />
+    <Compile Include="Navigator\Controls Navigator\EasyNavigator.cs" />
+    <Compile Include="Navigator\Controls Navigator\EasyNavigatorControlCollection.cs" />
+    <Compile Include="Navigator\Controls Visuals\VisualPopupPage.cs">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Navigator\Converters\BarItemSizingConverter.cs" />
+    <Compile Include="Navigator\Converters\ButtonDisplayConverter.cs" />
+    <Compile Include="Navigator\Converters\ButtonDisplayLogicConverter.cs" />
+    <Compile Include="Navigator\Converters\CloseButtonActionConverter.cs" />
+    <Compile Include="Navigator\Converters\ContextButtonActionConverter.cs" />
+    <Compile Include="Navigator\Converters\DirectionButtonActionConverter.cs" />
+    <Compile Include="Navigator\Converters\MapEasyPageImageConverter.cs" />
+    <Compile Include="Navigator\Converters\MapEasyPageTextConverter.cs" />
+    <Compile Include="Navigator\Converters\NavigatorModeConverter.cs" />
+    <Compile Include="Navigator\Converters\PaletteButtonSpecStyleConverter.cs" />
+    <Compile Include="Navigator\Converters\PopupPageAllowConverter.cs" />
+    <Compile Include="Navigator\Converters\PopupPagePositionConverter.cs" />
+    <Compile Include="Navigator\Dragging\DragFeedback.cs" />
+    <Compile Include="Navigator\Dragging\DragFeedbackDocking.cs" />
+    <Compile Include="Navigator\Dragging\DragFeedbackSolid.cs" />
+    <Compile Include="Navigator\Dragging\DragManager.cs" />
+    <Compile Include="Navigator\Dragging\DragTarget.cs" />
+    <Compile Include="Navigator\Dragging\DragTargetNavigatorTransfer.cs" />
+    <Compile Include="Navigator\Dragging\DropDockingIndicatorsRounded.cs" />
+    <Compile Include="Navigator\Dragging\DropDockingIndicatorsSquare.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="General\ModelWaitDialog.Designer.cs">
-      <DependentUpon>ModelWaitDialog.cs</DependentUpon>
+    <Compile Include="Navigator\Dragging\DropSolidWindow.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Palette Base\PaletteBack\PaletteBack.cs" />
-    <Compile Include="Palette Base\PaletteBack\PaletteBackInherit.cs" />
-    <Compile Include="Palette Base\PaletteBack\PaletteBackInheritForced.cs" />
-    <Compile Include="Palette Base\PaletteBack\PaletteBackInheritOverride.cs" />
-    <Compile Include="Palette Base\PaletteBack\PaletteBackInheritRedirect.cs" />
-    <Compile Include="Palette Base\PaletteBack\PaletteBackLightenColors.cs" />
-    <Compile Include="Palette Base\PaletteBack\PaletteBackToPalette.cs" />
-    <Compile Include="Palette Base\PaletteBorder\PaletteBorder.cs" />
-    <Compile Include="Palette Base\PaletteBorder\PaletteBorderInherit.cs" />
-    <Compile Include="Palette Base\PaletteBorder\PaletteBorderInheritOverride.cs" />
-    <Compile Include="Palette Base\PaletteBorder\PaletteBorderInheritRedirect.cs" />
-    <Compile Include="Palette Base\PaletteBorder\PaletteBorderToPalette.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContent.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentImage.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentInherit.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentInheritOverride.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentInheritRedirect.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentJustImage.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentJustShortText.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentJustText.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentText.cs" />
-    <Compile Include="Palette Base\PaletteContent\PaletteContentToPalette.cs" />
-    <Compile Include="Palette Base\PaletteDefinitations.cs" />
-    <Compile Include="Palette Base\PaletteDouble\PaletteBorderInheritForced.cs" />
-    <Compile Include="Palette Base\PaletteDouble\PaletteDouble.cs" />
-    <Compile Include="Palette Base\PaletteDouble\PaletteDoubleMetric.cs" />
-    <Compile Include="Palette Base\PaletteDouble\PaletteDoubleMetricRedirect.cs" />
-    <Compile Include="Palette Base\PaletteDouble\PaletteDoubleRedirect.cs" />
-    <Compile Include="Palette Base\PaletteDragDrop\PaletteDragDrop.cs" />
-    <Compile Include="Palette Base\PaletteElementColor\PaletteElementColor.cs" />
-    <Compile Include="Palette Base\PaletteElementColor\PaletteElementColorInherit.cs" />
-    <Compile Include="Palette Base\PaletteElementColor\PaletteElementColorInheritRedirect.cs" />
-    <Compile Include="Palette Base\PaletteElementColor\PaletteElementColorRedirect.cs" />
-    <Compile Include="Palette Base\PaletteMetric\PaletteMetricRedirect.cs" />
-    <Compile Include="Palette Base\PaletteRedirect\PaletteDoubleRedirect.cs" />
-    <Compile Include="Palette Base\PaletteRedirect\PaletteRedirect.cs" />
-    <Compile Include="Palette Base\PaletteRedirect\PaletteRedirectBack.cs" />
-    <Compile Include="Palette Base\PaletteRedirect\PaletteRedirectButtonSpec.cs" />
-    <Compile Include="Palette Base\PaletteRedirect\PaletteRedirectContent.cs" />
-    <Compile Include="Palette Base\PaletteRedirect\PaletteRedirectGrids.cs" />
-    <Compile Include="Palette Base\PaletteRedirect\PaletteRedirectTriple.cs" />
-    <Compile Include="Palette Base\PaletteRedirect\PaletteRedirectTripleMetric.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonBack.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonBackInherit.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonBackInheritRedirect.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonDouble.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonDoubleInherit.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonDoubleInheritRedirect.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonGeneral.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonGeneralInherit.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonGeneralInheritRedirect.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonText.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonTextInherit.cs" />
-    <Compile Include="Palette Base\PaletteRibbon\PaletteRibbonTextInheritRedirect.cs" />
-    <Compile Include="Palette Base\PaletteTab\PaletteTabBorder.cs" />
-    <Compile Include="Palette Base\PaletteTab\PaletteTabTriple.cs" />
-    <Compile Include="Palette Base\PaletteTab\PaletteTabTripleRedirect.cs" />
-    <Compile Include="Palette Base\PaletteTriple\PaletteTriple.cs" />
-    <Compile Include="Palette Base\PaletteTriple\PaletteTripleJustImage.cs" />
-    <Compile Include="Palette Base\PaletteTriple\PaletteTripleJustImageRedirect.cs" />
-    <Compile Include="Palette Base\PaletteTriple\PaletteTripleMetric.cs" />
-    <Compile Include="Palette Base\PaletteTriple\PaletteTripleMetricRedirect.cs" />
-    <Compile Include="Palette Base\PaletteTriple\PaletteTripleOverride.cs" />
-    <Compile Include="Palette Base\PaletteTriple\PaletteTripleRedirect.cs" />
-    <Compile Include="Palette Base\PaletteTriple\PaletteTripleToPalette.cs" />
-    <Compile Include="Palette Builtin\PaletteBase.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Navigator\Dragging\PageDragEndData.cs" />
+    <Compile Include="Navigator\EventArgs\CloseActionEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\ContextActionEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\CtrlTabCancelEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\DirectionActionEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\EasyContextMenuStripEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\EasyPageCancelEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\EasyPageFlagsEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\PageDragCancelEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\PageDragEndEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\PageDragEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\PageDropEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\PageMovedEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\PageReorderEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\PopupPageEventArgs.cs" />
+    <Compile Include="Navigator\EventArgs\ShowContextMenuArgs.cs" />
+    <Compile Include="Navigator\General\Definitions.cs" />
+    <Compile Include="Navigator\General\PageToToolTipMapping.cs" />
+    <Compile Include="Navigator\General\PlatformInvoke.cs" />
+    <Compile Include="Navigator\Navigator\EasyNavigatorActionList.cs" />
+    <Compile Include="Navigator\Navigator\EasyNavigatorDesigner.cs" />
+    <Compile Include="Navigator\Navigator\EasyPageActionList.cs" />
+    <Compile Include="Navigator\Navigator\EasyPageDesigner.cs" />
+    <Compile Include="Navigator\Navigator\EasyPageFormEditFlags.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Palette Builtin\PaletteOffice2007Base.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Navigator\Navigator\EasyPageFormEditFlags.Designer.cs">
+      <DependentUpon>EasyPageFormEditFlags.cs</DependentUpon>
     </Compile>
-    <Compile Include="Palette Builtin\PaletteOffice2007Black.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteOffice2007Blue.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteOffice2007Silver.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteOffice2010Base.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteOffice2010Black.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteOffice2010Blue.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteOffice2010Silver.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteProfessionalOffice2003.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteProfessionalSystem.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteSparkleBase.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteSparkleBlue.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteSparkleOrange.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Builtin\PaletteSparklePurple.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Palette Component\EasyPaletteTMSToolStrip.cs" />
-    <Compile Include="Palette Component\EasyInternalKCT.cs" />
-    <Compile Include="Palette Component\EasyPaletteButtonSpecBase.cs" />
-    <Compile Include="Palette Component\EasyPaletteButtonSpecs.cs" />
-    <Compile Include="Palette Component\EasyPaletteButtonSpecTyped.cs" />
-    <Compile Include="Palette Component\EasyPaletteCalendarDay.cs" />
-    <Compile Include="Palette Component\EasyPaletteCargo.cs" />
-    <Compile Include="Palette Component\EasyPaletteCommon.cs" />
-    <Compile Include="Palette Component\EasyPaletteContextMenu.cs" />
-    <Compile Include="Palette Component\EasyPaletteControl.cs" />
-    <Compile Include="Palette Component\EasyPaletteControls.cs" />
-    <Compile Include="Palette Component\EasyPaletteDouble3.cs" />
-    <Compile Include="Palette Component\EasyPaletteForm.cs" />
-    <Compile Include="Palette Component\EasyPaletteForms.cs" />
-    <Compile Include="Palette Component\EasyPaletteGrid.cs" />
-    <Compile Include="Palette Component\EasyPaletteHeaderGroupState.cs" />
-    <Compile Include="Palette Component\EasyPaletteHeaders.cs" />
-    <Compile Include="Palette Component\EasyPaletteImagesCheckBox.cs" />
-    <Compile Include="Palette Component\EasyPaletteImagesContextMenu.cs" />
-    <Compile Include="Palette Component\EasyPaletteImagesDropDownButton.cs" />
-    <Compile Include="Palette Component\EasyPaletteImagesGalleryButton.cs" />
-    <Compile Include="Palette Component\EasyPaletteImagesGalleryButtons.cs" />
-    <Compile Include="Palette Component\EasyPaletteImagesRadioButton.cs" />
-    <Compile Include="Palette Component\EasyPaletteImagesTreeView.cs" />
-    <Compile Include="Palette Component\EasyPaletteInputControl.cs" />
-    <Compile Include="Palette Component\EasyPaletteInputControls.cs" />
-    <Compile Include="Palette Component\EasyPaletteLabel.cs" />
-    <Compile Include="Palette Component\EasyPaletteLabels.cs" />
-    <Compile Include="Palette Component\EasyPaletteNavigator.cs" />
-    <Compile Include="Palette Component\EasyPaletteNavigatorState.cs" />
-    <Compile Include="Palette Component\EasyPaletteNavigatorStateBar.cs" />
-    <Compile Include="Palette Component\EasyPalettePanel.cs" />
-    <Compile Include="Palette Component\EasyPalettePanels.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbon.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonAppButton.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupArea.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupBaseText.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupButtonText.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupCheckBoxText.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupCollapsedBack.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupCollapsedBorder.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupCollapsedFrameBack.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupCollapsedFrameBorder.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupCollapsedText.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupLabelText.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupNormalBorder.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupNormalTitle.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonGroupRadioButtonText.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonQATMinibar.cs" />
-    <Compile Include="Palette Component\EasyPaletteRibbonTab.cs" />
-    <Compile Include="Palette Component\EasyPaletteSeparator.cs" />
-    <Compile Include="Palette Component\EasyPaletteSeparators.cs" />
-    <Compile Include="Palette Component\EasyPaletteTabButton.cs" />
-    <Compile Include="Palette Component\EasyPaletteTabButtons.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMS.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMSBase.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMSButton.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMSGrip.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMSMenu.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMSMenuStrip.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMSRafting.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMSSeparator.cs" />
-    <Compile Include="Palette Component\EasyPaletteTMSStatusStrip.cs" />
-    <Compile Include="Palette Component\EasyPaletteTrackBar.cs" />
-    <Compile Include="Palette Component\EaysePaletteHeader.cs" />
-    <Compile Include="Palette Component\EaysePaletteHeaderGroup.cs" />
-    <Compile Include="Palette Component\PaletteImages.cs" />
-    <Compile Include="Palette Control\EasyColorTable2007.cs" />
-    <Compile Include="Palette Control\EasyColorTable.cs" />
-    <Compile Include="Palette Control\EasyColorTable2010.cs" />
-    <Compile Include="Palette Control\EasyColorTableSparkle.cs" />
-    <Compile Include="Palette Component\EasyPaletteCheckButtons.cs" />
-    <Compile Include="Palette Control\EasyPaletteGrids.cs" />
-    <Compile Include="Palette Control\EasyPersistAttribute.cs" />
-    <Compile Include="Palette Component\EasyPaletteCheckButton.cs" />
-    <Compile Include="Palette Control\EasyProfessionalCustomKCT.cs" />
-    <Compile Include="Palette Control\EasyProfessionalKCT.cs" />
-    <Compile Include="Palette Control\LinkLabelBehaviorInherit.cs" />
-    <Compile Include="Palette Control\PaletteBorderEdge.cs" />
-    <Compile Include="Palette Control\PaletteBorderEdgeRedirect.cs" />
-    <Compile Include="Palette Control\PaletteContextMenuItemState.cs" />
-    <Compile Include="Palette Control\PaletteContextMenuItemStateChecked.cs" />
-    <Compile Include="Palette Control\PaletteContextMenuItemStateHighlight.cs" />
-    <Compile Include="Palette Control\PaletteContextMenuItemStateRedirect.cs" />
-    <Compile Include="Palette Control\PaletteContextMenuRedirect.cs" />
-    <Compile Include="Palette Control\PaletteDataGridViewAll.cs" />
-    <Compile Include="Palette Control\PaletteDataGridViewCells.cs" />
-    <Compile Include="Palette Control\PaletteDataGridViewContentCommon.cs" />
-    <Compile Include="Palette Control\PaletteDataGridViewContentStates.cs" />
-    <Compile Include="Palette Control\PaletteDataGridViewHeaders.cs" />
-    <Compile Include="Palette Control\PaletteDataGridViewRedirect.cs" />
-    <Compile Include="Palette Control\PaletteDataGridViewTripleRedirect.cs" />
-    <Compile Include="Palette Control\PaletteDataGridViewTripleStates.cs" />
-    <Compile Include="Palette Control\PaletteForm.cs" />
-    <Compile Include="Palette Control\PaletteFormRedirect.cs" />
-    <Compile Include="Palette Control\PaletteGroupBox.cs" />
-    <Compile Include="Palette Control\PaletteGroupBoxRedirect.cs" />
-    <Compile Include="Palette Control\PaletteHeaderButtonRedirect.cs" />
-    <Compile Include="Palette Control\PaletteHeaderRedirect.cs" />
-    <Compile Include="Palette Control\PaletteInputControlBackStates.cs" />
-    <Compile Include="Palette Control\PaletteInputControlContentStates.cs" />
-    <Compile Include="Palette Control\PaletteInputControlTripleRedirect.cs" />
-    <Compile Include="Palette Control\PaletteInputControlTripleStates.cs" />
-    <Compile Include="Palette Control\PaletteMonthCalendarDoubleState.cs" />
-    <Compile Include="Palette Control\PaletteMonthCalendarRedirect.cs" />
-    <Compile Include="Palette Control\PaletteMonthCalendarState.cs" />
-    <Compile Include="Palette Control\PaletteMonthCalendarStateRedirect.cs" />
-    <Compile Include="Palette Control\PaletteRedirectCheckBox.cs" />
-    <Compile Include="Palette Control\PaletteRedirectCommon.cs" />
-    <Compile Include="Palette Control\PaletteRedirectContextMenu.cs" />
-    <Compile Include="Palette Control\PaletteRedirectRadioButton.cs" />
-    <Compile Include="Palette Control\PaletteSeparatorPadding.cs" />
-    <Compile Include="Palette Control\PaletteSeparatorPaddingRedirect.cs" />
-    <Compile Include="Palette Control\PaletteTrackBarPositionStates.cs" />
-    <Compile Include="Palette Control\PaletteTrackBarRedirect.cs" />
-    <Compile Include="Palette Control\PaletteTrackBarStates.cs" />
-    <Compile Include="PathToTagPropertyEditor.cs" />
+    <Compile Include="Navigator\Navigator\NavigatorPageCollectionEditor.cs" />
+    <Compile Include="Navigator\Page\EasyPage.cs" />
+    <Compile Include="Navigator\Page\EasyPageCollection.cs" />
+    <Compile Include="Navigator\Palette\HeaderGroupMappingBase.cs" />
+    <Compile Include="Navigator\Palette\HeaderGroupMappingPrimary.cs" />
+    <Compile Include="Navigator\Palette\HeaderGroupMappingSecondary.cs" />
+    <Compile Include="Navigator\Palette\NavigatorBar.cs" />
+    <Compile Include="Navigator\Palette\NavigatorButton.cs" />
+    <Compile Include="Navigator\Palette\NavigatorGroup.cs" />
+    <Compile Include="Navigator\Palette\NavigatorHeader.cs" />
+    <Compile Include="Navigator\Palette\NavigatorOutlook.cs" />
+    <Compile Include="Navigator\Palette\NavigatorOutlookFull.cs" />
+    <Compile Include="Navigator\Palette\NavigatorOutlookMini.cs" />
+    <Compile Include="Navigator\Palette\NavigatorPanel.cs" />
+    <Compile Include="Navigator\Palette\NavigatorPopupPages.cs" />
+    <Compile Include="Navigator\Palette\NavigatorStack.cs" />
+    <Compile Include="Navigator\Palette\NavigatorToolTips.cs" />
+    <Compile Include="Navigator\Palette\PaletteBarRedirect.cs" />
+    <Compile Include="Navigator\Palette\PaletteMetrics.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavContent.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavContentText.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavigator.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavigatorHeaderGroup.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavigatorHeaderGroupRedirect.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavigatorOther.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavigatorOtherEx.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavigatorOtherOverride.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavigatorOtherRedirect.cs" />
+    <Compile Include="Navigator\Palette\PaletteNavigatorRedirect.cs" />
+    <Compile Include="Navigator\Palette\PalettePage.cs" />
+    <Compile Include="Navigator\Palette\PalettePageRedirect.cs" />
+    <Compile Include="Navigator\Palette\PaletteRedirectRibbonTabContent.cs" />
+    <Compile Include="Navigator\Palette\PaletteRibbonGeneralRedirect.cs" />
+    <Compile Include="Navigator\Palette\PaletteRibbonTabContent.cs" />
+    <Compile Include="Navigator\Palette\PaletteRibbonTabContentInheritOverride.cs" />
+    <Compile Include="Navigator\Palette\PaletteRibbonTabContentRedirect.cs" />
+    <Compile Include="Navigator\Palette\RibbonTabToContent.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarCheckButtonGroupInside.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarCheckButtonGroupOnly.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarCheckButtonGroupOutside.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarCheckButtonOnly.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarItemBase.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarRibbonTabBase.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarRibbonTabGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarRibbonTabOnly.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarTabBase.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarTabGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBarTabOnly.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderBase.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderHeaderBarCheckButtonBase.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderHeaderBarCheckButtonGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderHeaderBarCheckButtonHeaderGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderHeaderBarCheckButtonOnly.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderHeaderBarTabGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderHeaderGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderItemBase.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderOutlookBase.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderOutlookFull.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderOutlookMini.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderPanel.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderStackCheckButtonBase.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderStackCheckButtonGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewBuilderStackCheckButtonHeaderGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewletHeaderGroup.cs" />
+    <Compile Include="Navigator\View Builder\ViewletHeaderGroupOutlook.cs" />
+    <Compile Include="Navigator\View Draw\ViewDrawNavCheckButtonBar.cs" />
+    <Compile Include="Navigator\View Draw\ViewDrawNavCheckButtonBase.cs" />
+    <Compile Include="Navigator\View Draw\ViewDrawNavCheckButtonStack.cs" />
+    <Compile Include="Navigator\View Draw\ViewDrawNavCheckButtonTab.cs" />
+    <Compile Include="Navigator\View Draw\ViewDrawNavOutlookMini.cs" />
+    <Compile Include="Navigator\View Draw\ViewDrawNavOutlookOverflow.cs" />
+    <Compile Include="Navigator\View Draw\ViewDrawNavOutlookStack.cs" />
+    <Compile Include="Navigator\View Draw\ViewDrawNavRibbonTab.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutBar.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutBarForTabs.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutDockerOverlap.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutInsetOverlap.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutOutlookFull.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutOutlookMini.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutPageHide.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutPageShow.cs" />
+    <Compile Include="Navigator\View Layout\ViewLayoutPopupPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="PropertyEditorBase.cs" />
-    <Compile Include="Rendering\EasyOffice2007Renderer.cs" />
-    <Compile Include="Rendering\EasyOffice2010Renderer.cs" />
-    <Compile Include="Rendering\EasyProfessionalRenderer.cs" />
-    <Compile Include="Rendering\EasySparkleRenderer.cs" />
-    <Compile Include="Rendering\EasyStandardRenderer.cs" />
-    <Compile Include="Rendering\RenderBase.cs">
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Toolkit\AccurateText\AccurateText.cs" />
+    <Compile Include="Toolkit\AccurateText\AccurateTextMemento.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpec.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Rendering\RenderContext.cs" />
-    <Compile Include="Rendering\RenderDefinitations.cs" />
-    <Compile Include="Rendering\RenderDragDockingData.cs" />
-    <Compile Include="Rendering\RenderExpertHelpers.cs" />
-    <Compile Include="Rendering\RenderGlassHelpers.cs" />
-    <Compile Include="Rendering\RenderMementos.cs" />
-    <Compile Include="Rendering\RenderOffice2007.cs">
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecAny.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Rendering\RenderOffice2010.cs">
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecCalendar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Rendering\RenderProfessional.cs">
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecCollection.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecFormFixed.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Rendering\RenderSparkle.cs">
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecFormWindowClose.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Rendering\RenderStandard.cs">
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecFormWindowMax.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Values\ButtonImageStates.cs" />
-    <Compile Include="Values\ButtonValues.cs" />
-    <Compile Include="Values\CaptionValues.cs" />
-    <Compile Include="Values\CheckBoxImages.cs" />
-    <Compile Include="Values\CheckButtonImageStates.cs" />
-    <Compile Include="Values\ContextMenuImages.cs" />
-    <Compile Include="Values\FixedContentValue.cs" />
-    <Compile Include="Values\HeaderValuesBase.cs" />
-    <Compile Include="Values\ImageValues.cs" />
-    <Compile Include="Values\LabelValues.cs" />
-    <Compile Include="Values\RadioButtonImages.cs" />
-    <Compile Include="View Base\ViewBase.cs" />
-    <Compile Include="View Base\ViewContext.cs" />
-    <Compile Include="View Base\ViewContextMenuManager.cs" />
-    <Compile Include="View Base\ViewDecorator.cs" />
-    <Compile Include="View Base\ViewLeaf.cs" />
-    <Compile Include="View Base\ViewManager.cs" />
-    <Compile Include="View Decorator\ViewDecoratorFixedSize.cs" />
-    <Compile Include="View Draw\ViewDrawBorderEdge.cs" />
-    <Compile Include="View Draw\ViewDrawButton.cs" />
-    <Compile Include="View Draw\ViewDrawCanvas.cs" />
-    <Compile Include="View Draw\ViewDrawCheckBox.cs" />
-    <Compile Include="View Draw\ViewDrawContent.cs" />
-    <Compile Include="View Draw\ViewDrawDocker.cs" />
-    <Compile Include="View Draw\ViewDrawDropDownButton.cs" />
-    <Compile Include="View Draw\ViewDrawEmptyContent.cs" />
-    <Compile Include="View Draw\ViewDrawForm.cs" />
-    <Compile Include="View Draw\ViewDrawGroupBoxDocker.cs" />
-    <Compile Include="View Draw\ViewDrawImage.cs" />
-    <Compile Include="View Draw\ViewDrawMenuCheckBox.cs" />
-    <Compile Include="View Draw\ViewDrawMenuCheckButton.cs" />
-    <Compile Include="View Draw\ViewDrawMenuColorBlock.cs" />
-    <Compile Include="View Draw\ViewDrawMenuColorColumn.cs" />
-    <Compile Include="View Draw\ViewDrawMenuColorColumns.cs" />
-    <Compile Include="View Draw\ViewDrawMenuHeading.cs" />
-    <Compile Include="View Draw\ViewDrawMenuImageCanvas.cs" />
-    <Compile Include="View Draw\ViewDrawMenuImageColumn.cs" />
-    <Compile Include="View Draw\ViewDrawMenuImageSelectItem.cs" />
-    <Compile Include="View Draw\ViewDrawMenuItem.cs" />
-    <Compile Include="View Draw\ViewDrawMenuItemContent.cs" />
-    <Compile Include="View Draw\ViewDrawMenuLinkLabel.cs" />
-    <Compile Include="View Draw\ViewDrawMenuMonthCalendar.cs" />
-    <Compile Include="View Draw\ViewDrawMenuRadioButton.cs" />
-    <Compile Include="View Draw\ViewDrawMenuSeparator.cs" />
-    <Compile Include="View Draw\ViewDrawMonth.cs" />
-    <Compile Include="View Draw\ViewDrawMonthDayNames.cs" />
-    <Compile Include="View Draw\ViewDrawMonthDays.cs" />
-    <Compile Include="View Draw\ViewDrawPanel.cs" />
-    <Compile Include="View Draw\ViewDrawRadioButton.cs" />
-    <Compile Include="View Draw\ViewDrawSplitCanvas.cs" />
-    <Compile Include="View Draw\ViewDrawToday.cs" />
-    <Compile Include="View Draw\ViewDrawWeekNumbers.cs" />
-    <Compile Include="View Layout\ViewComposite.cs" />
-    <Compile Include="View Layout\ViewLayoutCenter.cs" />
-    <Compile Include="View Layout\ViewLayoutColorStack.cs" />
-    <Compile Include="View Layout\ViewLayoutContext.cs" />
-    <Compile Include="View Layout\ViewLayoutDocker.cs" />
-    <Compile Include="View Layout\ViewLayoutFill.cs" />
-    <Compile Include="View Layout\ViewLayoutMenuItemSelect.cs" />
-    <Compile Include="View Layout\ViewLayoutMenuItemsPile.cs" />
-    <Compile Include="View Layout\ViewLayoutMenuSepGap.cs" />
-    <Compile Include="View Layout\ViewLayoutMetricSpacer.cs" />
-    <Compile Include="View Layout\ViewLayoutMonths.cs" />
-    <Compile Include="View Layout\ViewLayoutNull.cs" />
-    <Compile Include="View Layout\ViewLayoutPile.cs" />
-    <Compile Include="View Layout\ViewLayoutSeparator.cs" />
-    <Compile Include="View Layout\ViewLayoutStack.cs" />
-    <Compile Include="View Layout\ViewLayoutWeekCorner.cs" />
-    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecFormWindowMin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecHeaderGroup.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecManagerBase.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecManagerDraw.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecManagerLayout.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecRemapByContentBase.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecRemapByContentCache.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecRemapByContentView.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecToContent.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecView.cs" />
+    <Compile Include="Toolkit\ButtonSpec\ButtonSpecViewControllers.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuCheckBox.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuCheckButton.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuCollection.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuColorColumns.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuHeading.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuImageSelect.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuItem.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuItemBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuItems.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuLinkLabel.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuMonthCalendar.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuRadioButton.cs" />
+    <Compile Include="Toolkit\ContextMenu\EasyContextMenuSeparator.cs" />
+    <Compile Include="Toolkit\Controller\ButtonController.cs" />
+    <Compile Include="Toolkit\Controller\CheckBoxController.cs" />
+    <Compile Include="Toolkit\Controller\ContextMenuController.cs" />
+    <Compile Include="Toolkit\Controller\ControllerDefinitions.cs" />
+    <Compile Include="Toolkit\Controller\LinkLabelController.cs" />
+    <Compile Include="Toolkit\Controller\MenuCheckBoxController.cs" />
+    <Compile Include="Toolkit\Controller\MenuCheckButtonController.cs" />
+    <Compile Include="Toolkit\Controller\MenuColorBlockController.cs" />
+    <Compile Include="Toolkit\Controller\MenuImageSelectController.cs" />
+    <Compile Include="Toolkit\Controller\MenuItemController.cs" />
+    <Compile Include="Toolkit\Controller\MenuLinkLabelController.cs" />
+    <Compile Include="Toolkit\Controller\MenuRadioButtonController.cs" />
+    <Compile Include="Toolkit\Controller\MonthCalendarController.cs" />
+    <Compile Include="Toolkit\Controller\RadioButtonController.cs" />
+    <Compile Include="Toolkit\Controller\SeparatorController.cs" />
+    <Compile Include="Toolkit\Controller\TooltipController.cs" />
+    <Compile Include="Toolkit\Controller\TrackBarController.cs" />
+    <Compile Include="Toolkit\Controller\TrackPositionController.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyBorderEdge.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyBreadCrumb.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyBreadCrumbItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyButton.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyCheckBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyCheckButton.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyCheckedListBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyCheckSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyColorButton.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyComboBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyDataGridViewColumns.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyDateTimePicker.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyDomainUpDown.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyDropButton.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyGroup.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyGroupBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyGroupPanel.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyHeader.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyHeaderGroup.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyInputBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyLabel.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyLinkLabel.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyListBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyListItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyMaskedTextBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyMessageBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyMonthCalendar.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyNumericUpDown.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyPalette.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Toolkit\EasyPanel.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyRadioButton.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyRichTextBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasySeparator.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasySplitContainer.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasySplitterPanel.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyTaskDialog.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyTaskDialogCommand.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyTextBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyTrackBar.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyTreeNode.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyTreeView.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\EasyWrapLabel.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualContainerControl.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualContainerControlBase.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualContextMenu.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualContextMenuDTP.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualControl.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualControlBase.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualControlContainment.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Visuals\VisualPanel.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualPopup.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualPopupManager.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualPopupShadow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Controls Visuals\VisualPopupTooltip.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualSimple.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualSimpleBase.cs" />
+    <Compile Include="Toolkit\Controls Visuals\VisualTaskDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Converters\ButtonSpecFormFixedConverter.cs" />
+    <Compile Include="Toolkit\Converters\ButtonStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\DataGridViewStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\DateTimeNullableConverter.cs" />
+    <Compile Include="Toolkit\Converters\GridStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\HeaderGroupCollapseTargetConverter.cs" />
+    <Compile Include="Toolkit\Converters\HeaderStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\InputControlStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\EasyCheckedButtonConverter.cs" />
+    <Compile Include="Toolkit\Converters\EasyLinkBehaviorConverter.cs" />
+    <Compile Include="Toolkit\Converters\LabelStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteBackStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteBorderStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteButtonOrientationConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteButtonSpecStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteButtonStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteContentStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteDrawBordersConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteImageEffectConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteImageStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteModeConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteModeManagerConverter.cs" />
+    <Compile Include="Toolkit\Converters\PaletteTextTrimConverter.cs" />
+    <Compile Include="Toolkit\Converters\SeparatorStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\StringLookupConverter.cs" />
+    <Compile Include="Toolkit\Converters\TabBorderStyleConverter.cs" />
+    <Compile Include="Toolkit\Converters\TabStyleConverter.cs" />
+    <Compile Include="Toolkit\EventArgs\BreadCrumbMenuArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\ButtonDragOffsetEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\ButtonDragRectangleEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\ButtonSpecEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\CloseReasonEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\ColorEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\ContextMenuArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\ContextPositionMenuArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\DateTimePickerCloseArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\DateTimePickerDropArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\ImageSelectEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\NeedLayoutEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\PaletteLayoutEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\PointEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\PointEventCancelArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\PointOffsetEventCancelArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\SplitterMoveRectEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\TooltipEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\TypedCollectionEventArgs.cs" />
+    <Compile Include="Toolkit\EventArgs\ViewControlHitTestArgs.cs" />
+    <Compile Include="Toolkit\General\AntiAlias.cs" />
+    <Compile Include="Toolkit\General\BoolFlags31.cs" />
+    <Compile Include="Toolkit\General\Clipping.cs" />
+    <Compile Include="Toolkit\General\CommonHelper.cs" />
+    <Compile Include="Toolkit\General\ContextMenuProvider.cs" />
+    <Compile Include="Toolkit\General\ControlObscurer.cs" />
+    <Compile Include="Toolkit\General\CorrectContextControl.cs" />
+    <Compile Include="Toolkit\General\Definitions.cs" />
+    <Compile Include="Toolkit\General\DesktopWindowManager.cs" />
+    <Compile Include="Toolkit\General\GlobalId.cs" />
+    <Compile Include="Toolkit\General\GlobalStrings.cs" />
+    <Compile Include="Toolkit\General\GraphicsHint.cs" />
+    <Compile Include="Toolkit\General\GraphicsTextHint.cs" />
+    <Compile Include="Toolkit\General\HSL.cs" />
+    <Compile Include="Toolkit\General\EasyControlCollection.cs" />
+    <Compile Include="Toolkit\General\EasyDefaultColorAttribute.cs" />
+    <Compile Include="Toolkit\General\EasyReadOnlyControls.cs" />
+    <Compile Include="Toolkit\General\ModalWaitDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolkit\General\ModalWaitDialog.Designer.cs">
+      <DependentUpon>ModalWaitDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Toolkit\General\NullContentValues.cs" />
+    <Compile Include="Toolkit\General\OperationThread.cs" />
+    <Compile Include="Toolkit\General\PlatformInvoke.cs" />
+    <Compile Include="Toolkit\General\Storage.cs" />
+    <Compile Include="Toolkit\General\TooltipManager.cs" />
+    <Compile Include="Toolkit\General\TypedCollection.cs" />
+    <Compile Include="Toolkit\General\TypedRestrictCollection.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBack\PaletteBack.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBack\PaletteBackColor1.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBack\PaletteBackInherit.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBack\PaletteBackInheritForced.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBack\PaletteBackInheritOverride.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBack\PaletteBackInheritRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBack\PaletteBackLightenColors.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBack\PaletteBackToPalette.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBorder\PaletteBorder.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBorder\PaletteBorderInherit.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBorder\PaletteBorderInheritForced.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBorder\PaletteBorderInheritOverride.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBorder\PaletteBorderInheritRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteBorder\PaletteBorderToPalette.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContent.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentImage.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentInherit.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentInheritForced.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentInheritOverride.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentInheritRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentJustImage.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentJustShortText.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentJustText.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentText.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteContent\PaletteContentToPalette.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteDefinitions.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteDouble\PaletteDouble.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteDouble\PaletteDoubleMetric.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteDouble\PaletteDoubleMetricRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteDouble\PaletteDoubleOverride.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteDouble\PaletteDoubleRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteDragDrop\PaletteDragDrop.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteElementColor\PaletteElementColor.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteElementColor\PaletteElementColorInherit.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteElementColor\PaletteElementColorInheritOverride.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteElementColor\PaletteElementColorInheritRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteElementColor\PaletteElementColorRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteMetric\PaletteMetricRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectBack.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectBorder.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectBorderEdge.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectButtonSpec.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectContent.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectDouble.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectDoubleMetric.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectGrids.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectMetric.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectRibbonBack.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectRibbonDouble.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectRibbonGeneral.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectTriple.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRedirect\PaletteRedirectTripleMetric.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonBack.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonBackInherit.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonBackInheritRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonBackRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonDouble.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonDoubleInherit.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonDoubleInheritOverride.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonDoubleInheritRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonDoubleRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonGeneral.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonGeneralInherit.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonGeneralInheritRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonText.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonTextInherit.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteRibbon\PaletteRibbonTextInheritRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTab\PaletteTabBorder.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTab\PaletteTabTriple.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTab\PaletteTabTripleRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTriple\PaletteTriple.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTriple\PaletteTripleJustImage.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTriple\PaletteTripleJustImageRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTriple\PaletteTripleMetric.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTriple\PaletteTripleMetricRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTriple\PaletteTripleOverride.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTriple\PaletteTripleRedirect.cs" />
+    <Compile Include="Toolkit\Palette Base\PaletteTriple\PaletteTripleToPalette.cs" />
+    <Compile Include="Toolkit\Palette Builtin\PaletteBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteOffice2007Base.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteOffice2007Black.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteOffice2007Blue.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteOffice2007Silver.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteOffice2010Base.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteOffice2010Black.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteOffice2010Blue.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteOffice2010Silver.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteProfessionalOffice2003.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteProfessionalSystem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteSparkleBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteSparkleBlue.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteSparkleOrange.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Builtin\PaletteSparklePurple.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Palette Component\EasyInternalKCT.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteButtonSpecBase.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteButtonSpecs.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteButtonSpecTyped.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteCalendarDay.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteCargo.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteCheckButton.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteCheckButtons.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteCommon.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteContextMenu.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteControl.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteControls.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteDouble3.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteForm.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteForms.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteGrid.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteGrids.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteHeader.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteHeaderGroup.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteHeaderGroupState.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteHeaders.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteImages.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteImagesCheckBox.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteImagesContextMenu.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteImagesDropDownButton.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteImagesGalleryButton.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteImagesGalleryButtons.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteImagesRadioButton.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteImagesTreeView.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteInputControl.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteInputControls.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteLabel.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteLabels.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteNavigator.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteNavigatorState.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteNavigatorStateBar.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPalettePanel.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPalettePanels.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbon.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonAppButton.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupArea.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupBaseText.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupButtonText.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupCheckBoxText.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupCollapsedBack.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupCollapsedBorder.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupCollapsedFrameBack.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupCollapsedFrameBorder.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupCollapsedText.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupLabelText.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupNormalBorder.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupNormalTitle.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonGroupRadioButtonText.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonQATMinibar.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteRibbonTab.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteSeparator.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteSeparators.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTabButton.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTabButtons.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMS.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSBase.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSButton.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSGrip.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSMenu.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSMenuStrip.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSRafting.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSSeparator.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSStatusStrip.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTMSToolStrip.cs" />
+    <Compile Include="Toolkit\Palette Component\EasyPaletteTrackBar.cs" />
+    <Compile Include="Toolkit\Palette Controls\EasyColorTable.cs" />
+    <Compile Include="Toolkit\Palette Controls\EasyColorTable2007.cs" />
+    <Compile Include="Toolkit\Palette Controls\EasyColorTable2010.cs" />
+    <Compile Include="Toolkit\Palette Controls\EasyColorTableSparkle.cs" />
+    <Compile Include="Toolkit\Palette Controls\EasyDataGridViewStyles.cs" />
+    <Compile Include="Toolkit\Palette Controls\EasyPersistAttribute.cs" />
+    <Compile Include="Toolkit\Palette Controls\EasyProfessionalCustomKCT.cs" />
+    <Compile Include="Toolkit\Palette Controls\EasyProfessionalKCT.cs" />
+    <Compile Include="Toolkit\Palette Controls\LinkLabelBehaviorInherit.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteBackInheritNode.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteBorderEdge.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteBorderEdgeRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteBreadCrumbDoubleState.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteBreadCrumbRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteBreadCrumbState.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteColorButtonStrings.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteComboBoxJustComboStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteComboBoxJustItemStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteComboBoxRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteComboBoxStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteContentInheritNode.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteContextMenuItemState.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteContextMenuItemStateChecked.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteContextMenuItemStateHighlight.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteContextMenuItemStateRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteContextMenuRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewAll.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewBackInherit.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewCells.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewContentCommon.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewContentInherit.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewContentStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewHeaders.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewTripleCommon.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewTripleRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteDataGridViewTripleStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteForm.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteFormRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteGroupBox.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteGroupBoxRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteHeaderButtonRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteHeaderGroup.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteHeaderGroupRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteHeaderPaddingRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteHeaderRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteInputControlBackStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteInputControlContentStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteInputControlTripleRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteInputControlTripleStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteListItemTriple.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteListItemTripleRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteListState.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteListStateRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteMonthCalendarDoubleState.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteMonthCalendarRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteMonthCalendarState.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteMonthCalendarStateRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteNodeOverride.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteRedirectBreadCrumb.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteRedirectCheckBox.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteRedirectCommon.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteRedirectContextMenu.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteRedirectDropDownButton.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteRedirectRadioButton.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteRedirectTreeView.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteSeparatorPadding.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteSeparatorPaddingRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteSplitContainer.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteSplitContainerRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTrackBarPositionStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTrackBarPositionStatesOverride.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTrackBarRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTrackBarStates.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTrackBarStatesOverride.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTreeNodeTriple.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTreeNodeTripleRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTreeState.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteTreeStateRedirect.cs" />
+    <Compile Include="Toolkit\Palette Controls\PaletteWrapLabel.cs" />
+    <Compile Include="Toolkit\Rendering\EasyOffice2007Renderer.cs" />
+    <Compile Include="Toolkit\Rendering\EasyOffice2010Renderer.cs" />
+    <Compile Include="Toolkit\Rendering\EasyProfessionalRenderer.cs" />
+    <Compile Include="Toolkit\Rendering\EasySparkleRenderer.cs" />
+    <Compile Include="Toolkit\Rendering\EasyStandardRenderer.cs" />
+    <Compile Include="Toolkit\Rendering\RenderBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Rendering\RenderContext.cs" />
+    <Compile Include="Toolkit\Rendering\RenderDefinitions.cs" />
+    <Compile Include="Toolkit\Rendering\RenderDragDockingData.cs" />
+    <Compile Include="Toolkit\Rendering\RenderExpertHelpers.cs" />
+    <Compile Include="Toolkit\Rendering\RenderGlassHelpers.cs" />
+    <Compile Include="Toolkit\Rendering\RenderMementos.cs" />
+    <Compile Include="Toolkit\Rendering\RenderOffice2007.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Rendering\RenderOffice2010.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Rendering\RenderProfessional.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Rendering\RenderSparkle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Rendering\RenderStandard.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Toolkit\EasyBorderEdgeActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyBorderEdgeDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyBreadCrumbActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyBreadCrumbDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyBreadCrumbItemDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyBreadCrumbItemsEditor.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyButtonActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyButtonDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckButtonActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckButtonCollectionEditor.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckButtonCollectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Toolkit\EasyCheckButtonCollectionForm.Designer.cs">
+      <DependentUpon>EasyCheckButtonCollectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Toolkit\Toolkit\EasyCheckButtonDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckedListBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckedListBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckSetActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCheckSetDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyColorButtonActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyColorButtonDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyComboBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyComboBoxColumnDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyComboBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCommandActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyCommandDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyContextMenuActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyContextMenuCollectionEditor.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyContextMenuDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyContextMenuItemCollectionEditor.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyContextMenuItemDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyContextMenuItemsDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDateTimePickerActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDateTimePickerColumnDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDateTimePickerDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDesignerActionItem.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDomainUpDownActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDomainUpDownColumnDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDomainUpDownDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDropButtonActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyDropButtonDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyGroupActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyGroupBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyGroupBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyGroupDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyGroupPanelDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyHeaderActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyHeaderDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyHeaderGroupActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyHeaderGroupDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyLabelActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyLabelDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyLinkLabelActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyLinkLabelDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyListBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyListBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyManagerActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyManagerDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyMaskedTextBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyMaskedTextBoxColumnDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyMaskedTextBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyMonthCalendarActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyMonthCalendarDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyNumericUpDownActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyNumericUpDownColumnDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyNumericUpDownDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyPaletteActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyPaletteDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyPanelActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyPanelDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyRadioButtonActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyRadioButtonDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyRichTextBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyRichTextBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasySeparatorActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasySeparatorDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasySplitContainerActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasySplitContainerBehavior.cs" />
+    <Compile Include="Toolkit\Toolkit\EasySplitContainerDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasySplitContainerGlyph.cs" />
+    <Compile Include="Toolkit\Toolkit\EasySplitterPanelDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyTextBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyTextBoxColumnDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyTextBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyTrackBarActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyTrackBarDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyTreeViewActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyTreeViewDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyWrapLabelActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\EasyWrapLabelDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\PaletteDrawBordersEditor.cs" />
+    <Compile Include="Toolkit\Toolkit\PaletteDrawBordersSelector.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Toolkit\Toolkit\PaletteDrawBordersSelector.Designer.cs">
+      <DependentUpon>PaletteDrawBordersSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Toolkit\Values\ButtonImageStates.cs" />
+    <Compile Include="Toolkit\Values\ButtonValues.cs" />
+    <Compile Include="Toolkit\Values\CaptionValues.cs" />
+    <Compile Include="Toolkit\Values\CheckBoxImages.cs" />
+    <Compile Include="Toolkit\Values\CheckButtonImageStates.cs" />
+    <Compile Include="Toolkit\Values\CheckButtonValues.cs" />
+    <Compile Include="Toolkit\Values\ColorButtonValues.cs" />
+    <Compile Include="Toolkit\Values\ContextMenuImages.cs" />
+    <Compile Include="Toolkit\Values\DropDownButtonImages.cs" />
+    <Compile Include="Toolkit\Values\FixedContentValue.cs" />
+    <Compile Include="Toolkit\Values\GalleryButtonImages.cs" />
+    <Compile Include="Toolkit\Values\GalleryImages.cs" />
+    <Compile Include="Toolkit\Values\HeaderGroupValuesPrimary.cs" />
+    <Compile Include="Toolkit\Values\HeaderGroupValuesSecondary.cs" />
+    <Compile Include="Toolkit\Values\HeaderValues.cs" />
+    <Compile Include="Toolkit\Values\HeaderValuesBase.cs" />
+    <Compile Include="Toolkit\Values\LabelValues.cs" />
+    <Compile Include="Toolkit\Values\RadioButtonImages.cs" />
+    <Compile Include="Toolkit\Values\ShortTextValue.cs" />
+    <Compile Include="Toolkit\Values\TreeViewImages.cs" />
+    <Compile Include="Toolkit\View Base\ViewBase.cs" />
+    <Compile Include="Toolkit\View Base\ViewComposite.cs" />
+    <Compile Include="Toolkit\View Base\ViewContext.cs" />
+    <Compile Include="Toolkit\View Base\ViewContextMenuManager.cs" />
+    <Compile Include="Toolkit\View Base\ViewControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Toolkit\View Base\ViewDecorator.cs" />
+    <Compile Include="Toolkit\View Base\ViewLeaf.cs" />
+    <Compile Include="Toolkit\View Base\ViewManager.cs" />
+    <Compile Include="Toolkit\View Decorator\ViewDecoratorFixedSize.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawBorderEdge.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawButton.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawCanvas.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawCheckBox.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawContent.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawDateTimeButton.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawDateTimeText.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawDebug.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawDocker.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawDropDownButton.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawEmptyContent.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawForm.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawGroupBoxDocker.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuCheckBox.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuCheckButton.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuColorBlock.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuColorColumn.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuColorColumns.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuHeading.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuImageCanvas.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuImageColumn.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuImageSelectItem.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuItem.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuItemContent.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuLinkLabel.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuMonthCalendar.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuRadioButton.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMenuSeparator.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMonth.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMonthDayNames.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMonthDays.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawMonthUpDown.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawNull.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawPanel.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawRadioButton.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawScrollBar.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawSeparator.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawSplitCanvas.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawToday.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawTrackBar.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawTrackPosition.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawTrackTicks.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawTrackTP.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawTrackTrack.cs" />
+    <Compile Include="Toolkit\View Draw\ViewDrawWeekNumbers.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutCenter.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutColorStack.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutContext.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutControl.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutCrumbs.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutDocker.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutFill.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutFit.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutMenuItemSelect.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutMenuItemsPile.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutMenuSepGap.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutMetricSpacer.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutMonths.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutNull.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutPadding.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutPile.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutScrollViewport.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutSeparator.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutStack.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutStretch.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutViewport.cs" />
+    <Compile Include="Toolkit\View Layout\ViewLayoutWeekCorner.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
       <Project>{275e5d96-e78d-4fad-a87a-415dbf1d7b74}</Project>
       <Name>EasyScada.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EasyScada.Winforms.Connector\EasyScada.Winforms.Connector.csproj">
-      <Project>{4b95b838-26b8-4103-afb2-c13c1efa9fcf}</Project>
-      <Name>EasyScada.Winforms.Connector</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormAnimateDesigner.resx">
-      <DependentUpon>FormAnimateDesigner.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.resx">
+      <DependentUpon>HistoricalTrendToolbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Alarm\AlarmGroupSettingView.resx">
+      <DependentUpon>AlarmGroupSettingView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Alarm\AlarnClassSettingView.resx">
+      <DependentUpon>AlarnClassSettingView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Alarm\AnalogAlarmSettingView.resx">
+      <DependentUpon>AnalogAlarmSettingView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Alarm\DiscreteAlarmSettingView.resx">
+      <DependentUpon>DiscreteAlarmSettingView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Animate\AnimateDesignerForm.resx">
+      <DependentUpon>AnimateDesignerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Connector\ConnectionSchemeDesignerForm.resx">
+      <DependentUpon>ConnectionSchemeDesignerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Connector\GetConnectionSchemaForm.resx">
+      <DependentUpon>GetConnectionSchemaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\DatabaseConfig\ColumnsConfigDesignerForm.resx">
+      <DependentUpon>ColumnsConfigDesignerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\DatabaseConfig\LogProfileConfigDesignerForm.resx">
+      <DependentUpon>LogProfileConfigDesignerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\TagPath\SearchTagControl.resx">
+      <DependentUpon>SearchTagControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\TagPath\SelectTagPathDesignerForm.resx">
+      <DependentUpon>SelectTagPathDesignerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Navigator\Navigator\EasyPageFormEditFlags.resx">
+      <DependentUpon>EasyPageFormEditFlags.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Resources\2010BlackContextMenuSub.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010BlackDropDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010BlueContextMenuSub.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010BlueDropDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonClose.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonCloseBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonCloseH.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMax.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMaxBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMDIClose.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMDICloseBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMDIMax.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMDIMaxBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMDIMin.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMDIMinBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMDIRestore.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMDIRestoreBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMin.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonMinBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonRestore.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2010ButtonRestoreBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\add.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\arrow_down_blue.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\arrow_up_blue.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonCloseA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonCloseAH.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonCloseI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonCollapse.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonExpand.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonMaxA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonMaxAH.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonMaxI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonMinA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonMinAH.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonMinI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonRestoreA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonRestoreAH.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackButtonRestoreI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackContextMenuSub.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlackDropDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueButtonCloseA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueButtonCloseI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueButtonMaxA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueButtonMaxI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueButtonMinA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueButtonMinI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueButtonRestoreA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueButtonRestoreI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueContextMenuSub.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BlueDropDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ButtonColorImageSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ButtonNoColor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CB2007Black.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CB2007Blue.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CB2007Silver.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CB2010Black.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CB2010Blue.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CB2010Silver.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CBSparkle.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CBSparkleOrange.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CBSparklePurple.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ComponentYellow.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\delete2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DisabledDropDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DisabledDropDownButton2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DisabledDropUpButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DisabledGalleryDropButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Empty16x16.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\error.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\errorSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Gallery2010.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GalleryBlue.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GallerySilverBlack.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GridErrorIcon.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GridRowIndicators.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GridSortOrder.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\help2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\help2Small.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\hourglass.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\information.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\informationSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonCheckBox.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonCheckButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonContextMenuColorColumns.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonContextMenuHeading.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonContextMenuImageSelect.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonContextMenuItem.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonContextMenuItems.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonContextMenuSeparator.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonLinkLabel.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonMonthCalendar.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KryptonRadioButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MdiClose.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MdiMin.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MdiRestore.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MdiRibbonExpand.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MdiRibbonMinimize.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Office2007Checked.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Office2007Indeterminate.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalArrowDownButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalArrowLeftButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalArrowRightButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalArrowUpButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalButtonCloseA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalButtonCloseI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalButtonMaxA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalButtonMaxI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalButtonMinA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalButtonMinI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalButtonRestoreA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalButtonRestoreI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalCloseButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalContextButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalDropDownButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalMaximize.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalNextButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantCloseA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantCloseI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantExpandA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantExpandI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantMinA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantMinI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantMinimizeA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantMinimizeI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantRestoreA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPendantRestoreI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPinHorizontalButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPinVerticalButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalPreviousButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ProfessionalRestore.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlackN.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlackNC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlackP.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlackPC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlackT.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlackTC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlueD.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlueDC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlueN.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlueNC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlueP.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BluePC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlueT.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007BlueTC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007SilverN.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007SilverNC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007SilverP.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007SilverPC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007SilverT.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2007SilverTC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010BlueD.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010BlueDC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010BlueN.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010BlueNC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010BlueP.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010BluePC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010BlueT.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010BlueTC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010SilverN.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010SilverNC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010SilverPC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RB2010SilverTC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleD.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleDC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleN.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleNC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleOrangeNC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleOrangeP.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleOrangePC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleOrangeT.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleOrangeTC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleP.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparklePC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparklePurpleNC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparklePurpleP.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparklePurplePC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparklePurpleT.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparklePurpleTC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleT.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RBSparkleTC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RibbonDown2010.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RibbonDown2010Black.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RibbonUp2010.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RibbonUp2010Black.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SelectParentControl.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sign_warning.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sign_warningSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverButtonCloseA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverButtonCloseI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverButtonMaxA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverButtonMaxI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverButtonMinA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverButtonMinI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverButtonRestoreA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverButtonRestoreI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverContextMenuSub.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SilverDropDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleButtonCloseA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleButtonCloseI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleButtonMaxA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleButtonMaxI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleButtonMinA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleButtonMinI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleButtonRestoreA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleButtonRestoreI.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleChecked.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleContextMenuSub.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleDropDownButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleDropDownOutlineButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleDropUpButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleGalleryDropButton.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleGrayChecked.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleGrayIndeterminate.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SparkleIndeterminate.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SystemChecked.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SystemContextMenuSub.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SystemIndeterminate.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TreeCollapseBlack.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TreeCollapseMinus.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TreeExpandPlus.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TreeExpandWhite.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TreeMinusBox.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TreePlusBox.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteArrowDownButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteArrowLeftButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteArrowRightButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteArrowUpButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteButtonClose.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteCloseButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteContextButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteDropDownButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteMaximize.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhiteNextButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhitePendantCloseA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhitePendantMinA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhitePendantRestoreA.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhitePendantRibbonExpand.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhitePendantRibbonMinimize.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhitePinHorizontalButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhitePinVerticalButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WhitePreviousButton.bmp" />
-  </ItemGroup>
-  <ItemGroup>
+    <EmbeddedResource Include="Toolkit\Controls Toolkit\EasyInputBox.resx">
+      <DependentUpon>EasyInputBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Toolkit\Controls Toolkit\EasyMessageBox.resx">
+      <DependentUpon>EasyMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Toolkit\Controls Visuals\VisualTaskDialog.resx">
+      <DependentUpon>VisualTaskDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Toolkit\General\ModalWaitDialog.resx">
+      <DependentUpon>ModalWaitDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Toolkit\Toolkit\EasyCheckButtonCollectionForm.resx">
+      <DependentUpon>EasyCheckButtonCollectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Toolkit\Toolkit\PaletteDrawBordersSelector.resx">
+      <DependentUpon>PaletteDrawBordersSelector.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="NavigatorBitmaps\EasyNavigator.bmp" />
+    <Content Include="NavigatorBitmaps\EasyPage.bmp" />
+    <None Include="Resources\PageSmall1.png" />
+    <None Include="Resources\PageMedium1.png" />
+    <None Include="Resources\PageLarge1.png" />
+    <None Include="Resources\help22.png" />
+    <None Include="Resources\delete22.png" />
+    <None Include="Resources\check21.png" />
+    <None Include="Resources\CF_Logo1.bmp" />
+    <None Include="Resources\BlueUp1.bmp" />
+    <None Include="Resources\BlueDown1.bmp" />
+    <None Include="Resources\DocumentValid1.cur" />
+    <None Include="Resources\DocumentInvalid1.cur" />
+    <None Include="Resources\DocumentValid.cur" />
+    <None Include="Resources\DocumentInvalid.cur" />
+    <None Include="Resources\PageSmall.png" />
+    <None Include="Resources\PageMedium.png" />
+    <None Include="Resources\PageLarge.png" />
+    <None Include="Resources\help21.png" />
+    <None Include="Resources\delete21.png" />
+    <None Include="Resources\check2.png" />
+    <None Include="Resources\CF_Logo.bmp" />
+    <None Include="Resources\BlueUp.bmp" />
+    <None Include="Resources\BlueDown.bmp" />
+    <None Include="Resources\SplitVertical.cur" />
+    <None Include="Resources\SplitHorizontal.cur" />
     <None Include="Resources\WhiteRestore.bmp" />
+    <None Include="Resources\WhitePreviousButton.bmp" />
+    <None Include="Resources\WhitePinVerticalButton.bmp" />
+    <None Include="Resources\WhitePinHorizontalButton.bmp" />
+    <None Include="Resources\WhitePendantRibbonMinimize.bmp" />
+    <None Include="Resources\WhitePendantRibbonExpand.bmp" />
+    <None Include="Resources\WhitePendantRestoreA.bmp" />
+    <None Include="Resources\WhitePendantMinA.bmp" />
+    <None Include="Resources\WhitePendantCloseA.bmp" />
+    <None Include="Resources\WhiteNextButton.bmp" />
+    <None Include="Resources\WhiteMaximize.bmp" />
+    <None Include="Resources\WhiteDropDownButton.bmp" />
+    <None Include="Resources\WhiteContextButton.bmp" />
+    <None Include="Resources\WhiteCloseButton.bmp" />
+    <None Include="Resources\WhiteButtonClose.bmp" />
+    <None Include="Resources\WhiteArrowUpButton.bmp" />
+    <None Include="Resources\WhiteArrowRightButton.bmp" />
+    <None Include="Resources\WhiteArrowLeftButton.bmp" />
+    <None Include="Resources\WhiteArrowDownButton.bmp" />
+    <None Include="Resources\TreePlusBox.png" />
+    <None Include="Resources\TreeMinusBox.png" />
+    <None Include="Resources\TreeExpandWhite.png" />
+    <None Include="Resources\TreeExpandPlus.png" />
+    <None Include="Resources\TreeCollapseMinus.png" />
+    <None Include="Resources\TreeCollapseBlack.png" />
+    <None Include="Resources\SystemIndeterminate.png" />
+    <None Include="Resources\SystemContextMenuSub.png" />
+    <None Include="Resources\SystemChecked.png" />
+    <None Include="Resources\SparkleIndeterminate.png" />
+    <None Include="Resources\SparkleGrayIndeterminate.png" />
+    <None Include="Resources\SparkleGrayChecked.png" />
+    <None Include="Resources\SparkleGalleryDropButton.png" />
+    <None Include="Resources\SparkleDropUpButton.png" />
+    <None Include="Resources\SparkleDropDownOutlineButton.png" />
+    <None Include="Resources\SparkleDropDownButton.png" />
+    <None Include="Resources\SparkleContextMenuSub.png" />
+    <None Include="Resources\SparkleChecked.png" />
+    <None Include="Resources\SparkleButtonRestoreI.bmp" />
+    <None Include="Resources\SparkleButtonRestoreA.bmp" />
+    <None Include="Resources\SparkleButtonMinI.bmp" />
+    <None Include="Resources\SparkleButtonMinA.bmp" />
+    <None Include="Resources\SparkleButtonMaxI.bmp" />
+    <None Include="Resources\SparkleButtonMaxA.bmp" />
+    <None Include="Resources\SparkleButtonCloseI.bmp" />
+    <None Include="Resources\SparkleButtonCloseA.bmp" />
+    <None Include="Resources\SilverDropDownButton.png" />
+    <None Include="Resources\SilverContextMenuSub.png" />
+    <None Include="Resources\SilverButtonRestoreI.bmp" />
+    <None Include="Resources\SilverButtonRestoreA.bmp" />
+    <None Include="Resources\SilverButtonMinI.bmp" />
+    <None Include="Resources\SilverButtonMinA.bmp" />
+    <None Include="Resources\SilverButtonMaxI.bmp" />
+    <None Include="Resources\SilverButtonMaxA.bmp" />
+    <None Include="Resources\SilverButtonCloseI.bmp" />
+    <None Include="Resources\SilverButtonCloseA.bmp" />
+    <None Include="Resources\sign_warningSmall.png" />
+    <None Include="Resources\sign_warning.png" />
+    <None Include="Resources\SelectParentControl.png" />
+    <None Include="Resources\RibbonUp2010Black.bmp" />
+    <None Include="Resources\RibbonUp2010.bmp" />
+    <None Include="Resources\RibbonDown2010Black.bmp" />
+    <None Include="Resources\RibbonDown2010.bmp" />
+    <None Include="Resources\RBSparkleTC.png" />
+    <None Include="Resources\RBSparkleT.png" />
+    <None Include="Resources\RBSparklePurpleTC.png" />
+    <None Include="Resources\RBSparklePurpleT.png" />
+    <None Include="Resources\RBSparklePurplePC.png" />
+    <None Include="Resources\RBSparklePurpleP.png" />
+    <None Include="Resources\RBSparklePurpleNC.png" />
+    <None Include="Resources\RBSparklePC.png" />
+    <None Include="Resources\RBSparkleP.png" />
+    <None Include="Resources\RBSparkleOrangeTC.png" />
+    <None Include="Resources\RBSparkleOrangeT.png" />
+    <None Include="Resources\RBSparkleOrangePC.png" />
+    <None Include="Resources\RBSparkleOrangeP.png" />
+    <None Include="Resources\RBSparkleOrangeNC.png" />
+    <None Include="Resources\RBSparkleNC.png" />
+    <None Include="Resources\RBSparkleN.png" />
+    <None Include="Resources\RBSparkleDC.png" />
+    <None Include="Resources\RBSparkleD.png" />
+    <None Include="Resources\RB2010SilverTC.png" />
+    <None Include="Resources\RB2010SilverPC.png" />
+    <None Include="Resources\RB2010SilverNC.png" />
+    <None Include="Resources\RB2010SilverN.png" />
+    <None Include="Resources\RB2010BlueTC.png" />
+    <None Include="Resources\RB2010BlueT.png" />
+    <None Include="Resources\RB2010BluePC.png" />
+    <None Include="Resources\RB2010BlueP.png" />
+    <None Include="Resources\RB2010BlueNC.png" />
+    <None Include="Resources\RB2010BlueN.png" />
+    <None Include="Resources\RB2010BlueDC.png" />
+    <None Include="Resources\RB2010BlueD.png" />
+    <None Include="Resources\RB2007SilverTC.png" />
+    <None Include="Resources\RB2007SilverT.png" />
+    <None Include="Resources\RB2007SilverPC.png" />
+    <None Include="Resources\RB2007SilverP.png" />
+    <None Include="Resources\RB2007SilverNC.png" />
+    <None Include="Resources\RB2007SilverN.png" />
+    <None Include="Resources\RB2007BlueTC.png" />
+    <None Include="Resources\RB2007BlueT.png" />
+    <None Include="Resources\RB2007BluePC.png" />
+    <None Include="Resources\RB2007BlueP.png" />
+    <None Include="Resources\RB2007BlueNC.png" />
+    <None Include="Resources\RB2007BlueN.png" />
+    <None Include="Resources\RB2007BlueDC.png" />
+    <None Include="Resources\RB2007BlueD.png" />
+    <None Include="Resources\RB2007BlackTC.png" />
+    <None Include="Resources\RB2007BlackT.png" />
+    <None Include="Resources\RB2007BlackPC.png" />
+    <None Include="Resources\RB2007BlackP.png" />
+    <None Include="Resources\RB2007BlackNC.png" />
+    <None Include="Resources\RB2007BlackN.png" />
+    <None Include="Resources\ProfessionalRestore.bmp" />
+    <None Include="Resources\ProfessionalPreviousButton.bmp" />
+    <None Include="Resources\ProfessionalPinVerticalButton.bmp" />
+    <None Include="Resources\ProfessionalPinHorizontalButton.bmp" />
+    <None Include="Resources\ProfessionalPendantRestoreI.bmp" />
+    <None Include="Resources\ProfessionalPendantRestoreA.bmp" />
+    <None Include="Resources\ProfessionalPendantMinimizeI.bmp" />
+    <None Include="Resources\ProfessionalPendantMinimizeA.bmp" />
+    <None Include="Resources\ProfessionalPendantMinI.bmp" />
+    <None Include="Resources\ProfessionalPendantMinA.bmp" />
+    <None Include="Resources\ProfessionalPendantExpandI.bmp" />
+    <None Include="Resources\ProfessionalPendantExpandA.bmp" />
+    <None Include="Resources\ProfessionalPendantCloseI.bmp" />
+    <None Include="Resources\ProfessionalPendantCloseA.bmp" />
+    <None Include="Resources\ProfessionalNextButton.bmp" />
+    <None Include="Resources\ProfessionalMaximize.bmp" />
+    <None Include="Resources\ProfessionalDropDownButton.bmp" />
+    <None Include="Resources\ProfessionalContextButton.bmp" />
+    <None Include="Resources\ProfessionalCloseButton.bmp" />
+    <None Include="Resources\ProfessionalButtonRestoreI.bmp" />
+    <None Include="Resources\ProfessionalButtonRestoreA.bmp" />
+    <None Include="Resources\ProfessionalButtonMinI.bmp" />
+    <None Include="Resources\ProfessionalButtonMinA.bmp" />
+    <None Include="Resources\ProfessionalButtonMaxI.bmp" />
+    <None Include="Resources\ProfessionalButtonMaxA.bmp" />
+    <None Include="Resources\ProfessionalButtonCloseI.bmp" />
+    <None Include="Resources\ProfessionalButtonCloseA.bmp" />
+    <None Include="Resources\ProfessionalArrowUpButton.bmp" />
+    <None Include="Resources\ProfessionalArrowRightButton.bmp" />
+    <None Include="Resources\ProfessionalArrowLeftButton.bmp" />
+    <None Include="Resources\ProfessionalArrowDownButton.bmp" />
+    <None Include="Resources\Office2007Indeterminate.png" />
+    <None Include="Resources\Office2007Checked.png" />
+    <None Include="Resources\MdiRibbonMinimize.bmp" />
+    <None Include="Resources\MdiRibbonExpand.bmp" />
+    <None Include="Resources\MdiRestore.bmp" />
+    <None Include="Resources\MdiMin.bmp" />
+    <None Include="Resources\MdiClose.bmp" />
+    <None Include="Resources\EasyRadioButton.bmp" />
+    <None Include="Resources\EasyMonthCalendar.bmp" />
+    <None Include="Resources\EasyLinkLabel.bmp" />
+    <None Include="Resources\EasyContextMenuSeparator.bmp" />
+    <None Include="Resources\EasyContextMenuItems.bmp" />
+    <None Include="Resources\EasyContextMenuItem.bmp" />
+    <None Include="Resources\EasyContextMenuImageSelect.bmp" />
+    <None Include="Resources\EasyContextMenuHeading.bmp" />
+    <None Include="Resources\EasyContextMenuColorColumns.bmp" />
+    <None Include="Resources\EasyCheckButton.bmp" />
+    <None Include="Resources\EasyCheckBox.bmp" />
+    <None Include="Resources\informationSmall.png" />
+    <None Include="Resources\information.png" />
+    <None Include="Resources\hourglass.png" />
+    <None Include="Resources\help2Small.png" />
+    <None Include="Resources\help2.png" />
+    <None Include="Resources\GridSortOrder.bmp" />
+    <None Include="Resources\GridRowIndicators.bmp" />
+    <None Include="Resources\GridErrorIcon.bmp" />
+    <None Include="Resources\GallerySilverBlack.bmp" />
+    <None Include="Resources\GalleryBlue.bmp" />
+    <None Include="Resources\Gallery2010.bmp" />
+    <None Include="Resources\errorSmall.png" />
+    <None Include="Resources\error.png" />
+    <None Include="Resources\Empty16x16.bmp" />
+    <None Include="Resources\DisabledGalleryDropButton.png" />
+    <None Include="Resources\DisabledDropUpButton.png" />
+    <None Include="Resources\DisabledDropDownButton2.png" />
+    <None Include="Resources\DisabledDropDownButton.png" />
+    <None Include="Resources\delete2.png" />
+    <None Include="Resources\ComponentYellow.png" />
+    <None Include="Resources\CBSparklePurple.bmp" />
+    <None Include="Resources\CBSparkleOrange.bmp" />
+    <None Include="Resources\CBSparkle.bmp" />
+    <None Include="Resources\CB2010Silver.bmp" />
+    <None Include="Resources\CB2010Blue.bmp" />
+    <None Include="Resources\CB2010Black.bmp" />
+    <None Include="Resources\CB2007Silver.bmp" />
+    <None Include="Resources\CB2007Blue.bmp" />
+    <None Include="Resources\CB2007Black.bmp" />
+    <None Include="Resources\ButtonNoColor.png" />
+    <None Include="Resources\ButtonColorImageSmall.png" />
+    <None Include="Resources\BlueDropDownButton.png" />
+    <None Include="Resources\BlueContextMenuSub.png" />
+    <None Include="Resources\BlueButtonRestoreI.bmp" />
+    <None Include="Resources\BlueButtonRestoreA.bmp" />
+    <None Include="Resources\BlueButtonMinI.bmp" />
+    <None Include="Resources\BlueButtonMinA.bmp" />
+    <None Include="Resources\BlueButtonMaxI.bmp" />
+    <None Include="Resources\BlueButtonMaxA.bmp" />
+    <None Include="Resources\BlueButtonCloseI.bmp" />
+    <None Include="Resources\BlueButtonCloseA.bmp" />
+    <None Include="Resources\BlackDropDownButton.png" />
+    <None Include="Resources\BlackContextMenuSub.png" />
+    <None Include="Resources\BlackButtonRestoreI.bmp" />
+    <None Include="Resources\BlackButtonRestoreAH.bmp" />
+    <None Include="Resources\BlackButtonRestoreA.bmp" />
+    <None Include="Resources\BlackButtonMinI.bmp" />
+    <None Include="Resources\BlackButtonMinAH.bmp" />
+    <None Include="Resources\BlackButtonMinA.bmp" />
+    <None Include="Resources\BlackButtonMaxI.bmp" />
+    <None Include="Resources\BlackButtonMaxAH.bmp" />
+    <None Include="Resources\BlackButtonMaxA.bmp" />
+    <None Include="Resources\BlackButtonExpand.bmp" />
+    <None Include="Resources\BlackButtonCollapse.bmp" />
+    <None Include="Resources\BlackButtonCloseI.bmp" />
+    <None Include="Resources\BlackButtonCloseAH.bmp" />
+    <None Include="Resources\BlackButtonCloseA.bmp" />
+    <None Include="Resources\arrow_up_blue.png" />
+    <None Include="Resources\arrow_down_blue.png" />
+    <None Include="Resources\add.png" />
+    <None Include="Resources\2010ButtonRestoreBlack.bmp" />
+    <None Include="Resources\2010ButtonRestore.bmp" />
+    <None Include="Resources\2010ButtonMinBlack.bmp" />
+    <None Include="Resources\2010ButtonMin.bmp" />
+    <None Include="Resources\2010ButtonMDIRestoreBlack.bmp" />
+    <None Include="Resources\2010ButtonMDIRestore.bmp" />
+    <None Include="Resources\2010ButtonMDIMinBlack.bmp" />
+    <None Include="Resources\2010ButtonMDIMin.bmp" />
+    <None Include="Resources\2010ButtonMDIMaxBlack.bmp" />
+    <None Include="Resources\2010ButtonMDIMax.bmp" />
+    <None Include="Resources\2010ButtonMDICloseBlack.bmp" />
+    <None Include="Resources\2010ButtonMDIClose.bmp" />
+    <None Include="Resources\2010ButtonMaxBlack.bmp" />
+    <None Include="Resources\2010ButtonMax.bmp" />
+    <None Include="Resources\2010ButtonCloseH.bmp" />
+    <None Include="Resources\2010ButtonCloseBlack.bmp" />
+    <None Include="Resources\2010ButtonClose.bmp" />
+    <None Include="Resources\2010BlueDropDownButton.png" />
+    <None Include="Resources\2010BlueContextMenuSub.png" />
+    <None Include="Resources\2010BlackDropDownButton.png" />
+    <None Include="Resources\2010BlackContextMenuSub.png" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyBorderEdge.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyBreadCrumb.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyBreadCrumbItem.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyButton.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyButtonSpec.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyCheckBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyCheckButton.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyCheckedListBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyCheckSet.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyColorButton.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyComboBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyCommand.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyContextMenu.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyContextMenuColorColumns.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyContextMenuHeading.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyContextMenuImageSelect.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyContextMenuItem.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyContextMenuItems.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyContextMenuSeparator.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyDataGridView.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyDateTimePicker.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyDomainUpDown.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyDropButton.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyForm.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyGroup.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyGroupBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyGroupPanel.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyHeader.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyHeaderGroup.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyInputBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyLabel.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyLinkLabel.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyListBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyManager.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyMaskedTextBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyMessageBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyMonthCalendar.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyNumericUpDown.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyPalette.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyPanel.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyRadioButton.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyRichTextBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasySeparator.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasySplitContainer.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyTaskDialog.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyTaskDialogCommand.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyTextBox.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyTrackBar.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyTreeView.bmp" />
+    <Content Include="Toolkit\ToolkitBitmaps\EasyWrapLabel.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\EasyButton\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

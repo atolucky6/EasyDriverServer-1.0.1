@@ -21,7 +21,7 @@ namespace EasyDriver.OmronHostLink
         public IEasyDriverPlugin Driver { get; set; }
         public List<ByteOrder> ByteOrderSource { get; set; }
         public IDeviceCore Device { get; set; }
-        public IChannelCore Channel => Device?.Parent as IChannelCore;
+        public IChannelCore Channel => Device.FindParent<IChannelCore>(x => x is IChannelCore);
 
         public ObservableCollection<ReadBlockSetting> ReadBlockSettings { get; set; }
 
@@ -67,9 +67,12 @@ namespace EasyDriver.OmronHostLink
             if (Device != null)
             {
                 txbName.Text = Device.Name;
-                spnTimeout.Value = (decimal)Device.ParameterContainer.Parameters["Timeout"];
-                spnTryReadWrite.Value = (decimal)Device.ParameterContainer.Parameters["TryReadWriteTimes"];
-                spnUnitNo.Value = (decimal)Device.ParameterContainer.Parameters["UnitNo"];
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["Timeout"], out decimal timeout))
+                    spnTimeout.Value = timeout;
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["TryReadWriteTimes"], out decimal tryReadWriteTimes))
+                    spnTryReadWrite.Value = tryReadWriteTimes;
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["UnitNo"], out decimal unitNo))
+                    spnUnitNo.Value = unitNo;
                 cobByteOrder.SelectedItem = Device.ByteOrder;
 
                 if (Device.ParameterContainer.Parameters.ContainsKey("ReadBlockSettings"))
@@ -108,9 +111,9 @@ namespace EasyDriver.OmronHostLink
                 Device.ParameterContainer.DisplayName = "Omron Host Link Device Parameter";
                 Device.ParameterContainer.DisplayParameters = "Omron Host Link Device Parameter";
 
-                Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value;
-                Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value;
-                Device.ParameterContainer.Parameters["UnitNo"] = spnUnitNo.Value;
+                Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value.ToString();
+                Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();
+                Device.ParameterContainer.Parameters["UnitNo"] = spnUnitNo.Value.ToString();
                 Device.ByteOrder = (ByteOrder)(Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString()));
                 DisableErrorBlockSettings(blockSettingView.ReadBlockSettings);
 
@@ -139,13 +142,13 @@ namespace EasyDriver.OmronHostLink
                 return false;
             }
 
-            if (Channel.Childs.FirstOrDefault(x => x != Device && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
+            if (Device.Parent.Childs.FirstOrDefault(x => x != Device && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The device name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
-
-            if (Channel.Childs.FirstOrDefault(x => x != Device && (decimal)(x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnUnitNo.Value) != null)
+            var deviceChilds = Channel.GetAllDevices();
+            if (deviceChilds.FirstOrDefault(x => x != Device && (x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnUnitNo.Value.ToString()) != null)
             {
                 DXMessageBox.Show($"The unit no'{spnUnitNo.Value}' is already used in this device.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;

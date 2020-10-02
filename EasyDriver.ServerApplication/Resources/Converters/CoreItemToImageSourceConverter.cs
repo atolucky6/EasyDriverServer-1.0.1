@@ -19,6 +19,8 @@ namespace EasyScada.ServerApplication
 
         public ImageSource DeviceImageSource { get; set; }
 
+        public ImageSource GroupImageSource { get; set; }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is BreadcrumbNode node)
@@ -27,15 +29,17 @@ namespace EasyScada.ServerApplication
                     return LocalStationImageSource;
                 else if (node.Item is RemoteStation station)
                 {
-                    if (station.StationType == EasyDriverPlugin.StationType.Remote)
+                    if (station.StationType == "Remote")
                         return RemoteStationImageSource;
-                    else if (station.StationType == EasyDriverPlugin.StationType.OPC_DA)
+                    else if (station.StationType == "OPC_DA")
                         return RemoteOpcDaStationImageSource;
                 }
                 else if (node.Item is ChannelCore)
                     return ChannelImageSource;
                 else if (node.Item is DeviceCore)
                     return DeviceImageSource;
+                else if (node.Item is GroupCore)
+                    return GroupImageSource;
             }
             return null;
         }

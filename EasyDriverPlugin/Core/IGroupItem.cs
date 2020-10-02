@@ -73,5 +73,13 @@ namespace EasyDriverPlugin
         /// </summary>
         /// <param name="e"></param>
         void ChildCollectionChangedCallback(NotifyCollectionChangedEventArgs e);
+
+        object Browse(string[] paths, int nameIndex);
+
+        IEnumerable<ITagCore> GetAllTags(bool findDeep = true);
+
+        IEnumerable<IDeviceCore> GetAllDevices(bool findDeep = true);
+
+        IEnumerable<IChannelCore> GetAllChannels(bool findDeep = true);
     }
 }

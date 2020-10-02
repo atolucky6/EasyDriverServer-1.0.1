@@ -2,9 +2,9 @@
 
 namespace EasyDriverPlugin
 {
-    public interface IDeviceCore : IGroupItem, ISupportParameters, ISupportSynchronization
+    public interface IDeviceCore : IGroupItem, ISupportParameters, ISupportSynchronization, IHaveTag
     {
-        Indexer<ITagCore> Tags { get; }
+        ConnectionStatus ConnectionStatus { get; set; }
         string CommunicationError { get; set; }
         ByteOrder ByteOrder { get; set; }
         DateTime LastRefreshTime { get; set; }

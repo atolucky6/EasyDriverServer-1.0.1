@@ -12,11 +12,6 @@ namespace WindowsFormsApp9
 {
     public partial class Form1 : Form
     {
-
-        public EasyScada.Core.ITag Tag1 { get; set; }
-
-        public string TestProperty2 { get; set; }
-
         public Form1()
         {
             InitializeComponent();

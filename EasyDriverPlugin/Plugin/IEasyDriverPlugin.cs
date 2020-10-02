@@ -18,6 +18,10 @@ namespace EasyDriverPlugin
         object GetEditDeviceControl(IDeviceCore device);
         object GetEditTagControl(ITagCore tag);
 
+        IChannelCore ConvertToChannel(IChannelCore baseChannel);
+        IDeviceCore ConverrtToDevice(IDeviceCore baseDevice);
+        ITagCore ConvertToTag(ITagCore tagCore);
+
         event EventHandler Disposed;
         event EventHandler Refreshed;
     }

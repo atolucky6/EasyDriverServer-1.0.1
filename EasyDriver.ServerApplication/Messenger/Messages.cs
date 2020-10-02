@@ -1,5 +1,6 @@
 ﻿using EasyDriver.Core;
 using EasyDriver.Opc.Client.Da;
+using EasyDriverPlugin;
 using Microsoft.AspNet.SignalR.Client;
 using System.Collections.Generic;
 
@@ -34,7 +35,6 @@ namespace EasyScada.ServerApplication
     {
         public object Sender { get; private set; }
 
-
         public HidePropertiesMessage(object sender)
         {
             Sender = sender;
@@ -43,14 +43,12 @@ namespace EasyScada.ServerApplication
 
     public class CreateRemoteStationSuccessMessage
     {
-        public List<StationClient> SelectedStations { get; private set; }
         public HubModel HubModel { get; private set; }
         public HubConnection HubConnection { get; private set; }
         public IHubProxy HubProxy { get; private set; }
 
-        public CreateRemoteStationSuccessMessage(List<StationClient> selectedStations, HubModel hubModel, HubConnection hubConnection, IHubProxy hubProxy)
+        public CreateRemoteStationSuccessMessage(HubModel hubModel, HubConnection hubConnection, IHubProxy hubProxy)
         {
-            SelectedStations = selectedStations;
             HubModel = hubModel;
             HubConnection = hubConnection;
             HubProxy = hubProxy;
@@ -60,12 +58,12 @@ namespace EasyScada.ServerApplication
     public class CreateRemoteOpcDaStationSuccessMessage
     {
         public OpcDaServer OpcServer { get; private set; }
-        public StationClient Station { get; private set; }
+        public IGroupItem Parent { get; private set; }
 
-        public CreateRemoteOpcDaStationSuccessMessage(OpcDaServer opcServer, StationClient station)
+        public CreateRemoteOpcDaStationSuccessMessage(OpcDaServer opcServer, IGroupItem parent)
         {
             OpcServer = opcServer;
-            Station = station;
+            Parent = parent;
         }
     }
 

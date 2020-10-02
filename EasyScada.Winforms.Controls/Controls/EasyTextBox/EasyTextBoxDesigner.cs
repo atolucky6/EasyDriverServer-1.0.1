@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -33,16 +33,13 @@ namespace EasyScada.Winforms.Controls
             actionItems.Add(new DesignerActionPropertyItem("Name", "Name", DesignerCategory.DESIGN, ""));
 
             actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.APPEARANCE));
-            actionItems.Add(new DesignerActionPropertyItem("TextAlign", "TextAlign", DesignerCategory.APPEARANCE, ""));
-            actionItems.Add(new DesignerActionPropertyItem("Font", "Font", DesignerCategory.APPEARANCE, ""));
+            actionItems.Add(new DesignerActionPropertyItem("Text", "Text", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("BackColor", "BackColor", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("ForeColor", "ForeColor", DesignerCategory.APPEARANCE, ""));
-            actionItems.Add(new DesignerActionPropertyItem("BorderColor", "BorderColor", DesignerCategory.APPEARANCE, ""));
+            actionItems.Add(new DesignerActionPropertyItem("Font", "Font", DesignerCategory.APPEARANCE, ""));
+            actionItems.Add(new DesignerActionPropertyItem("TextAlign", "TextAlign", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("Multiline", "Multiline", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("WordWrap", "WordWrap", DesignerCategory.APPEARANCE, ""));
-
-            actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.VALUES));
-            actionItems.Add(new DesignerActionPropertyItem("Text", "Text", DesignerCategory.VALUES, ""));
         }
 
         #region Properties
@@ -61,42 +58,20 @@ namespace EasyScada.Winforms.Controls
 
         public Color BackColor
         {
-            get { return BaseControl.StateCommon.Back.Color1; }
-            set
-            {
-                if (BaseControl.StateCommon.Back.Color1 != value)
-                    BaseControl.StateCommon.Back.Color1 = value;
-            }
+            get { return BackColor; }
+            set { BaseControl.SetValue(value); }
         }
 
         public Color ForeColor
         {
-            get { return BaseControl.StateCommon.Content.Color1; }
-            set
-            {
-                if (BaseControl.StateCommon.Content.Color1 != value)
-                    BaseControl.StateCommon.Content.Color1 = value;
-            }
-        }
-
-        public Color BorderColor
-        {
-            get { return BaseControl.StateCommon.Border.Color1; }
-            set
-            {
-                if (BaseControl.StateCommon.Border.Color1 != value)
-                    BaseControl.StateCommon.Border.Color1 = value;
-            }
+            get { return BaseControl.ForeColor; }
+            set { BaseControl.SetValue(value); }
         }
 
         public Font Font
         {
-            get { return BaseControl.StateCommon.Content.Font; }
-            set
-            {
-                if (BaseControl.StateCommon.Content.Font != value)
-                    BaseControl.StateCommon.Content.Font = value;
-            }
+            get { return BaseControl.Font; }
+            set { BaseControl.SetValue(value); }
         }
 
         public string Text
@@ -108,11 +83,7 @@ namespace EasyScada.Winforms.Controls
         public bool Multiline
         {
             get { return BaseControl.Multiline; }
-            set
-            {
-                if (BaseControl.Multiline != value)
-                    BaseControl.Multiline = value;
-            }
+            set { BaseControl.SetValue(value); }
         }
 
         public bool WordWrap

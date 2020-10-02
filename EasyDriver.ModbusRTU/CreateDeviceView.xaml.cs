@@ -20,7 +20,7 @@ namespace EasyDriver.ModbusRTU
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
-        public IChannelCore Channel { get; set; }
+        public IGroupItem ParentItem { get; set; }
         public List<ByteOrder> ByteOrderSource { get; set; }
         public ObservableCollection<ReadBlockSetting> ReadInputContacts { get; set; }
         public ObservableCollection<ReadBlockSetting> ReadOutputCoils { get; set; }
@@ -31,10 +31,10 @@ namespace EasyDriver.ModbusRTU
 
         #region Constructors
 
-        public CreateDeviceView(IEasyDriverPlugin driver, IChannelCore channel, IDeviceCore templateItem)
+        public CreateDeviceView(IEasyDriverPlugin driver, IGroupItem parent, IDeviceCore templateItem)
         {
             Driver = driver;
-            Channel = channel;
+            ParentItem = parent;
 
             InitializeComponent();
 
@@ -44,7 +44,7 @@ namespace EasyDriver.ModbusRTU
 
             if (templateItem == null)
             {
-                txbName.Text = channel.GetUniqueNameInGroup("Device1");
+                txbName.Text = parent.GetUniqueNameInGroup("Device1");
                 ReadInputContacts = new ObservableCollection<ReadBlockSetting>();
                 ReadOutputCoils = new ObservableCollection<ReadBlockSetting>();
                 ReadInputRegisters = new ObservableCollection<ReadBlockSetting>();
@@ -52,7 +52,7 @@ namespace EasyDriver.ModbusRTU
             }
             else
             {
-                txbName.Text = channel.GetUniqueNameInGroup(templateItem.Name);
+                txbName.Text = parent.GetUniqueNameInGroup(templateItem.Name);
 
                 if (templateItem.ParameterContainer.Parameters.ContainsKey("Timeout"))
                     spnTimeout.EditValue = templateItem.ParameterContainer.Parameters["Timeout"];
@@ -178,27 +178,29 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            if (Channel.Childs.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
+            var childDevices = Driver.Channel.GetAllDevices();
+
+            if (ParentItem.Childs.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The device name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (Channel.Childs.FirstOrDefault(x => (decimal)(x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnDeviceId.Value) != null)
+            if (childDevices.FirstOrDefault(x => (x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnDeviceId.Value.ToString()) != null)
             {
                 DXMessageBox.Show($"The device id '{spnDeviceId.Value}' is already used in this device.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            IDeviceCore device = new DeviceCore(Channel);
+            IDeviceCore device = new DeviceCore(ParentItem);
             device.Name = txbName.Text?.Trim();
             device.ParameterContainer.DisplayName = "ModbusRTU Device Parameter";
             device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";
 
-            device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value;
+            device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value.ToString();
             device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
-            device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value;
-            device.ParameterContainer.Parameters["DeviceId"] = spnDeviceId.Value;
+            device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();
+            device.ParameterContainer.Parameters["DeviceId"] = spnDeviceId.Value.ToString();
 
             DisableErrorBlockSettings(blockInputContacts.ReadBlockSettings);
             DisableErrorBlockSettings(blockOutputCoils.ReadBlockSettings);

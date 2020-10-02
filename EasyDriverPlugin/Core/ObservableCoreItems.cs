@@ -96,6 +96,15 @@ namespace EasyDriverPlugin
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
+            if (e.NewItems != null)
+            {
+                foreach (var item in e.NewItems)
+                {
+                    if (item is ICoreItem)
+                        (item as ICoreItem).Parent = Owner;
+                }
+            }
+
             if (!DisableNotifyChanged)
             {
                 base.OnCollectionChanged(e);

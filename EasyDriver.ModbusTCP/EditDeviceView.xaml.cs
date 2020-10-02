@@ -21,7 +21,7 @@ namespace EasyDriver.ModbusTCP
         public IEasyDriverPlugin Driver { get; set; }
         public List<ByteOrder> ByteOrderSource { get; set; }
         public IDeviceCore Device { get; set; }
-        public IChannelCore Channel => Device?.Parent as IChannelCore;
+        public IChannelCore Channel => Device.FindParent<IChannelCore>(x => x is IChannelCore) as IChannelCore;
 
         public ObservableCollection<ReadBlockSetting> ReadInputContacts { get; set; }
         public ObservableCollection<ReadBlockSetting> ReadOutputCoils { get; set; }
@@ -72,12 +72,17 @@ namespace EasyDriver.ModbusTCP
             {
                 txbName.Text = Device.Name;
                 txbIpAddress.Text = Device.ParameterContainer.Parameters["IpAddress"]?.ToString();
-                spnTimeout.Value = (decimal)Device.ParameterContainer.Parameters["Timeout"];
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["Timeout"], out decimal timeout))
+                    spnTimeout.Value = timeout;
                 cobByteOrder.SelectedItem = Device.ByteOrder;
-                spnTryReadWrite.Value = (decimal)Device.ParameterContainer.Parameters["TryReadWriteTimes"];
-                spnUnitId.Value = (decimal)Device.ParameterContainer.Parameters["UnitId"];
-                spnDelayPool.Value = (decimal)Device.ParameterContainer.Parameters["DelayBetweenPool"];
-                spnScanRate.Value = (decimal)Device.ParameterContainer.Parameters["ScanRate"];
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["TryReadWriteTimes"], out decimal tryReadWriteTimes))
+                    spnTryReadWrite.Value = tryReadWriteTimes;
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["UnitId"], out decimal unitId))
+                    spnUnitId.Value = unitId;
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["DelayBetweenPool"], out decimal delayPool))
+                    spnDelayPool.Value = delayPool;
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["ScanRate"], out decimal scanRate))
+                    spnScanRate.Value = scanRate;
 
                 if (Device.ParameterContainer.Parameters.ContainsKey("ReadInputContactsBlockSetting"))
                 {
@@ -192,12 +197,12 @@ namespace EasyDriver.ModbusTCP
                 Device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";
 
                 Device.ParameterContainer.Parameters["IpAddress"] = txbIpAddress.Text?.Trim();
-                Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value;
+                Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value.ToString();
                 Device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
-                Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value;
-                Device.ParameterContainer.Parameters["UnitId"] = spnUnitId.Value;
-                Device.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value;
-                Device.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value;
+                Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();
+                Device.ParameterContainer.Parameters["UnitId"] = spnUnitId.Value.ToString();
+                Device.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
+                Device.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
 
                 DisableErrorBlockSettings(blockInputContacts.ReadBlockSettings);
                 DisableErrorBlockSettings(blockOutputCoils.ReadBlockSettings);

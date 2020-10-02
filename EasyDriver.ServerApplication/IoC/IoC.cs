@@ -1,4 +1,5 @@
 ﻿using DevExpress.Mvvm.POCO;
+using EasyDriver.Core;
 using EasyDriver.Opc.Client.Common;
 using EasyDriverPlugin;
 using Ninject;
@@ -57,8 +58,25 @@ namespace EasyScada.ServerApplication
             Kernel.Bind<IProjectManagerService>().ToConstant(new ProjectManagerService());
             Kernel.Bind<IWorkspaceManagerService>().ToConstant(new WorkspaceManagerService((token) =>
             {
-                if (token is IDeviceCore)
-                    return Kernel.GetPOCOViewModel<TagCollectionViewModel>();
+                if (token is IHaveTag haveTags)
+                {
+                    if (haveTags.HaveTags && haveTags != null)
+                    {
+                        if (token is ICoreItem coreItem)
+                        {
+                            if (coreItem.FindParent<IStationCore>(x => x is RemoteStation) is RemoteStation parentStation)
+                            {
+                                if (haveTags.Tags.Count > 0)
+                                    return Kernel.GetPOCOViewModel<TagCollectionViewModel>();
+                            }
+                            else
+                            {
+                                return Kernel.GetPOCOViewModel<TagCollectionViewModel>();
+                            }
+                        }
+                        
+                    }
+                }
                 return null;
             }));
             Kernel.BindPOCOViewModel<ApplicationViewModel>().InSingletonScope();

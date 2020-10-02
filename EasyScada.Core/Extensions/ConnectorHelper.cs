@@ -5,57 +5,24 @@ namespace EasyScada.Core
 {
     public static class ConnectorHelper
     {
-        public static IEnumerable<string> GetAllTagPath(this ConnectionSchema connector)
+        public static IEnumerable<string> GetAllTagPath(this ICoreItem coreItem)
         {
-            IEnumerable<Tag> result = GetAllTag(connector)?.ToList();
-            if (result == null)
-                return new List<string>();
-            return result.Select(x => x.Path);
+            var allTags = coreItem.GetAllTags();
+            return allTags.Select(X => X.Path);
         }
 
-        public static IEnumerable<Tag> GetAllTag(this ConnectionSchema connector)
+        public static IEnumerable<ITag> GetAllTags(this ICoreItem coreItem)
         {
-            if (connector != null && connector.Stations != null)
+            if (coreItem != null && coreItem.Childs != null)
             {
-                foreach (var station in connector.Stations)
-                    foreach (var tag in GetAllTag(station))
+                foreach (var item in coreItem.Childs)
+                {
+                    if (item is ITag tag)
                         yield return tag;
-            }
-        }
 
-        public static IEnumerable<Tag> GetAllTag(this Station station)
-        {
-            if (station != null && station.Channels != null)
-            {
-                foreach (var channel in station.Channels)
-                    foreach (var tag in GetAllTag(channel))
-                        yield return tag;
-            }
-
-            if (station != null && station.RemoteStations != null)
-            {
-                foreach (var innerStation in station.RemoteStations)
-                    foreach (var tag in GetAllTag(innerStation))
-                        yield return tag;
-            }
-        }
-
-        public static IEnumerable<Tag> GetAllTag(this Channel channel)
-        {
-            if (channel != null && channel.Devices != null)
-            {
-                foreach (var device in channel.Devices)
-                    foreach (var tag in GetAllTag(device))
-                        yield return tag;
-            }
-        }
-
-        public static IEnumerable<Tag> GetAllTag(this Device device)
-        {
-            if (device != null && device.Tags != null)
-            {
-                foreach (var tag in device.Tags)
-                    yield return tag;
+                    foreach (var childTag in item.GetAllTags())
+                        yield return childTag as ITag;
+                }
             }
         }
     }

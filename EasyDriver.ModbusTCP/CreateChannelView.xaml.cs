@@ -1,11 +1,4 @@
-﻿using DevExpress.Xpf.Core;
-using EasyDriverPlugin;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Ports;
-using System.Linq;
-using System.Threading;
+﻿using EasyDriverPlugin;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -36,7 +29,10 @@ namespace EasyDriver.ModbusTCP
             if (templateItem != null)
             {
                 if (templateItem.ParameterContainer.Parameters.ContainsKey("Port"))
-                    spnPort.Value = (ushort)templateItem.ParameterContainer.Parameters["Port"];
+                {
+                    if (ushort.TryParse(templateItem.ParameterContainer.Parameters["Port"], out ushort port))
+                        spnPort.Value = port;
+                }
             }
 
             KeyDown += OnKeyDown;
@@ -63,7 +59,7 @@ namespace EasyDriver.ModbusTCP
         {
             Driver.Channel.ParameterContainer.DisplayName = "ModbusTCP Comunication Parameters";
             Driver.Channel.ParameterContainer.DisplayParameters = "ModbusTCP Comunication Parameters";
-            Driver.Channel.ParameterContainer.Parameters["Port"] = spnPort.Value;
+            Driver.Channel.ParameterContainer.Parameters["Port"] = spnPort.Value.ToString();
 
             Driver.Connect();
             ((Parent as FrameworkElement).Parent as Window).Tag = Driver.Channel;

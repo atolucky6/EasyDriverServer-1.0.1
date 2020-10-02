@@ -172,14 +172,14 @@ namespace EasyDriver.ModbusRTU
         {
             if (Channel.ParameterContainer.Parameters.Count >= 5)
             {
-                // Lấy các thông số kết nối từ Channel parameter container
                 var port = Channel.ParameterContainer.Parameters["Port"].ToString();
-                var baudRate = (int)Channel.ParameterContainer.Parameters["Baudrate"];
-                var dataBits = (int)Channel.ParameterContainer.Parameters["DataBits"];
-                var stopBits = (StopBits)Channel.ParameterContainer.Parameters["StopBits"];
-                var parity = (Parity)Channel.ParameterContainer.Parameters["Parity"];
-                // Khởi tạo cổng serial
-                mbMaster.Init(port, baudRate, dataBits, parity, stopBits);
+                if (int.TryParse(Channel.ParameterContainer.Parameters["Baudrate"], out int baudRate) &&
+                    int.TryParse(Channel.ParameterContainer.Parameters["DataBits"], out int dataBits) &&
+                    Enum.TryParse(Channel.ParameterContainer.Parameters["StopBits"], out StopBits stopBits) &&
+                    Enum.TryParse(Channel.ParameterContainer.Parameters["Parity"], out Parity parity))
+                {
+                    mbMaster.Init(port, baudRate, dataBits, parity, stopBits);
+                }
             }
         }
 
@@ -201,7 +201,7 @@ namespace EasyDriver.ModbusRTU
                     if (mbMaster.Open())
                     {
                         // Lặp qua tất cả các Device có trong Channel
-                        foreach (var channelChild in Channel.Childs.ToArray())
+                        foreach (var channelChild in Channel.GetAllDevices().ToArray())
                         {
                             // Đảm bảo đổi tượng con của Channel là Device
                             if (!(channelChild is IDeviceCore device))
@@ -259,7 +259,7 @@ namespace EasyDriver.ModbusRTU
 
                             #endregion
 
-                            foreach (var childDevice in device.Childs.ToArray())
+                            foreach (var childDevice in device.GetAllTags().ToArray())
                             {
                                 if (!(childDevice is ITagCore tag))
                                     continue;
@@ -272,18 +272,18 @@ namespace EasyDriver.ModbusRTU
                                 {
                                     if (tag.Address.DecomposeAddress(out AddressType addressType, out ushort offset))
                                     {
-                                        tag.ParameterContainer.Parameters["AddressType"] = (int)addressType;
-                                        tag.ParameterContainer.Parameters["Offset"] = offset;
-                                        tag.ParameterContainer.Parameters["IsValid"] = true;
+                                        tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
+                                        tag.ParameterContainer.Parameters["Offset"] = offset.ToString();
+                                        tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
                                         tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
                                     }
                                     else
                                     {
-                                        tag.ParameterContainer.Parameters["IsValid"] = false;
+                                        tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
                                     }
                                 }
 
-                                if ((bool)tag.ParameterContainer.Parameters["IsValid"])
+                                if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString)
                                 {
                                     if ((DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
                                     {
@@ -291,98 +291,109 @@ namespace EasyDriver.ModbusRTU
                                         bool containInBlock = false;
                                         foreach (var block in DeviceToReadBlockSettings[device])
                                         {
-                                            if (block.AddressType == (AddressType)tag.ParameterContainer.Parameters["AddressType"])
+                                            if (Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
                                             {
-                                                if (block.CheckTagIsInReadBlockRange(
-                                                    tag,
-                                                    block.AddressType,
-                                                    (ushort)tag.ParameterContainer.Parameters["Offset"],
-                                                    tag.DataType.RequireByteLength,
-                                                    out int index))
+                                                if (ushort.TryParse(tag.ParameterContainer.Parameters["Offset"], out ushort offset))
                                                 {
-                                                    containInBlock = true;
-                                                    readSuccess = block.ReadResult;
-                                                    if (readSuccess)
+                                                    if (block.AddressType == addressType)
                                                     {
-                                                        switch (block.AddressType)
+                                                        if (block.CheckTagIsInReadBlockRange(
+                                                            tag,
+                                                            block.AddressType,
+                                                            offset,
+                                                            tag.DataType.RequireByteLength,
+                                                            out int index))
                                                         {
-                                                            case AddressType.InputContact:
-                                                            case AddressType.OutputCoil:
-                                                                tag.Value = block.BoolBuffer[index] ? 
-                                                                    (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
-                                                                break;
-                                                            case AddressType.InputRegister:
-                                                            case AddressType.HoldingRegister:
-                                                                tag.Value = tag.DataType.ConvertToValue(
-                                                                    block.ByteBuffer, tag.Gain, tag.Offset, index, 0, byteOrder);
-                                                                break;
-                                                            default:
-                                                                break;
+                                                            containInBlock = true;
+                                                            readSuccess = block.ReadResult;
+                                                            if (readSuccess)
+                                                            {
+                                                                switch (block.AddressType)
+                                                                {
+                                                                    case AddressType.InputContact:
+                                                                    case AddressType.OutputCoil:
+                                                                        tag.Value = block.BoolBuffer[index] ?
+                                                                            (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+                                                                        break;
+                                                                    case AddressType.InputRegister:
+                                                                    case AddressType.HoldingRegister:
+                                                                        tag.Value = tag.DataType.ConvertToValue(
+                                                                            block.ByteBuffer, tag.Gain, tag.Offset, index, 0, byteOrder);
+                                                                        break;
+                                                                    default:
+                                                                        break;
+                                                                }
+                                                            }
+                                                            break;
                                                         }
                                                     }
-                                                    break;
                                                 }
                                             }
                                         }
 
                                         if (!containInBlock)
                                         {
-                                            switch ((AddressType)tag.ParameterContainer.Parameters["AddressType"])
+                                            if (ushort.TryParse(tag.ParameterContainer.Parameters["Offset"], out ushort offset) &&
+                                                Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
                                             {
-                                                case AddressType.InputContact:
-                                                    {
-                                                        bool[] inputs = new bool[1];
-                                                        readSuccess = ReadBits(
-                                                            deviceId,
-                                                            AddressType.InputContact,
-                                                            (ushort)tag.ParameterContainer.Parameters["Offset"],
-                                                            1, ref inputs);
-                                                        if (readSuccess)
-                                                            tag.Value = inputs[0] ?
-                                                                (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+                                                switch (addressType)
+                                                {
+                                                    case AddressType.InputContact:
+                                                        {
+                                                            bool[] inputs = new bool[1];
+                                                            readSuccess = ReadBits(
+                                                                deviceId,
+                                                                AddressType.InputContact,
+                                                                offset,
+                                                                1, ref inputs);
+                                                            if (readSuccess)
+                                                                tag.Value = inputs[0] ?
+                                                                    (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+                                                            break;
+                                                        }
+                                                    case AddressType.OutputCoil:
+                                                        {
+                                                            bool[] outputs = new bool[1];
+                                                            readSuccess = ReadBits(
+                                                                deviceId,
+                                                                AddressType.OutputCoil,
+                                                                offset,
+                                                                1, ref outputs);
+                                                            if (readSuccess)
+                                                                tag.Value = outputs[0] ?
+                                                                    (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+                                                            break;
+                                                        }
+                                                    case AddressType.InputRegister:
+                                                        {
+                                                            byte[] inputRegs = new byte[tag.DataType.RequireByteLength];
+                                                            readSuccess = ReadRegisters(
+                                                                deviceId,
+                                                                AddressType.InputRegister,
+                                                                offset,
+                                                                (ushort)(tag.DataType.RequireByteLength / 2),
+                                                                ref inputRegs);
+                                                            if (readSuccess)
+                                                                tag.Value = tag.DataType.ConvertToValue(inputRegs, tag.Gain, tag.Offset, 0, 0, device.ByteOrder);
+                                                            break;
+                                                        }
+                                                    case AddressType.HoldingRegister:
+                                                        {
+                                                            byte[] holdingRegs = new byte[tag.DataType.RequireByteLength];
+                                                            readSuccess = ReadRegisters(
+                                                                deviceId,
+                                                                AddressType.HoldingRegister, 
+                                                                offset,
+                                                                (ushort)(tag.DataType.RequireByteLength / 2),
+                                                                ref holdingRegs);
+                                                            if (readSuccess)
+                                                                tag.Value = tag.DataType.ConvertToValue(holdingRegs, tag.Gain, tag.Offset, 0, 0, device.ByteOrder);
+                                                            break;
+                                                        }
+                                                    default:
                                                         break;
-                                                    }
-                                                case AddressType.OutputCoil:
-                                                    {
-                                                        bool[] outputs = new bool[1];
-                                                        readSuccess = ReadBits(
-                                                            deviceId,
-                                                            AddressType.OutputCoil,
-                                                            (ushort)tag.ParameterContainer.Parameters["Offset"],
-                                                            1, ref outputs);
-                                                        if (readSuccess)
-                                                            tag.Value = outputs[0] ?
-                                                                (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
-                                                        break;
-                                                    }
-                                                case AddressType.InputRegister:
-                                                    {
-                                                        byte[] inputRegs = new byte[tag.DataType.RequireByteLength];
-                                                        readSuccess = ReadRegisters(
-                                                            deviceId,
-                                                            AddressType.InputRegister,
-                                                            (ushort)tag.ParameterContainer.Parameters["Offset"],
-                                                            (ushort)(tag.DataType.RequireByteLength / 2),
-                                                            ref inputRegs);
-                                                        if (readSuccess)
-                                                            tag.Value = tag.DataType.ConvertToValue(inputRegs, tag.Gain, tag.Offset, 0, 0, device.ByteOrder);
-                                                        break;
-                                                    }
-                                                case AddressType.HoldingRegister:
-                                                    {
-                                                        byte[] holdingRegs = new byte[tag.DataType.RequireByteLength];
-                                                        readSuccess = ReadRegisters(
-                                                            deviceId,
-                                                            AddressType.HoldingRegister, (
-                                                            ushort)tag.ParameterContainer.Parameters["Offset"],
-                                                            (ushort)(tag.DataType.RequireByteLength / 2),
-                                                            ref holdingRegs);
-                                                        if (readSuccess)
-                                                            tag.Value = tag.DataType.ConvertToValue(holdingRegs, tag.Gain, tag.Offset, 0, 0, device.ByteOrder);
-                                                        break;
-                                                    }
-                                                default:
-                                                    break;
+                                                }
+
                                             }
                                         }
 
@@ -401,12 +412,10 @@ namespace EasyDriver.ModbusRTU
                     }
                     else
                     {
-                        for (int i = 0; i < Channel.Childs.Count; i++)
+                        foreach (var device in Channel.GetAllDevices())
                         {
-                            IDeviceCore device = Channel.Childs[i] as IDeviceCore;
-                            for (int k = 0; k < device.Childs.Count; k++)
+                            foreach (var tag in device.GetAllTags())
                             {
-                                ITagCore tag = device.Childs[k] as ITagCore;
                                 tag.TimeStamp = DateTime.Now;
                                 tag.Quality = Quality.Bad;
                                 tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
@@ -586,7 +595,7 @@ namespace EasyDriver.ModbusRTU
                 {
                     // Kiểm tra các điều kiện cần để thực hiện việc ghi
                     if (tag != null && tag.DataType != null && 
-                        tag.Parent is IDeviceCore device && tag.AccessPermission == AccessPermission.ReadAndWrite)
+                        tag.FindParent<IDeviceCore>(x => x is IDeviceCore) is IDeviceCore device && tag.AccessPermission == AccessPermission.ReadAndWrite)
                     {
                         // Lấy thông tin của địa chỉ Tag như kiểu địa chỉ và vị trí bắt đầu của thanh ghi
                         if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
@@ -597,17 +606,17 @@ namespace EasyDriver.ModbusRTU
                         {
                             if (tag.Address.DecomposeAddress(out AddressType addressType, out ushort offset))
                             {
-                                tag.ParameterContainer.Parameters["AddressType"] = addressType;
-                                tag.ParameterContainer.Parameters["Offset"] = offset;
-                                tag.ParameterContainer.Parameters["IsValid"] = true;
+                                tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
+                                tag.ParameterContainer.Parameters["Offset"] = offset.ToString();
+                                tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
                                 tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
                             }
                             else
                             {
-                                tag.ParameterContainer.Parameters["IsValid"] = false;
+                                tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
                             }
                         }
-                        if ((bool)tag.ParameterContainer.Parameters["IsValid"])
+                        if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString)
                         {
                             // Lấy thông tin byte order của device parent
                             ByteOrder byteOrder = device.ByteOrder;
@@ -636,21 +645,30 @@ namespace EasyDriver.ModbusRTU
                                         {
                                             try
                                             {
-                                                if ((AddressType)tag.ParameterContainer.Parameters["AddressType"] == AddressType.OutputCoil)
+                                                if (Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
                                                 {
-                                                    bool bitResult = ByteHelper.GetBitAt(writeBuffer, 0, 0);
-                                                    writeResult = mbMaster.WriteSingleCoil(
-                                                        deviceId, 
-                                                        (ushort)tag.ParameterContainer.Parameters["Offset"], 
-                                                        bitResult);
-                                                }
-                                                else if ((AddressType)tag.ParameterContainer.Parameters["AddressType"] == AddressType.HoldingRegister)
-                                                {
-                                                    writeResult = mbMaster.WriteHoldingRegisters(
-                                                        deviceId, 
-                                                        (ushort)tag.ParameterContainer.Parameters["Offset"], 
-                                                        (ushort)(writeBuffer.Length / 2), 
-                                                        writeBuffer);
+                                                    if (addressType == AddressType.OutputCoil)
+                                                    {
+                                                        if (!ushort.TryParse(tag.ParameterContainer.Parameters["Offset"], out ushort offset))
+                                                            break;
+
+                                                        bool bitResult = ByteHelper.GetBitAt(writeBuffer, 0, 0);
+                                                        writeResult = mbMaster.WriteSingleCoil(
+                                                            deviceId,
+                                                            offset,
+                                                            bitResult);
+                                                    }
+                                                    else if (addressType == AddressType.HoldingRegister)
+                                                    {
+                                                        if (!ushort.TryParse(tag.ParameterContainer.Parameters["Offset"], out ushort offset))
+                                                            break;
+                                                        writeResult = mbMaster.WriteHoldingRegisters(
+                                                            deviceId,
+                                                            offset,
+                                                            (ushort)(writeBuffer.Length / 2),
+                                                            writeBuffer);
+                                                    }
+                                                    else { break; }
                                                 }
                                                 else { break; }
                                                 if (writeResult) // Nếu ghi thành công thì thoát khỏi vòng lặp
@@ -685,12 +703,12 @@ namespace EasyDriver.ModbusRTU
 
         public object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
         {
-            return new CreateDeviceView(this, parent as IChannelCore, templateItem);
+            return new CreateDeviceView(this, parent, templateItem);
         }
 
         public object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
         {
-            return new CreateTagView(this, parent as IDeviceCore, templateItem);
+            return new CreateTagView(this, parent, templateItem);
         }
 
         public object GetEditChannelControl(IChannelCore channel)
@@ -706,6 +724,21 @@ namespace EasyDriver.ModbusRTU
         public object GetEditTagControl(ITagCore tag)
         {
             return new EditTagView(this, tag);
+        }
+
+        public IChannelCore ConvertToChannel(IChannelCore baseChannel)
+        {
+            return baseChannel;
+        }
+
+        public IDeviceCore ConverrtToDevice(IDeviceCore baseDevice)
+        {
+            return baseDevice;
+        }
+
+        public ITagCore ConvertToTag(ITagCore tagCore)
+        {
+            return tagCore;
         }
 
         #endregion

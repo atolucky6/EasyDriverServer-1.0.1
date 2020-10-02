@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{14BF6113-B248-4FA3-8F43-8F9D832C33C0}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <RootNamespace>EasyDriverServer.Workspace.ProjectTree</RootNamespace>
+    <AssemblyName>EasyDriverServer.Workspace.ProjectTree</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.Data.Desktop.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Data.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Mvvm.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Pdf.v20.1.Core, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v20.1.Core, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Controls.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Core.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Docking.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Xpf.Grid.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpf.Grid.v20.1.Core, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="EasyDriver.WorkspaceManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\Debug\Services\EasyDriver.WorkspaceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\ProjectTreeWorkspaceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Template.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Behaviors\ITreeLitstViewUtilities.cs" />
+    <Compile Include="Converter\ChannelCoreToDriverNameConverter.cs" />
+    <Compile Include="Converter\ConnectionStatusToImageSourceConverter.cs" />
+    <Compile Include="Converter\OpcConnectionStatusToImageSourceConverter.cs" />
+    <Compile Include="Converter\StringEmptyToVisibilityConverter.cs" />
+    <Compile Include="Behaviors\CustomCopyPasteTreeListControl.cs" />
+    <Compile Include="Behaviors\EnableEditOnTreeNodeLevel.cs" />
+    <Compile Include="TemplateSelector\ProjectTreeCellTemplateSelector.cs" />
+    <Compile Include="TemplateSelector\ProjectTreeChildNodeSelector.cs" />
+    <Compile Include="TemplateSelector\TagChildNodeSelector.cs" />
+    <Compile Include="ViewModel\ProjectTreeWorkspaceViewModel.cs" />
+    <Compile Include="View\ProjectTreeWorkspaceView.xaml.cs">
+      <DependentUpon>ProjectTreeWorkspaceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\edit-48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\channel_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\channel_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cloud_cross_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\collapse-arrow-48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\copy_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cut_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\delete_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\device_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\device_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\expand-arrow-48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\import_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\local_station_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\opc_cloud_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\remote_station_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\tag_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\tag_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasyDriver.ContextWindow\EasyDriver.ContextWindow.csproj">
+      <Project>{420E4897-82A5-4888-A176-9E3F14B4479A}</Project>
+      <Name>EasyDriver.ContextWindow</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.CopyPaste\EasyDriver.CopyPaste.csproj">
+      <Project>{51216A76-E992-45D7-9C5F-3E094C3B0E92}</Project>
+      <Name>EasyDriver.CopyPaste</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.CoreItemFactory\EasyDriver.CoreItemFactory.csproj">
+      <Project>{e4f1317c-b5b5-4ade-a24b-f32aef011223}</Project>
+      <Name>EasyDriver.CoreItemFactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.DriverManager\EasyDriver.DriverManager.csproj">
+      <Project>{6EF333EB-4AE1-4E3B-B79F-CE8E3E7D1E2A}</Project>
+      <Name>EasyDriver.DriverManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.Helper\EasyDriver.Helper.csproj">
+      <Project>{91d4b09d-53b7-464d-9fc7-1b03a33eebde}</Project>
+      <Name>EasyDriver.Helper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.ProjectManager\EasyDriver.ProjectManager.csproj">
+      <Project>{DDE2B76B-C794-45E1-852D-538BC35609B0}</Project>
+      <Name>EasyDriver.ProjectManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.RemoteConnectionManager\EasyDriver.RemoteConnectionManager.csproj">
+      <Project>{3256F18B-6815-4BF8-8020-1736F88A2798}</Project>
+      <Name>EasyDriver.RemoteConnectionManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.Reversible\EasyDriver.Reversible.csproj">
+      <Project>{E4D82CAD-7B55-484E-8F88-AC6996477181}</Project>
+      <Name>EasyDriver.Reversible</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.Server.Models\EasyDriver.Core.csproj">
+      <Project>{67089d82-2fde-46c7-9264-ed5c066dc8ad}</Project>
+      <Name>EasyDriver.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.ServicePlugin\EasyDriver.ServicePlugin.csproj">
+      <Project>{D1836482-3072-483C-92E6-4C9742D9FCCB}</Project>
+      <Name>EasyDriver.ServicePlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriver.SyncContext\EasyDriver.SyncContext.csproj">
+      <Project>{DB049D20-9A04-4F7A-955C-612A60D227AC}</Project>
+      <Name>EasyDriver.SyncContext</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriverPlugin\EasyDriverPlugin.csproj">
+      <Project>{5CBCE8B3-27A3-4D71-B38A-9CEEEF539F0A}</Project>
+      <Name>EasyDriverPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyDriverServer.ViewModel\EasyDriverServer.ViewModel.csproj">
+      <Project>{e15427a1-140d-474b-a2af-c48d8562e938}</Project>
+      <Name>EasyDriverServer.ViewModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\Workspaces\</PostBuildEvent>
+  </PropertyGroup>
+</Project>

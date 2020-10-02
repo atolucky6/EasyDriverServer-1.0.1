@@ -87,7 +87,7 @@ namespace EasyDriver.ModbusTCP
             Channel.Name = txbName.Text?.Trim();
             Driver.Channel.ParameterContainer.DisplayName = "ModbusTCP Comunication Parameters";
             Driver.Channel.ParameterContainer.DisplayParameters = "ModbusTCP Comunication Parameters";
-            Driver.Channel.ParameterContainer.Parameters["Port"] = currentPort;
+            Driver.Channel.ParameterContainer.Parameters["Port"] = currentPort.ToString();
 
             ((Parent as FrameworkElement).Parent as Window).Tag = Channel;
             ((Parent as FrameworkElement).Parent as Window).Close();

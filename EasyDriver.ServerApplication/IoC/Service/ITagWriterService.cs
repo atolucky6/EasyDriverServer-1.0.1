@@ -40,16 +40,20 @@ namespace EasyScada.ServerApplication
 
         public async Task<WriteResponse> WriteTag(WriteCommand writeCommand)
         {
-            WriteResponse respone = new WriteResponse();
-            respone.IsSuccess = false;
-            respone.WriteCommand = writeCommand;
-            respone.Error = "The tag not found";
+            WriteResponse respone = new WriteResponse
+            {
+                ReceiveTime = DateTime.Now,
+                IsSuccess = false,
+                WriteCommand = writeCommand,
+                Error = "The tag not found"
+            };
 
             if (ProjectManagerService.CurrentProject == null)
             {
                 respone.IsSuccess = false;
                 respone.WriteCommand = writeCommand;
                 respone.Error = "The server doesn't open project.";
+                respone.ExecuteTime = DateTime.Now;
             }
             else
             {
@@ -57,21 +61,32 @@ namespace EasyScada.ServerApplication
                 {
                     if (writeCommand.PathToTag.StartsWith("Local Station"))
                     {
-                        if (ProjectManagerService.CurrentProject.GetItem<ITagClient>(writeCommand.PathToTag) is ITagCore tagCore)
+                        string[] pathSplit = writeCommand.PathToTag.Split('/');
+                        if (pathSplit != null && pathSplit.Length > 2)
                         {
-                            var driver = DriverManagerService.GetDriver(tagCore);
-                            if (driver != null)
+                            string[] parentPath = new string[pathSplit.Length - 1];
+                            Array.Copy(pathSplit, 0, parentPath, 0, parentPath.Length);
+                            if (ProjectManagerService.CurrentProject.Browse(parentPath, 0) is IHaveTag parentOfTag)
                             {
-                                Quality writeQuality = driver.Write(tagCore, writeCommand.Value);
-                                respone.ExecuteTime = DateTime.Now;
-                                respone.WriteCommand = writeCommand;
-                                respone.IsSuccess = writeQuality == Quality.Good;
-                            }
-                            else
-                            {
-                                respone.IsSuccess = false;
-                                respone.WriteCommand = writeCommand;
-                                respone.Error = "Can't found driver of the tag";
+                                IEasyDriverPlugin driver = DriverManagerService.GetDriver(parentOfTag as IGroupItem);
+
+                                if (driver != null)
+                                {
+                                    ITagCore tag = parentOfTag.Tags.Find(pathSplit[parentPath.Length - 1]);
+                                    if (tag != null)
+                                    {
+                                        respone.ExecuteTime = DateTime.Now;
+                                        Quality writeQuality = driver.Write(tag, writeCommand.Value);
+                                        respone.WriteCommand = writeCommand;
+                                        respone.IsSuccess = writeQuality == Quality.Good;
+                                    }
+                                }
+                                else
+                                {
+                                    respone.IsSuccess = false;
+                                    respone.WriteCommand = writeCommand;
+                                    respone.Error = "Can't found driver of the tag";
+                                }
                             }
                         }
                     }
@@ -82,25 +97,27 @@ namespace EasyScada.ServerApplication
                         {
                             if (ProjectManagerService.CurrentProject.FirstOrDefault(x => x.Name == pathSplit[0]) is IStationCore stationCore)
                             {
-                                if (stationCore.StationType == StationType.Remote)
+                                if (stationCore.StationType == "Remote")
                                 {
                                     if (HubConnectionManagerService.ConnectionDictonary.ContainsKey(stationCore))
                                     {
                                         string oldPath = writeCommand.PathToTag;
                                         RemoteStationConnection remoteConnection = HubConnectionManagerService.ConnectionDictonary[stationCore];
                                         writeCommand.PathToTag = writeCommand.PathToTag.Remove(0, pathSplit[0].Length + 1);
-                                        respone = await remoteConnection.WriteTagValue(writeCommand);
+                                        respone.ExecuteTime = DateTime.Now;
+                                        respone = await remoteConnection.WriteTagValue(writeCommand, respone);
                                         respone.WriteCommand.PathToTag = oldPath;
                                     }
                                 }
-                                else if (stationCore.StationType == StationType.OPC_DA)
+                                else if (stationCore.StationType == "OPC_DA")
                                 {
                                     if (OpcDaClientManagerService.ConnectionDictonary.ContainsKey(stationCore))
                                     {
                                         string oldPath = writeCommand.PathToTag;
                                         OpcDaRemoteStationConnection remoteConnection = OpcDaClientManagerService.ConnectionDictonary[stationCore];
                                         writeCommand.PathToTag = writeCommand.PathToTag.Remove(0, pathSplit[0].Length + 1);
-                                        respone = await remoteConnection.WriteTagValue(writeCommand);
+                                        respone.ExecuteTime = DateTime.Now;
+                                        respone = await remoteConnection.WriteTagValue(writeCommand, respone);
                                         respone.WriteCommand.PathToTag = oldPath;
                                     }
                                 }

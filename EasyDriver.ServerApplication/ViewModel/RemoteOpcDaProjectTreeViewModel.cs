@@ -8,8 +8,8 @@ using EasyDriver.Core;
 using EasyDriver.Opc.Client.Da;
 using EasyDriver.Opc.Client.Da.Browsing;
 using System.Threading.Tasks;
-using System;
 using EasyDriverPlugin;
+using System;
 
 namespace EasyScada.ServerApplication
 {
@@ -18,20 +18,23 @@ namespace EasyScada.ServerApplication
         #region Constructors
 
         public RemoteOpcDaProjectTreeViewModel(
-            IOpcDaClientManagerService opcDaClientManagerService)
+            IOpcDaClientManagerService opcDaClientManagerService,
+            IProjectManagerService projectManagerService)
         {
             Title = "Easy Driver Server";
             SizeToContent = SizeToContent.Manual;
             Height = 600;
-            Width = 400;
+            Width = 800;
             OpcDaClientManagerService = opcDaClientManagerService;
-            Source = new List<StationClient>();
+            ProjectManagerService = projectManagerService;
+            Source = new List<IGroupItem>();
         }
 
         #endregion
 
         #region Injected services
 
+        protected IProjectManagerService ProjectManagerService { get; set; }
         protected IOpcDaClientManagerService OpcDaClientManagerService { get; set; }
 
         #endregion
@@ -47,7 +50,8 @@ namespace EasyScada.ServerApplication
         #endregion
 
         #region Public members
-
+        int tagCount = 0;
+        public virtual string TotalTags { get => $"Total tags: {tagCount}"; }
         public string Title { get; set; }
         public SizeToContent SizeToContent { get; set; }
         public double Width { get; set; }
@@ -58,7 +62,7 @@ namespace EasyScada.ServerApplication
         public virtual object SelectedItem { get; set; }
         public virtual ObservableCollection<object> SelectedItems { get; set; }
         public bool IsCreateStationMode { get; private set; }
-        public List<StationClient> Source { get; set; }
+        public List<IGroupItem> Source { get; set; }
         public OpcDaServer OpcDaServer { get; private set; }
 
         #endregion
@@ -76,13 +80,19 @@ namespace EasyScada.ServerApplication
                     {
                         try
                         {
-                            StationClient station = new StationClient();
-                            station.StationType = StationType.OPC_DA;
+                            // Create root object
+                            RemoteStation station = new RemoteStation(ProjectManagerService.CurrentProject);
+                            station.StationType = "OPC_DA";
                             station.Name = OpcDaServer.Uri.ToString();
+                            station.IsChecked = true;
+                            station.ConnectionStatus = ConnectionStatus.Connected;
+                            tagCount = 0;
                             OpcDaBrowserAuto browser = new OpcDaBrowserAuto(OpcDaServer);
-                            station.Channels = await GetChannelClientsAsync(browser, null);
-                            Source = new List<StationClient>() { station };
+                            var childs = await GetChildElementsAsync(browser, null, station);
+                            childs.ForEach(x => station.Childs.Add(x));
+                            Source = new List<IGroupItem>() { station };
                             this.RaisePropertyChanged(x => x.Source);
+                            this.RaisePropertyChanged(x => x.TotalTags);
                         }   
                         catch
                         {
@@ -103,70 +113,55 @@ namespace EasyScada.ServerApplication
             }
         }
 
-        Task<List<ChannelClient>> GetChannelClientsAsync(IOpcDaBrowser browser, string itemId)
+        Task<List<IGroupItem>> GetChildElementsAsync(IOpcDaBrowser browser, string itemId, IGroupItem parent)
         {
-            return Task.Run(() => GetChannelClients(browser, itemId));
+            return Task.Run(() => GetChildElements(browser, itemId, parent));
         }
 
-        List<ChannelClient> GetChannelClients(IOpcDaBrowser browser, string itemId)
+        List<IGroupItem> GetChildElements(IOpcDaBrowser browser, string itemId, IGroupItem parent)
         {
-            List<ChannelClient> result = new List<ChannelClient>();
+            List<IGroupItem> result = new List<IGroupItem>();
             OpcDaBrowseElement[] elements = browser.GetElements(itemId);
             foreach (OpcDaBrowseElement element in elements)
             {
-                if (!element.Name.StartsWith("_"))
+                if (element.Name.StartsWith("_"))
+                    continue;
+                IGroupItem groupItem = null;
+                if (element.IsItem)
                 {
-                    ChannelClient client = new ChannelClient();
-                    client.Name = element.Name;
-                    client.DriverName = "";
-
-                    if (!element.HasChildren)
-                        client.Devices = new List<DeviceClient>();
-                    else
-                        client.Devices = GetDeviceClients(browser, element.ItemId);
-                    result.Add(client);
+                    groupItem = new TagCore(parent, true);
+                    tagCount++;
                 }
-            }
-            return result;
-        }
-
-        List<DeviceClient> GetDeviceClients(IOpcDaBrowser browser, string itemId)
-        {
-            List<DeviceClient> result = new List<DeviceClient>();
-            OpcDaBrowseElement[] elements = browser.GetElements(itemId);
-            foreach (OpcDaBrowseElement element in elements)
-            {
-                if (!element.Name.StartsWith("_"))
+                else
                 {
-                    DeviceClient client = new DeviceClient();
-                    client.Name = element.Name;
+                    groupItem = new GroupCore(parent, true, true);
+                }
 
-                    if (!element.HasChildren)
-                        client.Tags = new List<TagClient>();
-                    else
+                groupItem.Name = element.Name;
+                if (groupItem is ISupportParameters supportParameters)
+                    supportParameters.ParameterContainer.Parameters["ItemId"] = element.ItemId;
+
+                if (groupItem != null)
+                {
+                    groupItem.IsChecked = true;
+                    if (element.HasChildren)
                     {
-
-                        client.Tags = GetTagClients(browser, element.ItemId);
+                        GetChildElements(browser, element.ItemId, groupItem)?.ForEach(x =>
+                        {
+                            if (x is TagCore && groupItem is IHaveTag itemHaveTags)
+                            {
+                                if (itemHaveTags.HaveTags)
+                                {
+                                    itemHaveTags.Tags.Add(x);
+                                }
+                            }
+                            else
+                            {
+                                groupItem.Add(x);
+                            }
+                        });
                     }
-                    result.Add(client);
-                }
-            }
-            return result;
-        }
-
-        List<TagClient> GetTagClients(IOpcDaBrowser browser, string itemId)
-        {
-            List<TagClient> result = new List<TagClient>();
-            OpcDaBrowseElement[] elements = browser.GetElements(itemId);
-            foreach (OpcDaBrowseElement element in elements)
-            {
-                if (!element.Name.StartsWith("_"))
-                {
-                    TagClient client = new TagClient();
-                    client.Name = element.Name;
-                    client.Parameters = new Dictionary<string, object>();
-                    client.Parameters["ItemId"] = element.ItemId;
-                    result.Add(client);
+                    result.Add(groupItem);
                 }
             }
             return result;
@@ -184,22 +179,14 @@ namespace EasyScada.ServerApplication
                 if (IsCreateStationMode)
                 {
                     IsBusy = true;
-                    StationClient station = Source.FirstOrDefault();
-                    if (station != null)
-                    {
-                        List<ChannelClient> checkedChannels = GetCheckedChannels(station);
-                        station.Channels = checkedChannels;
-                    }
-                    else
-                    {
-                        station = new StationClient();
-                    }
-                    Messenger.Default.Send(new CreateRemoteOpcDaStationSuccessMessage(OpcDaServer, station));
+                    IGroupItem groupItem = Source.FirstOrDefault();
+                    RemoveUncheckedItem(groupItem);
+                    Messenger.Default.Send(new CreateRemoteOpcDaStationSuccessMessage(OpcDaServer, groupItem));
                     CurrentWindowService.Close();
                     IsBusy = false;
                 }
             }
-            catch
+            catch (Exception ex)
             {
             }
             finally { IsBusy = false; }
@@ -268,74 +255,24 @@ namespace EasyScada.ServerApplication
         #endregion
 
         #region Methods
-
-        public List<ChannelClient> GetCheckedChannels(StationClient station)
+        private void RemoveUncheckedItem(IGroupItem groupItem)
         {
-            List<ChannelClient> checkedChannels = new List<ChannelClient>();
-            if (!station.Checked)
+            groupItem.Childs.ToList().ForEach(x =>
             {
-                foreach (var channel in station.Channels)
+                if (x is ICoreItem coreItem)
                 {
-                    if (channel != null)
+                    if (coreItem.IsChecked.HasValue && !coreItem.IsChecked.Value)
                     {
-                        ChannelClient checkedChannel = channel.DeepCopy();
-                        checkedChannel.Devices = GetCheckedDevices(channel);
-                        if (checkedChannel.Devices.Count > 0)
-                            checkedChannels.Add(checkedChannel);
+                        groupItem.Remove(coreItem);
+                    }
+                    else
+                    {
+                        if (x is IGroupItem childGroupItem)
+                            RemoveUncheckedItem(childGroupItem);
                     }
                 }
-            }
-            else
-            {
-                checkedChannels.AddRange(station.Channels);
-            }
-            return checkedChannels;
+            });
         }
-
-        public List<DeviceClient> GetCheckedDevices(ChannelClient channel)
-        {
-            List<DeviceClient> checkedDevices = new List<DeviceClient>();
-            if (!channel.Checked)
-            {
-                foreach (var device in channel.Devices)
-                {
-                    if (device != null)
-                    {
-                        DeviceClient checkedDevice = device.DeepCopy();
-                        checkedDevice.Tags = GetCheckedTags(device);
-                        if (checkedDevice.Tags.Count > 0)
-                            checkedDevices.Add(checkedDevice);
-                    }
-                }
-            }
-            else
-            {
-                checkedDevices.AddRange(channel.Devices);
-            }
-            return checkedDevices;
-        }
-
-        public List<TagClient> GetCheckedTags(DeviceClient device)
-        {
-            List<TagClient> checkedTags = new List<TagClient>();
-            if (!device.Checked)
-            {
-                foreach (var tag in device.Tags.Where(x => x.Checked))
-                {
-                    if (tag != null)
-                    {
-                        TagClient checkedTag = tag.DeepCopy();
-                        checkedTags.Add(checkedTag);
-                    }
-                }
-            }
-            else
-            {
-                checkedTags.AddRange(device.Tags);
-            }
-            return checkedTags;
-        }
-
         #endregion
     }
 }

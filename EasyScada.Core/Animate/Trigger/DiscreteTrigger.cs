@@ -10,8 +10,8 @@ namespace EasyScada.Core.Animate
     {
         #region Members
 
-        public string TagName { get; set; }
-        public BoolValue CompareValue { get; set; }
+        public string TriggerTagPath { get; set; }
+        public string TriggerValue { get; set; }
 
         #endregion
 
@@ -28,10 +28,10 @@ namespace EasyScada.Core.Animate
 
         protected override bool CanExecute(object parameter = null)
         {
-            if (string.IsNullOrEmpty(TagName))
+            if (string.IsNullOrEmpty(TriggerTagPath))
                 return false;
 
-            string expression = $"Tag[{'"'}{TagName}{'"'}] = {(int)CompareValue}";
+            string expression = $"Tag[{'"'}{TriggerTagPath}{'"'}] = {TriggerValue}";
             TokenExpressionString = expression;
             return base.CanExecute(parameter);
         }

@@ -553,9 +553,29 @@ namespace EasyScada.Winforms.Controls.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BlueDown1 {
+            get {
+                object obj = ResourceManager.GetObject("BlueDown1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap BlueDropDownButton {
             get {
                 object obj = ResourceManager.GetObject("BlueDropDownButton", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BlueUp1 {
+            get {
+                object obj = ResourceManager.GetObject("BlueUp1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -673,6 +693,26 @@ namespace EasyScada.Winforms.Controls.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CF_Logo1 {
+            get {
+                object obj = ResourceManager.GetObject("CF_Logo1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap check21 {
+            get {
+                object obj = ResourceManager.GetObject("check21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ComponentYellow {
             get {
                 object obj = ResourceManager.GetObject("ComponentYellow", resourceCulture);
@@ -686,6 +726,16 @@ namespace EasyScada.Winforms.Controls.Properties {
         internal static System.Drawing.Bitmap delete2 {
             get {
                 object obj = ResourceManager.GetObject("delete2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap delete22 {
+            get {
+                object obj = ResourceManager.GetObject("delete22", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -726,6 +776,136 @@ namespace EasyScada.Winforms.Controls.Properties {
         internal static System.Drawing.Bitmap DisabledGalleryDropButton {
             get {
                 object obj = ResourceManager.GetObject("DisabledGalleryDropButton", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DocumentInvalid {
+            get {
+                object obj = ResourceManager.GetObject("DocumentInvalid", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DocumentValid {
+            get {
+                object obj = ResourceManager.GetObject("DocumentValid", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyCheckBox {
+            get {
+                object obj = ResourceManager.GetObject("EasyCheckBox", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyCheckButton {
+            get {
+                object obj = ResourceManager.GetObject("EasyCheckButton", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyContextMenuColorColumns {
+            get {
+                object obj = ResourceManager.GetObject("EasyContextMenuColorColumns", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyContextMenuHeading {
+            get {
+                object obj = ResourceManager.GetObject("EasyContextMenuHeading", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyContextMenuImageSelect {
+            get {
+                object obj = ResourceManager.GetObject("EasyContextMenuImageSelect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyContextMenuItem {
+            get {
+                object obj = ResourceManager.GetObject("EasyContextMenuItem", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyContextMenuItems {
+            get {
+                object obj = ResourceManager.GetObject("EasyContextMenuItems", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyContextMenuSeparator {
+            get {
+                object obj = ResourceManager.GetObject("EasyContextMenuSeparator", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyLinkLabel {
+            get {
+                object obj = ResourceManager.GetObject("EasyLinkLabel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyMonthCalendar {
+            get {
+                object obj = ResourceManager.GetObject("EasyMonthCalendar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EasyRadioButton {
+            get {
+                object obj = ResourceManager.GetObject("EasyRadioButton", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -833,6 +1013,16 @@ namespace EasyScada.Winforms.Controls.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap help22 {
+            get {
+                object obj = ResourceManager.GetObject("help22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap help2Small {
             get {
                 object obj = ResourceManager.GetObject("help2Small", resourceCulture);
@@ -866,116 +1056,6 @@ namespace EasyScada.Winforms.Controls.Properties {
         internal static System.Drawing.Bitmap informationSmall {
             get {
                 object obj = ResourceManager.GetObject("informationSmall", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonCheckBox {
-            get {
-                object obj = ResourceManager.GetObject("KryptonCheckBox", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonCheckButton {
-            get {
-                object obj = ResourceManager.GetObject("KryptonCheckButton", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonContextMenuColorColumns {
-            get {
-                object obj = ResourceManager.GetObject("KryptonContextMenuColorColumns", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonContextMenuHeading {
-            get {
-                object obj = ResourceManager.GetObject("KryptonContextMenuHeading", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonContextMenuImageSelect {
-            get {
-                object obj = ResourceManager.GetObject("KryptonContextMenuImageSelect", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonContextMenuItem {
-            get {
-                object obj = ResourceManager.GetObject("KryptonContextMenuItem", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonContextMenuItems {
-            get {
-                object obj = ResourceManager.GetObject("KryptonContextMenuItems", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonContextMenuSeparator {
-            get {
-                object obj = ResourceManager.GetObject("KryptonContextMenuSeparator", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonLinkLabel {
-            get {
-                object obj = ResourceManager.GetObject("KryptonLinkLabel", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonMonthCalendar {
-            get {
-                object obj = ResourceManager.GetObject("KryptonMonthCalendar", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap KryptonRadioButton {
-            get {
-                object obj = ResourceManager.GetObject("KryptonRadioButton", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1046,6 +1126,36 @@ namespace EasyScada.Winforms.Controls.Properties {
         internal static System.Drawing.Bitmap Office2007Indeterminate {
             get {
                 object obj = ResourceManager.GetObject("Office2007Indeterminate", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PageLarge1 {
+            get {
+                object obj = ResourceManager.GetObject("PageLarge1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PageMedium1 {
+            get {
+                object obj = ResourceManager.GetObject("PageMedium1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PageSmall1 {
+            get {
+                object obj = ResourceManager.GetObject("PageSmall1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2197,6 +2307,26 @@ namespace EasyScada.Winforms.Controls.Properties {
             get {
                 object obj = ResourceManager.GetObject("SparkleIndeterminate", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Windows.Forms.Cursor similar to [Cursor: System.Windows.Forms.Cursor].
+        /// </summary>
+        internal static System.Windows.Forms.Cursor SplitHorizontal {
+            get {
+                object obj = ResourceManager.GetObject("SplitHorizontal", resourceCulture);
+                return ((System.Windows.Forms.Cursor)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Windows.Forms.Cursor similar to [Cursor: System.Windows.Forms.Cursor].
+        /// </summary>
+        internal static System.Windows.Forms.Cursor SplitVertical {
+            get {
+                object obj = ResourceManager.GetObject("SplitVertical", resourceCulture);
+                return ((System.Windows.Forms.Cursor)(obj));
             }
         }
         

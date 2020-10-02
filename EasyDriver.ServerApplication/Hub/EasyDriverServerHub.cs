@@ -43,14 +43,14 @@ namespace EasyScada.ServerApplication
 
         #region Subscribe/Unsubscribe
 
-        public string Subscribe(string stationsJson, string communicationMode, int refreshRate)
+        public string Subscribe(string tagsJson, string communicationMode, int refreshRate)
         {
-            List<StationClient> stations = JsonConvert.DeserializeObject<List<StationClient>>(stationsJson);
-            if (stations != null && stations.Count > 0)
+            List<string> subscribeTags = JsonConvert.DeserializeObject<List<string>>(tagsJson);
+            if (subscribeTags != null && subscribeTags.Count > 0)
             {
                 if (Enum.TryParse(communicationMode, out CommunicationMode comMode))
                 {
-                    ioc.ServerBroadcastService.AddEndpoint(Context.ConnectionId, stations, comMode, refreshRate);
+                    ioc.ServerBroadcastService.AddEndpoint(Context.ConnectionId, subscribeTags, comMode, refreshRate);
                     return "Ok";
                 }
             }
@@ -79,7 +79,6 @@ namespace EasyScada.ServerApplication
             }
             return string.Empty;
         }
-
         public async Task<string> GetSubscribedDataAsync()
         {
             return await Task.Run(() => GetSubscribedData());
@@ -87,139 +86,31 @@ namespace EasyScada.ServerApplication
 
         #endregion
 
-        #region Station
-
-        public string GetStation(string pathToStation = "Local Station")
-        {
-            if (ioc.ProjectManagerService.CurrentProject != null)
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IStationClient>(pathToStation));
-            return null;
-        }
-        public async Task<string> GetStationAsync(string pathToStation = "Local Station")
-        {
-            return await Task.Run(() => GetStation());
-        }
-
-        public string GetAllStations()
+        public string GetAllElements()
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
             {
-                var result = ioc.ProjectManagerService.CurrentProject.Childs?.Select(x => x as IStationClient)?.ToList();
-                return JsonConvert.SerializeObject(result, Formatting.Indented);
+                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.Childs.Select(x => x as IClientObject)?.ToList(), Formatting.Indented);
             }
             return null;
         }
-        public async Task<string> GetAllStationsAsync()
-        {
-            return await Task.Run(() => GetAllStations());
-        }
 
-        public string GetStations(IEnumerable<string> pathToStations)
+        public async Task<string> GetAllElementsAsync()
         {
-            if (pathToStations != null && ioc.ProjectManagerService.CurrentProject != null)
-            {
-                List<IStationClient> stations = new List<IStationClient>();
-                foreach (var path in pathToStations)
-                {
-                    IStationClient station = ioc.ProjectManagerService.CurrentProject.GetItem<IStationClient>(path);
-                    if (station != null)
-                        stations.Add(station);
-                }
-                return JsonConvert.SerializeObject(stations);
-            }
-            return null;
+            return await Task.Run(() => GetAllElements());
         }
-        public async Task<string> GetStationsAsync(IEnumerable<string> pathToStations)
-        {
-            return await Task.Run(() => GetStations(pathToStations));
-        }
-
-        #endregion
-
-        #region Channel
-
-        public string GetChannel(string pathToChannel)
-        {
-            if (ioc.ProjectManagerService.CurrentProject != null)
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IChannelClient>(pathToChannel));
-            return null;
-        }
-        public async Task<string> GetChannelAsync(string pathToChannel)
-        {
-            return await Task.Run(() => GetChannel(pathToChannel));
-        }
-
-        public string GetAllChannels(string pathToStation = "Local Station")
-        {
-            if (ioc.ProjectManagerService.CurrentProject != null)
-            {
-                IStationClient station = ioc.ProjectManagerService.CurrentProject.GetItem<IStationClient>(pathToStation);
-                if (station != null)
-                    return JsonConvert.SerializeObject(station.Channels);
-            }
-            return null;
-        }
-        public async Task<string> GetAllChannelsAsync(string pathToStation = "Local Station")
-        {
-            return await Task.Run(() => GetAllChannels(pathToStation));
-        }
-
-        public string GetChannels(IEnumerable<string> pathToChannels)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<string> GetChannelsAsync(IEnumerable<string> pathToChannels)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region Device
-
-        public string GetDevice(string pathToDevice)
-        {
-            if (ioc.ProjectManagerService.CurrentProject != null)
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<IDeviceClient>(pathToDevice));
-            return null;
-        }
-        public async Task<string> GetDeviceAsync(string pathToDevice)
-        {
-            return await Task.Run(() => GetDevice(pathToDevice));
-        }
-
-        public string GetAllDevices(string pathToChannel)
-        {
-            if (ioc.ProjectManagerService.CurrentProject != null)
-            {
-                IChannelClient channel = ioc.ProjectManagerService.CurrentProject.GetItem<IChannelClient>(pathToChannel);
-                if (channel != null)
-                    return JsonConvert.SerializeObject(channel.Devices);
-            }
-            return null;
-        }
-        public async Task<string> GetAllDevicesAsync(string pathToChannel)
-        {
-            return await Task.Run(() => GetAllDevices(pathToChannel));
-        }
-
-        public string GetDevices(IEnumerable<string> pathToDevices)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<string> GetDevicesAsync(IEnumerable<string> pathToDevices)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
         #region Tag
 
         public string GetTag(string pathToTag)
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.GetItem<ITagClient>(pathToTag));
+            {
+                //if (ioc.ProjectManagerService.CurrentProject.BrowseTag(pathToTag.Split('/'), 0) is ITagCore tagClient)
+                //{
+                //    return JsonConvert.SerializeObject(tagClient as IClientObject);
+                //}
+            }
             return null;
         }
         public async Task<string> GetTagAsync(string pathToTag)
@@ -227,13 +118,18 @@ namespace EasyScada.ServerApplication
             return await Task.Run(() => GetTag(pathToTag));
         }
 
-        public string GetAllTags(string pathToDevice)
+        public string GetAllTags(string pathToParent)
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
             {
-                IDeviceClient device = ioc.ProjectManagerService.CurrentProject.GetItem<IDeviceClient>(pathToDevice);
-                if (device != null)
-                    return JsonConvert.SerializeObject(device.Tags?.Select(x => x as ITagClient));
+                //if (ioc.ProjectManagerService.CurrentProject.BrowseTag(pathToParent.Split('/'), 0) is IGroupItem groupItem)
+                //{
+                //    List<IClientObject> tags = new List<IClientObject>();
+                //    var foundTags = groupItem.Find(x => x is ITagCore, true);
+                //    if (foundTags != null && foundTags.Count() > 0)
+                //        tags.AddRange(foundTags.Select(x => x as IClientObject));
+                //    return JsonConvert.SerializeObject(tags);
+                //}   
             }
             return null;
         }
@@ -245,7 +141,6 @@ namespace EasyScada.ServerApplication
         #endregion
 
         #region Write
-
         public async Task<WriteResponse> WriteTagValueAsync(WriteCommand writeCommand)
         {
             return await ioc.Get<ITagWriterService>().WriteTag(writeCommand); 
@@ -255,37 +150,6 @@ namespace EasyScada.ServerApplication
         {
             return await ioc.Get<ITagWriterService>().WriteMultiTag(writeCommands);
         }
-        #endregion
-
-        #region Utils
-
-        public string SetChannelParameters(string jsonValue, string pathToChannel)
-        {
-            throw new NotImplementedException();
-        }
-        public string SetChannelParametersAsync(string jsonValue, string pathToChannel)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string SetDeviceParameters(string jsonValue, string pathToDevice)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<string> SetDeviceParametersAsync(string jsonValue, string pathToChannel)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string SetTagParameters(string jsonValue, string pathToTag)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<string> SetTagParametersAsync(string jsonValue, string pathToTag)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #region Lifecycle handler

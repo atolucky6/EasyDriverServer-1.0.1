@@ -21,7 +21,7 @@ namespace EasyDriver.ModbusRTU
         public IEasyDriverPlugin Driver { get; set; }
         public List<ByteOrder> ByteOrderSource { get; set; }
         public IDeviceCore Device { get; set; }
-        public IChannelCore Channel => Device?.Parent as IChannelCore;
+        public IChannelCore Channel => Driver.Channel;
 
         public ObservableCollection<ReadBlockSetting> ReadInputContacts { get; set; }
         public ObservableCollection<ReadBlockSetting> ReadOutputCoils { get; set; }
@@ -71,10 +71,13 @@ namespace EasyDriver.ModbusRTU
             if (Device != null)
             {
                 txbName.Text = Device.Name;
-                spnTimeout.Value = (decimal)Device.ParameterContainer.Parameters["Timeout"];
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["Timeout"], out decimal timeout))
+                    spnTimeout.Value = timeout;
                 cobByteOrder.SelectedItem = Device.ByteOrder;
-                spnTryReadWrite.Value = (decimal)Device.ParameterContainer.Parameters["TryReadWriteTimes"];
-                spnDeviceId.Value = (decimal)Device.ParameterContainer.Parameters["DeviceId"];
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["TryReadWriteTimes"], out decimal tryReadWriteTimes))
+                    spnTryReadWrite.Value = tryReadWriteTimes;
+                if (decimal.TryParse(Device.ParameterContainer.Parameters["DeviceId"], out decimal deviceId))
+                    spnDeviceId.Value = deviceId;
 
                 if (Device.ParameterContainer.Parameters.ContainsKey("ReadInputContactsBlockSetting"))
                 {
@@ -188,10 +191,10 @@ namespace EasyDriver.ModbusRTU
                 Device.ParameterContainer.DisplayName = "ModbusRTU Device Parameter";
                 Device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";
 
-                Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value;
+                Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value.ToString();
                 Device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
-                Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value;
-                Device.ParameterContainer.Parameters["DeviceId"] = spnDeviceId.Value;
+                Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();
+                Device.ParameterContainer.Parameters["DeviceId"] = spnDeviceId.Value.ToString();
 
                 DisableErrorBlockSettings(blockInputContacts.ReadBlockSettings);
                 DisableErrorBlockSettings(blockOutputCoils.ReadBlockSettings);
@@ -226,13 +229,14 @@ namespace EasyDriver.ModbusRTU
                 return false;
             }
 
-            if (Channel.Childs.FirstOrDefault(x => x != Device && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
+            var childDevices = Channel.GetAllDevices();
+            if (Device.Parent.Childs.FirstOrDefault(x => x != Device && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The device name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
-            if (Channel.Childs.FirstOrDefault(x => x != Device && (decimal)(x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnDeviceId.Value) != null)
+            if (childDevices.FirstOrDefault(x => x != Device && (x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnDeviceId.Value.ToString()) != null)
             {
                 DXMessageBox.Show($"The device id '{spnDeviceId.Value}' is already used in this device.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;

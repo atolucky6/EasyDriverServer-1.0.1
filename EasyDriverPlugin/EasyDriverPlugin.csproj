@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Converters\ByteOrderConverter.cs" />
     <Compile Include="Converters\StringLookupConverrter.cs" />
+    <Compile Include="Core\TagCollection.cs" />
     <Compile Include="Enums\AccessPermission.cs" />
     <Compile Include="Enums\ByteOrder.cs" />
     <Compile Include="DataTypes\Base\IDataType.cs" />
@@ -77,7 +78,6 @@
     <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Enums\ErrorMessageType.cs" />
     <Compile Include="Enums\Quality.cs" />
-    <Compile Include="Enums\StationType.cs" />
     <Compile Include="EventArgs\TagQualityChangedEventArgs.cs" />
     <Compile Include="EventArgs\TagValueChangedEventArgs.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
@@ -88,6 +88,7 @@
     <Compile Include="Core\IGroupItem.cs" />
     <Compile Include="Helper\Extensions.cs" />
     <Compile Include="Helper\Utils.cs" />
+    <Compile Include="Interfaces\IHaveTag.cs" />
     <Compile Include="Interfaces\Indexer.cs" />
     <Compile Include="Interfaces\IParameterContainer.cs" />
     <Compile Include="Core\IStationCore.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Interfaces\ISupportSynchronization.cs" />
     <Compile Include="Core\ITagCore.cs" />
     <Compile Include="Core\ObservableCoreItems.cs" />
+    <Compile Include="NameChangedEventArgs.cs" />
     <Compile Include="Plugin\IEasyDriverPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

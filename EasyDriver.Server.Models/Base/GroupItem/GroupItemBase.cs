@@ -27,6 +27,14 @@ namespace EasyDriver.Core
             set => SetProperty(value);
         }
 
+        [Category(PropertyCategory.General), DisplayName("Enabled")]
+        [JsonIgnore]
+        public virtual bool Enabled
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
+
         /// <summary>
         /// Đường dẫn đến đối tượng
         /// </summary>
@@ -83,7 +91,22 @@ namespace EasyDriver.Core
         /// </summary>
         [Browsable(false)]
         [JsonIgnore]
-        public virtual bool IsReadOnly { get; private set; }
+        public virtual bool IsReadOnly { get; set; }
+
+        private bool? isChecked;
+        [JsonIgnore]
+        public virtual bool? IsChecked
+        {
+            get => isChecked;
+            set
+            {
+                if (isChecked != value)
+                {
+                    isChecked = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
         /// <summary>
         /// Danh sách con của đối tượng này
@@ -110,6 +133,13 @@ namespace EasyDriver.Core
 
         #endregion
 
+        #region Events
+
+        public event EventHandler<TagValueChangedEventArgs> ValueChanged;
+        public event EventHandler<TagQualityChangedEventArgs> QualityChanged;
+
+        #endregion
+
         #region Child collection changed callback
 
         /// <summary>
@@ -125,6 +155,20 @@ namespace EasyDriver.Core
         #endregion
 
         #region Methods       
+
+        public virtual void RaiseTagValueChanged(ITagCore tagSender, TagValueChangedEventArgs args)
+        {
+            ValueChanged?.Invoke(tagSender, args);
+            if (Parent is GroupItemBase groupItem)
+                groupItem.RaiseTagValueChanged(tagSender, args);
+        }
+
+        public virtual void RaiseTagQualityChanged(ITagCore tagSender, TagQualityChangedEventArgs args)
+        {
+            QualityChanged?.Invoke(tagSender, args);
+            if (Parent is GroupItemBase groupItem)
+                groupItem.RaiseTagQualityChanged(tagSender, args);
+        }
 
         /// <summary>
         /// Hàm đặt lại trạng thái của đối tượng thành không thay đổi bằng cách chấp nhận sự thay đổi
@@ -285,13 +329,11 @@ namespace EasyDriver.Core
                 {
                     if (predicate(item as ICoreItem))
                         yield return item as ICoreItem;
-                    else
+
+                    if (item is IGroupItem)
                     {
-                        if (item is IGroupItem)
-                        {
-                            foreach (var itemInChild in (item as IGroupItem).Find(predicate, findInChildren))
-                                yield return itemInChild;
-                        }
+                        foreach (var itemInChild in (item as IGroupItem).Find(predicate, findInChildren))
+                            yield return itemInChild;
                     }
                 }
             }
@@ -312,6 +354,105 @@ namespace EasyDriver.Core
         {
             RaisePropertyChanged(nameof(Path));
             Childs.ForEach(x => x.RefreshPath());
+        }
+
+        public virtual object Browse(string[] paths, int nameIndex)
+        {
+            if (nameIndex < paths.Length)
+            {
+                foreach (var item in Childs)
+                {
+                    if (item is IGroupItem groupItem)
+                    {
+                        if (groupItem.Name == paths[nameIndex])
+                        {
+                            if (nameIndex == paths.Length - 1)
+                                return groupItem;
+                            else
+                            {
+                                nameIndex++;
+                                return groupItem.Browse(paths, nameIndex);
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public virtual IEnumerable<ITagCore> GetAllTags(bool findDeep = true)
+        {
+            if (this is IHaveTag haveTagObj)
+            {
+                if (haveTagObj.HaveTags)
+                {
+                    foreach (var item in haveTagObj.Tags)
+                    {
+                        if (item is ITagCore tag)
+                            yield return tag;
+                    }
+                }
+            }
+
+            if (findDeep)
+            {
+                foreach (var childItem in Find(x => x is IHaveTag, true))
+                {
+                    if (childItem is IHaveTag haveTag)
+                    {
+                        if (haveTag.HaveTags)
+                        {
+                            foreach (var item in haveTag.Tags)
+                            {
+                                if (item is ITagCore tag)
+                                    yield return tag;
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public virtual IEnumerable<IChannelCore> GetAllChannels(bool findDeep = true)
+        {
+            if (!(this is IDeviceCore) || !(this is ITagCore))
+            {
+                foreach (var item in Childs)
+                {
+                    if (item is IChannelCore)
+                        yield return item as IChannelCore;
+                    if (findDeep && !(item is ITagCore) && !(item is IDeviceCore) && !(item is IChannelCore) && item is IGroupItem childGroup)
+                    {
+                        foreach (var childChannel in childGroup.GetAllChannels())
+                        {
+                            if (childChannel is IChannelCore)
+                                yield return childChannel as IChannelCore;
+                        }
+                    }
+                }
+            }
+        }
+
+        public virtual IEnumerable<IDeviceCore> GetAllDevices(bool findDeep = true)
+        {
+            if (!(this is ITagCore))
+            {
+                foreach (var item in Childs)
+                {
+                    if (item is IDeviceCore device)
+                        yield return device;
+                    
+                    if (findDeep && !(item is ITagCore) && !(item is IDeviceCore) && item is IGroupItem childGroup)
+                    {
+                        foreach (var childDevice in childGroup.GetAllDevices())
+                        {
+                            if (childDevice is IDeviceCore)
+                                yield return childDevice as IDeviceCore;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

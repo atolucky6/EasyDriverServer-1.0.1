@@ -1,225 +1,349 @@
-﻿<UserControl x:Class="EasyScada.ServerApplication.TagCollectionView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:EasyScada.ServerApplication"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="1200"
-             xmlns:plugin="clr-namespace:EasyDriverPlugin;assembly=EasyDriverPlugin"
-             xmlns:dxco="http://schemas.devexpress.com/winfx/2008/xaml/controls"
-             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"  
-             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"  
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm">
+﻿<UserControl
+    x:Class="EasyScada.ServerApplication.TagCollectionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxco="http://schemas.devexpress.com/winfx/2008/xaml/controls"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    xmlns:local="clr-namespace:EasyScada.ServerApplication"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:plugin="clr-namespace:EasyDriverPlugin;assembly=EasyDriverPlugin"
+    d:DesignHeight="450"
+    d:DesignWidth="1200"
+    mc:Ignorable="d">
     <UserControl.Resources>
-        <local:TextToWidthConverter x:Key="TextToWidthConverter"/>
-        <local:CoreItemToImageSourceConverter x:Key="CoreItemToImageSourceConverter"
-                                              RemoteOpcDaStationImageSource="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png"
-                                              ChannelImageSource="/EasyDriverServer;component/Resources/Images/channel_24px.png"
-                                              DeviceImageSource="/EasyDriverServer;component/Resources/Images/device_24px.png"
-                                              RemoteStationImageSource="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
-                                              LocalStationImageSource="/EasyDriverServer;component/Resources/Images/local_station_16px.png"/>
+        <local:TextToWidthConverter x:Key="TextToWidthConverter" />
+        <local:CoreItemToImageSourceConverter
+            x:Key="CoreItemToImageSourceConverter"
+            ChannelImageSource="/EasyDriverServer;component/Resources/Images/channel_24px.png"
+            DeviceImageSource="/EasyDriverServer;component/Resources/Images/device_24px.png"
+            GroupImageSource="/EasyDriverServer;component/Resources/Images/folder_48px.png"
+            LocalStationImageSource="/EasyDriverServer;component/Resources/Images/local_station_16px.png"
+            RemoteOpcDaStationImageSource="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png"
+            RemoteStationImageSource="/EasyDriverServer;component/Resources/Images/remote_station_24px.png" />
         <Style TargetType="dxe:TextEditSettings">
             <Setter Property="StyleSettings">
                 <Setter.Value>
-                    <dxe:TextEditStyleSettings HighlightedTextBackground="{StaticResource PinkBrush}"  />
+                    <dxe:TextEditStyleSettings HighlightedTextBackground="{StaticResource PinkBrush}" />
                 </Setter.Value>
             </Setter>
         </Style>
-
     </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:SaveFileDialogService/>
-        <dxmvvm:OpenFileDialogService/>
-        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnLoadedCommand}"/>
+        <dxmvvm:SaveFileDialogService />
+        <dxmvvm:OpenFileDialogService />
+        <dxmvvm:EventToCommand Command="{Binding OnLoadedCommand}" EventName="Loaded" />
     </dxmvvm:Interaction.Behaviors>
     <dx:BackgroundPanel>
         <dxb:BarManager>
             <dxb:BarManager.Items>
-                <dxb:BarStaticItem x:Name="bTotal" Content="{DXBinding '`Count: ` + Token.Childs.Count'}" Alignment="Far"/>
-                <dxb:BarItemSeparator x:Name="bSeperator"/>
-                <dxb:BarButtonItem x:Name="bAdd" Content="Add tag" Command="{Binding AddCommand}" GlyphSize="Default" Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Add.svg}" />
-                <dxb:BarButtonItem x:Name="bInsertAbove" Content="Insert above" Command="{Binding InsertAboveCommand}" GlyphSize="Default" Glyph="{dx:DXImage SvgImages/Snap/InsertGroupHeader.svg}" />
-                <dxb:BarButtonItem x:Name="bInsertBelow" Content="Insert below" Command="{Binding InsertBelowCommand}" GlyphSize="Default" Glyph="{dx:DXImage SvgImages/Snap/InsertGroupFooter.svg}" />
-                <dxb:BarButtonItem x:Name="bExport" Content="Export" Command="{Binding ExportCommand}" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/export_48px.png" />
-                <dxb:BarButtonItem x:Name="bImport" Content="Import" Command="{Binding ImportCommand}" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/import_48px.png"/>
-                <dxb:BarButtonItem x:Name="bCopy" Content="Copy" Command="{Binding CopyCommand}" GlyphSize="Default" KeyGesture="Ctrl+C" Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"/>
-                <dxb:BarButtonItem x:Name="bCut" Content="Cut" Command="{Binding CutCommand}" GlyphSize="Default" KeyGesture="Ctrl+X" Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"/>
-                <dxb:BarButtonItem x:Name="bPaste" Content="Paste" Command="{Binding PasteCommand}" GlyphSize="Default" KeyGesture="Ctrl+V" />
-                <dxb:BarButtonItem x:Name="bDelete" Content="Delete" Command="{Binding DeleteCommand}" GlyphSize="Default" KeyGesture="Delete" Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"/>
-                <dxb:BarButtonItem x:Name="bEdit" Content="Edit" Command="{Binding EditCommand}" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/edit-48.png"/>
-                <dxb:BarButtonItem x:Name="bSearch" Content="Search" Command="{Binding ShowSearchPanelCommand}" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/search-48.png"/>
-                <dxb:BarCheckItem x:Name="bAllowDrag" Content="Allow Drag/Drop Tag" GlyphSize="Default" Glyph="/EasyDriverServer;component/Resources/Images/drag-48.png" />
-                <dxb:BarButtonItem x:Name="bWriteTag" Content="Write Tag" Command="{Binding WriteTagCommand}"/>
+                <dxb:BarStaticItem
+                    x:Name="bTotal"
+                    Alignment="Far"
+                    Content="{DXBinding '`Count: ` + Token.Childs.Count'}" />
+                <dxb:BarItemSeparator x:Name="bSeperator" />
+                <dxb:BarButtonItem
+                    x:Name="bAdd"
+                    Command="{Binding AddCommand}"
+                    Content="Add tag"
+                    Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Add.svg}"
+                    GlyphSize="Default" />
+                <dxb:BarButtonItem
+                    x:Name="bInsertAbove"
+                    Command="{Binding InsertAboveCommand}"
+                    Content="Insert above"
+                    Glyph="{dx:DXImage SvgImages/Snap/InsertGroupHeader.svg}"
+                    GlyphSize="Default" />
+                <dxb:BarButtonItem
+                    x:Name="bInsertBelow"
+                    Command="{Binding InsertBelowCommand}"
+                    Content="Insert below"
+                    Glyph="{dx:DXImage SvgImages/Snap/InsertGroupFooter.svg}"
+                    GlyphSize="Default" />
+                <dxb:BarButtonItem
+                    x:Name="bExport"
+                    Command="{Binding ExportCommand}"
+                    Content="Export"
+                    Glyph="/EasyDriverServer;component/Resources/Images/export_48px.png"
+                    GlyphSize="Default" />
+                <dxb:BarButtonItem
+                    x:Name="bImport"
+                    Command="{Binding ImportCommand}"
+                    Content="Import"
+                    Glyph="/EasyDriverServer;component/Resources/Images/import_48px.png"
+                    GlyphSize="Default" />
+                <dxb:BarButtonItem
+                    x:Name="bCopy"
+                    Command="{Binding CopyCommand}"
+                    Content="Copy"
+                    Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"
+                    GlyphSize="Default"
+                    KeyGesture="Ctrl+C" />
+                <dxb:BarButtonItem
+                    x:Name="bCut"
+                    Command="{Binding CutCommand}"
+                    Content="Cut"
+                    Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"
+                    GlyphSize="Default"
+                    KeyGesture="Ctrl+X" />
+                <dxb:BarButtonItem
+                    x:Name="bPaste"
+                    Command="{Binding PasteCommand}"
+                    Content="Paste"
+                    GlyphSize="Default"
+                    KeyGesture="Ctrl+V" />
+                <dxb:BarButtonItem
+                    x:Name="bDelete"
+                    Command="{Binding DeleteCommand}"
+                    Content="Delete"
+                    Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"
+                    GlyphSize="Default"
+                    KeyGesture="Delete" />
+                <dxb:BarButtonItem
+                    x:Name="bEdit"
+                    Command="{Binding EditCommand}"
+                    Content="Edit"
+                    Glyph="/EasyDriverServer;component/Resources/Images/edit-48.png"
+                    GlyphSize="Default" />
+                <dxb:BarButtonItem
+                    x:Name="bSearch"
+                    Command="{Binding ShowSearchPanelCommand}"
+                    Content="Search"
+                    Glyph="/EasyDriverServer;component/Resources/Images/search-48.png"
+                    GlyphSize="Default" />
+                <dxb:BarCheckItem
+                    x:Name="bAllowDrag"
+                    Content="Allow Drag/Drop Tag"
+                    Glyph="/EasyDriverServer;component/Resources/Images/drag-48.png"
+                    GlyphSize="Default" />
+                <dxb:BarButtonItem
+                    x:Name="bWriteTag"
+                    Command="{Binding WriteTagCommand}"
+                    Content="Write Tag" />
             </dxb:BarManager.Items>
             <dxb:BarManager.Bars>
-                <dxb:Bar Caption="Datablock Toolbox" UseWholeRow="True" AllowQuickCustomization="False" AllowCollapse="False"
-                         AllowCustomizationMenu="False" AllowHide="False" AllowRemove="False" ShowDragWidget="False">
+                <dxb:Bar
+                    AllowCollapse="False"
+                    AllowCustomizationMenu="False"
+                    AllowHide="False"
+                    AllowQuickCustomization="False"
+                    AllowRemove="False"
+                    Caption="Datablock Toolbox"
+                    ShowDragWidget="False"
+                    UseWholeRow="True">
                     <dxb:Bar.DockInfo>
-                        <dxb:BarDockInfo ContainerName="barContainer"/>
+                        <dxb:BarDockInfo ContainerName="barContainer" />
                     </dxb:Bar.DockInfo>
                     <dxb:Bar.ItemLinks>
-                        <dxb:BarButtonItemLink BarItemName="bImport"/>
-                        <dxb:BarButtonItemLink BarItemName="bExport"/>
-                        <dxb:BarItemLinkSeparator BarItemName="bSeperator"/>
-                        <dxb:BarButtonItemLink BarItemName="bAdd"/>
-                        <dxb:BarButtonItemLink BarItemName="bInsertAbove"/>
-                        <dxb:BarButtonItemLink BarItemName="bInsertBelow"/>
-                        <dxb:BarItemLinkSeparator BarItemName="bSeperator"/>
-                        <dxb:BarButtonItemLink BarItemName="bSearch"/>
-                        <dxb:BarCheckItemLink BarItemName="bAllowDrag"/>
-                        <dxb:BarStaticItemLink BarItemName="bTotal"/>
+                        <dxb:BarButtonItemLink BarItemName="bImport" />
+                        <dxb:BarButtonItemLink BarItemName="bExport" />
+                        <dxb:BarItemLinkSeparator BarItemName="bSeperator" />
+                        <dxb:BarButtonItemLink BarItemName="bAdd" />
+                        <dxb:BarButtonItemLink BarItemName="bInsertAbove" />
+                        <dxb:BarButtonItemLink BarItemName="bInsertBelow" />
+                        <dxb:BarItemLinkSeparator BarItemName="bSeperator" />
+                        <dxb:BarButtonItemLink BarItemName="bSearch" />
+                        <dxb:BarCheckItemLink BarItemName="bAllowDrag" />
+                        <dxb:BarStaticItemLink BarItemName="bTotal" />
                     </dxb:Bar.ItemLinks>
                 </dxb:Bar>
             </dxb:BarManager.Bars>
-            <DockPanel> 
-                <Border BorderThickness="0,0,0,1" BorderBrush="#44475a" DockPanel.Dock="Top" Padding="8 0 0 0">
-                    <dxco:BreadcrumbControl ChildMember="Childs"
-                                            ShowBorder="False"
-                                            DisplayMember="Name"
-                                            IsEnabled="False"
-                                            EditMode="Both"
-                                            Foreground="{StaticResource CyanBrush}"
-                                            SelectedItemPathSeparator="/"
-                                            SelectedItem="{Binding Parent}"
-                                            ItemsSource="{Binding ProjectChilds}"
-                                            ShowItemImages="False">
+            <DockPanel>
+                <Border
+                    Padding="8,0,0,0"
+                    BorderBrush="#44475a"
+                    BorderThickness="0,0,0,1"
+                    DockPanel.Dock="Top">
+                    <dxco:BreadcrumbControl
+                        ChildMember="Childs"
+                        DisplayMember="Name"
+                        EditMode="Both"
+                        Foreground="{StaticResource CyanBrush}"
+                        IsEnabled="False"
+                        ItemsSource="{Binding ProjectChilds}"
+                        SelectedItem="{Binding Parent}"
+                        SelectedItemPathSeparator="/"
+                        ShowBorder="False"
+                        ShowItemImages="False">
                         <dxco:BreadcrumbControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Width="16" Height="16" Source="{Binding Converter={StaticResource CoreItemToImageSourceConverter}}"/>
-                                    <TextBlock Text="{Binding Path=Item.Name}" Padding="4 0 0 0"/>
+                                    <Image
+                                        Width="16"
+                                        Height="16"
+                                        Source="{Binding Converter={StaticResource CoreItemToImageSourceConverter}}" />
+                                    <TextBlock Padding="4,0,0,0" Text="{Binding Path=Item.Name}" />
                                 </StackPanel>
                             </DataTemplate>
                         </dxco:BreadcrumbControl.ItemTemplate>
                         <dxco:BreadcrumbControl.SelectedItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Width="16" Height="16" Source="{Binding Converter={StaticResource CoreItemToImageSourceConverter}}"/>
-                                    <TextBlock Text="{Binding Path=Item.Name}" Padding="4 0 0 0"/>
+                                    <Image
+                                        Width="16"
+                                        Height="16"
+                                        Source="{Binding Converter={StaticResource CoreItemToImageSourceConverter}}" />
+                                    <TextBlock Padding="4,0,0,0" Text="{Binding Path=Item.Name}" />
                                 </StackPanel>
                             </DataTemplate>
                         </dxco:BreadcrumbControl.SelectedItemTemplate>
                     </dxco:BreadcrumbControl>
                 </Border>
-                <Border BorderThickness="0,0,0,0" BorderBrush="#44475a" DockPanel.Dock="Top">
+                <Border
+                    BorderBrush="#44475a"
+                    BorderThickness="0,0,0,0"
+                    DockPanel.Dock="Top">
                     <dxb:BarContainerControl x:Name="barContainer" />
                 </Border>
-                <Border BorderThickness="0,1,0,0" BorderBrush="#44475a">
+                <Border BorderBrush="#44475a" BorderThickness="0,1,0,0">
                     <!--#region TreeListControl-->
-                    <dxg:GridControl ShowBorder="False"                                        
-                                     SelectionMode="Row"  
-                                     ItemsSource="{Binding Parent.Childs}"
-                                     CurrentItem="{Binding CurrentItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     SelectedItems="{Binding SelectedItems, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}">
+                    <dxg:GridControl
+                        CurrentItem="{Binding CurrentItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        ItemsSource="{Binding Token.Tags}"
+                        SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        SelectedItems="{Binding SelectedItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        SelectionMode="Row"
+                        ShowBorder="False">
                         <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand EventName="PreviewMouseDown" Command="{Binding ShowPropertyCommand}">
+                            <dxmvvm:EventToCommand Command="{Binding ShowPropertyCommand}" EventName="PreviewMouseDown">
                                 <dxmvvm:EventToCommand.EventArgsConverter>
-                                    <dx:EventArgsToDataRowConverter/>
+                                    <dx:EventArgsToDataRowConverter />
                                 </dxmvvm:EventToCommand.EventArgsConverter>
                             </dxmvvm:EventToCommand>
-                            <dxmvvm:EventToCommand EventName="PreviewMouseDoubleClick" Command="{Binding OpenOnDoubleClickCommand}">
+                            <dxmvvm:EventToCommand Command="{Binding OpenOnDoubleClickCommand}" EventName="PreviewMouseDoubleClick">
                                 <dxmvvm:EventToCommand.EventArgsConverter>
-                                    <dx:EventArgsToDataRowConverter/>
+                                    <dx:EventArgsToDataRowConverter />
                                 </dxmvvm:EventToCommand.EventArgsConverter>
                             </dxmvvm:EventToCommand>
-                            <local:CustomCopyPasteGridControl CopyCommand="{Binding CopyCommand}"
-                                                              PasteCommand="{Binding PasteCommand}"/>
+                            <local:CustomCopyPasteGridControl CopyCommand="{Binding CopyCommand}" PasteCommand="{Binding PasteCommand}" />
                         </dxmvvm:Interaction.Behaviors>
                         <!--#region TreeListView-->
                         <dxg:GridControl.View>
-                            <dxg:TableView HorizontalScrollbarVisibility="Auto"
-                                           VerticalScrollbarVisibility="Auto"
-                                           ShowIndicator="True"
-                                           IndicatorWidth="24"
-                                           EditorShowMode="MouseUpFocused"
-                                           AllowEditing="False"
-                                           AllowFilterEditor="False"
-                                           AllowSorting="False"
-                                           ShowSelectionRectangle="True"
-                                           AllowColumnMoving="False"
-                                           AllowScrollToFocusedRow="True"
-                                           ShowGroupPanel="False"
-                                           AllowFixedColumnMenu="False" 
-                                           AllowDragDrop="{Binding ElementName=bAllowDrag, Path=IsChecked}" 
-                                           SearchPanelHighlightResults="True" 
-                                           SearchPanelFindFilter="Default" 
-                                           SearchDelay="100"                                        
-                                           >
+                            <dxg:TableView
+                                AllowColumnMoving="False"
+                                AllowDragDrop="{Binding ElementName=bAllowDrag, Path=IsChecked}"
+                                AllowEditing="False"
+                                AllowFilterEditor="False"
+                                AllowFixedColumnMenu="False"
+                                AllowScrollToFocusedRow="True"
+                                AllowSorting="False"
+                                EditorShowMode="MouseUpFocused"
+                                HorizontalScrollbarVisibility="Auto"
+                                IndicatorWidth="24"
+                                SearchDelay="100"
+                                SearchPanelFindFilter="Default"
+                                SearchPanelHighlightResults="True"
+                                ShowGroupPanel="False"
+                                ShowIndicator="True"
+                                ShowSelectionRectangle="True"
+                                VerticalScrollbarVisibility="Auto">
                                 <dxmvvm:Interaction.Behaviors>
-                                    <local:TableViewUtilities/>
+                                    <local:TableViewUtilities />
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:TableView.RowIndicatorContentTemplate>
                                     <DataTemplate>
-                                        <Image Height="16" Width="16" Source="/EasyDriverServer;component/Resources/Images/tag_48px.png"/>
+                                        <Image
+                                            Width="16"
+                                            Height="16"
+                                            Source="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
                                     </DataTemplate>
                                 </dxg:TableView.RowIndicatorContentTemplate>
                                 <dxg:TableView.RowCellMenuCustomizations>
-                                    <dxb:BarButtonItemLink BarItemName="bWriteTag"/>
-                                    <dxb:BarItemSeparator/>
-                                    <dxb:BarButtonItemLink BarItemName="bAdd"/>
+                                    <dxb:BarButtonItemLink BarItemName="bWriteTag" />
+                                    <dxb:BarItemSeparator />
+                                    <dxb:BarButtonItemLink BarItemName="bAdd" />
                                     <dxb:BarSubItem Content="Insert tag" GlyphSize="Default">
                                         <dxb:BarSubItem.Items>
-                                            <dxb:BarButtonItemLink BarItemName="bInsertAbove"/>
-                                            <dxb:BarButtonItemLink BarItemName="bInsertBelow"/>
+                                            <dxb:BarButtonItemLink BarItemName="bInsertAbove" />
+                                            <dxb:BarButtonItemLink BarItemName="bInsertBelow" />
                                         </dxb:BarSubItem.Items>
                                     </dxb:BarSubItem>
-                                    <dxb:BarButtonItemLink BarItemName="bEdit"/>
-                                    <dxb:BarItemSeparator/>
-                                    <dxb:BarButtonItemLink BarItemName="bCopy"/>
-                                    <dxb:BarButtonItemLink BarItemName="bCut"/>
-                                    <dxb:BarButtonItemLink BarItemName="bPaste"/>
-                                    <dxb:BarButtonItemLink BarItemName="bDelete"/>
+                                    <dxb:BarButtonItemLink BarItemName="bEdit" />
+                                    <dxb:BarItemSeparator />
+                                    <dxb:BarButtonItemLink BarItemName="bCopy" />
+                                    <dxb:BarButtonItemLink BarItemName="bCut" />
+                                    <dxb:BarButtonItemLink BarItemName="bPaste" />
+                                    <dxb:BarButtonItemLink BarItemName="bDelete" />
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
                         <!--#endregion-->
                         <!--#region Columns-->
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Width="{Binding Token.Childs.Count, Converter={StaticResource TextToWidthConverter}}" AllowMoving="False" AllowResizing="False" AllowEditing="False" ReadOnly="True" AllowColumnFiltering="False" AllowSearchPanel="False">
+                            <dxg:GridColumn
+                                Width="{Binding Token.Childs.Count, Converter={StaticResource TextToWidthConverter}}"
+                                AllowColumnFiltering="False"
+                                AllowEditing="False"
+                                AllowMoving="False"
+                                AllowResizing="False"
+                                AllowSearchPanel="False"
+                                ReadOnly="True">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock x:Name="PART_Editor" Text="{DXBinding 'RowData.RowHandle.Value + 1'}" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                                        <TextBlock
+                                            x:Name="PART_Editor"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Bottom"
+                                            Text="{DXBinding 'RowData.RowHandle.Value + 1'}"
+                                            TextAlignment="Center" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Name" Header="Name" AllowSearchPanel="True">
+                            <dxg:GridColumn
+                                AllowSearchPanel="True"
+                                FieldName="Name"
+                                Header="Name">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Address" Header="Address" Width="90" AllowSearchPanel="True">
+                            <dxg:GridColumn
+                                Width="90"
+                                AllowSearchPanel="True"
+                                FieldName="Address"
+                                Header="Address">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DataTypeName" Header="Data type" Width="80" AllowSearchPanel="True">
+                            <dxg:GridColumn
+                                Width="80"
+                                AllowSearchPanel="True"
+                                FieldName="DataTypeName"
+                                Header="Data type">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Value" Header="Value" Width="80" AllowSearchPanel="False">
+                            <dxg:GridColumn
+                                Width="80"
+                                AllowSearchPanel="False"
+                                FieldName="Value"
+                                Header="Value">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Quality" Header="Quality" Width="80" AllowSearchPanel="True">
+                            <dxg:GridColumn
+                                Width="80"
+                                AllowSearchPanel="True"
+                                FieldName="Quality"
+                                Header="Quality">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="TimeStamp" Header="Timestamp" Width="80" AllowSearchPanel="False">
+                            <dxg:GridColumn
+                                Width="80"
+                                AllowSearchPanel="False"
+                                FieldName="TimeStamp"
+                                Header="Timestamp">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings DisplayFormat="HH:mm:ss">
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings DisplayFormat="HH:mm:ss" />
                                 </dxg:GridColumn.EditSettings>
                                 <!--<dxg:GridColumn.CellDisplayTemplate>
                                     <DataTemplate>
@@ -227,47 +351,62 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellDisplayTemplate>-->
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="RefreshRate" Header="Refresh rate (ms)" Width="105" AllowSearchPanel="False">
+                            <dxg:GridColumn
+                                Width="105"
+                                AllowSearchPanel="False"
+                                FieldName="RefreshRate"
+                                Header="Refresh rate (ms)">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="AccessPermission" Header="Access permission" Width="110" AllowSearchPanel="True">
+                            <dxg:GridColumn
+                                Width="110"
+                                AllowSearchPanel="True"
+                                FieldName="AccessPermission"
+                                Header="Access permission">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Gain" Header="Gain" Width="50" AllowSearchPanel="True">
+                            <dxg:GridColumn
+                                Width="50"
+                                AllowSearchPanel="True"
+                                FieldName="Gain"
+                                Header="Gain">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Offset" Header="Offset" Width="50" AllowSearchPanel="True">
+                            <dxg:GridColumn
+                                Width="50"
+                                AllowSearchPanel="True"
+                                FieldName="Offset"
+                                Header="Offset">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Description" Header="Description" Width="*" AllowSearchPanel="False">
+                            <dxg:GridColumn
+                                Width="*"
+                                AllowSearchPanel="False"
+                                FieldName="Description"
+                                Header="Description">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:TextEditSettings>
-                                    </dxe:TextEditSettings>
+                                    <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <!--#endregion-->
                         <!--#region ContextMenu-->
-                        <dxb:BarManager.DXContextMenu >
+                        <dxb:BarManager.DXContextMenu>
                             <dxb:PopupMenu>
-                                <dxb:BarButtonItemLink BarItemName="bAdd"/>
-                                <dxb:BarItemSeparator/>
-                                <dxb:BarButtonItemLink BarItemName="bCopy"/>
-                                <dxb:BarButtonItemLink BarItemName="bCut"/>
-                                <dxb:BarButtonItemLink BarItemName="bPaste"/>
-                                <dxb:BarButtonItemLink BarItemName="bDelete"/>
+                                <dxb:BarButtonItemLink BarItemName="bAdd" />
+                                <dxb:BarItemSeparator />
+                                <dxb:BarButtonItemLink BarItemName="bCopy" />
+                                <dxb:BarButtonItemLink BarItemName="bCut" />
+                                <dxb:BarButtonItemLink BarItemName="bPaste" />
+                                <dxb:BarButtonItemLink BarItemName="bDelete" />
                             </dxb:PopupMenu>
                         </dxb:BarManager.DXContextMenu>
                         <!--#endregion-->

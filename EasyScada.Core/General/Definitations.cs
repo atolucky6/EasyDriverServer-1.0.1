@@ -9,7 +9,7 @@ namespace EasyScada.Core
     /// </summary>
     public interface ISupportConnector
     {
-        IEasyDriverConnector Connector { get; set; }
+        IEasyDriverConnector Connector { get; }
     }
 
     /// <summary>
@@ -17,7 +17,7 @@ namespace EasyScada.Core
     /// </summary>
     public interface ISupportTag
     {
-        string PathToTag { get; set; }
+        string TagPath { get; set; }
 
         ITag LinkedTag { get; }
     }
@@ -42,16 +42,11 @@ namespace EasyScada.Core
         event EventHandler<TagWritedEventArgs> TagWrited;
     }
 
-    public interface ISupportWriteMultiTag
-    {
-        WriteTagCommandCollection WriteTagCommands { get; }
-    }
-
     [TypeConverter(typeof(WriteTriggerConverter))]
     public enum WriteTrigger
     {
         OnEnter,
         LostFocus,
-        ValueChanged
+        ValueChanged,
     }
 }

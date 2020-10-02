@@ -43,7 +43,7 @@ namespace WindowsFormsApp7
             //    Debug.WriteLine(userControl11.TestProperty);
             //}
 
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 200; i++)
             {
                 var renderPanel = new RenderPanel();
                 renderPanel.Size = new System.Drawing.Size(104, 85);

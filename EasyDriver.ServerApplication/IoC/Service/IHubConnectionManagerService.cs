@@ -126,7 +126,7 @@ namespace EasyScada.ServerApplication
                         this.hubConnection.Closed += OnDisconnected;
                         this.hubConnection.ConnectionSlow += OnConnectionSlow;
                       
-                        hubProxy.On("broadcastSubscribeData", (Action<string>)this.OnReceivedBroadcastMessage);
+                        hubProxy.On("broadcastSubscribeData", (Action<string>)OnReceivedBroadcastMessage);
                         OnStateChanged(new StateChange(ConnectionState.Connecting, this.hubConnection.State));
                     }
                 }
@@ -167,20 +167,18 @@ namespace EasyScada.ServerApplication
         /// <returns></returns>
         private bool Subscribe()
         {
-            string subscribeDataJson = JsonConvert.SerializeObject(StationCore.Childs.Select(x => x as IStationClient));
-            List<StationClient> subscribeData = JsonConvert.DeserializeObject<List<StationClient>>(subscribeDataJson);
-            if (subscribeData != null)
+            List<string> subscribeTags = new List<string>();
+            foreach (var item in StationCore.GetAllTags())
             {
-                foreach (var station in subscribeData)
-                    RemoveFirstStationPath(station, StationCore.Name.Length + 1);
-                subscribeDataJson = JsonConvert.SerializeObject(subscribeData);
-                if (hubConnection != null && hubConnection.State == ConnectionState.Connected)
-                {
-                    var subTask = hubProxy.Invoke<string>("subscribe", subscribeDataJson, StationCore.CommunicationMode.ToString(), StationCore.RefreshRate);
-                    Task.WaitAll(subTask);
-                    if (subTask.IsCompleted)
-                        return subTask.Result == "Ok";
-                }
+                subscribeTags.Add(item.Path.Remove(0, StationCore.Name.Length + 1));
+            }
+            string subscribeDataJson = JsonConvert.SerializeObject(subscribeTags);
+            if (hubConnection != null && hubConnection.State == ConnectionState.Connected)
+            {
+                var subTask = hubProxy.Invoke<string>("subscribe", subscribeDataJson, StationCore.CommunicationMode.ToString(), StationCore.RefreshRate);
+                Task.WaitAll(subTask);
+                if (subTask.IsCompleted)
+                    return subTask.Result == "Ok";
             }
             return false;
         }
@@ -190,20 +188,20 @@ namespace EasyScada.ServerApplication
             IsDisposed = true;
         }
 
-        public async Task<WriteResponse> WriteTagValue(WriteCommand writeCommand)
+        public async Task<WriteResponse> WriteTagValue(WriteCommand writeCommand, WriteResponse response)
         {
-            WriteResponse response = new WriteResponse();
             response.WriteCommand = writeCommand;
             if (hubConnection != null && hubConnection.State == ConnectionState.Connected)
             {
                 try
                 {
                     await semaphore.WaitAsync();
-                    response.SendTime = DateTime.Now;
-                    response = await hubProxy.Invoke<WriteResponse>("writeTagValueAsync", writeCommand);
+                    var res = await hubProxy.Invoke<WriteResponse>("writeTagValueAsync", writeCommand);
+                    response.Error = res.Error;
+                    response.IsSuccess = res.IsSuccess;
                     return response;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     response.Error = "Some error occur when send write command to remote station.";
                     return response;
@@ -260,7 +258,7 @@ namespace EasyScada.ServerApplication
             {
                 if (StationCore != null)
                 {
-                    foreach (var item in StationCore.Find(x => x is ITagCore, true))
+                    foreach (var item in StationCore.GetAllTags())
                     {
                         if (item is ITagCore tagCore)
                             tagCore.Quality = Quality.Bad;
@@ -288,15 +286,7 @@ namespace EasyScada.ServerApplication
                     // Re subscribe if needed
                     if (!IsSubscribed && hubConnection != null && hubConnection.State == ConnectionState.Connected)
                     {
-                        bool resSub = Subscribe();
-                        if (resSub)
-                        {
-                            IsSubscribed = true;
-                            foreach (var item in GetAllChildItems(StationCore))
-                            {
-                                cache.Add(item.Path.Remove(0, StationCore.Name.Length + 1), item);
-                            }
-                        }
+                        IsSubscribed = Subscribe();
                         delay = 100;
                     }
 
@@ -315,32 +305,50 @@ namespace EasyScada.ServerApplication
                                 if (getDataTask.IsCompleted)
                                 {
                                     string resJson = getDataTask.Result;
-
-                                    using (StringReader sr = new StringReader(resJson))
+                                    List<IClientTag> clientObjects = JsonConvert.DeserializeObject<List<IClientTag>>(resJson);
+                                    Hashtable cache = new Hashtable();
+                                    clientObjects.ForEach(x => cache.Add(x.Path, x));
+                                    var tags = StationCore.GetAllTags()?.ToList();
+                                    if (tags != null)
                                     {
-                                        JsonTextReader reader = new JsonTextReader(sr);
-
-                                        if (reader.Read())
+                                        tags.ForEach(x =>
                                         {
-                                            if (reader.TokenType == JsonToken.StartArray)
+                                            if (cache.ContainsKey(x.Parent))
                                             {
-                                                while (reader.Read())
-                                                {
-                                                    if (reader.TokenType == JsonToken.EndArray)
-                                                        break;
-                                                    else if (reader.TokenType == JsonToken.StartObject)
-                                                        UpdateStationManual(reader);
-                                                }
+                                                IClientTag clientTag = cache[x.Path] as IClientTag;
+                                                x.Value = clientTag.Value;
+                                                x.Quality = clientTag.Quality;
+                                                x.TimeStamp = clientTag.TimeStamp;
+                                                x.CommunicationError = clientTag.Error;
                                             }
-                                        }
+                                            else
+                                            {
+                                                x.Quality = Quality.Bad;
+                                                x.CommunicationError = "Object not found in server.";
+                                                x.TimeStamp = DateTime.Now;
+                                            }
+                                        });
                                     }
-
-                                    StationCore.LastRefreshTime = DateTime.Now;
                                 }
                             }
-                            catch { }
+                            catch
+                            {
+                                var tags = StationCore.GetAllTags()?.ToList();
+                                if (tags != null)
+                                {
+                                    tags.ForEach(x =>
+                                    {
+                                        x.Quality = Quality.Bad;
+                                        x.CommunicationError = "Some errors occur when get value from server.";
+                                        x.TimeStamp = DateTime.Now;
+                                    });
+                                }
+                            }
+                            finally
+                            {
+                                StationCore.LastRefreshTime = DateTime.Now;
+                            }
                             delay = StationCore.RefreshRate;
-
                         }
                         else { delay = 100; }
                     }
@@ -366,7 +374,7 @@ namespace EasyScada.ServerApplication
         /// The handler when the connection get broadcast message from server
         /// </summary>
         /// <param name="stationsJson"></param>
-        private async void OnReceivedBroadcastMessage(string stationsJson)
+        private async void OnReceivedBroadcastMessage(string resJson)
         {
             await Task.Run(async () =>
             {
@@ -381,32 +389,51 @@ namespace EasyScada.ServerApplication
                         !IsDisposed &&
                         StationCore.CommunicationMode == CommunicationMode.ReceiveFromServer)
                     {
-                        using (StringReader sr = new StringReader(stationsJson))
+                        try
                         {
-                            JsonTextReader reader = new JsonTextReader(sr);
-
-                            if (reader.Read())
+                            List<IClientTag> clientObjects = JsonConvert.DeserializeObject<List<IClientTag>>(resJson, new ListClientTagJsonConverter());
+                            Hashtable cache = new Hashtable();
+                            clientObjects.ForEach(x => cache.Add(StationCore.Name + "/" + x.Path, x));
+                            var tags = StationCore.GetAllTags()?.ToList();
+                            if (tags != null)
                             {
-                                if (reader.TokenType == JsonToken.StartArray)
+                                tags.ForEach(x =>
                                 {
-                                    while (reader.Read())
+                                    if (cache.ContainsKey(x.Path))
                                     {
-                                        if (reader.TokenType == JsonToken.EndArray)
-                                            break;
-                                        else if (reader.TokenType == JsonToken.StartObject)
-                                            UpdateStationManual(reader);
+                                        IClientTag clientTag = cache[x.Path] as IClientTag;
+                                        x.Value = clientTag.Value;
+                                        x.Quality = clientTag.Quality;
+                                        x.TimeStamp = clientTag.TimeStamp;
+                                        x.CommunicationError = clientTag.Error;
                                     }
-                                }
+                                    else
+                                    {
+                                        x.Quality = Quality.Bad;
+                                        x.CommunicationError = "Object not found in server.";
+                                        x.TimeStamp = DateTime.Now;
+                                    }
+                                });
                             }
                         }
-
+                        catch
+                        {
+                            var tags = StationCore.GetAllTags()?.ToList();
+                            if (tags != null)
+                            {
+                                tags.ForEach(x =>
+                                {
+                                    x.Quality = Quality.Bad;
+                                    x.CommunicationError = "Some errors occur when get value from server.";
+                                    x.TimeStamp = DateTime.Now;
+                                });
+                            }
+                        }
+                        finally { }
                         StationCore.LastRefreshTime = DateTime.Now;
                     }
                 }
-                catch (Exception ex)
-                {
-
-                }
+                catch (Exception) { }
                 finally
                 {
                     semaphore.Release();
@@ -414,361 +441,6 @@ namespace EasyScada.ServerApplication
                     Debug.WriteLine($"Handle broadcast message: {sw.ElapsedMilliseconds}");
                 }
             });
-        }
-
-        #endregion
-
-        #region Utils
-
-        private void UpdateStationManual(JsonTextReader reader)
-        {
-            reader.Read(); // Read property p (Path)
-            reader.Read(); // Read value of p
-            if (cache[reader.Value] is IStationCore station)
-            {
-                reader.Read(); // Read property r (LastRefreshTime)
-                reader.Read(); // Read value of r
-                station.LastRefreshTime = Convert.ToDateTime(reader.Value);
-
-                reader.Read(); // Read property s (ConnectionStatus)
-                reader.Read(); // Read value of s
-                if (Enum.TryParse((string)reader.Value, out ConnectionStatus status))
-                    station.ConnectionStatus = status;
-
-                reader.Read(); // Read property e (CommunicationError)
-                reader.Read(); // Read value of e
-                station.CommunicationError = (string)reader.Value;
-
-                reader.Read(); // Read property channels 
-                reader.Read(); // Read start array
-                while (reader.Read()) // Read start array
-                {
-                    if (reader.TokenType == JsonToken.EndArray)
-                        break;
-                    else if (reader.TokenType == JsonToken.StartObject)
-                        UpdateChannelManual(reader);
-                }
-
-                reader.Read(); // Read property stations 
-                reader.Read(); // Read start array
-                while (reader.Read()) // Read start array
-                {
-                    if (reader.TokenType == JsonToken.EndArray)
-                        break;
-                    else if (reader.TokenType == JsonToken.StartObject)
-                        UpdateStationManual(reader);
-                }
-
-                reader.Read(); // Read end object;
-            }
-            else
-            {
-                while (reader.Read())
-                    if (reader.TokenType == JsonToken.EndObject)
-                        break;
-            }
-        }
-
-        private void UpdateChannelManual(JsonTextReader reader)
-        {
-            reader.Read(); // Read property p (Path)
-            reader.Read(); // Read value of p
-
-            if (cache[reader.Value] is IChannelCore channel)
-            {
-                reader.Read(); // Read property r (LastRefreshTime)
-                reader.Read(); // Read value of r
-                channel.LastRefreshTime = Convert.ToDateTime(reader.Value);
-
-                reader.Read(); // Read property e (CommunicationError)
-                reader.Read(); // Read value of e
-                channel.CommunicationError = (string)reader.Value;
-
-                reader.Read(); // Read property devices array
-                reader.Read(); // Read start array
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonToken.EndArray)
-                        break;
-                    else if (reader.TokenType == JsonToken.StartObject)
-                        UpdateDeviceManual(reader);
-                }
-
-                reader.Read(); // Read end object;
-            }
-            else
-            {
-                while (reader.Read())
-                    if (reader.TokenType == JsonToken.EndObject)
-                        break;
-            }
-        }
-
-        private void UpdateDeviceManual(JsonTextReader reader)
-        {
-            reader.Read(); // Read property p (Path)
-            reader.Read(); // Read value of p
-
-            if (cache[reader.Value] is IDeviceCore device)
-            {
-                reader.Read(); // Read property r (LastRefreshTime)
-                reader.Read(); // Read value of r
-                device.LastRefreshTime = Convert.ToDateTime(reader.Value);
-
-                reader.Read(); // Read property e (CommunicationError)
-                reader.Read(); // Read value of e
-                device.CommunicationError = (string)reader.Value;
-
-                reader.Read(); // Read property tags array
-                reader.Read(); // Read start array
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonToken.EndArray)
-                        break;
-                    else if (reader.TokenType == JsonToken.StartObject)
-                        UpdateTagManual(reader);
-                }
-                reader.Read(); // Read end object
-            }
-            else
-            {
-                while (reader.Read())
-                    if (reader.TokenType == JsonToken.EndObject)
-                        break;
-            }
-
-        }
-
-        private void UpdateTagManual(JsonTextReader reader)
-        {
-            reader.Read(); // Read property p (Path)
-            reader.Read(); // Read value of p
-
-            if (cache[reader.Value] is ITagCore tag)
-            {
-                reader.Read(); // Read property v (Value)
-                reader.Read(); // Read value of v
-                tag.Value = (string)reader.Value;
-
-                reader.Read(); // Read property q (Quality)
-                reader.Read(); // Read value of q
-                if (Enum.TryParse(reader.Value.ToString(), out Quality quality))
-                    tag.Quality = quality;
-
-                reader.Read(); // Read property t (TimeStamp)
-                reader.Read(); // Read value of t
-                tag.TimeStamp = Convert.ToDateTime(reader.Value);
-
-                reader.Read(); // Read property e (CommunicationError)
-                reader.Read(); // Read value of e
-                tag.CommunicationError = (string)reader.Value;
-
-                reader.Read(); // Read end object
-            }
-            else
-            {
-                while (reader.Read())
-                    if (reader.TokenType == JsonToken.EndObject)
-                        break;
-            }
-        }
-
-        private void UpdateStationCore(StationClient station, IStationCore stationCore, string startPath)
-        {
-            if (station != null && stationCore != null)
-            {
-                stationCore.RefreshRate = station.RefreshRate;
-                stationCore.LastRefreshTime = station.LastRefreshTime;
-                stationCore.RemoteAddress = station.RemoteAddress;
-                stationCore.Port = station.Port;
-                stationCore.CommunicationMode = station.CommunicationMode;
-                stationCore.CommunicationError = station.Error;
-                stationCore.RefreshRate = station.RefreshRate;
-                stationCore.ParameterContainer.Parameters = station.Parameters;
-
-                List<IChannelCore> channelCores = new List<IChannelCore>();
-                List<IStationCore> stationCores = new List<IStationCore>();
-
-                foreach (var item in stationCore.Childs)
-                {
-                    if (item is IChannelCore)
-                        channelCores.Add(item as IChannelCore);
-                    else if (item is IStationCore)
-                        stationCores.Add(item as IStationCore);
-                }
-
-                if (channelCores != null && channelCores.Count > 0 && station.Channels != null)
-                {
-                    foreach (var channel in station.Channels)
-                    {
-                        if (stationCore.FirstOrDefault(x => x.Path.Remove(0, startPath.Length) == channel.Path) is IChannelCore channelCore)
-                        {
-                            UpdateChannelCore(channel, channelCore, startPath);
-                            channelCores.Remove(channelCore);
-                        }
-                    }
-                }
-                channelCores.ForEach(x => x.CommunicationError = "This channel could not be found on server.");
-
-                if (stationCores != null && stationCores.Count > 0 && station.RemoteStations != null)
-                {
-                    foreach (var remoteStation in station.RemoteStations)
-                    {
-                        if (stationCores.FirstOrDefault(x => x.Path.Remove(0, startPath.Length) == remoteStation.Path) is IStationCore updateStation)
-                        {
-                            UpdateStationCore(remoteStation, updateStation, startPath);
-                            stationCores.Remove(updateStation);
-                        }
-                    }
-                }
-                stationCores.ForEach(x => x.CommunicationError = "This station could not be found on server.");
-            }
-        }
-
-        private void UpdateChannelCore(ChannelClient channel, IChannelCore channelCore, string startPath)
-        {
-            if (channel != null && channelCore != null)
-            {
-                channelCore.CommunicationError = channel.Error;
-                channelCore.LastRefreshTime = channel.LastRefreshTime;
-                channelCore.ParameterContainer.Parameters = channel.Parameters;
-
-                List<IDeviceCore> deviceCores = channelCore.Childs.Select(x => x as IDeviceCore)?.ToList();
-                if (deviceCores != null && deviceCores.Count > 0 && channel.Devices != null)
-                {
-                    foreach (var device in channel.Devices)
-                    {
-                        if (deviceCores.FirstOrDefault(x => x.Path.Remove(0, startPath.Length) == device.Path) is IDeviceCore deviceCore)
-                        {
-                            UpdateDeviceCore(device, deviceCore, startPath);
-                            deviceCores.Remove(deviceCore);
-                        }
-                    }
-                }
-
-                deviceCores.ForEach(x => x.CommunicationError = "This device could not be found on server.");
-            }
-        }
-
-        private void UpdateDeviceCore(DeviceClient device, IDeviceCore deviceCore, string startPath)
-        {
-            if (device != null && deviceCore != null)
-            {
-                deviceCore.LastRefreshTime = device.LastRefreshTime;
-                deviceCore.CommunicationError = device.Error;
-                deviceCore.LastRefreshTime = device.LastRefreshTime;
-                deviceCore.ParameterContainer.Parameters = device.Parameters;
-
-                List<ITagCore> tagCores = deviceCore.Childs.Select(x => x as ITagCore)?.ToList();
-                if (tagCores != null && tagCores.Count > 0 && device.Tags != null)
-                {
-                    foreach (var tag in device.Tags)
-                    {
-                        if (tagCores.FirstOrDefault(x => x.Path.Remove(0, startPath.Length) == tag.Path) is ITagCore tagCore)
-                        {
-                            UpdateTagCore(tag, tagCore, startPath);
-                            tagCores.Remove(tagCore);
-                        }
-                    }
-                }
-
-                tagCores.ForEach(x =>
-                {
-                    x.Quality = Quality.Bad;
-                    x.CommunicationError = "This tag could not be found on server.";
-                });
-            }
-        }
-
-        private void UpdateTagCore(TagClient tag, ITagCore tagCore, string startPath)
-        {
-            if (tag != null && tagCore != null)
-            {
-                tagCore.Value = tag.Value;
-                tagCore.TimeStamp = tag.TimeStamp;
-                tagCore.Quality = tag.Quality;
-                tagCore.RefreshInterval = tag.RefreshInterval;
-                tagCore.RefreshRate = tag.RefreshRate;
-                tagCore.Address = tag.Address;
-                tagCore.DataTypeName = tag.DataType;
-                tagCore.CommunicationError = tag.Error;
-                tagCore.ParameterContainer.Parameters = tag.Parameters;
-                tagCore.AccessPermission = tag.AccessPermission;
-            }
-        }
-
-        private void RemoveFirstStationPath(StationClient station, int length)
-        {
-            if (station != null)
-            {
-                station.Path = station.Path.Remove(0, length);
-                if (station.RemoteStations != null)
-                {
-                    foreach (var remoteStation in station.RemoteStations)
-                        RemoveFirstStationPath(remoteStation, length);
-                }
-
-                if (station.Channels != null)
-                {
-                    foreach (var channel in station.Channels)
-                        RemoveFirstStationPath(channel, length);
-                }
-            }
-        }
-
-        private void RemoveFirstStationPath(ChannelClient channel, int length)
-        {
-            if (channel != null)
-            {
-                channel.Path = channel.Path.Remove(0, length);
-                if (channel.Devices != null)
-                {
-                    foreach (DeviceClient device in channel.Devices)
-                    {
-                        RemoveFirstStationPath(device, length);
-                    }
-                }
-            }
-        }
-
-        private void RemoveFirstStationPath(DeviceClient device, int length)
-        {
-            if (device != null)
-            {
-                device.Path = device.Path.Remove(0, length);
-                if (device.Tags != null)
-                {
-                    foreach (var tag in device.Tags)
-                    {
-                        RemoveFirstStationPath(tag, length);
-                    }
-                }
-            }
-        }
-
-        private void RemoveFirstStationPath(TagClient tag, int length)
-        {
-            if (tag != null)
-                tag.Path = tag.Path.Remove(0, length);
-        }
-
-        private IEnumerable<ICoreItem> GetAllChildItems(IGroupItem groupItem)
-        {
-            if (groupItem != null)
-            {
-                if (groupItem.Childs != null)
-                {
-                    foreach (var item in groupItem.Childs)
-                    {
-                        if (item is IGroupItem childGroup)
-                        {
-                            yield return item as IGroupItem;
-                            foreach (var child in GetAllChildItems(childGroup))
-                                yield return child as ICoreItem;
-                        }
-                    }
-                }
-            }
         }
 
         #endregion

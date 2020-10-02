@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ComponentFactory.Easy.Toolkit;
+using EasyScada.Core;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -32,14 +34,12 @@ namespace EasyScada.Winforms.Controls
             actionItems.Add(new DesignerActionPropertyItem("Name", "Name", DesignerCategory.DESIGN, ""));
 
             actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.APPEARANCE));
-            actionItems.Add(new DesignerActionPropertyItem("Orientation", "Orientation", DesignerCategory.APPEARANCE, ""));
+            actionItems.Add(new DesignerActionPropertyItem("Text", "Text", DesignerCategory.APPEARANCE, ""));
+            actionItems.Add(new DesignerActionPropertyItem("Font", "Font", DesignerCategory.APPEARANCE, ""));
+            actionItems.Add(new DesignerActionPropertyItem("BackColor", "BackColor", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("ForeColor", "ForeColor", DesignerCategory.APPEARANCE, ""));
-
-            actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.VALUES));
-            actionItems.Add(new DesignerActionPropertyItem("Text", "Text", DesignerCategory.VALUES, ""));
-            actionItems.Add(new DesignerActionPropertyItem("ExtraText", "Extra Text", DesignerCategory.VALUES, ""));
-            actionItems.Add(new DesignerActionPropertyItem("Image", "Image", DesignerCategory.VALUES, ""));
-
+            actionItems.Add(new DesignerActionPropertyItem("BorderColor", "BorderColor", DesignerCategory.APPEARANCE, ""));
+            actionItems.Add(new DesignerActionPropertyItem("BorderThickness", "BorderThickness", DesignerCategory.APPEARANCE, ""));
         }
 
         #region Properties
@@ -50,47 +50,40 @@ namespace EasyScada.Winforms.Controls
             set { BaseControl.SetValue(value); }
         }
 
-        public VisualOrientation Orientation
-        {
-            get { return BaseControl.Orientation; }
-            set { BaseControl.SetValue(value); }
-        }
-
-        public Color ForeColor
-        {
-            get { return BaseControl.StateCommon.Content.ShortText.Color1; }
-            set { BaseControl.StateCommon.Content.ShortText.Color1 = value; }
-        }
-
         public string Text
         {
             get { return BaseControl.Text; }
             set { BaseControl.SetValue(value); }
         }
 
-        public string ExtraText
+        public Color BackColor
         {
-            get { return BaseControl.Values.ExtraText; }
-            set
-            {
-                if (BaseControl.Values.ExtraText != value)
-                {
-                    BaseControl.Values.ExtraText = value;
-                }
-            }
+            get => BaseControl.BackColor;
+            set => BaseControl.SetValue(value);
         }
 
-        public Image Image
+        public Color ForeColor
         {
-            get { return BaseControl.Values.Image; }
+            get => BaseControl.ForeColor;
+            set => BaseControl.SetValue(value);
+        }
 
-            set
-            {
-                if (BaseControl.Values.Image != value)
-                {
-                    BaseControl.Values.Image = value;
-                }
-            }
+        public Font Font
+        {
+            get => BaseControl.Font;
+            set => BaseControl.SetValue(value);
+        }
+
+        public Color BorderColor
+        {
+            get => BaseControl.BorderColor;
+            set => BaseControl.SetValue(value);
+        }
+
+        public int BorderThickness
+        {
+            get => BaseControl.BorderThickness;
+            set => BaseControl.SetValue(value);
         }
 
         #endregion

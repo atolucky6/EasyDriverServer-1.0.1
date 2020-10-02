@@ -50,10 +50,19 @@ namespace EasyDriverPlugin
         /// </summary>
         int RefreshInterval { get; set; }  
 
+        /// <summary>
+        /// Hệ số nhân với Value
+        /// </summary>
         double Gain { get; set; }
 
+        /// <summary>
+        /// Hệ số bù cộng với Value
+        /// </summary>
         double Offset { get; set; }
 
+        /// <summary>
+        /// Kiểu dữ liệu của Tag
+        /// </summary>
         IDataType DataType { get; set; }
 
         /// <summary>
@@ -61,7 +70,12 @@ namespace EasyDriverPlugin
         /// </summary>
         string DataTypeName { get; set; }
 
+        /// <summary>
+        /// Thông tin lỗi của tag
+        /// </summary>
         string CommunicationError { get; set; }
+
+        ConnectionStatus ConnectionStatus { get; set; }
 
         /// <summary>
         /// Hàm lấy tất cả các <see cref="ITagCore"/> bên trong Tag này
@@ -69,16 +83,6 @@ namespace EasyDriverPlugin
         /// <returns></returns>
         IEnumerable<ITagCore> GetAllChildTag();
 
-        /// <summary>
-        /// Sự kiện giá trị của <see cref="ITagCore"/> thay đổi
-        /// </summary>
-        event EventHandler<TagValueChangedEventArgs> ValueChanged;
-
-        /// <summary>
-        /// Sự kiện trạng thái của <see cref="ITagCore"/> thay đổi
-        /// </summary>
-        event EventHandler<TagQualityChangedEventArgs> QualityChanged;
-
-        Indexer<ITagCore> Tags { get; }
+        event EventHandler<NameChangedEventArgs> NameChanged;
     }
 }

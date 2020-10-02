@@ -38,7 +38,11 @@ namespace EasyDriverPlugin
         /// <summary>
         /// Bit cho biết đối tượng chỉ được đọc hay không
         /// </summary>
-        bool IsReadOnly { get; }
+        bool IsReadOnly { get; set; }
+
+        bool Enabled { get; set; }
+     
+        bool? IsChecked { get; set; }
 
         /// <summary>
         /// Clone đối tượng và trả về kết quả. Hàm chỉ clone lại các kiểu dữ liệu nguyên thủy
@@ -81,5 +85,15 @@ namespace EasyDriverPlugin
         /// </summary>
         /// <param name="errorInfo"></param>
         void GetErrors(ref IErrorInfo errorInfo);
+
+        /// <summary>
+        /// Sự kiện giá trị của <see cref="ITagCore"/> thay đổi
+        /// </summary>
+        event EventHandler<TagValueChangedEventArgs> ValueChanged;
+
+        /// <summary>
+        /// Sự kiện trạng thái của <see cref="ITagCore"/> thay đổi
+        /// </summary>
+        event EventHandler<TagQualityChangedEventArgs> QualityChanged;
     }
 }

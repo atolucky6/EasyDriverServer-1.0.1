@@ -8,14 +8,14 @@ using System.Linq;
 namespace EasyDriver.Core
 {
     [Serializable]
-    public class RemoteStation : GroupItemBase, IStationCore, IStationClient
+    public class RemoteStation : GroupItemBase, IStationCore, IClientObject
     {
         #region IStationCore
 
         public RemoteStation(IGroupItem parent) : base(parent, true)
         {
             SyncObject = new object();
-            StationType = StationType.Remote;
+            StationType = StationType = "Remote";
             ParameterContainer = new ParameterContainer();
         }
 
@@ -30,7 +30,7 @@ namespace EasyDriver.Core
         public string CommunicationError { get; set; }
 
         [JsonIgnore]
-        public StationType StationType { get; set; }
+        public string StationType { get; set; }
 
         [JsonIgnore]
         public string OpcDaServerName { get; set; }
@@ -78,74 +78,42 @@ namespace EasyDriver.Core
 
         #endregion
 
-        #region IStation
+        #region IClientObject
 
         [JsonProperty("Name")]
-        string IStationClient.Name => Name;
-
-        [JsonProperty("StationType")]
-        StationType IStationClient.StationType => StationType;
-
-        [JsonProperty("RemoteAddress")]
-        string IStationClient.RemoteAddress => RemoteAddress;
-
-        [JsonProperty("OpcDaServerName")]
-        string IStationClient.OpcDaServerName => OpcDaServerName;
+        string IClientObject.Name => Name;
 
         [JsonProperty("Path")]
-        string IPath.Path => Path;
+        string IClientObject.Path => Path;
 
-        [JsonProperty("Port")]
-        ushort IStationClient.Port => Port;
-
-        [JsonProperty("RefreshRate")]
-        int IStationClient.RefreshRate => RefreshRate;
-
-        [JsonProperty("LastRefreshTime")]
-        DateTime IStationClient.LastRefreshTime => LastRefreshTime;
-
-        [JsonProperty("CommunicationMode")]
-        CommunicationMode IStationClient.CommunicationMode => CommunicationMode;
-
-        [JsonProperty("ConnectionStatus")]
-        ConnectionStatus IStationClient.ConnectionStatus => ConnectionStatus;
+        [JsonProperty("Description")]
+        string IClientObject.Description => Description;
 
         [JsonProperty("Error")]
-        string IStationClient.Error => CommunicationError;
+        string IClientObject.Error => CommunicationError;
 
-        [JsonProperty("Parameters")]
-        Dictionary<string, object> IStationClient.Parameters => ParameterContainer.Parameters;
+        [JsonProperty("ItemType")]
+        ItemType IClientObject.ItemType => ItemType.RemoteStation;
 
-        [JsonProperty("Channels")]
-        List<IChannelClient> IStationClient.Channels
+        [JsonProperty("Childs")]
+        List<IClientObject> IClientObject.Childs => this.GetClientObjects();
+
+        [JsonProperty("ConnectionStatus")]
+        ConnectionStatus IClientObject.ConnectionStatus => ConnectionStatus;
+
+        [JsonProperty("DisplayInfo")]
+        string IClientObject.DisplayInfo => !string.IsNullOrEmpty(OpcDaServerName) ? OpcDaServerName : $"{RemoteAddress}:{Port}";
+
+        [field: NonSerialized]
+        private Dictionary<string, string> properties;
+        public Dictionary<string, string> Properties
         {
-            get { return Childs.Select(x => x as IChannelClient)?.ToList(); }
-        }
-
-        [JsonProperty("RemoteStations")]
-        List<IStationClient> IStationClient.RemoteStations
-        {
-            get { return Childs.Select(x => x as IStationClient)?.ToList(); }
-        }
-
-        public T GetItem<T>(string pathToObject) where T : class, IPath
-        {
-            if (string.IsNullOrWhiteSpace(pathToObject))
-                return null;
-            if (Path == pathToObject)
-                return this as T;
-            if (pathToObject.StartsWith(Path))
+            get
             {
-                foreach (var child in Childs)
-                {
-                    if (child is IPath item)
-                    {
-                        if (pathToObject.StartsWith(item.Path))
-                            return item.GetItem<T>(pathToObject);
-                    }
-                }
+                if (properties == null)
+                    properties = new Dictionary<string, string>();
+                return properties;
             }
-            return null;
         }
 
         #endregion

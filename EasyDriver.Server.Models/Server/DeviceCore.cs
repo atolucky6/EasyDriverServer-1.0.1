@@ -2,12 +2,11 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EasyDriver.Core
 {
     [Serializable]
-    public class DeviceCore : GroupItemBase, IDeviceCore, IDeviceClient
+    public class DeviceCore : GroupItemBase, IDeviceCore, IClientObject
     {
         #region IDeviceCore
 
@@ -15,14 +14,12 @@ namespace EasyDriver.Core
         {
             SyncObject = new object();
             ParameterContainer = new ParameterContainer();
-            Tags = new Indexer<ITagCore>(this);
+            HaveTags = true;
+            Tags = new TagCollection(this);
         }
 
         [JsonIgnore]
         public object SyncObject { get; protected set; }
-
-        [JsonIgnore]
-        public Indexer<ITagCore> Tags { get; protected set; }
 
         [JsonIgnore]
         public IParameterContainer ParameterContainer { get; set; }
@@ -36,6 +33,9 @@ namespace EasyDriver.Core
         [JsonIgnore]
         public string CommunicationError { get; set; }
 
+        [JsonIgnore]
+        public ConnectionStatus ConnectionStatus { get; set; }
+
         public override string GetErrorOfProperty(string propertyName)
         {
             return string.Empty;
@@ -47,49 +47,55 @@ namespace EasyDriver.Core
 
         #endregion
 
-        #region IDevice
+        #region IHaveTags
+
+        [JsonIgnore]
+        public bool HaveTags { get; set; }
+
+        [JsonIgnore]
+        public TagCollection Tags { get; protected set; }
+
+        #endregion
+
+        #region IClientObject
 
         [JsonProperty("Name")]
-        string IDeviceClient.Name => Name;
+        string IClientObject.Name => Name;
 
         [JsonProperty("Path")]
-        string IPath.Path => Path;
+        string IClientObject.Path => Path;
 
-        [JsonProperty("Parameters")]
-        Dictionary<string, object> IDeviceClient.Parameters => ParameterContainer.Parameters;
-
-        [JsonProperty("LastRefreshTime")]
-        DateTime IDeviceClient.LastRefreshTime => LastRefreshTime;
+        [JsonProperty("Description")]
+        string IClientObject.Description => Description;
 
         [JsonProperty("Error")]
-        string IDeviceClient.Error => CommunicationError;
+        string IClientObject.Error => CommunicationError;
 
-        [JsonProperty("Tags")]
-        List<ITagClient> IDeviceClient.Tags
-        {
-            get { return Childs.Select(x => x as ITagClient)?.ToList(); }
-        }
+        [JsonProperty("ItemType")]
+        ItemType IClientObject.ItemType => ItemType.Device;
 
-        public T GetItem<T>(string pathToObject) where T : class, IPath
+        [JsonProperty("Childs")]
+        List<IClientObject> IClientObject.Childs => this.GetClientObjects();
+
+        [JsonProperty("DisplayInfo")]
+        string IClientObject.DisplayInfo => "";
+
+        [JsonProperty("ConnectionStatus")]
+        ConnectionStatus IClientObject.ConnectionStatus => ConnectionStatus;
+
+        [field: NonSerialized]
+        private Dictionary<string, string> properties;
+        public Dictionary<string, string> Properties
         {
-            if (string.IsNullOrWhiteSpace(pathToObject))
-                return null;
-            if (Path == pathToObject)
-                return this as T;
-            if (pathToObject.StartsWith(Path))
+            get
             {
-                foreach (var child in Childs)
-                {
-                    if (child is IPath item)
-                    {
-                        if (pathToObject == item.Path)
-                            return item as T;
-                    }
-                }
+                if (properties == null)
+                    properties = new Dictionary<string, string>();
+                return properties;
             }
-            return null;
         }
 
         #endregion
     }
+
 }

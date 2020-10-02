@@ -17,8 +17,9 @@ namespace EasyDriver.OmronHostLink
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
-        public IDeviceCore Device => TagEdit?.Parent as IDeviceCore;
+        public IDeviceCore Device => TagEdit.FindParent<IDeviceCore>(x => x is IDeviceCore);
         public ITagCore TagEdit { get; set; }
+        public IHaveTag HaveTagObj => TagEdit.Parent as IHaveTag;
         public List<AccessPermission> AccessPermissionSource { get; set; }
         public List<IDataType> DataTypeSource { get; set; }
 
@@ -106,7 +107,7 @@ namespace EasyDriver.OmronHostLink
                 return;
             }
 
-            if (Device.Childs.FirstOrDefault(x => x != TagEdit && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
+            if (HaveTagObj.Tags.FirstOrDefault(x => x != TagEdit && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The tag name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;

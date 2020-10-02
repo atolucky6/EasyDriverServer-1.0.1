@@ -125,13 +125,13 @@ namespace EasyDriver.OmronHostLink
                 Channel.Name = txbName.Text?.Trim();
                 Driver.Channel.ParameterContainer.DisplayName = "ModbusRTU Comunication Parameters";
                 Driver.Channel.ParameterContainer.DisplayParameters = "ModbusRTU Comunication Parameters";
-                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value;
-                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value;
+                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
+                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
 
                 ((Parent as FrameworkElement).Parent as Window).Tag = Channel;
                 ((Parent as FrameworkElement).Parent as Window).Close();

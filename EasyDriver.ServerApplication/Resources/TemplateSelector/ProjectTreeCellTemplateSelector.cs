@@ -15,48 +15,36 @@ namespace EasyScada.ServerApplication
         public DataTemplate HubTemplate { get; set; }
         public DataTemplate LocalStationTemplate { get; set; }
         public DataTemplate RemoteStationTemplate { get; set; }
-        public DataTemplate RemoteOpcDaStationTemplate { get; set; }
+        public DataTemplate GroupTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (item != null)
             {
                 var row = (item as GridCellData).Row;
-                if (row is IStationCore stationCore)
+                if (row is IClientObject clientObject)
                 {
-                    switch (stationCore.StationType)
+                    switch (clientObject.ItemType)
                     {
-                        case StationType.Local:
+                        case ItemType.ConnectionSchema:
+                            break;
+                        case ItemType.LocalStation:
                             return LocalStationTemplate;
-                        case StationType.Remote:
+                        case ItemType.RemoteStation:
                             return RemoteStationTemplate;
-                        case StationType.OPC_DA:
-                            return RemoteOpcDaStationTemplate;
+                        case ItemType.Channel:
+                            return ChannelTemplate;
+                        case ItemType.Device:
+                            return DeviceTemplate;
+                        case ItemType.Tag:
+                            return TagTemplate;
+                        case ItemType.Group:
+                            return GroupTemplate;
                         default:
                             break;
                     }
                 }
-                if (row is StationClient station)
-                {
-                    switch (station.StationType)
-                    {
-                        case StationType.Local:
-                            return LocalStationTemplate;
-                        case StationType.Remote:
-                            return RemoteStationTemplate;
-                        case StationType.OPC_DA:
-                            return RemoteOpcDaStationTemplate;
-                        default:
-                            break;
-                    }
-                }
-                if (row is IChannelCore || row is ChannelClient)
-                    return ChannelTemplate;
-                if (row is IDeviceCore || row is DeviceClient)
-                    return DeviceTemplate;
-                if (row is TagClient)
-                    return TagTemplate;
-                if (row is HubModel)
+                else if (row is HubModel)
                     return HubTemplate;
             }
             return DefaultTemplate;

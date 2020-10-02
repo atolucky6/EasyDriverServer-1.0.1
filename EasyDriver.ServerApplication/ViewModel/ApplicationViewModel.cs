@@ -9,6 +9,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace EasyScada.ServerApplication
 {
@@ -109,37 +111,44 @@ namespace EasyScada.ServerApplication
                     {
                         if (panel is TagCollectionViewModel tagCollectionVM)
                         {
-                            if (tagCollectionVM.IsOpened && tagCollectionVM.Parent is IDeviceCore deviceCore)
+                            if (tagCollectionVM.IsOpened && tagCollectionVM.Token is IHaveTag objHaveTags)
                             {
-                                foreach (var item in deviceCore.Childs.ToArray())
+                                if (objHaveTags.HaveTags && objHaveTags.Tags != null)
                                 {
-                                    if (item is TagCore tag)
+                                    foreach (var item in objHaveTags.Tags.ToArray())
                                     {
-                                        if (tag.NeedToUpdateValue)
+                                        if (item is TagCore tag)
                                         {
-                                            tag.NeedToUpdateValue = false;
-                                            DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                                            if (tag.NeedToUpdateValue)
                                             {
-                                                tag.RaisePropertyChanged("Value");
-                                            }));
-                                        }
+                                                tag.NeedToUpdateValue = false;
+                                                Application.Current.Dispatcher.Invoke(() =>
+                                                {
+                                                    tag.RaisePropertyChanged("Value");
 
-                                        if (tag.NeedToUpdateTimeStamp)
-                                        {
-                                            tag.NeedToUpdateTimeStamp = false;
-                                            DispatcherFacade.AddToDispatcherQueue(new Action(() =>
-                                            {
-                                                tag.RaisePropertyChanged("TimeStamp");
-                                            }));
-                                        }
+                                                });
+                                                DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                                                {
+                                                }));
+                                            }
 
-                                        if (tag.NeedToUpdateQuality)
-                                        {
-                                            tag.NeedToUpdateQuality = false;
-                                            DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                                            if (tag.NeedToUpdateTimeStamp)
                                             {
-                                                tag.RaisePropertyChanged("Quality");
-                                            }));
+                                                tag.NeedToUpdateTimeStamp = false;
+                                                DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                                                {
+                                                    tag.RaisePropertyChanged("TimeStamp");
+                                                }));
+                                            }
+
+                                            if (tag.NeedToUpdateQuality)
+                                            {
+                                                tag.NeedToUpdateQuality = false;
+                                                DispatcherFacade.AddToDispatcherQueue(new Action(() =>
+                                                {
+                                                    tag.RaisePropertyChanged("Quality");
+                                                }));
+                                            }
                                         }
                                     }
                                 }

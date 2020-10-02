@@ -31,7 +31,7 @@ namespace EasyScada.ServerApplication
                 if (string.IsNullOrEmpty(CurrentSelectedPath))
                     return string.Empty;
                 else
-                    return $"{CurrentSelectedPath}\\{Name?.Trim()}.esprj";
+                    return $"{CurrentSelectedPath}\\{Name?.Trim()}.json";
             }
         }
 

@@ -75,6 +75,7 @@
     <Compile Include="FormConnectionSchema.Designer.cs">
       <DependentUpon>FormConnectionSchema.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helper.cs" />
     <Compile Include="ProjectTreeView.cs">
       <SubType>Component</SubType>
     </Compile>

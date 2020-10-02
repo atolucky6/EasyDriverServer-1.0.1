@@ -10,7 +10,6 @@ namespace EasyScada.Core
 {
     public class TagPathConverter : StringConverter
     {
-
         static TagPathConverter()
         {
 
@@ -65,15 +64,11 @@ namespace EasyScada.Core
 
         public static object test;
 
-        private string GetCurrentDesignPath(ITypeDescriptorContext context)
+        private string GetCurrentDesignPath(IServiceProvider context)
         {
             try
             {
-                if (test == null)
-                {
-                    test = new object();
-                    MessageBox.Show("1");
-                }
+     
                 DTE dte = (DTE)context.GetService(typeof(DTE));
                 if (dte.ActiveDocument != null)
                 {
@@ -91,46 +86,46 @@ namespace EasyScada.Core
                     //    }
                     //}
 
-                    if (dte.ActiveDocument.ProjectItem != null)
-                    {
-                        FileCodeModel model = (FileCodeModel)dte.ActiveDocument.ProjectItem.FileCodeModel;
-                        foreach (CodeElement codeElement in model.CodeElements)
-                        {
-                            if (codeElement.Kind == vsCMElement.vsCMElementNamespace)
-                            {
-                                foreach (CodeElement child in codeElement.Children)
-                                {
-                                    if (child is CodeClass codeClass)
-                                    {
-                                        foreach (var item in child.Children)
-                                        {
-                                            if (item is CodeProperty prop)
-                                            {
-                                                if (prop.Name == "Tag1")
-                                                    codeClass.RemoveMember(item);
+                    //if (dte.ActiveDocument.ProjectItem != null)
+                    //{
+                    //    FileCodeModel model = (FileCodeModel)dte.ActiveDocument.ProjectItem.FileCodeModel;
+                    //    foreach (CodeElement codeElement in model.CodeElements)
+                    //    {
+                    //        if (codeElement.Kind == vsCMElement.vsCMElementNamespace)
+                    //        {
+                    //            foreach (CodeElement child in codeElement.Children)
+                    //            {
+                    //                if (child is CodeClass codeClass)
+                    //                {
+                    //                    foreach (var item in child.Children)
+                    //                    {
+                    //                        if (item is CodeProperty prop)
+                    //                        {
+                    //                            if (prop.Name == "Tag1")
+                    //                                codeClass.RemoveMember(item);
 
-                                            }
-                                        }
-                                        var edit = (EditPoint)codeClass.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint();
-                                        edit.Insert(Environment.NewLine);
-                                        edit.Indent(null, 2);
-                                        edit.Insert("public EasyScada.Core.ITag Tag1 { get; set; }" + Environment.NewLine);
+                    //                        }
+                    //                    }
+                    //                    var edit = (EditPoint)codeClass.GetStartPoint(vsCMPart.vsCMPartBody).CreateEditPoint();
+                    //                    edit.Insert(Environment.NewLine);
+                    //                    edit.Indent(null, 2);
+                    //                    edit.Insert("public EasyScada.Core.ITag Tag1 { get; set; }" + Environment.NewLine);
 
-                                    }
-                                }
+                    //                }
+                    //            }
                                 
-                            }
-                        }
-                    }
+                    //        }
+                    //    }
+                    //}
 
                     // Get Code
-                    TextDocument currentDocument = (TextDocument)dte.ActiveDocument.Object("TextDocument");
-                    if (currentDocument != null)
-                    {
-                        EnvDTE.EditPoint editPoint = currentDocument.StartPoint.CreateEditPoint();
-                        string res = editPoint.GetText(currentDocument.EndPoint);
-                        MessageBox.Show(res);
-                    }
+                    //TextDocument currentDocument = (TextDocument)dte.ActiveDocument.Object("TextDocument");
+                    //if (currentDocument != null)
+                    //{
+                    //    EnvDTE.EditPoint editPoint = currentDocument.StartPoint.CreateEditPoint();
+                    //    string res = editPoint.GetText(currentDocument.EndPoint);
+                    //    MessageBox.Show(res);
+                    //}
                     return Path.GetDirectoryName(dte.ActiveDocument.FullName) + "\\bin";
                 }
                 //MessageBox.Show(dte.ActiveDocument.Path);

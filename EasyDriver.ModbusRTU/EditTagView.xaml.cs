@@ -17,7 +17,8 @@ namespace EasyDriver.ModbusRTU
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
-        public IDeviceCore Device => TagEdit?.Parent as IDeviceCore;
+        public IGroupItem ParentItem => TagEdit?.Parent;
+        public IHaveTag HaveTagObj => ParentItem as IHaveTag;
         public ITagCore TagEdit { get; set; }
         public List<AccessPermission> AccessPermissionSource { get; set; }
         public List<IDataType> DataTypeSource { get; set; }
@@ -93,7 +94,7 @@ namespace EasyDriver.ModbusRTU
                 return;
             }
 
-            if (Device.Childs.FirstOrDefault(x => x != TagEdit && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
+            if (HaveTagObj.Tags.FirstOrDefault(x => x != TagEdit && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The tag name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -145,7 +146,7 @@ namespace EasyDriver.ModbusRTU
             TagEdit.RefreshRate = (int)spnScanRate.Value;
             TagEdit.Gain = (double)spnGain.Value;
             TagEdit.Offset = (double)spnOffset.Value;
-            TagEdit.ByteOrder = Device.ByteOrder;
+            TagEdit.ByteOrder = ParentItem.FindParent<IDeviceCore>(x => x is IDeviceCore).ByteOrder;
             TagEdit.ParameterContainer.DisplayName = "Tag Parameters";
             TagEdit.ParameterContainer.DisplayParameters = "Tag Parameters";
 

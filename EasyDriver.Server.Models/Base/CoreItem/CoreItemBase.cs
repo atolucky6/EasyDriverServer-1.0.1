@@ -25,6 +25,14 @@ namespace EasyDriver.Core
             set => SetProperty(value);
         }
 
+        [Category(PropertyCategory.General), DisplayName("Enabled")]
+        [JsonIgnore]
+        public virtual bool Enabled
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
+
         /// <summary>
         /// Đường dẫn đến đối tượng
         /// </summary>
@@ -81,7 +89,15 @@ namespace EasyDriver.Core
         [Display(AutoGenerateField = false)]
         [Browsable(false)]
         [JsonIgnore]
-        public virtual bool IsReadOnly { get; private set; }
+        public virtual bool IsReadOnly { get; set; }
+
+        [Browsable(false)]
+        [JsonIgnore]
+        public virtual bool? IsChecked
+        {
+            get => GetProperty<bool?>();
+            set => SetProperty(value);
+        }
 
         #endregion
 
@@ -95,6 +111,13 @@ namespace EasyDriver.Core
             SetProperty(DateTime.Now, nameof(ModifiedDate), false);
             IsChanged = false;
         }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<TagValueChangedEventArgs> ValueChanged;
+        public event EventHandler<TagQualityChangedEventArgs> QualityChanged;
 
         #endregion
 

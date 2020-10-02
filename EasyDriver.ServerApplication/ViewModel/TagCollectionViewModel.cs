@@ -60,9 +60,11 @@ namespace EasyScada.ServerApplication
 
         public virtual object CurrentItem { get; set; }
 
-        public virtual ObservableCollection<object> SelectedItems { get; set; }
+        public virtual ObservableCollection<object> SelectedItems { get; set; } = new ObservableCollection<object>();
 
-        public virtual IDeviceCore Parent => Token as IDeviceCore;
+        public virtual IGroupItem Parent => Token as IGroupItem;
+
+        public virtual IHaveTag ObjectHaveTag => Token as IHaveTag;
 
         public virtual ObservableCollection<object> ProjectChilds { get => ProjectManagerService?.CurrentProject?.Childs; }
 
@@ -86,7 +88,7 @@ namespace EasyScada.ServerApplication
 
         public virtual void OpenOnDoubleClick(object item)
         {
-            if (IsBusy && !Parent.IsReadOnly)
+            if (IsBusy || Parent.IsReadOnly)
                 return;
 
             IsBusy = true;
@@ -130,7 +132,7 @@ namespace EasyScada.ServerApplication
                     {
                         using (Transaction transaction = ReverseService.Begin("Add Tag"))
                         {
-                            Parent.Childs.AsReversibleCollection().AddRange(newTags.ToArray());
+                            ObjectHaveTag.Tags.AsReversibleCollection().AddRange(newTags.ToArray());
                             this.SetPropertyReversible(x => x.SelectedItems, new ObservableCollection<object>(newTags));
 
                             transaction.Reversing += (s, e) =>
@@ -148,7 +150,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanAdd()
         {
-            return !IsBusy && !Parent.IsReadOnly;
+            return !IsBusy && !Parent.IsReadOnly && ObjectHaveTag.HaveTags;
         }
 
         public void InsertAbove()
@@ -162,26 +164,26 @@ namespace EasyScada.ServerApplication
                 {
                     if (newTags.Count > 0)
                     {
-                        int selectedIndex = Parent.Childs.IndexOf(SelectedItem);
+                        int selectedIndex = ObjectHaveTag.Tags.IndexOf(SelectedItem);
                         if (selectedIndex > -1)
                         {
                             using (Transaction transaction = ReverseService.Begin("Insert Tag"))
                             {
-                                Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, true);
-                                ReversibleCollection<object> reversibleCollection = Parent.Childs.AsReversibleCollection();
+                                ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, true);
+                                ReversibleCollection<object> reversibleCollection = ObjectHaveTag.Tags.AsReversibleCollection();
                                 for (int i = newTags.Count - 1; i <= 0; i--)
                                 {
                                     reversibleCollection.Insert(selectedIndex, newTags[i]);
                                 }
-                                Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, false);
-                                Parent.Childs.NotifyResetCollection();
+                                ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, false);
+                                ObjectHaveTag.Tags.NotifyResetCollection();
                                 transaction.Reversing += (s, e) =>
                                 {
                                     WorkspaceManagerService.OpenPanel(this);
                                 };
                                 transaction.Reversed += (s, e) =>
                                 {
-                                    Parent.Childs.NotifyResetCollection();
+                                    ObjectHaveTag.Tags.NotifyResetCollection();
                                 };
                                 transaction.Commit();
                             }
@@ -206,28 +208,28 @@ namespace EasyScada.ServerApplication
             {
                 if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is List<ITagCore> newTags)
                 {
-                    int selectedIndex = Parent.Childs.IndexOf(SelectedItem);
+                    int selectedIndex = ObjectHaveTag.Tags.IndexOf(SelectedItem);
                     if (selectedIndex > -1)
                     {
                         if (selectedIndex > -1)
                         {
                             using (Transaction transaction = ReverseService.Begin("Insert Tag"))
                             {
-                                Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, true);
-                                ReversibleCollection<object> reversibleCollection = Parent.Childs.AsReversibleCollection();
+                                ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, true);
+                                ReversibleCollection<object> reversibleCollection = ObjectHaveTag.Tags.AsReversibleCollection();
                                 for (int i = newTags.Count - 1; i <= 0; i--)
                                 {
                                     reversibleCollection.Insert(selectedIndex + 1, newTags[i]);
                                 }
-                                Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, false);
-                                Parent.Childs.NotifyResetCollection();
+                                ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, false);
+                                ObjectHaveTag.Tags.NotifyResetCollection();
                                 transaction.Reversing += (s, e) =>
                                 {
                                     WorkspaceManagerService.OpenPanel(this);
                                 };
                                 transaction.Reversed += (s, e) =>
                                 {
-                                    Parent.Childs.NotifyResetCollection();
+                                    ObjectHaveTag.Tags.NotifyResetCollection();
                                 };
                                 transaction.Commit();
                             }
@@ -318,7 +320,7 @@ namespace EasyScada.ServerApplication
                     csv.AddColumn("Name").AddColumn("Address").
                         AddColumn("DataType").AddColumn("RefreshRate").AddColumn("AccessPermission").
                         AddColumn("Gain").AddColumn("Offset").AddColumn("Description");
-                    foreach (var item in Parent.Childs)
+                    foreach (var item in ObjectHaveTag.Tags)
                     {
                         if (item is ITagCore tag)
                         {
@@ -397,8 +399,8 @@ namespace EasyScada.ServerApplication
             {
                 if (x1 is ITagCore tag1 && x2 is ITagCore tag2)
                 {
-                    int index1 = tag1.Parent.Childs.IndexOf(tag1);
-                    int index2 = tag2.Parent.Childs.IndexOf(tag2);
+                    int index1 = (tag1.Parent as IHaveTag).Tags.IndexOf(tag1);
+                    int index2 = (tag2.Parent as IHaveTag).Tags.IndexOf(tag2);
                     if (index1 > index2)
                         return -1;
                     else if (index1 < index2)
@@ -421,7 +423,7 @@ namespace EasyScada.ServerApplication
         public void Cut()
         {
             ClipboardManager.CopyToClipboard(SelectedItems.ToList(), this);
-            Parent.Childs.RemoveRange(SelectedItems.ToArray());
+            ObjectHaveTag.Tags.RemoveRange(SelectedItems.ToArray());
         }
 
         public bool CanCut()
@@ -447,8 +449,8 @@ namespace EasyScada.ServerApplication
                         using (Transaction transaction = ReverseService.Begin("Paste Tags"))
                         {
 
-                            Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, true);
-                            ReversibleCollection<object> reversibleCollection = Parent.Childs.AsReversibleCollection();
+                            ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, true);
+                            ReversibleCollection<object> reversibleCollection = ObjectHaveTag.Tags.AsReversibleCollection();
                             foreach (var item in tagsToCopy)
                             {
                                 if (item is ITagCore tagCore)
@@ -467,8 +469,8 @@ namespace EasyScada.ServerApplication
                                     reversibleCollection.Add(newTag);
                                 }
                             }
-                            Parent.Childs.SetPropertyReversible(x => x.DisableNotifyChanged, false);
-                            Parent.Childs.NotifyResetCollection();
+                            ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, false);
+                            ObjectHaveTag.Tags.NotifyResetCollection();
                             transaction.Reversing += (s, e) =>
                             {
                                 WorkspaceManagerService.OpenPanel(this);
@@ -476,7 +478,7 @@ namespace EasyScada.ServerApplication
                             };
                             transaction.Reversed += (s, e) =>
                             {
-                                Parent.Childs.NotifyResetCollection();
+                                ObjectHaveTag.Tags.NotifyResetCollection();
                             };
 
                             transaction.Commit();
@@ -523,7 +525,7 @@ namespace EasyScada.ServerApplication
                         using (Transaction transaction = ReverseService.Begin("Delete Tags"))
                         {
                             List<object> itemsToRemove = SelectedItems.ToList();
-                            Parent.Childs.AsReversibleCollection().RemoveRange(itemsToRemove);
+                            ObjectHaveTag.Tags.AsReversibleCollection().RemoveRange(itemsToRemove);
 
                             transaction.Reversing += (s, e) =>
                             {

@@ -20,7 +20,7 @@ namespace EasyDriver.ModbusTCP
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
-        public IChannelCore Channel { get; set; }
+        public IGroupItem ParentItem { get; set; }
         public List<ByteOrder> ByteOrderSource { get; set; }
         public ObservableCollection<ReadBlockSetting> ReadInputContacts { get; set; }
         public ObservableCollection<ReadBlockSetting> ReadOutputCoils { get; set; }
@@ -31,10 +31,10 @@ namespace EasyDriver.ModbusTCP
 
         #region Constructors
 
-        public CreateDeviceView(IEasyDriverPlugin driver, IChannelCore channel, IDeviceCore templateItem)
+        public CreateDeviceView(IEasyDriverPlugin driver, IGroupItem parent, IDeviceCore templateItem)
         {
             Driver = driver;
-            Channel = channel;
+            ParentItem = parent;
 
             InitializeComponent();
 
@@ -44,7 +44,7 @@ namespace EasyDriver.ModbusTCP
 
             if (templateItem == null)
             {
-                txbName.Text = channel.GetUniqueNameInGroup("Device1");
+                txbName.Text = parent.GetUniqueNameInGroup("Device1");
                 ReadInputContacts = new ObservableCollection<ReadBlockSetting>();
                 ReadOutputCoils = new ObservableCollection<ReadBlockSetting>();
                 ReadInputRegisters = new ObservableCollection<ReadBlockSetting>();
@@ -52,7 +52,7 @@ namespace EasyDriver.ModbusTCP
             }
             else
             {
-                txbName.Text = channel.GetUniqueNameInGroup(templateItem.Name);
+                txbName.Text = parent.GetUniqueNameInGroup(templateItem.Name);
 
                 if (templateItem.ParameterContainer.Parameters.ContainsKey("IpAddress"))
                     txbIpAddress.Text = templateItem.ParameterContainer.Parameters["IpAddress"]?.ToString();
@@ -185,7 +185,7 @@ namespace EasyDriver.ModbusTCP
                 return;
             }
 
-            if (Channel.Childs.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
+            if (ParentItem.Childs.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
                 DXMessageBox.Show($"The device name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -197,18 +197,18 @@ namespace EasyDriver.ModbusTCP
                 return;
             }
 
-            IDeviceCore device = new DeviceCore(Channel);
+            IDeviceCore device = new DeviceCore(ParentItem);
             device.Name = txbName.Text?.Trim();
             device.ParameterContainer.DisplayName = "ModbusTCP Device Parameter";
             device.ParameterContainer.DisplayParameters = "ModbusTCP Device Parameter";
 
             device.ParameterContainer.Parameters["IpAddress"] = txbIpAddress.Text?.Trim();
-            device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value;
+            device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value.ToString();
             device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
-            device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value;
-            device.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value;
-            device.ParameterContainer.Parameters["UnitId"] = spnUnitId.Value;
-            device.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value;
+            device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();
+            device.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
+            device.ParameterContainer.Parameters["UnitId"] = spnUnitId.Value.ToString();
+            device.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
 
             DisableErrorBlockSettings(blockInputContacts.ReadBlockSettings);
             DisableErrorBlockSettings(blockOutputCoils.ReadBlockSettings);

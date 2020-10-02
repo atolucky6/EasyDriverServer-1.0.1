@@ -42,7 +42,7 @@ namespace EasyScada.ServerApplication
             IHubConnectionManagerService hubConnectionManagerService)
         {
             SizeToContent = SizeToContent.WidthAndHeight;
-            Width = 400;
+            Width = 800;
             Height = 260;
             ProjectManagerService = projectManagerService;
             DriverManagerService = driverManagerService;
@@ -154,7 +154,6 @@ namespace EasyScada.ServerApplication
                                 StationName = Name,
                                 Port = Port.ToString(),
                                 RemoteAddress = RemoteAddress,
-                                Stations = new List<StationClient>(),
                                 CommunicationMode = CommunicationMode.ReceiveFromServer.ToString()
                             };
                             IsBusy = false;
@@ -199,11 +198,14 @@ namespace EasyScada.ServerApplication
                     RefreshRate = RefreshRate
                 };
 
-                foreach (var station in message.SelectedStations)
+                if (message.HubModel != null && message.HubModel.Childs != null)
                 {
-                    IStationCore stationCore = CreateRemoteStationCore(station, remoteStation);
-                    if (stationCore != null)
-                        remoteStation.Add(stationCore);
+                    foreach (var item in message.HubModel.Childs)
+                    {
+                        IGroupItem groupItem = item.ToCoreItem(remoteStation, true);
+                        if (groupItem != null)
+                            remoteStation.Childs.Add(groupItem);
+                    }
                 }
 
                 ProjectManagerService.CurrentProject.Childs.Add(remoteStation);
@@ -214,79 +216,6 @@ namespace EasyScada.ServerApplication
                 CreateSuccess = true;
                 CurrentWindowService.Close();
             }
-        }
-
-        public IStationCore CreateRemoteStationCore(StationClient station, IGroupItem parent)
-        {
-            IStationCore stationCore = null;
-            if (station.StationType == StationType.Local)
-                stationCore = new LocalStation(parent);
-            else 
-                stationCore = new RemoteStation(parent);
-            stationCore.StationType = station.StationType;
-            stationCore.Name = station.Name;
-            stationCore.RemoteAddress = station.RemoteAddress;
-            stationCore.Port = station.Port;
-            stationCore.RefreshRate = station.RefreshRate;
-            stationCore.CommunicationMode = station.CommunicationMode;
-            stationCore.OpcDaServerName = station.OpcDaServerName;
-
-            if (station.Channels != null && station.Channels.Count > 0)
-            {
-                foreach (var channel in station.Channels)
-                    if (channel != null)
-                        stationCore.Childs.Add(CreateRemoteChannelCore(channel, stationCore));
-            }
-
-            if (station.RemoteStations != null && station.RemoteStations.Count > 0)
-            {
-                foreach (var innerStation in station.RemoteStations)
-                    if (innerStation != null)
-                        stationCore.Childs.Add(CreateRemoteStationCore(innerStation, stationCore));
-            }
-
-            return stationCore;
-        }
-
-        public IChannelCore CreateRemoteChannelCore(ChannelClient channel, IStationCore parent)
-        {
-            IChannelCore channelCore = new ChannelCore(parent, true);
-            channelCore.Name = channel.Name;
-            channelCore.DriverPath = channel.DriverName;
-            channelCore.ParameterContainer.Parameters = channel.Parameters;
-            foreach (var device in channel.Devices)
-                if (device != null)
-                    channelCore.Childs.Add(CreateRemoteDeviceCore(device, channelCore));
-            return channelCore;
-        }
-
-        public IDeviceCore CreateRemoteDeviceCore(DeviceClient device, IChannelCore parent)
-        {
-            IDeviceCore deviceCore = new DeviceCore(parent, true);
-            deviceCore.Name = device.Name;
-            deviceCore.LastRefreshTime = device.LastRefreshTime;
-            deviceCore.ParameterContainer.Parameters = device.Parameters;
-            foreach (var tag in device.Tags)
-                if (tag != null)
-                    deviceCore.Add(CreateRemoteTagCore(tag, deviceCore));
-            return deviceCore;
-        }
-
-        public ITagCore CreateRemoteTagCore(TagClient tag, IDeviceCore parent)
-        {
-            ITagCore tagCore = new TagCore(parent, true);
-            tagCore.Name = tag.Name;
-            tagCore.Address = tag.Address;
-            tagCore.DataTypeName = tag.DataType;
-            tagCore.Value = tag.Value;
-            tagCore.Quality = tag.Quality;
-            tagCore.RefreshRate = tag.RefreshRate;
-            tagCore.RefreshInterval = tag.RefreshInterval;
-            tagCore.AccessPermission = tag.AccessPermission;
-            tagCore.TimeStamp = tag.TimeStamp;
-            tagCore.ParameterContainer.Parameters = tag.Parameters;
-            parent.Childs.Add(tagCore);
-            return tagCore;
         }
 
         public virtual async void OnUnloaded()

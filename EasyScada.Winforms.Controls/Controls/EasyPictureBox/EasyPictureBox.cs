@@ -1,35 +1,144 @@
-﻿using System;
-using System.Text;
+﻿using EasyScada.Core;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Design;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
-using EasyScada.Winforms.Connector;
-using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
-using System.Collections;
-using System.Linq;
+using System.Windows.Forms;
 
 namespace EasyScada.Winforms.Controls
 {
     [ToolboxItem(true)]
-    //[DefaultEvent("Paint")]
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     [Designer(typeof(EasyPictureBoxDesigner))]
-    [DesignerCategory("code")]
     [Description("Displays images")]
     [ClassInterface(ClassInterfaceType.AutoDispatch)]
-    [ComVisible(true)]
-    public class EasyPictureBox : Control
+    public class EasyPictureBox : Control, ISupportTag, ISupportConnector
     {
         #region CACHE
         protected static Hashtable SHADED_IMAGE_CACHE = new Hashtable();
         protected static Hashtable IMAGE_CACHE = new Hashtable();
+        #endregion
+
+        #region ISupportTag
+        [Editor(typeof(PathToTagPropertyEditor), typeof(UITypeEditor))]
+        [Description("Select path to tag for control")]
+        [Browsable(true), Category(DesignerCategory.EASYSCADA)]
+        public string TagPath { get; set; }
+
+        ITag linkedTag;
+        [Browsable(false)]
+        public ITag LinkedTag
+        {
+            get
+            {
+                if (linkedTag == null)
+                {
+                    linkedTag = Connector?.GetTag(TagPath);
+                }
+                else
+                {
+                    if (linkedTag.Path != TagPath)
+                        linkedTag = Connector?.GetTag(TagPath);
+                }
+                return linkedTag;
+            }
+        }
+        #endregion
+
+        #region ISupportConnector
+        [Description("Select driver connector for control")]
+        [Browsable(true), Category(DesignerCategory.EASYSCADA)]
+        public IEasyDriverConnector Connector => EasyDriverConnectorProvider.GetEasyDriverConnector();
+
+        private void OnConnectorStarted(object sender, EventArgs e)
+        {
+            if (LinkedTag != null)
+            {
+                OnTagValueChanged(LinkedTag, new TagValueChangedEventArgs(LinkedTag, null, LinkedTag.Value));
+                OnTagQualityChanged(LinkedTag, new TagQualityChangedEventArgs(LinkedTag, Quality.Uncertain, LinkedTag.Quality));
+                LinkedTag.ValueChanged += OnTagValueChanged;
+                LinkedTag.QualityChanged += OnTagQualityChanged;
+            }
+        }
+
+        private void OnTagQualityChanged(object sender, TagQualityChangedEventArgs e)
+        {
+
+        }
+
+        private void OnTagValueChanged(object sender, TagValueChangedEventArgs e)
+        {
+            //if (decimal.TryParse(e.NewValue, out decimal newValue))
+            //{
+            //    if (Triggers != null)
+            //    {
+            //        if (Triggers.Count > 0)
+            //        {
+            //            foreach (var trigger in Triggers)
+            //            {
+            //                if (trigger.Enabled)
+            //                {
+            //                    if (trigger.TriggerMode == TriggerMode.DirectValue)
+            //                    {
+            //                        if (newValue == trigger.Value)
+            //                        {
+            //                            this.SetInvoke(x =>
+            //                            {
+            //                                Image = trigger.Image == null ? defaultImage : trigger.Image;
+            //                                ShadedColor = trigger.FillColor;
+            //                                Invalidate();
+            //                            });
+            //                            break;
+            //                        }
+            //                    }
+            //                    else
+            //                    {
+            //                        if (newValue >= trigger.MinValue && newValue <= trigger.MaxValue)
+            //                        {
+            //                            this.SetInvoke(x =>
+            //                            {
+            //                                Image = trigger.Image == null ? defaultImage : trigger.Image;
+            //                                ShadedColor = trigger.FillColor;
+            //                                Invalidate();
+            //                            });
+            //                            break;
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
+            //if (EnableScale)
+            //{
+            //    if (decimal.TryParse(e.NewValue, out decimal newValue))
+            //    {
+            //        RawValue = newValue;
+            //        ScaledValue = decimal.Multiply(newValue, (decimal)Gain);
+            //        ScaledValue += decimal.Add(ScaledValue, (decimal)Offset);
+            //        newValueString = ScaledValue.ToString();
+            //    }
+            //}
+            //else
+            //{
+            //    newValueString = e.NewValue;
+            //}
+
+            //this.SetInvoke((x) =>
+            //{
+            //    if (x.Text != newValueString)
+            //        x.Text = e.NewValue;
+            //});
+        }
+
         #endregion
 
         #region Private members
@@ -39,10 +148,17 @@ namespace EasyScada.Winforms.Controls
         private ImageFillMode _fillMode;
         private ImageFlipMode _flipMode;
         private Color _shadedColor = Color.Gray;
-
+        private Image defaultImage;
+        private TriggerCollection<ImageAnimatePropertyWrapper> triggers = new TriggerCollection<ImageAnimatePropertyWrapper>();
         #endregion
 
         #region Public members
+
+        [Category(DesignerCategory.EASYSCADA)]
+        [Description("Collection of write tag command specifications.")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public TriggerCollection<ImageAnimatePropertyWrapper> Triggers { get => triggers; }
+
         public Image Image
         {
             get
@@ -62,6 +178,8 @@ namespace EasyScada.Winforms.Controls
                 }
                 else
                 {
+                    if (defaultImage != null)
+                        defaultImage = value;
                     _keyCache = string.Join("", GetHash((Bitmap)value).Select(b => b ? "1" : "0").ToArray());
                     if (!IMAGE_CACHE.ContainsKey(_keyCache))
                         IMAGE_CACHE[_keyCache] = value;
@@ -138,9 +256,9 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Constructors
-        public EasyPictureBox()
+        public EasyPictureBox() : base()
         {
-           
+            triggers.TargetControl = this;
         }
         #endregion
 
@@ -173,7 +291,7 @@ namespace EasyScada.Winforms.Controls
                     if (!SHADED_IMAGE_CACHE.ContainsKey(_keyCache))
                         SHADED_IMAGE_CACHE[_keyCache] = new Hashtable();
                     if (!(SHADED_IMAGE_CACHE[_keyCache] as Hashtable).ContainsKey(ShadedColor))
-                        (SHADED_IMAGE_CACHE[_keyCache] as Hashtable)[ShadedColor] = CommonHelper.BitmapColorShade((Bitmap)Image, ShadedColor);
+                        (SHADED_IMAGE_CACHE[_keyCache] as Hashtable)[ShadedColor] = EasyScadaHelper.BitmapColorShade((Bitmap)Image, ShadedColor);
                     drawBM = (SHADED_IMAGE_CACHE[_keyCache] as Hashtable)[ShadedColor] as Bitmap;
                 }
                 else

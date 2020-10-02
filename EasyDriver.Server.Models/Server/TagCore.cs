@@ -2,23 +2,46 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace EasyDriver.Core
 {
     [Serializable]
-    public class TagCore : GroupItemBase, ITagCore, ITagClient
+    public class TagCore : GroupItemBase, ITagCore, IClientObject, IHaveTag, IClientTag
     {
         #region ITagCore
 
         public TagCore(IGroupItem parent, bool isReadOnly = false) : base(parent, isReadOnly)
         {
             SyncObject = new object();
+            Tags = new TagCollection(this);
             ParameterContainer = new ParameterContainer();
-            Tags = new Indexer<ITagCore>(this);
+            HaveTags = true;
+            Tags = new TagCollection(this);
             Gain = 1;
             Offset = 0;
         }
+
+        public bool IsDisposed { get; set; }
+
+        private string name;
+        public override string Name
+        {
+            get => name?.Trim();
+            set
+            {
+                if (name != value)
+                {
+                    string oldName = name;
+                    name = value;
+                    RaisePropertyChanged();
+                    NameChanged?.Invoke(this, new NameChangedEventArgs(oldName, value));
+                }
+            }
+        }
+
 
         [JsonIgnore]
         public string DisplayName
@@ -53,7 +76,8 @@ namespace EasyDriver.Core
                         string oldValue = this.value;
                         this.value = value;
                         NeedToUpdateValue = true;
-                        ValueChanged?.Invoke(this, new TagValueChangedEventArgs(oldValue, value));
+                        var eventArgs = new TagValueChangedEventArgs(oldValue, value);
+                        RaiseTagValueChanged(this, eventArgs);
                     }
                 }
                 catch { }
@@ -79,7 +103,8 @@ namespace EasyDriver.Core
                         Quality oldQuality = quality;
                         quality = value;
                         NeedToUpdateQuality = true;
-                        QualityChanged?.Invoke(this, new TagQualityChangedEventArgs(oldQuality, quality));
+                        var eventArgs = new TagQualityChangedEventArgs(oldQuality, quality);
+                        RaiseTagQualityChanged(this, eventArgs);
                     }
                 }
                 catch { }
@@ -155,9 +180,6 @@ namespace EasyDriver.Core
         public object SyncObject { get; protected set; }
 
         [JsonIgnore]
-        public Indexer<ITagCore> Tags { get; protected set; }
-
-        [JsonIgnore]
         public IParameterContainer ParameterContainer { get; set; }
 
         [JsonIgnore]
@@ -209,6 +231,9 @@ namespace EasyDriver.Core
             }
         }
 
+        [JsonIgnore]
+        public ConnectionStatus ConnectionStatus { get; set; }
+
         public IEnumerable<ITagCore> GetAllChildTag()
         {
             return null;
@@ -223,69 +248,96 @@ namespace EasyDriver.Core
         {
         }
 
-        public event EventHandler<TagValueChangedEventArgs> ValueChanged;
-        public event EventHandler<TagQualityChangedEventArgs> QualityChanged;
+        public override void ChildCollectionChangedCallback(NotifyCollectionChangedEventArgs e)
+        {
+            base.ChildCollectionChangedCallback(e);
+            if (e.OldItems.Contains(this))
+            {
+                IsDisposed = true;
+                Disposed?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        [field: NonSerialized]
+        public event EventHandler Disposed;
+
+        [field: NonSerialized]
+        public event EventHandler<NameChangedEventArgs> NameChanged;
 
         #endregion
 
-        #region ITag
+        #region IHaveTags
+
+        [JsonIgnore]
+        public bool HaveTags { get; set; }
+
+        [JsonIgnore]
+        public TagCollection Tags { get; protected set; }
+
+        #endregion
+
+        #region IClientObject
 
         [JsonProperty("Name")]
-        string ITagClient.Name => Name;
+        string IClientObject.Name => Name;
 
         [JsonProperty("Path")]
-        string IPath.Path => Path;
+        string IClientObject.Path => Path;
 
-        [JsonProperty("Address")]
-        string ITagClient.Address => Address;
-
-        [JsonProperty("DataType")]
-        string ITagClient.DataType => DataTypeName;
-
-        [JsonProperty("Value")]
-        string ITagClient.Value => Value;
-
-        [JsonProperty("Quality")]
-        Quality ITagClient.Quality => Quality;
-
-        [JsonProperty("AccessPermission")]
-        AccessPermission ITagClient.AccessPermission => AccessPermission;
-
-        [JsonProperty("RefreshRate")]
-        int ITagClient.RefreshRate => RefreshRate;
-
-        [JsonProperty("RefreshInterval")]
-        int ITagClient.RefreshInterval => RefreshInterval;
+        [JsonProperty("Description")]
+        string IClientObject.Description => Description;
 
         [JsonProperty("Error")]
-        string ITagClient.Error => CommunicationError;
+        string IClientObject.Error => CommunicationError;
 
-        [JsonProperty("TimeStamp")]
-        DateTime ITagClient.TimeStamp => TimeStamp;
+        [JsonProperty("ItemType")]
+        ItemType IClientObject.ItemType => ItemType.Tag;
 
-        [JsonProperty("Parameters")]
-        Dictionary<string, object> ITagClient.Parameters => ParameterContainer?.Parameters;
+        [JsonProperty("Childs")]
+        List<IClientObject> IClientObject.Childs => this.GetClientObjects();
 
-        public T GetItem<T>(string pathToObject) where T : class, IPath
+        [JsonProperty("DisplayInfo")]
+        string IClientObject.DisplayInfo => "";
+
+        [JsonProperty("ConnectionStatus")]
+        ConnectionStatus IClientObject.ConnectionStatus => ConnectionStatus;
+
+        [field: NonSerialized]
+        private Dictionary<string, string> properties;
+        public Dictionary<string, string> Properties
         {
-            if (string.IsNullOrWhiteSpace(pathToObject))
-                return null;
-            if (Path == pathToObject)
-                return this as T;
-            if (pathToObject.StartsWith(Path))
+            get
             {
-                foreach (var child in Childs)
-                {
-                    if (child is IPath item)
-                    {
-                        if (pathToObject.StartsWith(item.Path))
-                            return item.GetItem<T>(pathToObject);
-                    }
-                }
+                if (properties == null)
+                    properties = new Dictionary<string, string>();
+                properties["Value"] = Value;
+                properties["Quality"] = Quality.ToString();
+                properties["DataType"] = DataTypeName;
+                properties["AccessPermission"] = AccessPermission.ToString();
+                properties["TimeStamp"] = TimeStamp.ToString();
+                return properties;
             }
-            return null;
         }
 
         #endregion
+
+        #region IClientTag
+
+        string IClientTag.Name => Name;
+
+        string IClientTag.Path => Path;
+
+        string IClientTag.Error => CommunicationError;
+
+        List<IClientTag> IClientTag.Childs => this.GetClientTags();
+
+        string IClientTag.Value => Value;
+
+        Quality IClientTag.Quality => Quality;
+
+        DateTime IClientTag.TimeStamp => TimeStamp;
+
+        #endregion
+
     }
 }

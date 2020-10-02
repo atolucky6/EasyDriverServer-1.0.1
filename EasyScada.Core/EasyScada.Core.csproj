@@ -49,6 +49,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Net.Http.WebRequest" />
@@ -65,44 +66,36 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animate\Attribute\AnimateAttribute.cs" />
-    <Compile Include="Animate\Enum\BoolValue.cs" />
-    <Compile Include="Animate\Enum\CompareOperand.cs" />
-    <Compile Include="Animate\Trigger\AnalogRange.cs" />
+    <Compile Include="Alarm\AlarmClass.cs" />
+    <Compile Include="Alarm\AlarmGroup.cs" />
+    <Compile Include="Alarm\AlarmItemBase.cs" />
+    <Compile Include="Alarm\AlarmSetting.cs" />
+    <Compile Include="Alarm\AlarmState.cs" />
+    <Compile Include="Alarm\AnalogAlarm.cs" />
+    <Compile Include="Alarm\DeadbandMode.cs" />
+    <Compile Include="Alarm\DiscreteAlarm.cs" />
+    <Compile Include="Alarm\IUniqueNameItem.cs" />
+    <Compile Include="Alarm\LimitMode.cs" />
+    <Compile Include="Alarm\TimeUnit.cs" />
+    <Compile Include="Alarm\UniqueItemCollection.cs" />
     <Compile Include="Animate\Trigger\AnalogTrigger.cs" />
+    <Compile Include="Animate\Trigger\AnimateProperty\AnimateProperty.cs" />
+    <Compile Include="Animate\Trigger\AnimateProperty\AnimatePropertyBase.cs" />
+    <Compile Include="Animate\Trigger\AnimateProperty\AnimatePropertyWrapper.cs" />
+    <Compile Include="Animate\Trigger\AnimateProperty\ImageAnimateProperty.cs" />
+    <Compile Include="Animate\Trigger\CompareMode.cs" />
     <Compile Include="Animate\Trigger\DiscreteTrigger.cs" />
+    <Compile Include="Animate\Trigger\QualityTrigger.cs" />
     <Compile Include="Animate\Trigger\TriggerBase.cs" />
+    <Compile Include="Animate\Trigger\TriggerCollection.cs" />
     <Compile Include="Attributes\TagAttribute.cs" />
+    <Compile Include="Connector\ClientTagJsonConverter.cs" />
+    <Compile Include="Connector\ConnectionSchemaJsonConverter.cs" />
     <Compile Include="Connector\EasyDriverConnector.cs" />
     <Compile Include="Connector\EasyDriverConnectorProvider.cs" />
+    <Compile Include="Converter\ControlTypeConverter.cs" />
+    <Compile Include="Converter\OdbcDriverNameSourceConverter.cs" />
     <Compile Include="Converter\StringLookupConverter.cs" />
-    <Compile Include="Designer\Controls\AnchorStyles.cs" />
-    <Compile Include="Designer\Controls\Button\Button.cs" />
-    <Compile Include="Designer\Controls\ScrollViewer\AnimatedPanelContentPresenter.cs" />
-    <Compile Include="Designer\Controls\ScrollViewer\AnimatedScrollElement.cs" />
-    <Compile Include="Designer\Controls\ScrollViewer\AnimatedScrollViewer.cs" />
-    <Compile Include="Designer\Controls\ItemsControlHelper.cs" />
-    <Compile Include="Designer\Controls\ScrollViewer\EasedInterpolation.cs" />
-    <Compile Include="Designer\Controls\ScrollViewer\ExponentialInterpolation.cs" />
-    <Compile Include="Designer\Controls\ScrollViewer\Interpolation.cs" />
-    <Compile Include="Designer\Controls\ScrollViewer\ScrollData.cs" />
-    <Compile Include="Designer\Controls\TabControl\TabControl.cs" />
-    <Compile Include="Designer\Controls\TabControl\TabItem.cs" />
-    <Compile Include="Designer\Controls\TabControl\TabItemBase.cs" />
-    <Compile Include="Designer\Controls\TabControl\TabPositionElement.cs" />
-    <Compile Include="Designer\Controls\TextImageRelation.cs" />
-    <Compile Include="Designer\DesignAnimateView.xaml.cs">
-      <DependentUpon>DesignAnimateView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Designer\PathToTagPropertyControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Designer\PathToTagPropertyControl.Designer.cs">
-      <DependentUpon>PathToTagPropertyControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Designer\SearchListBox.xaml.cs">
-      <DependentUpon>SearchListBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Evaluate\Evaluator.cs" />
     <Compile Include="Evaluate\Parser\IIFShortCircuit.cs" />
     <Compile Include="Evaluate\Parser\TokenExpression.cs" />
@@ -115,6 +108,7 @@
     <Compile Include="Evaluate\Helper\DataTypeCheck.cs" />
     <Compile Include="Evaluate\Helper\ExQueue.cs" />
     <Compile Include="Evaluate\Helper\ExStack.cs" />
+    <Compile Include="Extensions\DesignerHelper.cs" />
     <Compile Include="General\Definitations.cs" />
     <Compile Include="Converter\TagPathConverter.cs" />
     <Compile Include="Enums\AccessPermission.cs" />
@@ -132,22 +126,25 @@
     <Compile Include="General\DesignerCategory.cs" />
     <Compile Include="General\TypedCollection.cs" />
     <Compile Include="General\TypedCollectionEventArgs.cs" />
-    <Compile Include="Logger\DbType.cs" />
-    <Compile Include="Logger\IDatabaseLogger.cs" />
-    <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Logger\LogColumnCollection.cs" />
+    <Compile Include="Logger\LogColumnMode.cs" />
+    <Compile Include="Logger\LogProfile\DbCreateMode.cs" />
+    <Compile Include="Logger\LogProfile\LogProfileCollection.cs" />
+    <Compile Include="Logger\LogProfile\DbType.cs" />
+    <Compile Include="Logger\LogColumn.cs" />
     <Compile Include="Logger\LogErrorEventArgs.cs" />
     <Compile Include="Logger\LoggedEventArgs.cs" />
     <Compile Include="Logger\LoggingEventArgs.cs" />
-    <Compile Include="Logger\MySqlLogger.cs" />
-    <Compile Include="Logger\TagNameMaper.cs" />
-    <Compile Include="Logger\TimerLogger.cs" />
+    <Compile Include="Logger\LogProfile\LogProfile.cs" />
+    <Compile Include="Models\Base\CollectionCoreItem.cs" />
+    <Compile Include="Models\Base\ItemType.cs" />
+    <Compile Include="Models\ClientTag.cs" />
     <Compile Include="Models\ConnectionSchema.cs" />
-    <Compile Include="Models\IChannel.cs" />
-    <Compile Include="Models\IComposite.cs" />
-    <Compile Include="Models\IDevice.cs" />
+    <Compile Include="Models\Base\CoreItemBase.cs" />
+    <Compile Include="Models\CoreItem.cs" />
+    <Compile Include="Models\Base\ICheckable.cs" />
+    <Compile Include="Models\Base\ICoreItem.cs" />
     <Compile Include="Connector\IEasyDriverConnector.cs" />
-    <Compile Include="Models\IPath.cs" />
-    <Compile Include="Models\IStation.cs" />
     <Compile Include="Models\ITag.cs" />
     <Compile Include="Models\WriteCommand.cs" />
     <Compile Include="Models\WriteResponse.cs" />
@@ -155,106 +152,101 @@
     <Compile Include="EventArgs\TagWritedEventArgs.cs" />
     <Compile Include="EventArgs\TagWritingEventArgs.cs" />
     <Compile Include="Converter\WriteTriggerConverter.cs" />
-    <Compile Include="General\WriteTagCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Designer\DesignAnimateView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Designer\SearchListBox.xaml">
+    <Page Include="Resources\Theme\TreeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\TreeView.xaml">
+    <Page Include="Resources\Theme\ToggleButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\ToggleButton.xaml">
+    <Page Include="Resources\Theme\TextBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\TextBox.xaml">
+    <Page Include="Resources\Theme\Slider.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\Slider.xaml">
+    <Page Include="Resources\Theme\RichTextBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\RichTextBox.xaml">
+    <Page Include="Resources\Theme\RepeatButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\RepeatButton.xaml">
+    <Page Include="Resources\Theme\RadioButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\RadioButton.xaml">
+    <Page Include="Resources\Theme\ProgressBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\ProgressBar.xaml">
+    <Page Include="Resources\Theme\Button.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\Button.xaml">
+    <Page Include="Resources\Theme\PasswordBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\PasswordBox.xaml">
+    <Page Include="Resources\Theme\Menu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\Menu.xaml">
+    <Page Include="Resources\Theme\GroupBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\GroupBox.xaml">
+    <Page Include="Resources\Theme\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\Generic.xaml">
+    <Page Include="Resources\Theme\CheckBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\CheckBox.xaml">
+    <Page Include="Resources\Theme\ComboBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\ComboBox.xaml">
+    <Page Include="Resources\Theme\ListBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\ListBox.xaml">
+    <Page Include="Resources\Theme\ScrollViewer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\ScrollViewer.xaml">
+    <Page Include="Resources\Theme\ListBoxScrollViewer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\ListBoxScrollViewer.xaml">
+    <Page Include="Resources\Theme\TabControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Theme\TabControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Designer\PathToTagPropertyControl.resx">
-      <DependentUpon>PathToTagPropertyControl.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assembly\Microsoft.AspNet.SignalR.Client.dll" />
     <EmbeddedResource Include="Assembly\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\channel_24px.png" />
+    <Resource Include="Resources\Images\device_24px.png" />
+    <Resource Include="Resources\Images\local_station_16px.png" />
+    <Resource Include="Resources\Images\remote_station_24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\checkmark_48px.png" />
+    <Resource Include="Resources\Images\delete_48px.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

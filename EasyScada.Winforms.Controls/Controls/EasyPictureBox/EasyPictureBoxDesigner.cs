@@ -41,6 +41,7 @@ namespace EasyScada.Winforms.Controls
             actionItems.Add(new DesignerActionPropertyItem("ShadedColor", "Shaded Color", DesignerCategory.VALUES, ""));
             actionItems.Add(new DesignerActionPropertyItem("RotateAngle", "Rotate Angle", DesignerCategory.VALUES, ""));
             actionItems.Add(new DesignerActionPropertyItem("FlipMode", "Flip Mode", DesignerCategory.VALUES, ""));
+            actionItems.Add(new DesignerActionMethodItem(this, "Animate", "Animate", DesignerCategory.EASYSCADA, "", true));
         }
 
         #region Properties
@@ -89,9 +90,18 @@ namespace EasyScada.Winforms.Controls
             set { BaseControl.SetValue(value); }
         }
 
+
         #endregion
 
         #region Actions methods
+
+        public void Animate()
+        {
+            //AnimatesDesignerForm form = new AnimatesDesignerForm(BaseControl.Triggers, Component.Site);
+            //form.ShowDialog();
+            AnimateDesignerForm form = new AnimateDesignerForm(BaseControl.Triggers, Component.Site, BaseControl.TagPath);
+            form.ShowDialog();
+        }
 
         #endregion
     }

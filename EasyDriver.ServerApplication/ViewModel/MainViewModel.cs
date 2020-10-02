@@ -74,6 +74,7 @@ namespace EasyScada.ServerApplication
             ProjectManagerService = projectManagerService;
             ApplicationViewModel = applicationViewModel;
             Messenger.Default.Register<AuthenticateLicenseMessage>(this, OnAuthenticateLicenseMessage);
+
         }
 
         #endregion
@@ -253,7 +254,7 @@ namespace EasyScada.ServerApplication
 
                 // Khởi tạo thông tin của SaveFileDialog
                 SaveFileDialogService.Title = "Save as...";
-                SaveFileDialogService.Filter = "Easy Scada Project (*.esprj)|*.esprj";
+                SaveFileDialogService.Filter = "Easy Scada Project (*.json)|*.json";
                 // Mở SaveDialog để lấy thông tin đường dẫn và tên của project mới
                 if (SaveFileDialogService.ShowDialog())
                 {
@@ -462,6 +463,17 @@ namespace EasyScada.ServerApplication
             if (WorkspaceManagerService.CurrentActivePanel is TagCollectionViewModel tagCollection)
                 return tagCollection.CanAdd();
             return false;
+        }
+
+        public void AddGroup()
+        {
+            ProjectTreeWorkspace.AddGroup();
+        }
+
+        public bool CanAddGroup()
+        {
+            // Đảm bảo rằng ProjectTreeWorkspace không null và có thể thêm Group
+            return ProjectTreeWorkspace != null && ProjectTreeWorkspace.CanAddGroup();
         }
 
         /// <summary>

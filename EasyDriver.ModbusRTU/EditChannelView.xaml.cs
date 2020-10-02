@@ -95,13 +95,13 @@ namespace EasyDriver.ModbusRTU
             if (Channel != null)
             {
                 txbName.Text = Channel.Name;
-                cobPort.SelectedItem = Channel.ParameterContainer.Parameters["Port"];
-                cobBaudrate.SelectedItem = Channel.ParameterContainer.Parameters["Baudrate"];
-                cobDataBits.SelectedItem = Channel.ParameterContainer.Parameters["DataBits"];
-                cobParity.SelectedItem = Channel.ParameterContainer.Parameters["Parity"];
-                cobStopBits.SelectedItem = Channel.ParameterContainer.Parameters["StopBits"];
-                spnDelayPool.EditValue = Channel.ParameterContainer.Parameters["DelayBetweenPool"];
-                spnScanRate.EditValue = Channel.ParameterContainer.Parameters["ScanRate"];
+                cobPort.Text = Channel.ParameterContainer.Parameters["Port"];
+                cobBaudrate.Text = Channel.ParameterContainer.Parameters["Baudrate"];
+                cobDataBits.Text = Channel.ParameterContainer.Parameters["DataBits"];
+                cobParity.Text = Channel.ParameterContainer.Parameters["Parity"];
+                cobStopBits.Text = Channel.ParameterContainer.Parameters["StopBits"];
+                spnDelayPool.Text = Channel.ParameterContainer.Parameters["DelayBetweenPool"];
+                spnScanRate.Text = Channel.ParameterContainer.Parameters["ScanRate"];
             }
         }
 
@@ -126,13 +126,13 @@ namespace EasyDriver.ModbusRTU
                 Channel.Name = txbName.Text?.Trim();
                 Driver.Channel.ParameterContainer.DisplayName = "ModbusRTU Comunication Parameters";
                 Driver.Channel.ParameterContainer.DisplayParameters = "ModbusRTU Comunication Parameters";
-                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value;
-                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value;
+                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
+                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
 
                 ((Parent as FrameworkElement).Parent as Window).Tag = Channel;
                 ((Parent as FrameworkElement).Parent as Window).Close();

@@ -23,6 +23,7 @@ namespace EasyScada.ServerApplication
         protected ICurrentWindowService CurrentWindowService { get => this.GetService<ICurrentWindowService>(); }
         protected IMessageBoxService MessageBoxService { get => this.GetService<IMessageBoxService>(); }
         protected IWindowService WindowService { get => this.GetService<IWindowService>(); }
+        protected IDispatcherService DispatcherService { get => this.GetService<IDispatcherService>(); }
 
         #endregion
 
@@ -99,6 +100,7 @@ namespace EasyScada.ServerApplication
                     {
                         if (OpcDaClientManagerService.ConnectionDictonary.ContainsKey(RemoteStation))
                         {
+                            RemoteStation.Name = Name;
                             RemoteStation.RemoteAddress = RemoteAddress;
                             RemoteStation.Port = Port;
                             RemoteStation.CommunicationMode = CommunicationMode;
@@ -171,104 +173,34 @@ namespace EasyScada.ServerApplication
 
         public void OnCreateRemoteOpcDaStationSuccessMessage(CreateRemoteOpcDaStationSuccessMessage message)
         {
-            IsBusy = true;
-            if (message != null && ProjectManagerService.CurrentProject != null)
+            DispatcherService.Invoke(() =>
             {
-                RemoteStation remoteStation = new RemoteStation(ProjectManagerService.CurrentProject)
+                IsBusy = true;
+                if (message != null && ProjectManagerService.CurrentProject != null)
                 {
-                    Name = Name,
-                    Port = Port,
-                    RemoteAddress = RemoteAddress,
-                    CommunicationMode = CommunicationMode,
-                    RefreshRate = RefreshRate,
-                    StationType = StationType.OPC_DA
-                };
-                remoteStation.OpcDaServerName = UrlBuilder.Build(OpcServer).ToString();
-                foreach (var channel in message.Station.Channels)
-                {
-                    IChannelCore channelCore = CreateRemoteChannelCore(channel, remoteStation);
-                    if (channelCore != null)
-                        remoteStation.Add(channelCore);
+                    RemoteStation remoteStation = new RemoteStation(ProjectManagerService.CurrentProject)
+                    {
+                        Name = Name,
+                        Port = Port,
+                        RemoteAddress = RemoteAddress,
+                        CommunicationMode = CommunicationMode,
+                        RefreshRate = RefreshRate,
+                        StationType = "OPC_DA"
+                    };
+                    remoteStation.OpcDaServerName = UrlBuilder.Build(OpcServer).ToString();
+                    foreach (var item in message.Parent.Childs)
+                        remoteStation.Childs.Add(item);
+
+                    ProjectManagerService.CurrentProject.Childs.Add(remoteStation);
+                    Thread.Sleep(100);
+                    OpcDaClientManagerService.AddConnection(remoteStation, OpcDaServer);
+                    IsBusy = false;
+                    ProjectTreeWorkspaceViewModel.IsBusy = false;
+                    CreateSuccess = true;
+                    CurrentWindowService.Close();
                 }
 
-                ProjectManagerService.CurrentProject.Childs.Add(remoteStation);
-                Thread.Sleep(100);
-                OpcDaClientManagerService.AddConnection(remoteStation, OpcDaServer);
-                IsBusy = false;
-                ProjectTreeWorkspaceViewModel.IsBusy = false;
-                CreateSuccess = true;
-                CurrentWindowService.Close();
-            }
-        }
-
-        public IStationCore CreateRemoteStationCore(StationClient station, IGroupItem parent)
-        {
-            IStationCore stationCore = null;
-
-            stationCore = new RemoteStation(parent);
-            stationCore.StationType = StationType.OPC_DA;
-            stationCore.Name = station.Name;
-            stationCore.RemoteAddress = station.RemoteAddress;
-            stationCore.Port = station.Port;
-            stationCore.RefreshRate = station.RefreshRate;
-            stationCore.CommunicationMode = station.CommunicationMode;
-
-            if (station.Channels != null && station.Channels.Count > 0)
-            {
-                foreach (var channel in station.Channels)
-                    if (channel != null)
-                        stationCore.Childs.Add(CreateRemoteChannelCore(channel, stationCore));
-            }
-
-            if (station.RemoteStations != null && station.RemoteStations.Count > 0)
-            {
-                foreach (var innerStation in station.RemoteStations)
-                    if (innerStation != null)
-                        stationCore.Childs.Add(CreateRemoteStationCore(innerStation, stationCore));
-            }
-
-            return stationCore;
-        }
-
-        public IChannelCore CreateRemoteChannelCore(ChannelClient channel, IStationCore parent)
-        {
-            IChannelCore channelCore = new ChannelCore(parent, true);
-            channelCore.Name = channel.Name;
-            //channelCore.DriverPath = channel.DriverName == null ? "" : channel.DriverName;
-            channelCore.ParameterContainer.Parameters = channel.Parameters;
-            foreach (var device in channel.Devices)
-                if (device != null)
-                    channelCore.Childs.Add(CreateRemoteDeviceCore(device, channelCore));
-            return channelCore;
-        }
-
-        public IDeviceCore CreateRemoteDeviceCore(DeviceClient device, IChannelCore parent)
-        {
-            IDeviceCore deviceCore = new DeviceCore(parent, true);
-            deviceCore.Name = device.Name;
-            deviceCore.LastRefreshTime = device.LastRefreshTime;
-            deviceCore.ParameterContainer.Parameters = device.Parameters;
-            foreach (var tag in device.Tags)
-                if (tag != null)
-                    deviceCore.Add(CreateRemoteTagCore(tag, deviceCore));
-            return deviceCore;
-        }
-
-        public ITagCore CreateRemoteTagCore(TagClient tag, IDeviceCore parent)
-        {
-            ITagCore tagCore = new TagCore(parent, true);
-            tagCore.Name = tag.Name;
-            tagCore.Address = tag.Address;
-            tagCore.DataTypeName = tag.DataType;
-            tagCore.Value = tag.Value;
-            tagCore.Quality = tag.Quality;
-            tagCore.RefreshRate = tag.RefreshRate;
-            tagCore.RefreshInterval = tag.RefreshInterval;
-            tagCore.AccessPermission = tag.AccessPermission;
-            tagCore.TimeStamp = tag.TimeStamp;
-            tagCore.ParameterContainer.Parameters = tag.Parameters;
-            parent.Childs.Add(tagCore);
-            return tagCore;
+            });
         }
 
         public virtual async void OnUnloaded()

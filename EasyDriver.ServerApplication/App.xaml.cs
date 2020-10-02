@@ -1,10 +1,12 @@
-﻿using DevExpress.Xpf.Core;
+﻿using DevExpress.Mvvm;
+using DevExpress.Xpf.Core;
 using EasyDriver.Opc.Client;
 using Microsoft.Owin.Hosting;
 using Microsoft.Shell;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
@@ -17,6 +19,7 @@ namespace EasyScada.ServerApplication
     /// </summary>
     public partial class App : System.Windows.Application, ISingleInstanceApp
     {
+        private static SplashScreenManager manager;
         private const string Unique = "EasyDriverServer";
         NotifyIcon MainNotifyIcon;
 
@@ -107,6 +110,10 @@ namespace EasyScada.ServerApplication
 
         static App()
         {
+            var splashVM = new DXSplashScreenViewModel() { Status = "Starting..." };
+            manager = SplashScreenManager.CreateWaitIndicator(splashVM);
+            manager.ShowOnStartup(true);
+
             //// Load custom theme
             //var theme = new Theme("EasyDriverServerDarkTheme");
             //theme.AssemblyName = "DevExpress.Xpf.Themes.EasyDriverServerDarkTheme.v20.1";
@@ -117,8 +124,9 @@ namespace EasyScada.ServerApplication
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
-            IoC.Instance.Setup();
 
+
+            IoC.Instance.Setup();
             // Show the main window
             Current.MainWindow = new MainWindow();
 
@@ -130,7 +138,6 @@ namespace EasyScada.ServerApplication
                     MainWindow.Hide();
                 }
             };
-            Current.MainWindow.Show();
 
             //Initialize notify icon
             MainNotifyIcon = new NotifyIcon()
@@ -145,6 +152,22 @@ namespace EasyScada.ServerApplication
 
             string url = $"http://*:{IoC.Instance.Get<ApplicationViewModel>().ServerConfiguration.Port}";
             WebApp.Start(url);
+            Current.MainWindow.Show();
+            string startUpFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\startup.ini";
+            if (File.Exists(startUpFilePath))
+            {
+                string startUpProjectPath = File.ReadAllText(startUpFilePath);
+                if (File.Exists(startUpProjectPath))
+                {
+                    var projectManager = IoC.Instance.Get<IProjectManagerService>();
+                    var loadedProject = projectManager.OpenProject(startUpProjectPath);
+                    if (loadedProject != null)
+                    {
+                        projectManager.CurrentProject = loadedProject;
+                    }
+                }
+            }
+            manager.Close();
         }
 
         void ShowMainWindow()

@@ -197,7 +197,7 @@ namespace EasyDriver.ModbusTCP
             {
                 try
                 {
-                    if (tag.Parent is IDeviceCore device)
+                    if (tag.FindParent<IDeviceCore>(x => x is IDeviceCore) is IDeviceCore device)
                     {
                         ModbusDeviceReader deviceReader = DeviceReaders.FirstOrDefault(x => x.Device == device);
                         if (deviceReader != null)
@@ -229,6 +229,7 @@ namespace EasyDriver.ModbusTCP
         public void Dispose()
         {
             IsDisposed = true;
+            Disposed?.Invoke(this, EventArgs.Empty);
             Disconnect();
         }
 
@@ -239,12 +240,12 @@ namespace EasyDriver.ModbusTCP
 
         public object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
         {
-            return new CreateDeviceView(this, parent as IChannelCore, templateItem);
+            return new CreateDeviceView(this, parent, templateItem);
         }
 
         public object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
         {
-            return new CreateTagView(this, parent as IDeviceCore, templateItem);
+            return new CreateTagView(this, parent, templateItem);
         }
 
         public object GetEditChannelControl(IChannelCore channel)
@@ -260,6 +261,21 @@ namespace EasyDriver.ModbusTCP
         public object GetEditTagControl(ITagCore tag)
         {
             return new EditTagView(this, tag);
+        }
+
+        public IChannelCore ConvertToChannel(IChannelCore baseChannel)
+        {
+            return baseChannel;
+        }
+
+        public IDeviceCore ConverrtToDevice(IDeviceCore baseDevice)
+        {
+            return baseDevice;
+        }
+
+        public ITagCore ConvertToTag(ITagCore tagCore)
+        {
+            return tagCore;
         }
 
         #endregion

@@ -4,6 +4,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -19,7 +20,7 @@ namespace EasyScada.ServerApplication
         int BroadcastRate { get; set; }
         IHubConnectionContext<dynamic> Clients { get; }
         List<BroadcastEndpoint> BroadcastEndpoints { get; }
-        void AddEndpoint(string connectionId, List<StationClient> subscribeData, CommunicationMode communicationMode, int refreshRate);
+        void AddEndpoint(string connectionId, List<string> subscribeTagPaths, CommunicationMode communicationMode, int refreshRate);
         void RemoveEndpoint(string connectionId);
         long BroadcastExecuteInterval { get; }
     }
@@ -34,14 +35,11 @@ namespace EasyScada.ServerApplication
         readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         readonly Task broadcastTask;
 
+        public ConcurrentDictionary<string, string[]> PathCache = new ConcurrentDictionary<string, string[]>();
         public IHubConnectionContext<dynamic> Clients { get; private set; }
-
         public List<BroadcastEndpoint> BroadcastEndpoints { get; private set; }
-
         public bool IsDisposed { get; protected set; }
-
         public long BroadcastExecuteInterval { get; private set; }
-
         public BroadcastMode BroadcastMode { get; set; }
         public int BroadcastRate { get; set; }
 
@@ -87,20 +85,11 @@ namespace EasyScada.ServerApplication
                                     endpoint.Send();
                                 break;
                             case BroadcastMode.SendAllData:
-                                using (StringWriter sw = new StringWriter())
-                                {
-                                    JsonTextWriter writer = new JsonTextWriter(sw);
-                                    writer.WriteStartArray();
-                                    foreach (var item in projectManagerService.CurrentProject.Childs)
-                                    {
-                                        if (item is IStationCore station)
-                                            writer.WriteStationCoreJson(station);
-                                    }
-                                    writer.WriteEndArray();
-                                    List<string> receivedClients = new List<string>(BroadcastEndpoints.Select(x => x.ConnectionId));
-                                    Clients.Clients(receivedClients).broadcastSubscribeData(sw.ToString());
-                                    writer.Close();
-                                }
+                                List<string> receivedClients = new List<string>(BroadcastEndpoints.Select(x => x.ConnectionId));
+                                List<IClientTag> clientTags = projectManagerService.CurrentProject.GetAllTags()?.Select(x => x as IClientTag).ToList();
+                                if (clientTags == null)
+                                    clientTags = new List<IClientTag>();
+                                Clients.Clients(receivedClients).broadcastSubscribeData(JsonConvert.SerializeObject(clientTags));
                                 break;
                             default:
                                 break;
@@ -126,22 +115,28 @@ namespace EasyScada.ServerApplication
             IsDisposed = true;
         }
 
-        public void AddEndpoint(string connectionId, List<StationClient> subscribeData, CommunicationMode communicationMode, int refreshRate)
+        public void AddEndpoint(string connectionId, List<string> subscribeTagPaths, CommunicationMode communicationMode, int refreshRate)
         {
             semaphore.Wait();
             try
             {
+                foreach (var item in subscribeTagPaths)
+                {
+                    if (!string.IsNullOrEmpty(item))
+                        PathCache.AddOrUpdate(item, item.Split('/'), (k, v) => item.Split('/'));
+                }
+
                 if (BroadcastEndpoints.FirstOrDefault(x => x.ConnectionId == connectionId) is BroadcastEndpoint endpoint)
                 {
-                    endpoint.Update(communicationMode, refreshRate, subscribeData);
+                    endpoint.Update(communicationMode, refreshRate, subscribeTagPaths);
                 }
                 else
                 {
-                    endpoint = new BroadcastEndpoint(Clients, connectionId, projectManagerService)
+                    endpoint = new BroadcastEndpoint(this, Clients, connectionId, projectManagerService)
                     {
                         CommunicationMode = communicationMode,
                         RereshRate = refreshRate,
-                        SubscribeData = subscribeData,
+                        SubscribeTagPaths = subscribeTagPaths,
                     };
                     BroadcastEndpoints.Add(endpoint);
                 }
@@ -168,26 +163,6 @@ namespace EasyScada.ServerApplication
             return BroadcastEndpoints.FirstOrDefault(x => x.ConnectionId == connectionId);
         }
 
-        private string GetAllStationsJson()
-        {
-            if (IoC.Instance.ProjectManagerService.CurrentProject != null)
-            {
-                var result = IoC.Instance.ProjectManagerService.CurrentProject.Childs?.Select(x => x as IStationClient)?.ToList();
-                return JsonConvert.SerializeObject(result);
-            }
-            return null;
-        }
-
-        private async Task<string> GetAllStationsJsonAsync()
-        {
-            return await Task.Run(() => GetAllStationsJson());
-        }
-
-        private async Task<List<StationClient>> GetListStationsAsync()
-        {
-            return await Task.Run(() => JsonConvert.DeserializeObject<List<StationClient>>(GetAllStationsJson()));
-        }
-
         public void Dispose()
         {
             IsDisposed = true;
@@ -202,7 +177,7 @@ namespace EasyScada.ServerApplication
 
     public class BroadcastEndpoint
     {
-        public List<StationClient> SubscribeData { get; set; }
+        public List<string> SubscribeTagPaths { get; set; }
         public CommunicationMode CommunicationMode { get; set; }
         public DateTime LastBroadcastTime { get; set; }
         public int RereshRate { get; set; }
@@ -212,12 +187,15 @@ namespace EasyScada.ServerApplication
         public long BroadcastExecuteInterval { get; private set; }
         readonly Stopwatch sw;
         readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+        readonly ServerBroadcastService serverBroadcastService;
        
         public BroadcastEndpoint(
+            ServerBroadcastService boardCastService,
             IHubConnectionContext<dynamic> clients, 
             string connectionId, 
             IProjectManagerService projectManagerService)
         {
+            serverBroadcastService = boardCastService;
             Clients = clients;
             ConnectionId = connectionId;
             ProjectManagerService = projectManagerService;
@@ -250,159 +228,63 @@ namespace EasyScada.ServerApplication
 
         public string GetBroadcastResponse()
         {
-            using (StringWriter sw = new StringWriter())
+            List<IClientTag> tags = new List<IClientTag>();
+            if (ProjectManagerService != null && ProjectManagerService.CurrentProject != null)
             {
-                JsonTextWriter writer = new JsonTextWriter(sw);
-                writer.WriteStartArray();
-
-                if (ProjectManagerService.CurrentProject != null)
+                Dictionary<string, List<string>> groupTagPathDic = new Dictionary<string, List<string>>();
+                foreach (var item in SubscribeTagPaths)
                 {
-                    if (SubscribeData != null && SubscribeData.Count > 0)
+                    if (!string.IsNullOrEmpty(item))
                     {
-                        foreach (var station in SubscribeData)
+                        string[] paths = serverBroadcastService.PathCache.GetOrAdd(item, (x) => x.Split('/'));
+                        if (paths.Length >= 3)
                         {
-                            if (station != null)
+                            string group = "";
+                            for (int i = 0; i < paths.Length - 1; i++)
                             {
-                                IStationCore stationCore = ProjectManagerService.CurrentProject.FirstOrDefault(x => x.Path == station.Path) as IStationCore;
-                                UpdateStation(station, stationCore);
+                                if (i == paths.Length - 2)
+                                    group += paths[i];
+                                else
+                                    group += paths[i] + "/";
+                            }
+                            if (groupTagPathDic.ContainsKey(group))
+                            {
+                                groupTagPathDic[group].Add(paths[paths.Length - 1]);
+                            }
+                            else
+                            {
+                                groupTagPathDic[group] = new List<string>();
+                                groupTagPathDic[group].Add(paths[paths.Length - 1]);
                             }
                         }
-                        foreach (var item in SubscribeData)
-                            JsonUtils.WriteStationClientJson(writer, item);
                     }
                 }
-                writer.WriteEndArray();
-                return sw.ToString();
+
+                foreach (var kvp in groupTagPathDic)
+                {
+                    if (ProjectManagerService.CurrentProject.Browse(kvp.Key.Split('/'), 0) is IHaveTag haveTagObj)
+                    {
+                        if (haveTagObj.HaveTags)
+                        {
+                            foreach (var tagName in kvp.Value)
+                            {
+                                if (haveTagObj.Tags.Find(tagName) is IClientTag clientTag)
+                                    tags.Add(clientTag);
+                            }
+                        }
+                    }
+                }
             }
+            return JsonConvert.SerializeObject(tags, Formatting.Indented, new ListClientTagJsonConverter());
         }
 
-        public void Update(CommunicationMode communicationMode, int refreshRate, List<StationClient> subscribeData)
+        public void Update(CommunicationMode communicationMode, int refreshRate, List<string> subscribeTagPaths)
         {
             semaphore.Wait();
             CommunicationMode = communicationMode;
             RereshRate = refreshRate;
-            SubscribeData = subscribeData;
+            SubscribeTagPaths = subscribeTagPaths;
             semaphore.Release();
-        }
-
-        private void UpdateStation(StationClient station, IStationCore stationCore)
-        {
-            if (stationCore != null)
-            {
-                station.CommunicationMode = stationCore.CommunicationMode;
-                station.Error = stationCore.CommunicationError;
-                station.RefreshRate = stationCore.RefreshRate;
-                station.RemoteAddress = stationCore.RemoteAddress;
-                station.Port = stationCore.Port;
-                station.Parameters = stationCore.ParameterContainer.Parameters;
-                station.LastRefreshTime = stationCore.LastRefreshTime;
-                station.ConnectionStatus = stationCore.ConnectionStatus;
-
-                if (station.RemoteStations != null && station.RemoteStations.Count > 0)
-                {
-                    foreach (StationClient remoteStation in station.RemoteStations)
-                    {
-                        if (remoteStation != null)
-                        {
-                            IStationCore remoteStationCore = stationCore.FirstOrDefault(x => x.Path == remoteStation.Path) as IStationCore;
-                            UpdateStation(remoteStation, remoteStationCore);
-                        }
-                    }
-                }
-
-                if (station.Channels != null && station.Channels.Count > 0)
-                {
-                    foreach (ChannelClient channel in station.Channels)
-                    {
-                        if (channel != null)
-                        {
-                            IChannelCore channelCore = stationCore.FirstOrDefault(x => x.Path == channel.Path) as IChannelCore;
-                            UpdateChannel(channel, channelCore);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                station.Error = "This station could not be found on server.";
-            }
-        }
-
-        private void UpdateChannel(ChannelClient channel, IChannelCore channelCore)
-        {
-            if (channelCore != null)
-            {
-                channel.LastRefreshTime = channelCore.LastRefreshTime;
-                channel.Parameters = channelCore.ParameterContainer.Parameters;
-                channel.Error = channelCore.CommunicationError;
-
-                if (channel.Devices != null && channel.Devices.Count > 0)
-                {
-                    foreach (var device in channel.Devices)
-                    {
-                        if (device != null)
-                        {
-                            IDeviceCore deviceCore = channelCore.FirstOrDefault(x => x.Path == device.Path) as IDeviceCore;
-                            UpdateDevice(device, deviceCore);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                channel.Error = "This channel could not be found on server.";
-            }
-        }
-
-        private void UpdateDevice(DeviceClient device, IDeviceCore deviceCore)
-        {
-            if (deviceCore != null)
-            {
-                device.LastRefreshTime = deviceCore.LastRefreshTime;
-                device.Parameters = deviceCore.ParameterContainer.Parameters;
-                device.Error = deviceCore.CommunicationError;
-
-                if (device.Tags != null && device.Tags.Count > 0)
-                {
-                    List<ICoreItem> tagCores = deviceCore.Childs.Select(x => x as ICoreItem).ToList();
-                    foreach (var tag in device.Tags)
-                    {
-                        if (tag != null)
-                        {
-                            ITagCore tagCore = tagCores.FirstOrDefault(x => x.Path == tag.Path) as ITagCore;
-                            if (tagCore != null)
-                                tagCore.Remove(tagCore);
-                            UpdateTag(tag, tagCore);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                device.Error = "This device could not be found on server.";
-            }
-
-        }
-
-        private void UpdateTag(TagClient tag, ITagCore tagCore)
-        {
-            if (tagCore != null)
-            {
-                tag.Address = tagCore.Address;
-                tag.DataType = tagCore.DataTypeName;
-                tag.AccessPermission = tagCore.AccessPermission;
-                tag.TimeStamp = tagCore.TimeStamp;
-                tag.Value = tagCore.Value;
-                tag.Quality = tagCore.Quality;
-                tag.Parameters = tagCore.ParameterContainer.Parameters;
-                tag.RefreshInterval = tagCore.RefreshInterval;
-                tag.RefreshRate = tagCore.RefreshRate;
-                tag.Error = tagCore.CommunicationError;
-            }
-            else
-            {
-                tag.Error = "This tag could not be found on server.";
-            }
         }
     }
 }

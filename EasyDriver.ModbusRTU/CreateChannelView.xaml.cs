@@ -20,7 +20,7 @@ namespace EasyDriver.ModbusRTU
         #region Public members
 
         public IEasyDriverPlugin Driver { get; set; }
-        public IGroupItem ParentChannel { get; set; }
+        public IGroupItem ParentItem { get; set; }
 
         public List<string> ComPortSource { get; set; }
         public List<int> BaudRateSource { get; set; }
@@ -35,7 +35,7 @@ namespace EasyDriver.ModbusRTU
         public CreateChannelView(IEasyDriverPlugin driver, IGroupItem parent, IChannelCore templateItem) 
         {
             Driver = driver;
-            ParentChannel = parent;
+            ParentItem = parent;
 
             InitializeComponent();
 
@@ -113,13 +113,13 @@ namespace EasyDriver.ModbusRTU
             {
                 Driver.Channel.ParameterContainer.DisplayName = "ModbusRTU Comunication Parameters";
                 Driver.Channel.ParameterContainer.DisplayParameters = "ModbusRTU Comunication Parameters";
-                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem;
-                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value;
-                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value;
+                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem.ToString();
+                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
+                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
 
                 Driver.Connect();
                 ((Parent as FrameworkElement).Parent as Window).Tag = Driver.Channel;
@@ -154,7 +154,7 @@ namespace EasyDriver.ModbusRTU
             }
             catch (IOException)
             {
-                foreach (var item in ParentChannel.Childs)
+                foreach (var item in ParentItem.Childs)
                 {
                     if (item is ISupportParameters supportParameters)
                     {

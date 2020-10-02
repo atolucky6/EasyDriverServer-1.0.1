@@ -7,8 +7,9 @@ namespace EasyScada.Core
     {
         public string PathToTag { get; set; }
         public string Value { get; set; }
-        public DateTime SendTime { get; internal set; } 
-        public WritePiority WritePiority { get; set; } = WritePiority.Default;
-        public WriteMode WriteMode { get; set; } = WriteMode.WriteAllValue;
+        public DateTime SendTime { get; set; }
+        public DateTime ReceiveTime { get; set; }
+        public WritePiority WritePiority { get; set; }
+        public WriteMode WriteMode { get; set; }
     }
 }
