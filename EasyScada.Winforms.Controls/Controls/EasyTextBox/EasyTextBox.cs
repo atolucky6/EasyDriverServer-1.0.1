@@ -51,7 +51,6 @@ namespace EasyScada.Winforms.Controls
 
         #region ISupportWriteTag
 
-        [TypeConverter(typeof(WriteTriggerConverter))]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
         public WriteTrigger WriteTrigger { get; set; }
 
@@ -92,6 +91,7 @@ namespace EasyScada.Winforms.Controls
         public EasyTextBox() : base()
         {
             writeDelayTimer.Elapsed += WriteDelayTimer_Elapsed;
+            Text = "";
         }
         #endregion
 
@@ -105,6 +105,7 @@ namespace EasyScada.Winforms.Controls
         private BorderStyle dropDownBorderStyle = BorderStyle.FixedSingle;
         private Font dropDownFont = DefaultFont;
         private DropDownDirection dropDownDirection = DropDownDirection.Bottom;
+        private string oldValue;
         #endregion
 
         #region Properties
@@ -188,6 +189,18 @@ namespace EasyScada.Winforms.Controls
                 OnTagQualityChanged(LinkedTag, new TagQualityChangedEventArgs(LinkedTag, Quality.Uncertain, LinkedTag.Quality));
                 LinkedTag.ValueChanged += OnTagValueChanged;
                 LinkedTag.QualityChanged += OnTagQualityChanged;
+
+                this.SetInvoke((x) =>
+                {
+                    x.Text = LinkedTag.Value;
+                });
+
+                dropDownLabel.SetInvoke(x =>
+                {
+                    UpdateDropDownPosition();
+                    if (x.Text != LinkedTag.Value)
+                        x.Text = LinkedTag.Value;
+                });
             }
         }
 
@@ -202,9 +215,15 @@ namespace EasyScada.Winforms.Controls
             {
                 if (x.Text != e.NewValue && !Focused)
                     x.Text = e.NewValue;
+            });
 
-                if (dropDownLabel.Text != e.NewValue)
-                    dropDownLabel.Text = e.NewValue;
+            dropDownLabel.SetInvoke(x =>
+            {
+                if (x.Text != e.NewValue)
+                {
+                    x.Text = e.NewValue;
+                    UpdateDropDownPosition();
+                }
             });
         }
 
@@ -226,14 +245,23 @@ namespace EasyScada.Winforms.Controls
             }
         }
 
-        protected override void OnTextChanged(EventArgs e)
+        protected override void OnKeyUp(KeyEventArgs e)
         {
-            base.OnTextChanged(e);
-            if (WriteTrigger == WriteTrigger.ValueChanged)
+            base.OnKeyUp(e);
+            if (oldValue != Text)
             {
-                writeDelayTimer.Stop();
-                writeDelayTimer.Start();
+                if (WriteTrigger == WriteTrigger.ValueChanged)
+                {
+                    writeDelayTimer.Stop();
+                    writeDelayTimer.Start();
+                }
             }
+        }
+
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            base.OnKeyPress(e);
+            oldValue = Text;
         }
 
         protected override void OnLostFocus(EventArgs e)
@@ -286,6 +314,8 @@ namespace EasyScada.Winforms.Controls
         #region Methods
         private void WriteDelayTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            writeDelayTimer.Stop();
+            writeValue = Text;
             WriteTag(writeValue);
         }
 
@@ -358,7 +388,6 @@ namespace EasyScada.Winforms.Controls
                     dropDownPanel.Visible = false;
                     break;
             }
-            dropDownLabel.Text = Text;
             dropDownPanel.Location = location;
         }
         #endregion

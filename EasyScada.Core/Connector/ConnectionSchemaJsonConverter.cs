@@ -38,7 +38,7 @@ namespace EasyScada.Core
                     schema.Port = jObject["Port"].Value<ushort>();
                     schema.Username = jObject["Username"].Value<string>();
                     schema.Password = jObject["Password"].Value<string>();
-                    schema.CommunicationMode = (CommunicationMode)jObject["CommunicationMode"].Value<int>();
+                    schema.CommunicationMode = (CommunicationMode)Enum.Parse(typeof(CommunicationMode), jObject["CommunicationMode"].Value<string>());
                     schema.RefreshRate = jObject["RefreshRate"].Value<int>();
                     schema.CreatedDate = jObject["CreatedDate"].Value<DateTime>();
                     Dictionary<string, string> properties = JsonConvert.DeserializeObject<Dictionary<string, string>>(jObject["Properties"].ToString());
@@ -64,13 +64,13 @@ namespace EasyScada.Core
                     item.Description = jObject["Description"].Value<string>();
                     item.DisplayInfo = jObject["DisplayInfo"].Value<string>();
                     item.Error = jObject["Error"].Value<string>();
-                    if (result is Tag tag)
-                    {
-                        tag.Address = jObject["Address"].Value<string>();
-                        tag.DataType = jObject["DataType"].Value<string>();
-                        tag.RefreshRate = jObject["RefreshRate"].Value<int>();
-                        tag.AccessPermission = (AccessPermission)jObject["RefreshRate"].Value<int>();
-                    }
+                    //if (result is Tag tag)
+                    //{
+                    //    //tag.Address = jObject["Address"].Value<string>();
+                    //    //tag.DataType = jObject["DataType"].Value<string>();
+                    //    //tag.RefreshRate = jObject["RefreshRate"].Value<int>();
+                    //    //tag.AccessPermission = (AccessPermission)jObject["RefreshRate"].Value<int>();
+                    //}
                     Dictionary<string, string> properties = JsonConvert.DeserializeObject<Dictionary<string, string>>(jObject["Properties"].ToString());
                     if (properties != null)
                         item.Properties = properties;
@@ -80,7 +80,7 @@ namespace EasyScada.Core
                     {
                         foreach (var child in childItems)
                         {
-                            var obj = JsonConvert.DeserializeObject(child.ToString(), typeof(ICoreItem), this);
+                            var obj = JsonConvert.DeserializeObject<ICoreItem>(child.ToString(), this);
                             if (obj is ICoreItem childCoreItem)
                                 item.Childs.Add(childCoreItem);
                         }
@@ -156,20 +156,20 @@ namespace EasyScada.Core
                 writer.WritePropertyName("Properties");
                 writer.WriteRawValue(JsonConvert.SerializeObject(coreItem.Properties, Formatting.Indented));
 
-                if (coreItem is ITag tag)
-                {
-                    writer.WritePropertyName("Address");
-                    writer.WriteValue(tag.Address);
+                //if (coreItem is ITag tag)
+                //{
+                //    writer.WritePropertyName("Address");
+                //    writer.WriteValue(tag.Address);
 
-                    writer.WritePropertyName("DataType");
-                    writer.WriteValue(tag.DataType);
+                //    writer.WritePropertyName("DataType");
+                //    writer.WriteValue(tag.DataType);
 
-                    writer.WritePropertyName("RefreshRate");
-                    writer.WriteValue(tag.RefreshRate);
+                //    writer.WritePropertyName("RefreshRate");
+                //    writer.WriteValue(tag.RefreshRate);
 
-                    writer.WritePropertyName("AccessPermission");
-                    writer.WriteValue(tag.AccessPermission.ToString());
-                }
+                //    writer.WritePropertyName("AccessPermission");
+                //    writer.WriteValue(tag.AccessPermission.ToString());
+                //}
 
                 writer.WritePropertyName("Childs");
                 writer.WriteStartArray();

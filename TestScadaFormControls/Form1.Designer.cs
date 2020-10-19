@@ -29,61 +29,21 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            EasyScada.Core.LogColumn logColumn1 = new EasyScada.Core.LogColumn();
-            EasyScada.Core.LogColumn logColumn2 = new EasyScada.Core.LogColumn();
-            this.easyPictureBox1 = new EasyScada.Winforms.Controls.EasyPictureBox();
-            this.easyDataLogger1 = new EasyScada.Winforms.Controls.EasyDataLogger(this.components);
-            this.easyDataLogger2 = new EasyScada.Winforms.Controls.EasyDataLogger(this.components);
+            EasyScada.Core.LogProfile logProfile1 = new EasyScada.Core.LogProfile();
+            this.easyAlarmSetting1 = new EasyScada.Winforms.Controls.EasyAlarmSetting();
             this.easyDriverConnector1 = new EasyScada.Winforms.Controls.EasyDriverConnector(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.easyDataLogger1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.easyDataLogger2)).BeginInit();
+            this.easyAlarmLogger2 = new EasyScada.Winforms.Controls.EasyAlarmLogger(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.easyDriverConnector1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.easyAlarmLogger2)).BeginInit();
             this.SuspendLayout();
             // 
-            // easyPictureBox1
+            // easyAlarmSetting1
             // 
-            this.easyPictureBox1.FillMode = EasyScada.Winforms.Controls.ImageFillMode.Original;
-            this.easyPictureBox1.FlipMode = EasyScada.Winforms.Controls.ImageFlipMode.None;
-            this.easyPictureBox1.Image = null;
-            this.easyPictureBox1.Location = new System.Drawing.Point(363, 214);
-            this.easyPictureBox1.Name = "easyPictureBox1";
-            this.easyPictureBox1.RotateAngle = 0;
-            this.easyPictureBox1.ShadedColor = System.Drawing.Color.Gray;
-            this.easyPictureBox1.Size = new System.Drawing.Size(75, 23);
-            this.easyPictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Normal;
-            this.easyPictureBox1.TabIndex = 7;
-            this.easyPictureBox1.TagPath = "Local Station/Channel/MayMen/Setting8";
-            this.easyPictureBox1.Text = "easyPictureBox1";
-            // 
-            // easyDataLogger1
-            // 
-            this.easyDataLogger1.AllowLogWhenTagBad = false;
-            logColumn1.ColumnName = "Column1";
-            logColumn1.DefaultValue = "";
-            logColumn1.Description = "";
-            logColumn1.Enabled = true;
-            logColumn1.Mode = EasyScada.Core.LogColumnMode.UseDefaultValueWhenTagBad;
-            logColumn1.TagPath = "";
-            logColumn1.UseDefaultValueWhenQualityBad = false;
-            this.easyDataLogger1.Columns.AddRange(new EasyScada.Core.LogColumn[] {
-            logColumn1});
-            this.easyDataLogger1.Enabled = false;
-            this.easyDataLogger1.Interval = 60000;
-            // 
-            // easyDataLogger2
-            // 
-            this.easyDataLogger2.AllowLogWhenTagBad = false;
-            logColumn2.ColumnName = "Column144";
-            logColumn2.DefaultValue = "";
-            logColumn2.Description = "";
-            logColumn2.Enabled = true;
-            logColumn2.Mode = EasyScada.Core.LogColumnMode.UseDefaultValueWhenTagBad;
-            logColumn2.TagPath = "";
-            logColumn2.UseDefaultValueWhenQualityBad = false;
-            this.easyDataLogger2.Columns.AddRange(new EasyScada.Core.LogColumn[] {
-            logColumn2});
-            this.easyDataLogger2.Enabled = false;
-            this.easyDataLogger2.Interval = 60000;
+            this.easyAlarmSetting1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.easyAlarmSetting1.Location = new System.Drawing.Point(0, 0);
+            this.easyAlarmSetting1.Name = "easyAlarmSetting1";
+            this.easyAlarmSetting1.Size = new System.Drawing.Size(800, 450);
+            this.easyAlarmSetting1.TabIndex = 0;
             // 
             // easyDriverConnector1
             // 
@@ -92,26 +52,37 @@
             this.easyDriverConnector1.RefreshRate = 1000;
             this.easyDriverConnector1.ServerAddress = "127.0.0.1";
             // 
+            // easyAlarmLogger2
+            // 
+            logProfile1.DatabaseName = "easyScada";
+            logProfile1.DatabaseType = EasyScada.Core.DbType.MySql;
+            logProfile1.DataSourceName = null;
+            logProfile1.Enabled = true;
+            logProfile1.IpAddress = "localhost";
+            logProfile1.Password = "100100";
+            logProfile1.Port = ((ushort)(3306));
+            logProfile1.TableName = "testalarm";
+            logProfile1.Username = "root";
+            this.easyAlarmLogger2.Databases.Add(logProfile1);
+            this.easyAlarmLogger2.Enabled = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.easyPictureBox1);
+            this.Controls.Add(this.easyAlarmSetting1);
             this.Name = "Form1";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.easyDataLogger1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.easyDataLogger2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.easyDriverConnector1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.easyAlarmLogger2)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private EasyScada.Winforms.Controls.EasyDataLogger easyDataLogger1;
-        private EasyScada.Winforms.Controls.EasyDataLogger easyDataLogger2;
-        private EasyScada.Winforms.Controls.EasyPictureBox easyPictureBox1;
+        private EasyScada.Winforms.Controls.EasyAlarmSetting easyAlarmSetting1;
         private EasyScada.Winforms.Controls.EasyDriverConnector easyDriverConnector1;
+        private EasyScada.Winforms.Controls.EasyAlarmLogger easyAlarmLogger2;
     }
 }

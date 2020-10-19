@@ -31,7 +31,7 @@ namespace EasyScada.Winforms.Controls
     [ToolboxBitmap(typeof(EasyLinkLabel), "ToolkitBitmaps.EasyLinkLabel.bmp")]
     [ClassInterface(ClassInterfaceType.AutoDispatch)]
     [ComVisible(true)]
-    public class EasyLinkLabel : EasyLabel
+    public class EasyLinkLabel : ThemedLabel
 	{
 		#region Instance Fields
         private PaletteContent _stateVisited;

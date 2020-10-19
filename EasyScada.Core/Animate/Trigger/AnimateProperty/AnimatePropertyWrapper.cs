@@ -29,13 +29,10 @@ namespace EasyScada.Core
                             {
                                 if (targetProp.Name == propertyInfo.Name)
                                 {
-                                    ConstructorInfo[] constructorInfos = propertyInfo.PropertyType.GetConstructors();
-                                    if (constructorInfos.Length > 0)
+                                    if (propertyInfo.GetValue(this) is AnimatePropertyBase animateProp)
                                     {
-                                        propertyInfo.SetValue(this, constructorInfos[0].Invoke(new object[]
-                                        {
-                                        value, targetProp, targetProp.GetValue(value)
-                                        }));
+                                        animateProp.TargetControl = value;
+                                        animateProp.SetAnimatePropertyInfo(targetProp);
                                     }
                                     break;
                                 }

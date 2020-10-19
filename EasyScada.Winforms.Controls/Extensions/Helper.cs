@@ -2,6 +2,7 @@
 using EnvDTE;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -19,6 +20,7 @@ namespace EasyScada.Winforms.Controls
 {
     internal static class EasyScadaHelper
     {
+        public static string REGEX_ValidFileName = @"^[\w\-. ]+$";
         public const string IpAddressPattern = @"^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$";
 
         /// <summary>
@@ -101,7 +103,6 @@ namespace EasyScada.Winforms.Controls
             for (int k = 0; k + 4 < pixelBuffer.Length; k += 4)
             {
 
-                //int gray = (int)(pixelBuffer[k + 2] * 0.12) + (int)(pixelBuffer[k + 1] * 0.4032) + (int)(pixelBuffer[k] * 0.4768);
                 int gray = (int)(pixelBuffer[k + 2] * 0.33) + (int)(pixelBuffer[k + 1] * 0.33) + (int)(pixelBuffer[k] * 0.34);
 
                 double rScale = shadeColor.R * 2 / 255;
@@ -274,6 +275,34 @@ namespace EasyScada.Winforms.Controls
         public static bool IsUniqueStringInCollection(this string name, ICollection<string> collection)
         {
             return !collection.Contains(name);
+        }
+
+        public static string GetUniqueNameInCollection(this ICollection collection, Func<object, string> getNameFunc, string patternName, bool insertBrackets = false)
+        {
+            uint index = patternName.ExtractLastNumberFromString(out bool hasIndex, out bool hasBracketsSurround);
+            index = insertBrackets ? 1 : index;
+            if (index == 0)
+                index++;
+            if (patternName.IsUniqueStringInCollection(collection, getNameFunc))
+                return patternName;
+            patternName = insertBrackets ? hasBracketsSurround ? patternName.RemoveLastNumberFromString() : patternName?.Trim() : patternName.RemoveLastNumberFromString();
+            string name = string.Format("{0}{1}", patternName, hasBracketsSurround || insertBrackets ? $"({index})" : $"{index}");
+            while (!name.IsUniqueStringInCollection(collection, getNameFunc))
+            {
+                index++;
+                name = string.Format("{0}{1}", patternName, hasBracketsSurround || insertBrackets ? $"({index})" : $"{index}");
+            }
+            return name;
+        }
+
+        public static bool IsUniqueStringInCollection(this string name, ICollection collection, Func<object, string> getNameFunc)
+        {
+            foreach (var item in collection)
+            {
+                if (getNameFunc(item) == name)
+                    return false;
+            }
+            return true;
         }
 
         public static void Paste(this DataGridView gridView, string colNameHeader = "Name")
@@ -487,12 +516,60 @@ namespace EasyScada.Winforms.Controls
             {
                 foreach (ICoreItem child in item.Childs)
                 {
-                    TreeNode childNode = item.ToTreeNode(includeChilds, includeTags);
-                    if (childNode != null)
-                        node.Nodes.Add(childNode);
+                    if (child is ITag)
+                    {
+                        if (includeTags)
+                        {
+                            TreeNode childNode = child.ToTreeNode(includeChilds, includeTags);
+                            if (childNode != null)
+                                node.Nodes.Add(childNode);
+                        }
+                    }
+                    else
+                    {
+                        TreeNode childNode = child.ToTreeNode(includeChilds, includeTags);
+                        if (childNode != null)
+                            node.Nodes.Add(childNode);
+                    }
                 }
             }
             return node;
+        }
+
+        public static string ValidateName(this string str, string name)
+        {
+            str = str?.Trim();
+            if (string.IsNullOrEmpty(str))
+                return $"The {name} name can't be empty.";
+            if (!Regex.IsMatch(str, REGEX_ValidFileName))
+                return $"The {name} name was not in correct format.";
+            return string.Empty;
+        }
+
+        public static string ToHexString(this Color c)
+        {
+            return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
+        }
+
+        public static Color ToColor(this string colorString)
+        {
+            try
+            {
+                return ColorTranslator.FromHtml(colorString);
+            }
+            catch { return Color.Transparent; }
+        }
+
+        public static bool ShowSelectTag(this IServiceProvider serviceProvider, out string selectedTag)
+        {
+            selectedTag = "";
+            SelectTagPathDesignerForm form = new SelectTagPathDesignerForm(serviceProvider);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                selectedTag = form.SelectedTagPath;
+                return true;
+            }
+            return false;
         }
     }
 }

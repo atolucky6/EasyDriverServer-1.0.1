@@ -24,7 +24,8 @@ namespace EasyScada.Winforms.Controls
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
             Load += GetConnectionSchemaForm_Load;
-            projectTree.AfterCheck += ProjectTree_AfterCheck;
+            projectTree.AfterSelect += ProjectTree_AfterSelect;
+            projectTree.EndInit();
         }
         #endregion
 
@@ -36,18 +37,10 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Event handlers
-        private void ProjectTree_AfterCheck(object sender, TreeViewEventArgs e)
+        private void ProjectTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            try
-            {
-                if (e.Action == TreeViewAction.ByMouse ||
-                    e.Action == TreeViewAction.ByKeyboard)
-                {
-                    if (e.Node.Tag is ICoreItem coreItem)
-                        DisplayTagCollection(coreItem);
-                }
-            }
-            catch { }
+            if (e.Node.Tag is ICoreItem coreItem)
+                DisplayTagCollection(coreItem);
         }
 
         private async void GetConnectionSchemaForm_Load(object sender, EventArgs e)
@@ -63,6 +56,17 @@ namespace EasyScada.Winforms.Controls
 
         private void BtnOk_Click(object sender, EventArgs e)
         {
+            if (ConnectionSchema != null && ConnectionSchema.Checked)
+            {
+                FilterCheckedItems(ConnectionSchema);
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            else
+            {
+                DialogResult = DialogResult.Cancel;
+                Close();
+            }
         }
         #endregion
 
@@ -130,6 +134,13 @@ namespace EasyScada.Winforms.Controls
             var tags = connectionSchema?.GetAllTags();
             if (tags != null)
                 tagCount = tags.Count();
+
+            if (projectTree.Nodes.Count > 0)
+            {
+                CheckAllNode(projectTree.Nodes[0]);
+                projectTree.Nodes[0].Text = $"Easy Driver Server - {ServerAddress}:{Port}";
+            }
+
             groupProjectTree.ValuesSecondary.Heading = $"Total tags: {tagCount}";
             ExpandAllNode();
         }
@@ -137,13 +148,35 @@ namespace EasyScada.Winforms.Controls
         private void ExpandAllNode()
         {
             if (projectTree.Nodes.Count > 0)
-                projectTree.Nodes[0].ExpandAll();
+            {
+                foreach (TreeNode node in projectTree.Nodes)
+                {
+                    node.ExpandAll();
+                }
+            }
         }
 
         private void CollapseAllNode()
         {
             if (projectTree.Nodes.Count > 0)
-                projectTree.Nodes[0].Collapse();
+            {
+                foreach (TreeNode node in projectTree.Nodes)
+                {
+                    node.Collapse();
+                }
+            }
+        }
+
+        private void CheckAllNode(TreeNode node)
+        {
+            node.Checked = true;
+            if (node.Nodes.Count > 0)
+            {
+                foreach (TreeNode childNode in node.Nodes)
+                {
+                    CheckAllNode(childNode);
+                }
+            }
         }
 
         private void DisplayTagCollection(ICoreItem coreItem)
@@ -163,31 +196,23 @@ namespace EasyScada.Winforms.Controls
             }
         }
 
-        private ConnectionSchema GetCheckedItems()
+        private void FilterCheckedItems(ICoreItem item)
         {
-            if (ConnectionSchema == null)
-                return null;
-
-            //ConnectionSchema cloneConnectionSchema = JsonConvert.DeserializeObject<ConnectionSchema>(JsonConvert.SerializeObject(ConnectionSchema));
-            //if (cloneConnectionSchema != null)
-            //{
-            //    if (cloneConnectionSchema.Childs != null)
-            //    {
-            //        cloneConnectionSchema.Childs.ForEach(x =>
-            //        {
-            //            if (!x.Checked)
-            //                cloneConnectionSchema.Stations.Remove(x);
-            //            else
-            //                FilterCheckedItems(x);
-            //        });
-            //    }
-            //}
-            return null;
-        }
-
-        private void FilterCheckedItems(object item)
-        {
-
+            if (item != null && item.Childs != null)
+            {
+                foreach (var child in item.Childs.ToArray())
+                {
+                    if (child is ITag)
+                        continue;
+                    if (child is ICheckable checkable)
+                    {
+                        if (!checkable.Checked)
+                            item.Childs.Remove(child);
+                        else
+                            FilterCheckedItems(child);
+                    }
+                }
+            }
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,6 @@ namespace EasyScada.Core.Animate
         
         public string MinValue { get; set; }
         public string MaxValue { get; set; }
-        public string TriggerTagPath { get; set; }
 
         #endregion
 

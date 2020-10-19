@@ -42,6 +42,12 @@ namespace EasyDriver.Core
             }
         }
 
+        [JsonIgnore]
+        public bool IsInternalTag
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
 
         [JsonIgnore]
         public string DisplayName
@@ -315,6 +321,7 @@ namespace EasyDriver.Core
                 properties["DataType"] = DataTypeName;
                 properties["AccessPermission"] = AccessPermission.ToString();
                 properties["TimeStamp"] = TimeStamp.ToString();
+                properties["IsInternalTag"] = IsInternalTag.ToString();
                 return properties;
             }
         }

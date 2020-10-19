@@ -46,7 +46,7 @@ namespace EasyScada.Core
             return null;
         }
 
-        public virtual string GetCreateTableQuery(LogColumn[] columns)
+        public virtual string GetCreateTableQuery(LogColumn[] columns, string timeColumnName = "DateTime")
         {
             if (columns == null)
                 return null;
@@ -59,7 +59,7 @@ namespace EasyScada.Core
                     {
                         sb.AppendLine($"if not exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[{TableName}]') and type in (N'U'))");
                         sb.AppendLine("BEGIN");
-                        sb.Append($"create table [dbo].[{TableName}] (DateTime  DATETIME");
+                        sb.Append($"create table [dbo].[{TableName}] ({timeColumnName}  DATETIME");
                         foreach (LogColumn column in columns)
                         {
                             sb.Append($", {column.ColumnName?.Replace(" ", "")} NVARCHAR(200)");
@@ -70,10 +70,10 @@ namespace EasyScada.Core
                     }
                 case DbType.MySql:
                     {
-                        sb.Append($"create table if not exists {TableName} (DateTime Datetime not null");
+                        sb.Append($"create table if not exists {TableName} ({timeColumnName} Datetime not null");
                         foreach (LogColumn column in columns)
                         {
-                            sb.Append($", {column.ColumnName?.Replace(" ", "")} varchar(200)");
+                            sb.Append($", `{column.ColumnName?.Replace(" ", "")}` varchar(200)");
                         }
                         sb.Append(");");
                         break;

@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,29 +11,49 @@ namespace EasyScada.Core
 {
     public class AlarmSetting
     {
-        public UniqueItemCollection<AlarmClass> AlarmClasses { get; set; }
-        public UniqueItemCollection<AlarmGroup> AlarmGroups { get; set; }
-        public UniqueItemCollection<DiscreteAlarm> DiscreteAlarms { get; set; }
-        public UniqueItemCollection<AnalogAlarm> AnalogAlarms { get; set; }
+        [Category("Easy Scada")]
+        public bool Enabled { get; set; } = true;
 
+        [Category("Easy Scada"), TypeConverter(typeof(CollectionEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public UniqueItemCollection<AlarmClass> AlarmClasses { get; set; }
+
+        [Category("Easy Scada"), TypeConverter(typeof(CollectionEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public UniqueItemCollection<AlarmGroup> AlarmGroups { get; set; }
+
+        [Category("Easy Scada"), TypeConverter(typeof(CollectionEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public AlarmSettingItemCollection<DiscreteAlarm> DiscreteAlarms { get; set; }
+
+        [Category("Easy Scada"), TypeConverter(typeof(CollectionEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public AlarmSettingItemCollection<AnalogAlarm> AnalogAlarms { get; set; }
+
+        [Category("Easy Scada"), TypeConverter(typeof(CollectionEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public AlarmSettingItemCollection<QualityAlarm> QualityAlarms { get; set; }
+
+        [Category("Easy Scada"), TypeConverter(typeof(CollectionEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public UniqueItemCollection<EmailSetting> EmailSettings { get; set; }
+
+        [Category("Easy Scada"), TypeConverter(typeof(CollectionEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public UniqueItemCollection<SMSSetting> SMSSettings { get; set; }
+
+        [JsonConstructor]
         public AlarmSetting()
         {
+            EmailSettings = new UniqueItemCollection<EmailSetting>();
+            SMSSettings = new UniqueItemCollection<SMSSetting>();
+
             AlarmClasses = new UniqueItemCollection<AlarmClass>();
             AlarmGroups = new UniqueItemCollection<AlarmGroup>();
-            DiscreteAlarms = new UniqueItemCollection<DiscreteAlarm>();
-            AnalogAlarms = new UniqueItemCollection<AnalogAlarm>();
-            DiscreteAlarms.CollectionChanged += DiscreteAlarms_CollectionChanged;
-            AnalogAlarms.CollectionChanged += AnalogAlarms_CollectionChanged;
+
+            DiscreteAlarms = new AlarmSettingItemCollection<DiscreteAlarm>(this);
+            AnalogAlarms = new AlarmSettingItemCollection<AnalogAlarm>(this);
+            QualityAlarms = new AlarmSettingItemCollection<QualityAlarm>(this);
         }
 
-        private void AnalogAlarms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        public event EventHandler<AlarmStateChangedEventArgs> AlarmStateChagned;
+
+        internal void RaiseAlarmStateChanged(object sender, AlarmStateChangedEventArgs e)
         {
-
-        }
-
-        private void DiscreteAlarms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-
+            AlarmStateChagned?.Invoke(sender, e);
         }
     }
 }

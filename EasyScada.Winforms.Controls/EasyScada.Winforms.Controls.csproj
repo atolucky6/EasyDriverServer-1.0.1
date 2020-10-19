@@ -78,7 +78,44 @@
     <Compile Include="Connector\EasyDriverConnector.Designer.cs">
       <DependentUpon>EasyDriverConnector.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\EasyAlarmLogger\EasyAlarmLoggerDesginer.cs" />
+    <Compile Include="Controls\EasyAlarmSetting\EasyAlarmSettingDesigner.cs" />
+    <Compile Include="Controls\EasyAlarmViewer\EasyAlarmViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyAlarmViewer\EasyAlarmViewer.Designer.cs">
+      <DependentUpon>EasyAlarmViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyEmailSetting\EasyEmailSetting.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyEmailSetting\EasyEmailSetting.Designer.cs">
+      <DependentUpon>EasyEmailSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyLabel\EasyLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyLabel\EasyLabelDesigner.cs" />
+    <Compile Include="Controls\EasyPictureBox\AnimateImageFlipMode.cs" />
+    <Compile Include="Controls\EasyPictureBox\AnimateImgeFillMode.cs" />
     <Compile Include="Controls\EasyPictureBox\ImageAnimatePropertyWrapper.cs" />
+    <Compile Include="Controls\EasyTextBox\DropDownDirection.cs" />
+    <Compile Include="Controls\EasyTextBox\EasyTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyTextBox\EasyTextBoxDesigner.cs" />
+    <Compile Include="Controls\EasyAlarmSetting\EasyAlarmSetting.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyAlarmSetting\EasyAlarmSetting.Designer.cs">
+      <DependentUpon>EasyAlarmSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\Alarm\EasyAlarmSettingDesignerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Designer\Alarm\EasyAlarmSettingDesignerForm.Designer.cs">
+      <DependentUpon>EasyAlarmSettingDesignerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Designer\Animate\AnimateDesignerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,24 +150,6 @@
       <DependentUpon>LogProfileConfigDesignerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Designer\DatabaseConfig\LogProfilePropertyEditor.cs" />
-    <Compile Include="Designer\Alarm\AlarmGroupSettingView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Designer\Alarm\AlarmGroupSettingView.Designer.cs">
-      <DependentUpon>AlarmGroupSettingView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Designer\Alarm\AlarnClassSettingView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Designer\Alarm\AlarnClassSettingView.Designer.cs">
-      <DependentUpon>AlarnClassSettingView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Designer\Alarm\AnalogAlarmSettingView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Designer\Alarm\AnalogAlarmSettingView.Designer.cs">
-      <DependentUpon>AnalogAlarmSettingView.cs</DependentUpon>
-    </Compile>
     <Compile Include="Charts\Axis.cs" />
     <Compile Include="Charts\AxisCollection.cs" />
     <Compile Include="Charts\AxisFormat.cs" />
@@ -194,9 +213,7 @@
     </Compile>
     <Compile Include="Controls\EasyDataUpdater\ResetTrigger.cs" />
     <Compile Include="Controls\EasyDataUpdater\UpdateUnit.cs" />
-    <Compile Include="Controls\EasyPictureBox\EasyPictureBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Controls\EasyPictureBox\EasyPictureBox.cs" />
     <Compile Include="Controls\EasyPictureBox\EasyPictureBoxDesigner.cs" />
     <Compile Include="Controls\EasyPictureBox\ImageFillMode.cs" />
     <Compile Include="Controls\EasyPictureBox\ImageFlipMode.cs" />
@@ -220,19 +237,12 @@
     <Compile Include="Designer\TagPath\PathToTagPropertyEditor.cs" />
     <Compile Include="Designer\Base\PropertyEditorBase.cs" />
     <Compile Include="Designer\SupportInterface\ISupportPallet.cs" />
-    <Compile Include="Designer\Alarm\DiscreteAlarmSettingView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Designer\Alarm\DiscreteAlarmSettingView.Designer.cs">
-      <DependentUpon>DiscreteAlarmSettingView.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.Designer.cs">
       <DependentUpon>HistoricalTrendToolbox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Extensions\CsvBuilder.cs" />
     <Compile Include="Extensions\Helper.cs" />
     <Compile Include="Extensions\RGB.cs" />
     <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavClose.cs">
@@ -487,7 +497,7 @@
     <Compile Include="Toolkit\Controls Toolkit\EasyBreadCrumbItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Toolkit\Controls Toolkit\EasyButton.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\ThemedButton.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyCheckBox.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyCheckButton.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyCheckedListBox.cs" />
@@ -518,7 +528,7 @@
     <Compile Include="Toolkit\Controls Toolkit\EasyHeader.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyHeaderGroup.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyInputBox.cs" />
-    <Compile Include="Toolkit\Controls Toolkit\EasyLabel.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\ThemedLabel.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyLinkLabel.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyListBox.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyListItem.cs">
@@ -542,7 +552,7 @@
     <Compile Include="Toolkit\Controls Toolkit\EasySplitterPanel.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyTaskDialog.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyTaskDialogCommand.cs" />
-    <Compile Include="Toolkit\Controls Toolkit\EasyTextBox.cs" />
+    <Compile Include="Toolkit\Controls Toolkit\ThemedTextBox.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyTrackBar.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyTreeNode.cs" />
     <Compile Include="Toolkit\Controls Toolkit\EasyTreeView.cs" />
@@ -955,8 +965,8 @@
     <Compile Include="Toolkit\Toolkit\EasyBreadCrumbDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyBreadCrumbItemDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyBreadCrumbItemsEditor.cs" />
-    <Compile Include="Toolkit\Toolkit\EasyButtonActionList.cs" />
-    <Compile Include="Toolkit\Toolkit\EasyButtonDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\ThemedButtonActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\ThemedButtonDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyCheckBoxActionList.cs" />
     <Compile Include="Toolkit\Toolkit\EasyCheckBoxDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyCheckButtonActionList.cs" />
@@ -1003,8 +1013,8 @@
     <Compile Include="Toolkit\Toolkit\EasyHeaderDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyHeaderGroupActionList.cs" />
     <Compile Include="Toolkit\Toolkit\EasyHeaderGroupDesigner.cs" />
-    <Compile Include="Toolkit\Toolkit\EasyLabelActionList.cs" />
-    <Compile Include="Toolkit\Toolkit\EasyLabelDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\ThemedLabelActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\ThemedLabelDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyLinkLabelActionList.cs" />
     <Compile Include="Toolkit\Toolkit\EasyLinkLabelDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyListBoxActionList.cs" />
@@ -1034,9 +1044,9 @@
     <Compile Include="Toolkit\Toolkit\EasySplitContainerDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasySplitContainerGlyph.cs" />
     <Compile Include="Toolkit\Toolkit\EasySplitterPanelDesigner.cs" />
-    <Compile Include="Toolkit\Toolkit\EasyTextBoxActionList.cs" />
-    <Compile Include="Toolkit\Toolkit\EasyTextBoxColumnDesigner.cs" />
-    <Compile Include="Toolkit\Toolkit\EasyTextBoxDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\ThemedTextBoxActionList.cs" />
+    <Compile Include="Toolkit\Toolkit\ThemedTextBoxColumnDesigner.cs" />
+    <Compile Include="Toolkit\Toolkit\ThemedTextBoxDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyTrackBarActionList.cs" />
     <Compile Include="Toolkit\Toolkit\EasyTrackBarDesigner.cs" />
     <Compile Include="Toolkit\Toolkit\EasyTreeViewActionList.cs" />
@@ -1164,20 +1174,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\EasyAlarmViewer\EasyAlarmViewer.resx">
+      <DependentUpon>EasyAlarmViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.resx">
       <DependentUpon>HistoricalTrendToolbox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Designer\Alarm\AlarmGroupSettingView.resx">
-      <DependentUpon>AlarmGroupSettingView.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\EasyAlarmSetting\EasyAlarmSetting.resx">
+      <DependentUpon>EasyAlarmSetting.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Designer\Alarm\AlarnClassSettingView.resx">
-      <DependentUpon>AlarnClassSettingView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Designer\Alarm\AnalogAlarmSettingView.resx">
-      <DependentUpon>AnalogAlarmSettingView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Designer\Alarm\DiscreteAlarmSettingView.resx">
-      <DependentUpon>DiscreteAlarmSettingView.cs</DependentUpon>
+    <EmbeddedResource Include="Designer\Alarm\EasyAlarmSettingDesignerForm.resx">
+      <DependentUpon>EasyAlarmSettingDesignerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Designer\Animate\AnimateDesignerForm.resx">
       <DependentUpon>AnimateDesignerForm.cs</DependentUpon>
@@ -1496,6 +1503,9 @@
     <None Include="Resources\2010BlueContextMenuSub.png" />
     <None Include="Resources\2010BlackDropDownButton.png" />
     <None Include="Resources\2010BlackContextMenuSub.png" />
+    <None Include="Resources\script_edit.png" />
+    <None Include="Resources\import_16px.png" />
+    <None Include="Resources\export_16px.png" />
     <Content Include="Toolkit\ToolkitBitmaps\EasyBorderEdge.bmp" />
     <Content Include="Toolkit\ToolkitBitmaps\EasyBreadCrumb.bmp" />
     <Content Include="Toolkit\ToolkitBitmaps\EasyBreadCrumbItem.bmp" />

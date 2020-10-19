@@ -148,7 +148,12 @@ namespace EasyScada.ServerApplication
 
         public async Task<List<WriteResponse>> WriteMultiTagAsync(List<WriteCommand> writeCommands)
         {
-            return await ioc.Get<ITagWriterService>().WriteMultiTag(writeCommands);
+            Stopwatch sw = new Stopwatch();
+            sw.Restart();
+            var result =  await ioc.Get<ITagWriterService>().WriteMultiTag(writeCommands);
+            sw.Stop();
+            Debug.WriteLine($"Write take time: {sw.ElapsedMilliseconds}");
+            return result;
         }
         #endregion
 

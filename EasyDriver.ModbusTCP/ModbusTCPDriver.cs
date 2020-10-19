@@ -4,6 +4,7 @@ using EasyDriverPlugin;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Specialized;
+using System.Text;
 
 namespace EasyDriver.ModbusTCP
 {
@@ -34,6 +35,7 @@ namespace EasyDriver.ModbusTCP
                 new DInt() { Name = "Long" },
                 new Real() { Name = "Float" },
                 new LReal() { Name = "Double" },
+                new EasyDriver.ModbusTCP.String() { Name = "String", RequireByteLength = 0 }
             };
         }
 
@@ -279,5 +281,24 @@ namespace EasyDriver.ModbusTCP
         }
 
         #endregion
+    }
+
+    public class String : EasyDriverPlugin.String
+    {
+        public override bool TryParseToByteArray(object value, double gain, double offset, out byte[] buffer, ByteOrder byteOrder = ByteOrder.ABCD)
+        {
+            buffer = null;
+            if (value == null)
+                return false;
+            buffer = new byte[value.ToString().Length];
+            Encoding.ASCII.GetBytes(value.ToString(), 0, buffer.Length, buffer, 0);
+            return true;
+        }
+
+        public override string ConvertToValue(byte[] buffer, double gain, double offset, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD)
+        {
+            int size = buffer.Length;
+            return Encoding.ASCII.GetString(buffer, 0, size);
+        }
     }
 }

@@ -35,7 +35,7 @@
             this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDataType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.txbSearch = new EasyScada.Winforms.Controls.EasyTextBox();
+            this.txbSearch = new EasyScada.Winforms.Controls.ThemedTextBox();
             this.btnClearSearch = new EasyScada.Winforms.Controls.ButtonSpecAny();
             this.timerDelay = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.easyPanel1)).BeginInit();
@@ -71,7 +71,8 @@
             this.gridView.GridStyles.Style = EasyScada.Winforms.Controls.DataGridViewStyle.Mixed;
             this.gridView.GridStyles.StyleBackground = EasyScada.Winforms.Controls.PaletteBackStyle.ControlClient;
             this.gridView.HideOuterBorders = true;
-            this.gridView.Location = new System.Drawing.Point(0, 29);
+            this.gridView.Location = new System.Drawing.Point(0, 26);
+            this.gridView.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.gridView.MultiSelect = false;
             this.gridView.Name = "gridView";
             this.gridView.ReadOnly = true;
@@ -79,7 +80,7 @@
             this.gridView.RowHeadersWidth = 25;
             this.gridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.gridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridView.Size = new System.Drawing.Size(384, 436);
+            this.gridView.Size = new System.Drawing.Size(384, 439);
             this.gridView.TabIndex = 3;
             this.gridView.VirtualMode = true;
             // 
@@ -152,7 +153,7 @@
         #endregion
 
         private EasyPanel easyPanel1;
-        private EasyTextBox txbSearch;
+        private ThemedTextBox txbSearch;
         private ButtonSpecAny btnClearSearch;
         private EasyDataGridView gridView;
         private System.Windows.Forms.Timer timerDelay;

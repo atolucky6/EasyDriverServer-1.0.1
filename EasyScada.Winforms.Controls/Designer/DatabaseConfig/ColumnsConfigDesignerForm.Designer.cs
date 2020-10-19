@@ -42,31 +42,34 @@
             this.easyPanel1 = new EasyScada.Winforms.Controls.EasyPanel();
             this.easyPanel2 = new EasyScada.Winforms.Controls.EasyPanel();
             this.easyHeaderGroup2 = new EasyScada.Winforms.Controls.EasyHeaderGroup();
+            this.btnClear = new EasyScada.Winforms.Controls.ButtonSpecHeaderGroup();
             this.gridView = new EasyScada.Winforms.Controls.EasyDataGridView();
-            this.easyHeaderGroup1 = new EasyScada.Winforms.Controls.EasyHeaderGroup();
-            this.btnAdd = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnEdit = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnDelete = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnSave = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnCancel = new EasyScada.Winforms.Controls.EasyButton();
-            this.txbDescription = new EasyScada.Winforms.Controls.EasyTextBox();
-            this.easyLabel5 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel4 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel3 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel2 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.txbDefaultValue = new EasyScada.Winforms.Controls.EasyTextBox();
-            this.cobMode = new EasyScada.Winforms.Controls.EasyComboBox();
-            this.ckbEnabled = new EasyScada.Winforms.Controls.EasyCheckBox();
-            this.txbColumnName = new EasyScada.Winforms.Controls.EasyTextBox();
-            this.txbTag = new EasyScada.Winforms.Controls.EasyTextBox();
-            this.btnBrowseTagPath = new EasyScada.Winforms.Controls.ButtonSpecAny();
-            this.easyLabel1 = new EasyScada.Winforms.Controls.EasyLabel();
             this.colEnabled = new EasyScada.Winforms.Controls.EasyDataGridViewCheckBoxColumn();
             this.colName = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
             this.colTriggerTag = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
             this.colDefaultValue = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
             this.colMode = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
             this.colDescription = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
+            this.easyHeaderGroup1 = new EasyScada.Winforms.Controls.EasyHeaderGroup();
+            this.btnImport = new EasyScada.Winforms.Controls.ButtonSpecHeaderGroup();
+            this.btnExport = new EasyScada.Winforms.Controls.ButtonSpecHeaderGroup();
+            this.btnAdd = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnEdit = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnDelete = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnSave = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnCancel = new EasyScada.Winforms.Controls.ThemedButton();
+            this.txbDescription = new EasyScada.Winforms.Controls.ThemedTextBox();
+            this.easyLabel5 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel4 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel3 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel2 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.txbDefaultValue = new EasyScada.Winforms.Controls.ThemedTextBox();
+            this.cobMode = new EasyScada.Winforms.Controls.EasyComboBox();
+            this.ckbEnabled = new EasyScada.Winforms.Controls.EasyCheckBox();
+            this.txbColumnName = new EasyScada.Winforms.Controls.ThemedTextBox();
+            this.txbTag = new EasyScada.Winforms.Controls.ThemedTextBox();
+            this.btnBrowseTagPath = new EasyScada.Winforms.Controls.ButtonSpecAny();
+            this.easyLabel1 = new EasyScada.Winforms.Controls.ThemedLabel();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.easyPanel1)).BeginInit();
             this.easyPanel1.SuspendLayout();
@@ -152,6 +155,8 @@
             // 
             // easyHeaderGroup2
             // 
+            this.easyHeaderGroup2.ButtonSpecs.AddRange(new EasyScada.Winforms.Controls.ButtonSpecHeaderGroup[] {
+            this.btnClear});
             this.easyHeaderGroup2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.easyHeaderGroup2.HeaderVisibleSecondary = false;
             this.easyHeaderGroup2.Location = new System.Drawing.Point(0, 4);
@@ -165,13 +170,19 @@
             this.easyHeaderGroup2.ValuesPrimary.Heading = "Columns Collection";
             this.easyHeaderGroup2.ValuesPrimary.Image = ((System.Drawing.Image)(resources.GetObject("easyHeaderGroup2.ValuesPrimary.Image")));
             // 
+            // btnClear
+            // 
+            this.btnClear.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
+            this.btnClear.Text = "Clear";
+            this.btnClear.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
+            this.btnClear.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
+            this.btnClear.UniqueName = "6851A3024E794604BB9CB96A91ACD6A2";
+            // 
             // gridView
             // 
             this.gridView.AllowUserToAddRows = false;
             this.gridView.AllowUserToDeleteRows = false;
-            this.gridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.gridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.gridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridView.AllowUserToResizeRows = false;
             this.gridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colEnabled,
             this.colName,
@@ -192,10 +203,78 @@
             this.gridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.gridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.gridView.Size = new System.Drawing.Size(762, 398);
-            this.gridView.TabIndex = 25;
+            this.gridView.TabIndex = 26;
+            // 
+            // colEnabled
+            // 
+            this.colEnabled.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.colEnabled.DataPropertyName = "Enabled";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.NullValue = false;
+            this.colEnabled.DefaultCellStyle = dataGridViewCellStyle1;
+            this.colEnabled.FalseValue = null;
+            this.colEnabled.HeaderText = "Enabled";
+            this.colEnabled.IndeterminateValue = null;
+            this.colEnabled.Name = "colEnabled";
+            this.colEnabled.ReadOnly = true;
+            this.colEnabled.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colEnabled.TrueValue = null;
+            this.colEnabled.Width = 59;
+            // 
+            // colName
+            // 
+            this.colName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colName.DataPropertyName = "ColumnName";
+            this.colName.HeaderText = "Column Name";
+            this.colName.Name = "colName";
+            this.colName.ReadOnly = true;
+            this.colName.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colName.Width = 114;
+            // 
+            // colTriggerTag
+            // 
+            this.colTriggerTag.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colTriggerTag.DataPropertyName = "TagPath";
+            this.colTriggerTag.HeaderText = "Tag";
+            this.colTriggerTag.Name = "colTriggerTag";
+            this.colTriggerTag.ReadOnly = true;
+            this.colTriggerTag.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colTriggerTag.Width = 54;
+            // 
+            // colDefaultValue
+            // 
+            this.colDefaultValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colDefaultValue.DataPropertyName = "DefaultValue";
+            this.colDefaultValue.HeaderText = "Default Value";
+            this.colDefaultValue.Name = "colDefaultValue";
+            this.colDefaultValue.ReadOnly = true;
+            this.colDefaultValue.Width = 105;
+            // 
+            // colMode
+            // 
+            this.colMode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colMode.DataPropertyName = "Mode";
+            this.colMode.HeaderText = "Mode";
+            this.colMode.Name = "colMode";
+            this.colMode.ReadOnly = true;
+            this.colMode.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colMode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colMode.Width = 48;
+            // 
+            // colDescription
+            // 
+            this.colDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colDescription.DataPropertyName = "Description";
+            this.colDescription.HeaderText = "Description";
+            this.colDescription.Name = "colDescription";
+            this.colDescription.ReadOnly = true;
+            this.colDescription.Width = 381;
             // 
             // easyHeaderGroup1
             // 
+            this.easyHeaderGroup1.ButtonSpecs.AddRange(new EasyScada.Winforms.Controls.ButtonSpecHeaderGroup[] {
+            this.btnImport,
+            this.btnExport});
             this.easyHeaderGroup1.Dock = System.Windows.Forms.DockStyle.Top;
             this.easyHeaderGroup1.HeaderVisibleSecondary = false;
             this.easyHeaderGroup1.Location = new System.Drawing.Point(4, 4);
@@ -223,6 +302,24 @@
             this.easyHeaderGroup1.TabIndex = 0;
             this.easyHeaderGroup1.ValuesPrimary.Heading = "Column properties";
             this.easyHeaderGroup1.ValuesPrimary.Image = ((System.Drawing.Image)(resources.GetObject("easyHeaderGroup1.ValuesPrimary.Image")));
+            // 
+            // btnImport
+            // 
+            this.btnImport.Image = ((System.Drawing.Image)(resources.GetObject("btnImport.Image")));
+            this.btnImport.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
+            this.btnImport.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
+            this.btnImport.ToolTipTitle = "Import";
+            this.btnImport.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
+            this.btnImport.UniqueName = "2C285DE16DF84C630FAB4F1322783807";
+            // 
+            // btnExport
+            // 
+            this.btnExport.Image = ((System.Drawing.Image)(resources.GetObject("btnExport.Image")));
+            this.btnExport.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
+            this.btnExport.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
+            this.btnExport.ToolTipTitle = "Export";
+            this.btnExport.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
+            this.btnExport.UniqueName = "B14A62879EE54AD1E2B7DAAA57264C05";
             // 
             // btnAdd
             // 
@@ -368,71 +465,6 @@
             this.easyLabel1.TabIndex = 0;
             this.easyLabel1.Values.Text = "Column name:";
             // 
-            // colEnabled
-            // 
-            this.colEnabled.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.colEnabled.DataPropertyName = "Enabled";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.NullValue = false;
-            this.colEnabled.DefaultCellStyle = dataGridViewCellStyle1;
-            this.colEnabled.FalseValue = null;
-            this.colEnabled.HeaderText = "Enabled";
-            this.colEnabled.IndeterminateValue = null;
-            this.colEnabled.Name = "colEnabled";
-            this.colEnabled.ReadOnly = true;
-            this.colEnabled.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colEnabled.TrueValue = null;
-            this.colEnabled.Width = 59;
-            // 
-            // colName
-            // 
-            this.colName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colName.DataPropertyName = "ColumnName";
-            this.colName.HeaderText = "Column Name";
-            this.colName.Name = "colName";
-            this.colName.ReadOnly = true;
-            this.colName.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colName.Width = 114;
-            // 
-            // colTriggerTag
-            // 
-            this.colTriggerTag.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colTriggerTag.DataPropertyName = "TagPath";
-            this.colTriggerTag.HeaderText = "Tag";
-            this.colTriggerTag.Name = "colTriggerTag";
-            this.colTriggerTag.ReadOnly = true;
-            this.colTriggerTag.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colTriggerTag.Width = 54;
-            // 
-            // colDefaultValue
-            // 
-            this.colDefaultValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colDefaultValue.DataPropertyName = "DefaultValue";
-            this.colDefaultValue.HeaderText = "Default Value";
-            this.colDefaultValue.Name = "colDefaultValue";
-            this.colDefaultValue.ReadOnly = true;
-            this.colDefaultValue.Width = 105;
-            // 
-            // colMode
-            // 
-            this.colMode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colMode.DataPropertyName = "Mode";
-            this.colMode.HeaderText = "Mode";
-            this.colMode.Name = "colMode";
-            this.colMode.ReadOnly = true;
-            this.colMode.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colMode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colMode.Width = 48;
-            // 
-            // colDescription
-            // 
-            this.colDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colDescription.DataPropertyName = "Description";
-            this.colDescription.HeaderText = "Description";
-            this.colDescription.Name = "colDescription";
-            this.colDescription.ReadOnly = true;
-            this.colDescription.Width = 381;
-            // 
             // ColumnsConfigDesignerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -475,30 +507,33 @@
         private EasyPanel easyPanel1;
         private EasyPanel easyPanel2;
         private EasyHeaderGroup easyHeaderGroup2;
-        private EasyDataGridView gridView;
         private EasyHeaderGroup easyHeaderGroup1;
-        private EasyButton btnCancel;
-        private EasyTextBox txbDescription;
-        private EasyLabel easyLabel5;
-        private EasyLabel easyLabel4;
-        private EasyLabel easyLabel3;
-        private EasyLabel easyLabel2;
-        private EasyTextBox txbDefaultValue;
+        private ThemedButton btnCancel;
+        private ThemedTextBox txbDescription;
+        private ThemedLabel easyLabel5;
+        private ThemedLabel easyLabel4;
+        private ThemedLabel easyLabel3;
+        private ThemedLabel easyLabel2;
+        private ThemedTextBox txbDefaultValue;
         private EasyComboBox cobMode;
         private EasyCheckBox ckbEnabled;
-        private EasyTextBox txbColumnName;
-        private EasyTextBox txbTag;
+        private ThemedTextBox txbColumnName;
+        private ThemedTextBox txbTag;
         private ButtonSpecAny btnBrowseTagPath;
-        private EasyLabel easyLabel1;
-        private EasyButton btnAdd;
-        private EasyButton btnEdit;
-        private EasyButton btnDelete;
-        private EasyButton btnSave;
+        private ThemedLabel easyLabel1;
+        private ThemedButton btnAdd;
+        private ThemedButton btnEdit;
+        private ThemedButton btnDelete;
+        private ThemedButton btnSave;
+        private EasyDataGridView gridView;
         private EasyDataGridViewCheckBoxColumn colEnabled;
         private EasyDataGridViewTextBoxColumn colName;
         private EasyDataGridViewTextBoxColumn colTriggerTag;
         private EasyDataGridViewTextBoxColumn colDefaultValue;
         private EasyDataGridViewTextBoxColumn colMode;
         private EasyDataGridViewTextBoxColumn colDescription;
+        private ButtonSpecHeaderGroup btnExport;
+        private ButtonSpecHeaderGroup btnImport;
+        private ButtonSpecHeaderGroup btnClear;
     }
 }

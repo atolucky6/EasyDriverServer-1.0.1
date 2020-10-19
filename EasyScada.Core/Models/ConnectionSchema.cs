@@ -9,7 +9,7 @@ namespace EasyScada.Core
         [JsonConstructor]
         public ConnectionSchema() : base()
         {
-            Parent = this;
+            Parent = null;
             ItemType = ItemType.ConnectionSchema;
         }
 

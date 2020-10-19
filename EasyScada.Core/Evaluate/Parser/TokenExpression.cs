@@ -520,7 +520,7 @@ namespace EasyScada.Core.Evaluate
                 // Increment the counter for the next character
                 charIndex++;                
 
-                System.Diagnostics.Debug.WriteLine("c = " + c.ToString() + "\tcurrentToken = " + currentToken + "\tparse state = " + parseState.ToString() + "\tOp Parse State = " + opFuncParseState.ToString());
+                // System.Diagnostics.Debug.WriteLine("c = " + c.ToString() + "\tcurrentToken = " + currentToken + "\tparse state = " + parseState.ToString() + "\tOp Parse State = " + opFuncParseState.ToString());
 
                 #region New Line and Tab check
                 // check for new line and tab
@@ -1393,7 +1393,7 @@ namespace EasyScada.Core.Evaluate
                 // Increment the counter for the next character
                 charIndex++;
 
-                System.Diagnostics.Debug.WriteLine("c = " + c.ToString() + "\tcurrentToken = " + currentToken + "\tparse state = " + parseState.ToString() + "\tOp Parse State = " + opFuncParseState.ToString());
+                // System.Diagnostics.Debug.WriteLine("c = " + c.ToString() + "\tcurrentToken = " + currentToken + "\tparse state = " + parseState.ToString() + "\tOp Parse State = " + opFuncParseState.ToString());
 
                 #region New Line and Tab check
                 // check for new line and tab
@@ -2463,7 +2463,7 @@ namespace EasyScada.Core.Evaluate
                 // Increment the counter for the next character
                 charIndex++;
 
-                System.Diagnostics.Debug.WriteLine("c = " + c.ToString() + "\tcurrentToken = " + currentToken + "\tparse state = " + parseState.ToString() + "\tOp Parse State = " + opFuncParseState.ToString());
+                // System.Diagnostics.Debug.WriteLine("c = " + c.ToString() + "\tcurrentToken = " + currentToken + "\tparse state = " + parseState.ToString() + "\tOp Parse State = " + opFuncParseState.ToString());
 
                 #region New Line and Tab check
                 // check for new line and tab
@@ -3473,7 +3473,7 @@ namespace EasyScada.Core.Evaluate
             ExStack<TokenItem> iifStack = new ExStack<TokenItem>();
             foreach (TokenItem item in this.tokenItems)
             {
-                System.Diagnostics.Debug.WriteLine(item.TokenName.Trim().ToLower());
+                // System.Diagnostics.Debug.WriteLine(item.TokenName.Trim().ToLower());
 
                 if (item.TokenType == TokenType.Token_Operand_Function_Start)
                 {
@@ -3640,7 +3640,7 @@ namespace EasyScada.Core.Evaluate
             // loop through all the token items
             foreach (TokenItem item in tokenItems)
             {
-                System.Diagnostics.Debug.WriteLine(item.TokenName);
+                // System.Diagnostics.Debug.WriteLine(item.TokenName);
 
                 switch (item.TokenType)
                 {
@@ -3681,7 +3681,7 @@ namespace EasyScada.Core.Evaluate
                                 // start peeking at the top operator
                                 do
                                 {
-                                    System.Diagnostics.Debug.WriteLine("    Peek = " + operators.Peek().TokenName);
+                                    // System.Diagnostics.Debug.WriteLine("    Peek = " + operators.Peek().TokenName);
 
                                     // see what is on top of the operator stack
                                     if (operators.Peek().TokenType == TokenType.Token_Open_Parenthesis)

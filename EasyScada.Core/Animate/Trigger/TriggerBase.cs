@@ -1,5 +1,6 @@
 ﻿using EasyScada.Core.Evaluate;
 using System;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace EasyScada.Core
@@ -22,7 +23,8 @@ namespace EasyScada.Core
             }
         }
 
-        public virtual bool Enabled { get; set; }
+        public virtual string TriggerTagPath { get; set; }
+        public virtual bool Enabled { get; set; } = true;
         public virtual object Target { get; set; }
         public virtual AnimatePropertyWrapper AnimatePropertyWrapper { get; set; }
         public virtual object SetValue { get; set; }
@@ -32,6 +34,23 @@ namespace EasyScada.Core
         public virtual int Delay { get; set; }
         public CompareMode CompareMode { get; set; }
         public virtual string Description { get; set; }
+
+        private ITag triggerTag;
+        [Browsable(false)]
+        public virtual ITag TriggerTag
+        {
+            get
+            {
+                if (triggerTag == null)
+                    triggerTag = EasyDriverConnectorProvider.GetEasyDriverConnector().GetTag(TriggerTagPath);
+                else
+                {
+                    if (triggerTag.Path != TriggerTagPath)
+                        triggerTag = EasyDriverConnectorProvider.GetEasyDriverConnector().GetTag(TriggerTagPath);
+                }
+                return triggerTag;
+            }
+        }
 
         #endregion
 

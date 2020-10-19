@@ -137,7 +137,7 @@ namespace EasyScada.Winforms.Controls
         }
 
         [ToolboxItem(false)]
-        internal class MessageButton : EasyButton
+        internal class MessageButton : ThemedButton
         {
             #region Instance Fields
             private bool _ignoreAltF4;

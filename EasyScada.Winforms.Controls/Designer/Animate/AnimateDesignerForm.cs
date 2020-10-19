@@ -60,10 +60,11 @@ namespace EasyScada.Winforms.Controls
 
             btnAddQuality.Click += BtnAddQuality_Click;
             btnEditQuality.Click += BtnEditQuality_Click;
-            btnDeleteQuality.Click += BtnDeleteQuality_Click;
             btnSaveQuality.Click += BtnSaveQuality_Click;
             btnCancelQuality.Click += BtnCancelQuality_Click;
+            btnDeleteQuality.Click += BtnDeleteQuality_Click;
             btnBrowseTriggerTagQuality.Click += BtnBrowseTagQuality_Click;
+
             foreach (var item in Enum.GetValues(typeof(Quality)))
                 cobQuality.Items.Add(item.ToString());
             cobCompareModeQuality.Items.Add(CompareMode.Equal.ToString());

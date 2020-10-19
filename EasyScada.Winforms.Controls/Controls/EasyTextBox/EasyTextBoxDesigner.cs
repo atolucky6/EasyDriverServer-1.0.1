@@ -40,6 +40,13 @@ namespace EasyScada.Winforms.Controls
             actionItems.Add(new DesignerActionPropertyItem("TextAlign", "TextAlign", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("Multiline", "Multiline", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("WordWrap", "WordWrap", DesignerCategory.APPEARANCE, ""));
+
+            actionItems.Add(new DesignerActionHeaderItem("DropDown"));
+            actionItems.Add(new DesignerActionPropertyItem("DropDownDirection", "DropDown Direction", "DropDown", ""));
+            actionItems.Add(new DesignerActionPropertyItem("DropDownBackColor", "DropDown BackColor", "DropDown", ""));
+            actionItems.Add(new DesignerActionPropertyItem("DropDownBackColor", "DropDown BackColor", "DropDown", ""));
+            actionItems.Add(new DesignerActionPropertyItem("DropDownFont", "DropDown Font", "DropDown", ""));
+            actionItems.Add(new DesignerActionPropertyItem("DropDownBorderStyle", "DropDown BorderStyle", "DropDown", ""));
         }
 
         #region Properties
@@ -58,7 +65,7 @@ namespace EasyScada.Winforms.Controls
 
         public Color BackColor
         {
-            get { return BackColor; }
+            get { return BaseControl.BackColor; }
             set { BaseControl.SetValue(value); }
         }
 
@@ -71,6 +78,36 @@ namespace EasyScada.Winforms.Controls
         public Font Font
         {
             get { return BaseControl.Font; }
+            set { BaseControl.SetValue(value); }
+        }
+
+        public Color DropDownBackColor
+        {
+            get { return BaseControl.DropDownBackColor; }
+            set { BaseControl.SetValue(value); }
+        }
+
+        public Color DropDownForeColor
+        {
+            get { return BaseControl.DropDownForeColor; }
+            set { BaseControl.SetValue(value); }
+        }
+
+        public Font DropDownFont
+        {
+            get { return BaseControl.DropDownFont; }
+            set { BaseControl.SetValue(value); }
+        }
+
+        public BorderStyle DropDownBorderStyle
+        {
+            get { return BaseControl.DropDownBorderStyle; }
+            set { BaseControl.SetValue(value); }
+        }
+
+        public DropDownDirection DropDownDirection
+        {
+            get { return BaseControl.DropDownDirection; }
             set { BaseControl.SetValue(value); }
         }
 

@@ -112,6 +112,18 @@ namespace EasyDriver.Core
                                 tag.AccessPermission = (AccessPermission)Enum.Parse(typeof(AccessPermission), jObject["AccessPermission"].Value<string>());
                                 tag.Gain = jObject["Gain"].Value<double>();
                                 tag.Offset = jObject["Offset"].Value<double>();
+                                if (jObject.TryGetValue("IsInternalTag", out JToken tokenIsInternalTag))
+                                {
+                                    tag.IsInternalTag = jObject["IsInternalTag"].Value<bool>();
+
+                                    if (tag.IsInternalTag)
+                                    {
+                                        if (jObject.TryGetValue("GUID", out JToken tokenGUID))
+                                            tag.ParameterContainer.Parameters["GUID"] = tokenGUID.Value<string>();
+                                        if (jObject.TryGetValue("Retain", out JToken tokenRetain))
+                                            tag.ParameterContainer.Parameters["Retain"] = tokenRetain.Value<string>();
+                                    }
+                                }
                                 break;
                             }
                         default:
@@ -219,6 +231,24 @@ namespace EasyDriver.Core
 
                     writer.WritePropertyName("Gain");
                     writer.WriteValue(tag.Gain);
+
+                    writer.WritePropertyName("IsInternalTag");
+                    writer.WriteValue(tag.IsInternalTag);
+
+                    if (tag.IsInternalTag)
+                    {
+                        if (tag.ParameterContainer.Parameters.ContainsKey("GUID"))
+                        {
+                            writer.WritePropertyName("GUID");
+                            writer.WriteValue(tag.ParameterContainer.Parameters["GUID"]);
+                        }
+
+                        if (tag.ParameterContainer.Parameters.ContainsKey("Retain"))
+                        {
+                            writer.WritePropertyName("Retain");
+                            writer.WriteValue(tag.ParameterContainer.Parameters["Retain"]);
+                        }
+                    }
                 }
 
                 writer.WritePropertyName("Childs");

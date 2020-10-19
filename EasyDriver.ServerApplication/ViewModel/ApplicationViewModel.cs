@@ -129,6 +129,7 @@ namespace EasyScada.ServerApplication
                                                 });
                                                 DispatcherFacade.AddToDispatcherQueue(new Action(() =>
                                                 {
+
                                                 }));
                                             }
 

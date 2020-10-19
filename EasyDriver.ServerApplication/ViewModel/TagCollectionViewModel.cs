@@ -20,7 +20,8 @@ namespace EasyScada.ServerApplication
             IWorkspaceManagerService workspaceManagerService, 
             IReverseService reverseService,
             IDriverManagerService driverManagerService,
-            IProjectManagerService projectManagerService) : base(null, workspaceManagerService)
+            IProjectManagerService projectManagerService,
+            IInternalStorageService internalStorageService) : base(null, workspaceManagerService)
         {
             IsDocument = true;
             WorkspaceName = WorkspaceRegion.DocumentHost;
@@ -28,6 +29,7 @@ namespace EasyScada.ServerApplication
             ReverseService = reverseService;
             DriverManagerService = driverManagerService;
             ProjectManagerService = projectManagerService;
+            InternalStorageService = internalStorageService;
         }
 
         #endregion
@@ -37,6 +39,7 @@ namespace EasyScada.ServerApplication
         protected IReverseService ReverseService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
         protected IProjectManagerService ProjectManagerService { get; set; }
+        protected IInternalStorageService InternalStorageService { get; set; }
 
         #endregion
 
@@ -94,9 +97,16 @@ namespace EasyScada.ServerApplication
             IsBusy = true;
             if (item is ITagCore tag)
             {
-                IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
-                if (driver != null)
-                    ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}");
+                if (!tag.IsInternalTag)
+                {
+                    IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
+                    if (driver != null)
+                        ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}");
+                }
+                else
+                {
+                    WindowService.Show("InternalTagView", tag, this);
+                }
             }
             IsBusy = false;
         }
@@ -149,6 +159,18 @@ namespace EasyScada.ServerApplication
         }
 
         public bool CanAdd()
+        {
+            return !IsBusy && !Parent.IsReadOnly && ObjectHaveTag.HaveTags;
+        }
+
+        public void AddInternal()
+        {
+            IsBusy = true;
+            WindowService.Show("InternalTagView", Parent, this);
+            IsBusy = false;
+        }
+
+        public bool CanAddInternal()
         {
             return !IsBusy && !Parent.IsReadOnly && ObjectHaveTag.HaveTags;
         }
@@ -251,46 +273,53 @@ namespace EasyScada.ServerApplication
 
             if (SelectedItem is ITagCore tag)
             {
-                IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
-                string oldName = tag.Name;
-                string oldAddress = tag.Address;
-                double oldGain = tag.Gain;
-                double oldOffset = tag.Offset;
-                IDataType oldDataType = tag.DataType;
-
-                int oldRefreshRate = tag.RefreshRate;
-                ByteOrder oldByteOrder = tag.ByteOrder;
-                AccessPermission oldAccessPermission = tag.AccessPermission;
-
-                if (ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}") is ITagCore tagCore)
+                if (tag.IsInternalTag)
                 {
-                    if (tagCore.HasChanges())
+                    WindowService.Show("InternalTagView", tag, this);
+                }
+                else
+                {
+                    IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
+                    string oldName = tag.Name;
+                    string oldAddress = tag.Address;
+                    double oldGain = tag.Gain;
+                    double oldOffset = tag.Offset;
+                    IDataType oldDataType = tag.DataType;
+
+                    int oldRefreshRate = tag.RefreshRate;
+                    ByteOrder oldByteOrder = tag.ByteOrder;
+                    AccessPermission oldAccessPermission = tag.AccessPermission;
+
+                    if (ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}") is ITagCore tagCore)
                     {
-                        using (Transaction transaction = ReverseService.Begin("Edit Tag"))
-                        { 
-                            if (oldName != tagCore.Name)
-                                tagCore.AddPropertyChangedReversible(x => x.Name, oldName, tagCore.Name);
-                            if (oldAddress != tagCore.Address)
-                                tagCore.AddPropertyChangedReversible(x => x.Address, oldAddress, tagCore.Address);
-                            if (oldGain != tagCore.Gain)
-                                tagCore.AddPropertyChangedReversible(x => x.Gain, oldGain, tagCore.Gain);
-                            if (oldOffset != tagCore.Offset)
-                                tagCore.AddPropertyChangedReversible(x => x.Offset, oldOffset, tagCore.Offset);
-                            if (oldDataType.Name != tagCore.DataType.Name)
-                                tagCore.AddPropertyChangedReversible(x => x.DataType, oldDataType, tagCore.DataType);
-                            if (oldRefreshRate != tagCore.RefreshRate)
-                                tagCore.AddPropertyChangedReversible(x => x.RefreshRate, oldRefreshRate, tagCore.RefreshRate);
-                            if (oldByteOrder != tagCore.ByteOrder)
-                                tagCore.AddPropertyChangedReversible(x => x.ByteOrder, oldByteOrder, tagCore.ByteOrder);
-                            if (oldAccessPermission != tagCore.AccessPermission)
-                                tagCore.AddPropertyChangedReversible(x => x.AccessPermission, oldAccessPermission, tagCore.AccessPermission);
-
-                            transaction.Reversing += (s, e) =>
+                        if (tagCore.HasChanges())
+                        {
+                            using (Transaction transaction = ReverseService.Begin("Edit Tag"))
                             {
-                                WorkspaceManagerService.OpenPanel(this);
-                            };
+                                if (oldName != tagCore.Name)
+                                    tagCore.AddPropertyChangedReversible(x => x.Name, oldName, tagCore.Name);
+                                if (oldAddress != tagCore.Address)
+                                    tagCore.AddPropertyChangedReversible(x => x.Address, oldAddress, tagCore.Address);
+                                if (oldGain != tagCore.Gain)
+                                    tagCore.AddPropertyChangedReversible(x => x.Gain, oldGain, tagCore.Gain);
+                                if (oldOffset != tagCore.Offset)
+                                    tagCore.AddPropertyChangedReversible(x => x.Offset, oldOffset, tagCore.Offset);
+                                if (oldDataType.Name != tagCore.DataType.Name)
+                                    tagCore.AddPropertyChangedReversible(x => x.DataType, oldDataType, tagCore.DataType);
+                                if (oldRefreshRate != tagCore.RefreshRate)
+                                    tagCore.AddPropertyChangedReversible(x => x.RefreshRate, oldRefreshRate, tagCore.RefreshRate);
+                                if (oldByteOrder != tagCore.ByteOrder)
+                                    tagCore.AddPropertyChangedReversible(x => x.ByteOrder, oldByteOrder, tagCore.ByteOrder);
+                                if (oldAccessPermission != tagCore.AccessPermission)
+                                    tagCore.AddPropertyChangedReversible(x => x.AccessPermission, oldAccessPermission, tagCore.AccessPermission);
 
-                            transaction.Commit();
+                                transaction.Reversing += (s, e) =>
+                                {
+                                    WorkspaceManagerService.OpenPanel(this);
+                                };
+
+                                transaction.Commit();
+                            }
                         }
                     }
                 }
@@ -527,9 +556,41 @@ namespace EasyScada.ServerApplication
                             List<object> itemsToRemove = SelectedItems.ToList();
                             ObjectHaveTag.Tags.AsReversibleCollection().RemoveRange(itemsToRemove);
 
+                            foreach (var item in itemsToRemove)
+                            {
+                                if (item is ITagCore tagCore)
+                                {
+                                    if (tagCore.ParameterContainer.Parameters.ContainsKey("GUID"))
+                                    {
+                                        string guid = tagCore.ParameterContainer.Parameters["GUID"];
+                                        InternalStorageService.RemoveInternalTag(guid);
+                                    }
+                                }
+                            }
+
                             transaction.Reversing += (s, e) =>
                             {
                                 WorkspaceManagerService.OpenPanel(this);
+                            };
+                            transaction.Reversed += (s, e) =>
+                            {
+                                foreach (var item in itemsToRemove)
+                                {
+                                    if (item is ITagCore tagCore)
+                                    {
+                                        if (tagCore.ParameterContainer.Parameters.ContainsKey("GUID"))
+                                        {
+                                            if (tagCore.ParameterContainer.Parameters.ContainsKey("Retain"))
+                                            {
+                                                if (tagCore.ParameterContainer.Parameters["Retain"] == bool.TrueString)
+                                                {
+                                                    string guid = tagCore.ParameterContainer.Parameters["GUID"];
+                                                    InternalStorageService.AddOrUpdateInternalTag(tagCore);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             };
                             transaction.Commit();
                         }

@@ -31,7 +31,7 @@ namespace EasyScada.Winforms.Controls
     [ToolboxBitmap(typeof(EasyCheckButton), "ToolkitBitmaps.EasyCheckButton.bmp")]
     [ClassInterface(ClassInterfaceType.AutoDispatch)]
     [ComVisible(true)]
-    public class EasyCheckButton : EasyButton
+    public class EasyCheckButton : ThemedButton
 	{
 		#region Instance Fields
         private PaletteTriple _stateCheckedNormal;

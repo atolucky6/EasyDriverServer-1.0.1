@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Reflection;
@@ -7,8 +8,13 @@ namespace EasyScada.Core
 {
     public class ImageAnimateProperty : AnimateProperty<Image>
     {
-        public ImageAnimateProperty(object targetControl, PropertyInfo property, Image defaultValue) : base(targetControl, property, defaultValue)
+        public ImageAnimateProperty(object targetControl, Image defaultValue) : base(targetControl, defaultValue)
         {
+        }
+
+        public ImageAnimateProperty() : base()
+        {
+
         }
 
         [Editor("System.Drawing.Design.ImageEditor", typeof(UITypeEditor))]

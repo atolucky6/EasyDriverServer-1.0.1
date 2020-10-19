@@ -273,7 +273,7 @@ namespace EasyScada.Winforms.Controls
     {
         #region Static Fields
         [ThreadStatic]
-        private static EasyTextBox _paintingTextBox;
+        private static ThemedTextBox _paintingTextBox;
         private static readonly Type _defaultEditType = typeof(EasyDataGridViewTextBoxEditingControl);
         private static readonly Type _defaultValueType = typeof(System.String);
         private static readonly Size _sizeLarge = new Size(10000, 10000);
@@ -288,7 +288,7 @@ namespace EasyScada.Winforms.Controls
             // Create a thread specific EasyTextBox control used for the painting of the non-edited cells
             if (_paintingTextBox == null)
             {
-                _paintingTextBox = new EasyTextBox();
+                _paintingTextBox = new ThemedTextBox();
                 _paintingTextBox.StateCommon.Border.Width = 0;
                 _paintingTextBox.StateCommon.Border.Draw = InheritBool.False;
                 _paintingTextBox.StateCommon.Back.Color1 = Color.Empty;
@@ -353,7 +353,7 @@ namespace EasyScada.Winforms.Controls
             if (dataGridView == null || dataGridView.EditingControl == null)
                 throw new InvalidOperationException("Cell is detached or its grid has no editing control.");
 
-            EasyTextBox easyTextBox = dataGridView.EditingControl as EasyTextBox;
+            ThemedTextBox easyTextBox = dataGridView.EditingControl as ThemedTextBox;
             if (easyTextBox != null)
             {
                 EasyDataGridViewTextBoxColumn textBoxColumn = OwningColumn as EasyDataGridViewTextBoxColumn;
@@ -384,7 +384,7 @@ namespace EasyScada.Winforms.Controls
         {
             base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
 
-            EasyTextBox textBox = DataGridView.EditingControl as EasyTextBox;
+            ThemedTextBox textBox = DataGridView.EditingControl as ThemedTextBox;
             if (textBox != null)
             {
                 EasyDataGridViewTextBoxColumn textBoxColumn = OwningColumn as EasyDataGridViewTextBoxColumn;
@@ -545,7 +545,7 @@ namespace EasyScada.Winforms.Controls
     /// Defines the editing control for the DataGridViewTextBoxCell custom cell type.
     /// </summary>
     [ToolboxItem(false)]
-    public class EasyDataGridViewTextBoxEditingControl : EasyTextBox,
+    public class EasyDataGridViewTextBoxEditingControl : ThemedTextBox,
                                                             IDataGridViewEditingControl
     {
         #region Instance Fields

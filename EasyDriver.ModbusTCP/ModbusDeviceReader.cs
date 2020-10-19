@@ -207,6 +207,13 @@ namespace EasyDriver.ModbusTCP
                                 if (!(childDevice is ITagCore tag))
                                     continue;
 
+                                if (tag.IsInternalTag)
+                                {
+                                    tag.Quality = Quality.Good;
+                                    tag.TimeStamp = DateTime.Now;
+                                    continue;
+                                }
+
                                 if (mbClient.IsSocketNull)
                                     break;
 
@@ -214,7 +221,7 @@ namespace EasyDriver.ModbusTCP
                                     tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
 
                                 AddressType addressType = AddressType.HoldingRegister;
-                                bool decomposeSuccess = tag.Address.DecomposeAddress(out addressType, out ushort offset);
+                                bool decomposeSuccess = tag.Address.DecomposeAddress(tag.DataType, out addressType, out ushort offset, out byte stringLength);
 
                                 if (!tag.ParameterContainer.Parameters.ContainsKey("AddressType") ||
                                     tag.Address != tag.ParameterContainer.Parameters["LastAddress"].ToString())
@@ -225,6 +232,7 @@ namespace EasyDriver.ModbusTCP
                                         tag.ParameterContainer.Parameters["Offset"] = offset.ToString();
                                         tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
                                         tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+                                        tag.ParameterContainer.Parameters["StringLength"] = stringLength.ToString();
                                     }
                                     else
                                     {
@@ -237,38 +245,59 @@ namespace EasyDriver.ModbusTCP
                                 {
                                     bool readSuccess = false;
                                     bool containInBlock = false;
+
+                                    int dtByteLength = 0;
+
+                                    if (tag.DataType.GetType() == typeof(ModbusTCP.String))
+                                    {
+                                        if (tag.ParameterContainer.Parameters.ContainsKey("StringLength"))
+                                        {
+                                            int.TryParse(tag.ParameterContainer.Parameters["StringLength"], out dtByteLength);
+                                            if (dtByteLength % 2 == 1)
+                                                dtByteLength++;
+                                            tag.DataType.RequireByteLength = dtByteLength;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        dtByteLength = tag.DataType.RequireByteLength;
+                                    }
+
                                     foreach (var block in ReadBlockSettings)
                                     {
                                         if (block.AddressType == addressType)
-                                        {
-                                            if (block.CheckTagIsInReadBlockRange(
-                                                tag,
-                                                block.AddressType,
-                                                offset,
-                                                tag.DataType.RequireByteLength,
-                                                out int index))
+                                        {                                          
+                                            if (dtByteLength > 0 && dtByteLength <= 246)
                                             {
-                                                containInBlock = true;
-                                                readSuccess = block.ReadResult;
-                                                if (readSuccess)
+                                                if (block.CheckTagIsInReadBlockRange(
+                                                    tag,
+                                                    block.AddressType,
+                                                    offset,
+                                                    dtByteLength,
+                                                    out int index))
                                                 {
-                                                    switch (block.AddressType)
+                                                    containInBlock = true;
+                                                    readSuccess = block.ReadResult;
+                                                    if (readSuccess)
                                                     {
-                                                        case AddressType.InputContact:
-                                                        case AddressType.OutputCoil:
-                                                            tag.Value = block.BoolBuffer[index] ?
-                                                                (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
-                                                            break;
-                                                        case AddressType.InputRegister:
-                                                        case AddressType.HoldingRegister:
-                                                            tag.Value = tag.DataType.ConvertToValue(
-                                                                block.ByteBuffer, tag.Gain, tag.Offset, index, 0, byteOrder);
-                                                            break;
-                                                        default:
-                                                            break;
+                                                        switch (block.AddressType)
+                                                        {
+                                                            case AddressType.InputContact:
+                                                            case AddressType.OutputCoil:
+                                                                tag.Value = block.BoolBuffer[index] ?
+                                                                    (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+                                                                break;
+                                                            case AddressType.InputRegister:
+                                                            case AddressType.HoldingRegister:
+                                                                tag.Value = tag.DataType.ConvertToValue(
+                                                                    block.ByteBuffer, tag.Gain, tag.Offset, index, 0, byteOrder);
+                                                                break;
+                                                            default:
+                                                                break;
+                                                        }
                                                     }
+                                                    break;
                                                 }
-                                                break;
                                             }
                                         }
 
@@ -350,6 +379,10 @@ namespace EasyDriver.ModbusTCP
                             {
                                 SetAllTagBad();
                             }
+                        }
+                        else
+                        {
+                            SetAllTagBad();
                         }
 
                         if (mbClient.IsSocketNull)
@@ -483,12 +516,18 @@ namespace EasyDriver.ModbusTCP
                     if (tag != null && tag.DataType != null &&
                         tag.FindParent<IDeviceCore>(x => x is IDeviceCore) is IDeviceCore device && tag.AccessPermission == AccessPermission.ReadAndWrite)
                     {
+                        if (tag.IsInternalTag)
+                        {
+                            tag.Value = value?.ToString();
+                            return Quality.Good;
+                        }
+
                         // Lấy thông tin của địa chỉ Tag như kiểu địa chỉ và vị trí bắt đầu của thanh ghi
                         if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
                             tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
 
                         AddressType addressType = AddressType.HoldingRegister;
-                        bool isTagValid = tag.Address.DecomposeAddress(out addressType, out ushort offset);
+                        bool isTagValid = tag.Address.DecomposeAddress(tag.DataType, out addressType, out ushort offset, out byte stringLength);
 
                         if (!tag.ParameterContainer.Parameters.ContainsKey("AddressType") ||
                             tag.Address != tag.ParameterContainer.Parameters["LastAddress"].ToString())
@@ -499,6 +538,7 @@ namespace EasyDriver.ModbusTCP
                                 tag.ParameterContainer.Parameters["Offset"] = offset.ToString();
                                 tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
                                 tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+                                tag.ParameterContainer.Parameters["StringLength"] = stringLength.ToString();
                             }
                             else
                             {
@@ -507,6 +547,17 @@ namespace EasyDriver.ModbusTCP
                         }
                         if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString)
                         {
+                            if (tag.DataType.GetType() == typeof(ModbusTCP.String))
+                            {
+                                if (tag.ParameterContainer.Parameters.ContainsKey("StringLength"))
+                                {
+                                    int.TryParse(tag.ParameterContainer.Parameters["StringLength"], out int dtByteLength);
+                                    if (dtByteLength % 2 == 1)
+                                        dtByteLength++;
+                                    tag.DataType.RequireByteLength = dtByteLength;
+                                }
+                            }
+
                             // Lấy thông tin byte order của device parent
                             ByteOrder byteOrder = device.ByteOrder;
                             // Chuyển đổi giá trị cần ghi thành chuỗi byte nếu thành công thì mới ghi
@@ -592,6 +643,8 @@ namespace EasyDriver.ModbusTCP
             {
                 if (childDevice is ITagCore tag)
                 {
+                    if (tag.IsInternalTag)
+                        continue;
                     tag.TimeStamp = DateTime.Now;
                     tag.Quality = Quality.Bad;
                     tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;

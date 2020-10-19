@@ -31,13 +31,13 @@ namespace EasyScada.Core
                 if (File.Exists(debugPath))
                 {
                     string resJson = File.ReadAllText(debugPath);
-                    driverConnector = JsonConvert.DeserializeObject<ConnectionSchema>(resJson);
+                    driverConnector = JsonConvert.DeserializeObject<ConnectionSchema>(resJson, new ConnectionSchemaJsonConverter());
 
                 }
                 else if (File.Exists(releasePath))
                 {
                     string resJson = File.ReadAllText(releasePath);
-                    driverConnector = JsonConvert.DeserializeObject<ConnectionSchema>(resJson);
+                    driverConnector = JsonConvert.DeserializeObject<ConnectionSchema>(resJson, new ConnectionSchemaJsonConverter());
                 }
 
                 if (driverConnector != null)

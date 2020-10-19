@@ -31,16 +31,16 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SelectTagPathDesignerForm));
             this.easyPanel1 = new EasyScada.Winforms.Controls.EasyPanel();
-            this.btnOk = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnCancel = new EasyScada.Winforms.Controls.EasyButton();
+            this.btnOk = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnCancel = new EasyScada.Winforms.Controls.ThemedButton();
             this.easyPanel2 = new EasyScada.Winforms.Controls.EasyPanel();
             this.easySplitContainer1 = new EasyScada.Winforms.Controls.EasySplitContainer();
             this.groupProjectTree = new EasyScada.Winforms.Controls.EasyHeaderGroup();
+            this.projectTree = new System.Windows.Forms.TreeView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupTagCollection = new EasyScada.Winforms.Controls.EasyHeaderGroup();
             this.easyPanel3 = new EasyScada.Winforms.Controls.EasyPanel();
             this.searchTagControl1 = new EasyScada.Winforms.Controls.SearchTagControl();
-            this.projectTree = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.easyPanel1)).BeginInit();
             this.easyPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.easyPanel2)).BeginInit();
@@ -134,14 +134,32 @@
             this.groupProjectTree.ValuesPrimary.Image = ((System.Drawing.Image)(resources.GetObject("groupProjectTree.ValuesPrimary.Image")));
             this.groupProjectTree.ValuesSecondary.Heading = "Total tags: 0";
             // 
+            // projectTree
+            // 
+            this.projectTree.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.projectTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.projectTree.HideSelection = false;
+            this.projectTree.ImageIndex = 0;
+            this.projectTree.ImageList = this.imageList1;
+            this.projectTree.ItemHeight = 21;
+            this.projectTree.Location = new System.Drawing.Point(0, 0);
+            this.projectTree.Name = "projectTree";
+            this.projectTree.PathSeparator = "/";
+            this.projectTree.SelectedImageIndex = 0;
+            this.projectTree.Size = new System.Drawing.Size(271, 487);
+            this.projectTree.TabIndex = 1;
+            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.White;
-            this.imageList1.Images.SetKeyName(0, "local_station_16px.png");
-            this.imageList1.Images.SetKeyName(1, "remote_station_24px.png");
-            this.imageList1.Images.SetKeyName(2, "channel_24px.png");
-            this.imageList1.Images.SetKeyName(3, "device_24px.png");
+            this.imageList1.Images.SetKeyName(0, "remote_station_24px-2.png");
+            this.imageList1.Images.SetKeyName(1, "local_station_16px.png");
+            this.imageList1.Images.SetKeyName(2, "remote_station_24px.png");
+            this.imageList1.Images.SetKeyName(3, "channel_24px.png");
+            this.imageList1.Images.SetKeyName(4, "device_24px.png");
+            this.imageList1.Images.SetKeyName(5, "folder_48px.png");
+            this.imageList1.Images.SetKeyName(6, "tag_24px.png");
             // 
             // groupTagCollection
             // 
@@ -164,37 +182,22 @@
             this.easyPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.easyPanel3.Location = new System.Drawing.Point(0, 0);
             this.easyPanel3.Name = "easyPanel3";
-            this.easyPanel3.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
+            this.easyPanel3.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
             this.easyPanel3.Size = new System.Drawing.Size(541, 487);
             this.easyPanel3.TabIndex = 0;
             // 
             // searchTagControl1
             // 
+            this.searchTagControl1.CoreItemSource = null;
             this.searchTagControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.searchTagControl1.IsInSearchMode = false;
-            this.searchTagControl1.Location = new System.Drawing.Point(0, 4);
+            this.searchTagControl1.Location = new System.Drawing.Point(0, 3);
             this.searchTagControl1.Name = "searchTagControl1";
             this.searchTagControl1.SelectedItem = null;
-            this.searchTagControl1.Size = new System.Drawing.Size(541, 483);
-            this.searchTagControl1.TabIndex = 1;
+            this.searchTagControl1.Size = new System.Drawing.Size(541, 484);
+            this.searchTagControl1.TabIndex = 2;
             this.searchTagControl1.TagPathSource = null;
-            this.searchTagControl1.CoreItemSource = null;
             this.searchTagControl1.UseTagPath = false;
-            // 
-            // projectTree
-            // 
-            this.projectTree.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.projectTree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.projectTree.HideSelection = false;
-            this.projectTree.ImageIndex = 0;
-            this.projectTree.ImageList = this.imageList1;
-            this.projectTree.ItemHeight = 21;
-            this.projectTree.Location = new System.Drawing.Point(0, 0);
-            this.projectTree.Name = "projectTree";
-            this.projectTree.PathSeparator = "/";
-            this.projectTree.SelectedImageIndex = 0;
-            this.projectTree.Size = new System.Drawing.Size(271, 487);
-            this.projectTree.TabIndex = 1;
             // 
             // SelectTagPathDesignerForm
             // 
@@ -236,15 +239,15 @@
         #endregion
 
         private EasyPanel easyPanel1;
-        private EasyButton btnOk;
-        private EasyButton btnCancel;
+        private ThemedButton btnOk;
+        private ThemedButton btnCancel;
         private EasyPanel easyPanel2;
         private EasySplitContainer easySplitContainer1;
         private EasyHeaderGroup groupProjectTree;
         private EasyHeaderGroup groupTagCollection;
         private EasyPanel easyPanel3;
-        private SearchTagControl searchTagControl1;
-        private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.TreeView projectTree;
+        private System.Windows.Forms.ImageList imageList1;
+        private SearchTagControl searchTagControl1;
     }
 }

@@ -54,6 +54,7 @@ namespace EasyScada.ServerApplication
 
         public void Setup()
         {
+            Kernel.Bind<IInternalStorageService>().ToConstant(new InternalStorageService());
             Kernel.Bind<IDispatcherFacade>().ToConstant(new DispatcherFacade(Application.Current.Dispatcher));
             Kernel.Bind<IProjectManagerService>().ToConstant(new ProjectManagerService());
             Kernel.Bind<IWorkspaceManagerService>().ToConstant(new WorkspaceManagerService((token) =>
@@ -93,10 +94,11 @@ namespace EasyScada.ServerApplication
                 applicationViewModel.ServerConfiguration.BroadcastMode,
                 applicationViewModel.ServerConfiguration.BroadcastRate));
             Kernel.Bind<ITagWriterService>().ToConstant(new TagWriterService(
-                ProjectManagerService, 
-                Get<IDriverManagerService>(), 
-                Get<IHubConnectionManagerService>(), 
-                Get<IOpcDaClientManagerService>()));
+                ProjectManagerService,
+                Get<IDriverManagerService>(),
+                Get<IHubConnectionManagerService>(),
+                Get<IOpcDaClientManagerService>(),
+                Get<IInternalStorageService>()));
             Kernel.Bind<ILicenseManagerService>().ToConstant(new LicenseManagerService("EasyScada", Get<IProjectManagerService>()));
         }
 

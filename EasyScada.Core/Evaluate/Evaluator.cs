@@ -577,7 +577,7 @@ namespace EasyScada.Core.Evaluate
                 TokenItem item = RPNQueue[index];
                 index++;
 
-                System.Diagnostics.Debug.WriteLine(item.TokenName);
+                //System.Diagnostics.Debug.WriteLine(item.TokenName);
 
                 if (item.TokenDataType == TokenDataType.Token_DataType_Variable)
                 {

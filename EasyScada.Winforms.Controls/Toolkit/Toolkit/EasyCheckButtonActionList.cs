@@ -17,7 +17,7 @@ using System.Windows.Forms.Design;
 
 namespace EasyScada.Winforms.Controls
 {
-    internal class EasyCheckButtonActionList : EasyButtonActionList
+    internal class EasyCheckButtonActionList : ThemedButtonActionList
     {
         #region Instance Fields
         private EasyCheckButton _checkButton;

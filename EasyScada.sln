@@ -129,6 +129,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestScadaFormControls", "Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyScada.Winforms.Controls", "EasyScada.Winforms.Controls\EasyScada.Winforms.Controls.csproj", "{BA53E923-5BAD-443C-A8F0-B191EAB9CA25}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.DPA870", "EasyDriver.DPA870\EasyDriver.DPA870.csproj", "{B3C16606-7974-4B2F-8EF5-69B4A9564CB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -331,6 +333,10 @@ Global
 		{BA53E923-5BAD-443C-A8F0-B191EAB9CA25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA53E923-5BAD-443C-A8F0-B191EAB9CA25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA53E923-5BAD-443C-A8F0-B191EAB9CA25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3C16606-7974-4B2F-8EF5-69B4A9564CB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3C16606-7974-4B2F-8EF5-69B4A9564CB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3C16606-7974-4B2F-8EF5-69B4A9564CB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3C16606-7974-4B2F-8EF5-69B4A9564CB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -394,6 +400,7 @@ Global
 		{A32BE31A-C547-42E0-A251-8512CD984C84} = {51BB0CF3-E7F8-4B3F-99A9-EF8E24164D1F}
 		{5DB8C4F9-E216-458B-A5B2-FE8FFD7CDCCF} = {64953AB8-3E10-4354-AF48-17612C96B8CD}
 		{BA53E923-5BAD-443C-A8F0-B191EAB9CA25} = {64953AB8-3E10-4354-AF48-17612C96B8CD}
+		{B3C16606-7974-4B2F-8EF5-69B4A9564CB1} = {61493679-BA3A-4687-85CB-7DE2668B16DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6494DC4C-62EB-49F5-B63E-F3EA2BA3E057}

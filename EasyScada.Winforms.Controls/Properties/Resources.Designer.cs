@@ -943,6 +943,16 @@ namespace EasyScada.Winforms.Controls.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap export_16px {
+            get {
+                object obj = ResourceManager.GetObject("export_16px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Gallery2010 {
             get {
                 object obj = ResourceManager.GetObject("Gallery2010", resourceCulture);
@@ -1036,6 +1046,16 @@ namespace EasyScada.Winforms.Controls.Properties {
         internal static System.Drawing.Bitmap HourGlass {
             get {
                 object obj = ResourceManager.GetObject("HourGlass", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap import_16px {
+            get {
+                object obj = ResourceManager.GetObject("import_16px", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2006,6 +2026,16 @@ namespace EasyScada.Winforms.Controls.Properties {
         internal static System.Drawing.Bitmap RibbonUp2010Black {
             get {
                 object obj = ResourceManager.GetObject("RibbonUp2010Black", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap script_edit {
+            get {
+                object obj = ResourceManager.GetObject("script_edit", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -1,31 +1,15 @@
 ﻿using EasyScada.Core;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace EasyScada.Winforms.Controls
 {
-    class HieraticalTreeView : TreeView
+    public class HieraticalTreeView : TreeView, ISupportInitialize
     {
         public HieraticalTreeView() : base()
         {
-            // Pad an image int image list to 6px
-            Point destPt = new Point(6, 0);
-            Size size = new Size(22, 16);
-            var imageListSource = ImageList;
-            if (imageListSource != null && imageListSource.Images.Count > 0)
-            {
-                ImageList = new ImageList();
-                ImageList.ImageSize = size;
-                ImageList.ColorDepth = ColorDepth.Depth32Bit;
-                foreach (string imgKey in imageListSource.Images.Keys)
-                {
-                    Bitmap bmp = new Bitmap(size.Width, size.Height);
-                    Graphics g = Graphics.FromImage(bmp);
-                    g.DrawImage(imageListSource.Images[imgKey], destPt);
-                    g.Dispose();
-                    ImageList.Images.Add(imgKey, bmp);
-                }
-            }
+            
         }
 
         protected override void OnAfterCheck(TreeViewEventArgs e)
@@ -45,7 +29,8 @@ namespace EasyScada.Winforms.Controls
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg != 0x203) base.WndProc(ref m);
+            if (m.Msg != 0x203 || !CheckBoxes)
+                base.WndProc(ref m);
         }
 
         private void UpdateCheckStateParent(TreeNode treeNode)
@@ -93,6 +78,32 @@ namespace EasyScada.Winforms.Controls
 
                 if (item.Tag is ICheckable checkable)
                     checkable.Checked = item.Checked;
+            }
+        }
+
+        public void BeginInit()
+        {
+        }
+
+        public void EndInit()
+        {
+            // Pad an image int image list to 6px
+            Point destPt = new Point(2, 0);
+            Size size = new Size(20, 18);
+            var imageListSource = ImageList;
+            if (imageListSource != null && imageListSource.Images.Count > 0)
+            {
+                ImageList = new ImageList();
+                ImageList.ImageSize = size;
+                ImageList.ColorDepth = ColorDepth.Depth32Bit;
+                foreach (string imgKey in imageListSource.Images.Keys)
+                {
+                    Bitmap bmp = new Bitmap(size.Width, size.Height);
+                    Graphics g = Graphics.FromImage(bmp);
+                    g.DrawImage(imageListSource.Images[imgKey], destPt);
+                    g.Dispose();
+                    ImageList.Images.Add(imgKey, bmp);
+                }
             }
         }
     }

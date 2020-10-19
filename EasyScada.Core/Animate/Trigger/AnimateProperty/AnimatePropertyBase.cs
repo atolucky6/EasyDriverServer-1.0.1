@@ -14,13 +14,17 @@ namespace EasyScada.Core
         public virtual bool Enabled { get; set; }
 
         [Browsable(false)]
-        public bool IsDirty { get; internal set; }
+        public bool IsDirty { get; set; }
 
+        [field: NonSerialized]
         [Browsable(false)]
         public virtual object TargetControl { get; set; }
 
+        [field: NonSerialized]
+        protected PropertyInfo propertyInfo;
+
         [Browsable(false)]
-        public virtual PropertyInfo AnimatePropertyInfo { get; set; }
+        public virtual PropertyInfo AnimatePropertyInfo { get => propertyInfo; }
 
         public abstract void SetValue();
 
@@ -33,6 +37,11 @@ namespace EasyScada.Core
         public override string ToString()
         {
             return "";
+        }
+
+        public virtual void SetAnimatePropertyInfo(PropertyInfo propInfo)
+        {
+            propertyInfo = propInfo;
         }
     }
 }

@@ -27,6 +27,7 @@ namespace EasyScada.ServerApplication
 
         #region Injected members
 
+        protected IInternalStorageService InternalStorageService { get; set; }
         protected IReverseService ReverseService { get; set; }
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
@@ -55,7 +56,8 @@ namespace EasyScada.ServerApplication
             IDriverManagerService driverManagerService,
             IHubFactory hubFactory,
             IHubConnectionManagerService hubConnectionManagerService,
-            IOpcDaClientManagerService opcDaClientManagerService) : base(null, workspaceManagerService)
+            IOpcDaClientManagerService opcDaClientManagerService,
+            IInternalStorageService internalStorageService) : base(null, workspaceManagerService)
         {
             WorkspaceName = WorkspaceRegion.ProjectTree;
             Caption = "Project Explorer";
@@ -66,6 +68,7 @@ namespace EasyScada.ServerApplication
             HubFactory = hubFactory;
             HubConnectionManagerService = hubConnectionManagerService;
             OpcDaClientManagerService = opcDaClientManagerService;
+            InternalStorageService = internalStorageService;
 
             ProjectManagerService.ProjectChanged += OnProjectChanged;
 
@@ -160,8 +163,12 @@ namespace EasyScada.ServerApplication
                         {
                             if (i is IChannelCore channel)
                             {
+                                string driverPath = channel.DriverPath;
+                                string driverName = Path.GetFileName(driverPath);
+                                driverPath = $"{Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\Driver\\{driverName}";
+
                                 // Thêm driver tương ứng với channel vào DriverManagerService
-                                IEasyDriverPlugin driver = DriverManagerService.AddDriver(channel, channel.DriverPath); 
+                                IEasyDriverPlugin driver = DriverManagerService.AddDriver(channel, driverPath); 
                                 if (driver != null)
                                 {
                                     // Khởi động driver bằng hàm connect
@@ -170,6 +177,30 @@ namespace EasyScada.ServerApplication
                                     foreach (var tag in channel.GetAllTags())
                                     {
                                         tag.DataType = dataTypes.FirstOrDefault(x => x.Name == tag.DataTypeName);
+                                        if (tag.IsInternalTag)
+                                        {
+                                            if (!tag.ParameterContainer.Parameters.ContainsKey("GUID"))
+                                            {
+                                                tag.ParameterContainer.Parameters["GUID"] = Guid.NewGuid().ToString();
+                                                if (tag.ParameterContainer.Parameters.ContainsKey("Retain"))
+                                                    InternalStorageService.AddOrUpdateInternalTag(tag);
+                                            }
+                                            else
+                                            {
+                                                if (tag.ParameterContainer.Parameters.ContainsKey("Retain"))
+                                                {
+                                                    if (tag.ParameterContainer.Parameters["Retain"] == bool.TrueString)
+                                                    {
+                                                        string guid = tag.ParameterContainer.Parameters["GUID"];
+                                                        var internalValue = InternalStorageService.GetInternalTagValue(guid);
+                                                        if (internalValue != null && internalValue.GUID == guid)
+                                                        {
+                                                            tag.Value = internalValue.Value;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
