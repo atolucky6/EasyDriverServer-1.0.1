@@ -43,7 +43,7 @@ namespace EasyScada.Winforms.Controls
         /// Internal button used by the VisualTaskDialog
         /// </summary>
         [ToolboxItem(false)]
-        public class MessageButton : EasyButton
+        public class MessageButton : ThemedButton
         {
             #region Instance Fields
             private bool _ignoreAltF4;
@@ -123,7 +123,7 @@ namespace EasyScada.Winforms.Controls
         private EasyPanel _panelMainText;
         private EasyWrapLabel _messageText;
         private EasyWrapLabel _messageContent;
-        private EasyTextBox _messageContentMultiline;
+        private ThemedTextBox _messageContentMultiline;
         private EasyPanel _panelButtons;
         private MessageButton _buttonOK;
         private MessageButton _buttonYes;
@@ -334,7 +334,7 @@ namespace EasyScada.Winforms.Controls
                 foreach (EasyTaskDialogCommand command in _commandButtons)
                 {
                     // Create and add a new button instance
-                    EasyButton button = new EasyButton();
+                    ThemedButton button = new ThemedButton();
                     button.ButtonStyle = ButtonStyle.Command;
                     button.StateCommon.Content.Image.ImageH = PaletteRelativeAlign.Near;
                     button.StateCommon.Content.ShortText.TextH = PaletteRelativeAlign.Near;
@@ -360,7 +360,7 @@ namespace EasyScada.Winforms.Controls
 
                 // Position the buttons in a vertical stack and size owning panel
                 Point offset = new Point(BUTTON_GAP - 1, 2);
-                foreach (EasyButton button in _panelMainCommands.Controls)
+                foreach (ThemedButton button in _panelMainCommands.Controls)
                 {
                     button.Location = offset;
                     button.Size = maxButtonSize;
@@ -853,7 +853,7 @@ namespace EasyScada.Winforms.Controls
             Close();
 
             // Update the result code from the command button
-            EasyButton button = (EasyButton)sender;
+            ThemedButton button = (ThemedButton)sender;
             DialogResult = button.DialogResult;
 
             // Invoke any event handlers from the command button
@@ -952,7 +952,7 @@ namespace EasyScada.Winforms.Controls
             this._panelMainRadio = new EasyScada.Winforms.Controls.EasyPanel();
             this._panelMainText = new EasyScada.Winforms.Controls.EasyPanel();
             this._messageContent = new EasyScada.Winforms.Controls.EasyWrapLabel();
-            this._messageContentMultiline = new EasyScada.Winforms.Controls.EasyTextBox();
+            this._messageContentMultiline = new EasyScada.Winforms.Controls.ThemedTextBox();
             this._messageText = new EasyScada.Winforms.Controls.EasyWrapLabel();
             this._panelIcon = new EasyScada.Winforms.Controls.EasyPanel();
             this._messageIcon = new System.Windows.Forms.PictureBox();

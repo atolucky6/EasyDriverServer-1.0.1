@@ -34,18 +34,17 @@
             this.easyPanel1 = new EasyScada.Winforms.Controls.EasyPanel();
             this.easySplitContainer1 = new EasyScada.Winforms.Controls.EasySplitContainer();
             this.easyHeaderGroup3 = new EasyScada.Winforms.Controls.EasyHeaderGroup();
-            this.easyLabel4 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel3 = new EasyScada.Winforms.Controls.EasyLabel();
+            this.easyLabel4 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel3 = new EasyScada.Winforms.Controls.ThemedLabel();
             this.cobCommunicationMode = new EasyScada.Winforms.Controls.EasyComboBox();
-            this.txbServerAddress = new EasyScada.Winforms.Controls.EasyTextBox();
-            this.easyLabel2 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel1 = new EasyScada.Winforms.Controls.EasyLabel();
+            this.txbServerAddress = new EasyScada.Winforms.Controls.ThemedTextBox();
+            this.easyLabel2 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel1 = new EasyScada.Winforms.Controls.ThemedLabel();
             this.txbPort = new EasyScada.Winforms.Controls.EasyNumericUpDown();
             this.txbRefreshRate = new EasyScada.Winforms.Controls.EasyNumericUpDown();
             this.easySplitContainer2 = new EasyScada.Winforms.Controls.EasySplitContainer();
             this.groupProjectTree = new EasyScada.Winforms.Controls.EasyHeaderGroup();
             this.projectTree = new EasyScada.Winforms.Controls.HieraticalTreeView();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupTagCollection = new EasyScada.Winforms.Controls.EasyHeaderGroup();
             this.searchTagControl = new EasyScada.Winforms.Controls.SearchTagControl();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -64,6 +63,7 @@
             this.btnSave = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnGetConnectionSchema = new System.Windows.Forms.ToolStripButton();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -92,6 +92,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.groupProjectTree.Panel)).BeginInit();
             this.groupProjectTree.Panel.SuspendLayout();
             this.groupProjectTree.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.projectTree)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupTagCollection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupTagCollection.Panel)).BeginInit();
             this.groupTagCollection.Panel.SuspendLayout();
@@ -200,6 +201,7 @@
             this.txbServerAddress.Name = "txbServerAddress";
             this.txbServerAddress.Size = new System.Drawing.Size(156, 23);
             this.txbServerAddress.TabIndex = 2;
+            this.txbServerAddress.Text = "127.0.0.1";
             // 
             // easyLabel2
             // 
@@ -314,24 +316,17 @@
             this.projectTree.Size = new System.Drawing.Size(338, 419);
             this.projectTree.TabIndex = 2;
             // 
-            // imageList1
-            // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.White;
-            this.imageList1.Images.SetKeyName(0, "local_station_16px.png");
-            this.imageList1.Images.SetKeyName(1, "remote_station_24px.png");
-            this.imageList1.Images.SetKeyName(2, "channel_24px.png");
-            this.imageList1.Images.SetKeyName(3, "device_24px.png");
-            // 
             // groupTagCollection
             // 
             this.groupTagCollection.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupTagCollection.GroupBackStyle = EasyScada.Winforms.Controls.PaletteBackStyle.ControlGroupBox;
             this.groupTagCollection.Location = new System.Drawing.Point(0, 0);
             this.groupTagCollection.Name = "groupTagCollection";
             // 
             // groupTagCollection.Panel
             // 
             this.groupTagCollection.Panel.Controls.Add(this.searchTagControl);
+            this.groupTagCollection.Panel.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
             this.groupTagCollection.Size = new System.Drawing.Size(677, 472);
             this.groupTagCollection.TabIndex = 1;
             this.groupTagCollection.ValuesPrimary.Heading = "Tag Collection";
@@ -340,15 +335,15 @@
             // 
             // searchTagControl
             // 
+            this.searchTagControl.CoreItemSource = null;
             this.searchTagControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.searchTagControl.IsInSearchMode = false;
-            this.searchTagControl.Location = new System.Drawing.Point(0, 0);
+            this.searchTagControl.Location = new System.Drawing.Point(0, 3);
             this.searchTagControl.Name = "searchTagControl";
             this.searchTagControl.SelectedItem = null;
-            this.searchTagControl.Size = new System.Drawing.Size(675, 419);
-            this.searchTagControl.TabIndex = 2;
+            this.searchTagControl.Size = new System.Drawing.Size(675, 416);
+            this.searchTagControl.TabIndex = 7;
             this.searchTagControl.TagPathSource = null;
-            this.searchTagControl.CoreItemSource = null;
             this.searchTagControl.UseTagPath = false;
             // 
             // menuStrip1
@@ -482,6 +477,18 @@
             this.btnGetConnectionSchema.Size = new System.Drawing.Size(23, 22);
             this.btnGetConnectionSchema.Text = "toolStripButton4";
             // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.White;
+            this.imageList1.Images.SetKeyName(0, "remote_station_24px-2.png");
+            this.imageList1.Images.SetKeyName(1, "local_station_16px.png");
+            this.imageList1.Images.SetKeyName(2, "remote_station_24px.png");
+            this.imageList1.Images.SetKeyName(3, "channel_24px.png");
+            this.imageList1.Images.SetKeyName(4, "device_24px.png");
+            this.imageList1.Images.SetKeyName(5, "folder_48px.png");
+            this.imageList1.Images.SetKeyName(6, "tag_24px.png");
+            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
@@ -526,6 +533,7 @@
             this.groupProjectTree.Panel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.groupProjectTree)).EndInit();
             this.groupProjectTree.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.projectTree)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupTagCollection.Panel)).EndInit();
             this.groupTagCollection.Panel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.groupTagCollection)).EndInit();
@@ -561,20 +569,20 @@
         private EasySplitContainer easySplitContainer1;
         private EasyHeaderGroup easyHeaderGroup3;
         private EasySplitContainer easySplitContainer2;
-        private EasyHeaderGroup groupTagCollection;
-        private EasyLabel easyLabel1;
-        private EasyTextBox txbServerAddress;
-        private EasyLabel easyLabel2;
+        private ThemedLabel easyLabel1;
+        private ThemedTextBox txbServerAddress;
+        private ThemedLabel easyLabel2;
         private EasyComboBox cobCommunicationMode;
-        private EasyLabel easyLabel3;
-        private EasyLabel easyLabel4;
+        private ThemedLabel easyLabel3;
+        private ThemedLabel easyLabel4;
         private EasyHeaderGroup groupProjectTree;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private SearchTagControl searchTagControl;
         private EasyScada.Winforms.Controls.HieraticalTreeView projectTree;
-        private System.Windows.Forms.ImageList imageList1;
         private EasyNumericUpDown txbPort;
         private EasyNumericUpDown txbRefreshRate;
+        private System.Windows.Forms.ImageList imageList1;
+        private EasyHeaderGroup groupTagCollection;
+        private SearchTagControl searchTagControl;
     }
 }

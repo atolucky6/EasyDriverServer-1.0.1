@@ -19,12 +19,14 @@ namespace EasyScada.ServerApplication
             IProjectManagerService projectManagerService,
             IDriverManagerService driverManagerService,
             IHubConnectionManagerService hubConnectionManagerService,
-            IOpcDaClientManagerService opcDaClientManagerService)
+            IOpcDaClientManagerService opcDaClientManagerService,
+            IInternalStorageService internalStorageService)
         {
             ProjectManagerService = projectManagerService;
             DriverManagerService = driverManagerService;
             HubConnectionManagerService = hubConnectionManagerService;
             OpcDaClientManagerService = opcDaClientManagerService;
+            InternalStorageService = internalStorageService;
         }
 
         #endregion
@@ -35,6 +37,7 @@ namespace EasyScada.ServerApplication
         protected IDriverManagerService DriverManagerService { get; set; }
         protected IHubConnectionManagerService HubConnectionManagerService { get; set; }
         protected IOpcDaClientManagerService OpcDaClientManagerService { get; set; }
+        protected IInternalStorageService InternalStorageService { get; set; }
 
         #endregion
 
@@ -72,13 +75,33 @@ namespace EasyScada.ServerApplication
 
                                 if (driver != null)
                                 {
-                                    ITagCore tag = parentOfTag.Tags.Find(pathSplit[parentPath.Length - 1]);
+                                    ITagCore tag = parentOfTag.Tags.Find(pathSplit[pathSplit.Length - 1]);
                                     if (tag != null)
                                     {
-                                        respone.ExecuteTime = DateTime.Now;
-                                        Quality writeQuality = driver.Write(tag, writeCommand.Value);
-                                        respone.WriteCommand = writeCommand;
-                                        respone.IsSuccess = writeQuality == Quality.Good;
+                                        if (tag.IsInternalTag)
+                                        {
+                                            respone.ExecuteTime = DateTime.Now;
+                                            tag.Value = writeCommand.Value;
+                                            respone.WriteCommand = writeCommand;
+                                            respone.IsSuccess = true;
+                                            if (!tag.ParameterContainer.Parameters.ContainsKey("GUID"))
+                                                tag.ParameterContainer.Parameters["GUID"] = Guid.NewGuid().ToString();
+
+                                            if (tag.ParameterContainer.Parameters.ContainsKey("Retain"))
+                                            {
+                                                if (tag.ParameterContainer.Parameters["Retain"] == bool.TrueString)
+                                                {
+                                                    InternalStorageService.AddOrUpdateInternalTag(tag);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            respone.ExecuteTime = DateTime.Now;
+                                            Quality writeQuality = driver.Write(tag, writeCommand.Value);
+                                            respone.WriteCommand = writeCommand;
+                                            respone.IsSuccess = writeQuality == Quality.Good;
+                                        }
                                     }
                                 }
                                 else

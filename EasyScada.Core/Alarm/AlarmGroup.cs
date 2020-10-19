@@ -9,16 +9,17 @@ namespace EasyScada.Core
 {
     public class AlarmGroup : IUniqueNameItem
     {
-        public int Id { get; set; }
+        public bool Enabled { get; set; } = true;
         public string Name { get; set; }
         public string Description { get; set; }
+        public virtual string EmailSettingName { get; set; }
+        public virtual string SMSSettingName { get; set; }
 
         [Browsable(false)]
-        public bool IsReadOnly { get; set; }
+        public bool ReadOnly { get; set; }
 
         public AlarmGroup()
         {
-
         }
     }
 }

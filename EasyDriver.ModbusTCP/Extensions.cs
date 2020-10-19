@@ -41,32 +41,67 @@ namespace EasyDriver.ModbusTCP
             return "The tag address was not in correct format.";
         }
 
-        public static string IsValidAddress(this string str, AccessPermission accessPermission, out bool isBitAddress)
+        public static string IsValidAddress(this string str, IDataType dataType, AccessPermission accessPermission, out bool isBitAddress)
         {
             isBitAddress = false;
             if (!string.IsNullOrWhiteSpace(str))
             {
-                if (uint.TryParse(str, out uint adrNumber))
+                if (dataType.GetType() == typeof(EasyDriver.ModbusTCP.String))
                 {
-                    int type = (int)(adrNumber / 100000);
-                    int offset = (int)(adrNumber % 100000) - 1;
-                    if ((ushort)offset <= 0xFFFFU && offset >= 0)
+                    string[] splitStr = str.Split('.');
+                    if (splitStr.Length == 2)
                     {
-                        if (type == (int)AddressType.InputContact ||
-                            type == (int)AddressType.OutputCoil ||
-                            type == (int)AddressType.InputRegister ||
-                            type == (int)AddressType.HoldingRegister)
+                        str = splitStr[0];
+                        if (uint.TryParse(str, out uint adrNumber))
                         {
-                            isBitAddress = type == (int)AddressType.InputContact || type == (int)AddressType.OutputCoil;
-                            if ((type == (int)AddressType.InputContact || type == (int)AddressType.InputRegister) && accessPermission == AccessPermission.ReadAndWrite)
-                                return "The current tag address doesn't support write function.";
-                            return string.Empty;
+                            int type = (int)(adrNumber / 100000);
+                            int offset = (int)(adrNumber % 100000) - 1;
+                            if ((ushort)offset <= 0xFFFFU && offset >= 0)
+                            {
+                                if (type == (int)AddressType.InputRegister ||
+                                    type == (int)AddressType.HoldingRegister)
+                                {
+                                    isBitAddress = false;
+                                    if ((type == (int)AddressType.InputContact || type == (int)AddressType.InputRegister) && accessPermission == AccessPermission.ReadAndWrite)
+                                        return "The current tag address doesn't support write function.";
+
+                                    if (byte.TryParse(splitStr[1], out byte length))
+                                    {
+                                        if (length <= 246)
+                                        {
+                                            return string.Empty;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (uint.TryParse(str, out uint adrNumber))
+                    {
+                        int type = (int)(adrNumber / 100000);
+                        int offset = (int)(adrNumber % 100000) - 1;
+                        if ((ushort)offset <= 0xFFFFU && offset >= 0)
+                        {
+                            if (type == (int)AddressType.InputContact ||
+                                type == (int)AddressType.OutputCoil ||
+                                type == (int)AddressType.InputRegister ||
+                                type == (int)AddressType.HoldingRegister)
+                            {
+                                isBitAddress = type == (int)AddressType.InputContact || type == (int)AddressType.OutputCoil;
+                                if ((type == (int)AddressType.InputContact || type == (int)AddressType.InputRegister) && accessPermission == AccessPermission.ReadAndWrite)
+                                    return "The current tag address doesn't support write function.";
+                                return string.Empty;
+                            }
                         }
                     }
                 }
             }
             return "The tag address was not in correct format.";
         }
+
 
         public static string IsValidAddress(this string address, AddressType addressType)
         {
@@ -86,23 +121,70 @@ namespace EasyDriver.ModbusTCP
             return "The tag address was not in correct format.";
         }
 
-        public static bool DecomposeAddress(this string address, out AddressType addressType, out ushort offset)
+        public static bool DecomposeAddress(this string address, IDataType dataType, out AddressType addressType, out ushort offset, out byte byteLength)
         {
             addressType = AddressType.InputContact;
+            byteLength = 0;
             offset = 0;
             try
             {
                 if (!string.IsNullOrWhiteSpace(address))
                 {
-                    if (uint.TryParse(address, out uint adrNumber))
+                    if (dataType == null)
                     {
-                        int type = (int)(adrNumber / 100000);
-                        int odd = (int)(adrNumber % 100000) - 1;
-
-                        if (Enum.TryParse(type.ToString(), out addressType) && odd >= 0 && (ushort)odd <= (ushort)0xFFFFU)
+                        if (uint.TryParse(address, out uint adrNumber))
                         {
-                            offset = (ushort)odd;
-                            return true;
+                            int type = (int)(adrNumber / 100000);
+                            int odd = (int)(adrNumber % 100000) - 1;
+
+                            if (Enum.TryParse(type.ToString(), out addressType) && odd >= 0 && (ushort)odd <= (ushort)0xFFFFU)
+                            {
+                                offset = (ushort)odd;
+                                return true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (dataType.GetType() == typeof(ModbusTCP.String))
+                        {
+                            string[] splitAddress = address.Split('.');
+                            if (splitAddress.Length == 2)
+                            {
+                                address = splitAddress[0];
+                                if (uint.TryParse(address, out uint adrNumber))
+                                {
+                                    int type = (int)(adrNumber / 100000);
+                                    int odd = (int)(adrNumber % 100000) - 1;
+
+                                    if (Enum.TryParse(type.ToString(), out addressType) && odd >= 0 && (ushort)odd <= (ushort)0xFFFFU)
+                                    {
+                                        offset = (ushort)odd;
+
+                                        if (byte.TryParse(splitAddress[1], out byteLength))
+                                        {
+                                            if (byteLength <= 246)
+                                            {
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (uint.TryParse(address, out uint adrNumber))
+                            {
+                                int type = (int)(adrNumber / 100000);
+                                int odd = (int)(adrNumber % 100000) - 1;
+
+                                if (Enum.TryParse(type.ToString(), out addressType) && odd >= 0 && (ushort)odd <= (ushort)0xFFFFU)
+                                {
+                                    offset = (ushort)odd;
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
@@ -110,5 +192,6 @@ namespace EasyDriver.ModbusTCP
             }
             catch { return false; }
         }
+
     }
 }

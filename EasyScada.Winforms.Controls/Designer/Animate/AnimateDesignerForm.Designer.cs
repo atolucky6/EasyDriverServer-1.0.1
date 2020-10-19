@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AnimateDesignerForm));
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.easyPanel1 = new EasyScada.Winforms.Controls.EasyPanel();
@@ -41,25 +41,25 @@
             this.easyPanel2 = new EasyScada.Winforms.Controls.EasyPanel();
             this.numDelayAnalog = new EasyScada.Winforms.Controls.EasyNumericUpDown();
             this.ckbEnabledAnalog = new EasyScada.Winforms.Controls.EasyCheckBox();
-            this.txbMinValueAnalog = new EasyScada.Winforms.Controls.EasyTextBox();
+            this.txbMinValueAnalog = new EasyScada.Winforms.Controls.ThemedTextBox();
             this.btnBrowseMinValueAnalog = new EasyScada.Winforms.Controls.ButtonSpecAny();
-            this.txbMaxValueAnalog = new EasyScada.Winforms.Controls.EasyTextBox();
+            this.txbMaxValueAnalog = new EasyScada.Winforms.Controls.ThemedTextBox();
             this.btnBrowseMaxValueAnalog = new EasyScada.Winforms.Controls.ButtonSpecAny();
-            this.txbDescriptionAnalog = new EasyScada.Winforms.Controls.EasyTextBox();
-            this.btnAddAnalog = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnEditAnalog = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnDeleteAnalog = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnSaveAnalog = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnCancelAnalog = new EasyScada.Winforms.Controls.EasyButton();
-            this.easyLabel7 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel6 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel5 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel4 = new EasyScada.Winforms.Controls.EasyLabel();
+            this.txbDescriptionAnalog = new EasyScada.Winforms.Controls.ThemedTextBox();
+            this.btnAddAnalog = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnEditAnalog = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnDeleteAnalog = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnSaveAnalog = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnCancelAnalog = new EasyScada.Winforms.Controls.ThemedButton();
+            this.easyLabel7 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel6 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel5 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel4 = new EasyScada.Winforms.Controls.ThemedLabel();
             this.cobCompareModeAnalog = new EasyScada.Winforms.Controls.EasyComboBox();
-            this.txbTriggerTagAnalog = new EasyScada.Winforms.Controls.EasyTextBox();
+            this.txbTriggerTagAnalog = new EasyScada.Winforms.Controls.ThemedTextBox();
             this.btnBrowseTriggerTagAnalog = new EasyScada.Winforms.Controls.ButtonSpecAny();
-            this.easyLabel2 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel1 = new EasyScada.Winforms.Controls.EasyLabel();
+            this.easyLabel2 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel1 = new EasyScada.Winforms.Controls.ThemedLabel();
             this.analogGridView = new EasyScada.Winforms.Controls.EasyDataGridView();
             this.colAnalogEnabled = new EasyScada.Winforms.Controls.EasyDataGridViewCheckBoxColumn();
             this.colAnalogTriggerTag = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
@@ -72,22 +72,22 @@
             this.easyPanel3 = new EasyScada.Winforms.Controls.EasyPanel();
             this.numDelayDiscrete = new EasyScada.Winforms.Controls.EasyNumericUpDown();
             this.ckbEnabledDiscrete = new EasyScada.Winforms.Controls.EasyCheckBox();
-            this.txbTriggerValueDiscrete = new EasyScada.Winforms.Controls.EasyTextBox();
+            this.txbTriggerValueDiscrete = new EasyScada.Winforms.Controls.ThemedTextBox();
             this.btnBrowseTriggerValueDiscrete = new EasyScada.Winforms.Controls.ButtonSpecAny();
-            this.txbDescriptionDiscrete = new EasyScada.Winforms.Controls.EasyTextBox();
-            this.btnAddDiscrete = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnEditDiscrete = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnDeleteDiscrete = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnSaveDiscrete = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnCancelDiscrete = new EasyScada.Winforms.Controls.EasyButton();
-            this.easyLabel3 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel8 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel9 = new EasyScada.Winforms.Controls.EasyLabel();
+            this.txbDescriptionDiscrete = new EasyScada.Winforms.Controls.ThemedTextBox();
+            this.btnAddDiscrete = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnEditDiscrete = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnDeleteDiscrete = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnSaveDiscrete = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnCancelDiscrete = new EasyScada.Winforms.Controls.ThemedButton();
+            this.easyLabel3 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel8 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel9 = new EasyScada.Winforms.Controls.ThemedLabel();
             this.cobCompareModeDiscrete = new EasyScada.Winforms.Controls.EasyComboBox();
-            this.txbTriggerTagDiscrete = new EasyScada.Winforms.Controls.EasyTextBox();
+            this.txbTriggerTagDiscrete = new EasyScada.Winforms.Controls.ThemedTextBox();
             this.btnBrowseTriggerTagDiscrete = new EasyScada.Winforms.Controls.ButtonSpecAny();
-            this.easyLabel11 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel12 = new EasyScada.Winforms.Controls.EasyLabel();
+            this.easyLabel11 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.easyLabel12 = new EasyScada.Winforms.Controls.ThemedLabel();
             this.discreteGridView = new EasyScada.Winforms.Controls.EasyDataGridView();
             this.easyDataGridViewCheckBoxColumn1 = new EasyScada.Winforms.Controls.EasyDataGridViewCheckBoxColumn();
             this.easyDataGridViewTextBoxColumn1 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
@@ -97,23 +97,24 @@
             this.easyDataGridViewTextBoxColumn5 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
             this.easyPage3 = new EasyScada.Winforms.Controls.Navigator.EasyPage();
             this.easyPanel4 = new EasyScada.Winforms.Controls.EasyPanel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.numDelayQuality = new EasyScada.Winforms.Controls.EasyNumericUpDown();
-            this.cobQuality = new EasyScada.Winforms.Controls.EasyComboBox();
-            this.ckbEnabledQuality = new EasyScada.Winforms.Controls.EasyCheckBox();
-            this.txbDescriptionQuality = new EasyScada.Winforms.Controls.EasyTextBox();
-            this.btnAddQuality = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnEditQuality = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnDeleteQuality = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnSaveQuality = new EasyScada.Winforms.Controls.EasyButton();
-            this.btnCancelQuality = new EasyScada.Winforms.Controls.EasyButton();
-            this.easyLabel10 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel13 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel14 = new EasyScada.Winforms.Controls.EasyLabel();
             this.cobCompareModeQuality = new EasyScada.Winforms.Controls.EasyComboBox();
-            this.txbTriggerTagQuality = new EasyScada.Winforms.Controls.EasyTextBox();
+            this.cobQuality = new EasyScada.Winforms.Controls.EasyComboBox();
+            this.themedLabel5 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.themedLabel3 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.themedLabel2 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.themedLabel1 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.ckbEnabledQuality = new EasyScada.Winforms.Controls.EasyCheckBox();
+            this.txbTriggerTagQuality = new EasyScada.Winforms.Controls.ThemedTextBox();
             this.btnBrowseTriggerTagQuality = new EasyScada.Winforms.Controls.ButtonSpecAny();
-            this.easyLabel15 = new EasyScada.Winforms.Controls.EasyLabel();
-            this.easyLabel16 = new EasyScada.Winforms.Controls.EasyLabel();
+            this.themedLabel4 = new EasyScada.Winforms.Controls.ThemedLabel();
+            this.txbDescriptionQuality = new EasyScada.Winforms.Controls.ThemedTextBox();
+            this.btnAddQuality = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnEditQuality = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnDeleteQuality = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnSaveQuality = new EasyScada.Winforms.Controls.ThemedButton();
+            this.btnCancelQuality = new EasyScada.Winforms.Controls.ThemedButton();
             this.qualityGridView = new EasyScada.Winforms.Controls.EasyDataGridView();
             this.easyDataGridViewCheckBoxColumn2 = new EasyScada.Winforms.Controls.EasyDataGridViewCheckBoxColumn();
             this.easyDataGridViewTextBoxColumn3 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
@@ -156,8 +157,9 @@
             this.easyPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.easyPanel4)).BeginInit();
             this.easyPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cobQuality)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cobCompareModeQuality)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cobQuality)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.qualityGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.easyHeaderGroup2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.easyHeaderGroup2.Panel)).BeginInit();
@@ -172,11 +174,11 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.easyPanel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1039, 676);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(980, 610);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(1039, 676);
+            this.toolStripContainer1.Size = new System.Drawing.Size(980, 635);
             this.toolStripContainer1.TabIndex = 0;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -187,7 +189,7 @@
             this.easyPanel1.Location = new System.Drawing.Point(0, 0);
             this.easyPanel1.Name = "easyPanel1";
             this.easyPanel1.Padding = new System.Windows.Forms.Padding(4);
-            this.easyPanel1.Size = new System.Drawing.Size(1039, 676);
+            this.easyPanel1.Size = new System.Drawing.Size(980, 610);
             this.easyPanel1.TabIndex = 0;
             // 
             // easySplitContainer1
@@ -204,8 +206,8 @@
             // easySplitContainer1.Panel2
             // 
             this.easySplitContainer1.Panel2.Controls.Add(this.easyHeaderGroup2);
-            this.easySplitContainer1.Size = new System.Drawing.Size(1031, 668);
-            this.easySplitContainer1.SplitterDistance = 705;
+            this.easySplitContainer1.Size = new System.Drawing.Size(972, 602);
+            this.easySplitContainer1.SplitterDistance = 664;
             this.easySplitContainer1.TabIndex = 0;
             // 
             // easyNavigator1
@@ -243,8 +245,8 @@
             this.easyPage2,
             this.easyPage3});
             this.easyNavigator1.Panel.PanelBackStyle = EasyScada.Winforms.Controls.PaletteBackStyle.PanelClient;
-            this.easyNavigator1.SelectedIndex = 1;
-            this.easyNavigator1.Size = new System.Drawing.Size(705, 668);
+            this.easyNavigator1.SelectedIndex = 0;
+            this.easyNavigator1.Size = new System.Drawing.Size(664, 602);
             this.easyNavigator1.TabIndex = 0;
             this.easyNavigator1.Text = "easyNavigator1";
             // 
@@ -256,7 +258,7 @@
             this.easyPage1.LastVisibleSet = true;
             this.easyPage1.MinimumSize = new System.Drawing.Size(50, 50);
             this.easyPage1.Name = "easyPage1";
-            this.easyPage1.Size = new System.Drawing.Size(703, 642);
+            this.easyPage1.Size = new System.Drawing.Size(662, 576);
             this.easyPage1.Text = "Analog triggers";
             this.easyPage1.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage1.ToolTipTitle = "Page ToolTip";
@@ -287,7 +289,7 @@
             this.easyPanel2.Location = new System.Drawing.Point(0, 0);
             this.easyPanel2.Name = "easyPanel2";
             this.easyPanel2.Padding = new System.Windows.Forms.Padding(4);
-            this.easyPanel2.Size = new System.Drawing.Size(703, 642);
+            this.easyPanel2.Size = new System.Drawing.Size(662, 576);
             this.easyPanel2.TabIndex = 0;
             // 
             // numDelayAnalog
@@ -298,7 +300,7 @@
             0,
             0,
             0});
-            this.numDelayAnalog.Location = new System.Drawing.Point(556, 70);
+            this.numDelayAnalog.Location = new System.Drawing.Point(515, 70);
             this.numDelayAnalog.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -321,15 +323,15 @@
             this.txbMinValueAnalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txbMinValueAnalog.ButtonSpecs.AddRange(new EasyScada.Winforms.Controls.ButtonSpecAny[] {
             this.btnBrowseMinValueAnalog});
-            this.txbMinValueAnalog.Location = new System.Drawing.Point(556, 10);
+            this.txbMinValueAnalog.Location = new System.Drawing.Point(515, 10);
             this.txbMinValueAnalog.Name = "txbMinValueAnalog";
-            this.txbMinValueAnalog.Size = new System.Drawing.Size(140, 24);
+            this.txbMinValueAnalog.Size = new System.Drawing.Size(140, 23);
             this.txbMinValueAnalog.TabIndex = 35;
             // 
             // btnBrowseMinValueAnalog
             // 
+            this.btnBrowseMinValueAnalog.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
             this.btnBrowseMinValueAnalog.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.InputControl;
-            this.btnBrowseMinValueAnalog.Text = "...";
             this.btnBrowseMinValueAnalog.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnBrowseMinValueAnalog.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseMinValueAnalog.UniqueName = "17BA7218BD974E7F87B64F3A03F1FC49";
@@ -339,15 +341,15 @@
             this.txbMaxValueAnalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txbMaxValueAnalog.ButtonSpecs.AddRange(new EasyScada.Winforms.Controls.ButtonSpecAny[] {
             this.btnBrowseMaxValueAnalog});
-            this.txbMaxValueAnalog.Location = new System.Drawing.Point(556, 40);
+            this.txbMaxValueAnalog.Location = new System.Drawing.Point(515, 40);
             this.txbMaxValueAnalog.Name = "txbMaxValueAnalog";
-            this.txbMaxValueAnalog.Size = new System.Drawing.Size(140, 24);
+            this.txbMaxValueAnalog.Size = new System.Drawing.Size(140, 23);
             this.txbMaxValueAnalog.TabIndex = 34;
             // 
             // btnBrowseMaxValueAnalog
             // 
+            this.btnBrowseMaxValueAnalog.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
             this.btnBrowseMaxValueAnalog.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.InputControl;
-            this.btnBrowseMaxValueAnalog.Text = "...";
             this.btnBrowseMaxValueAnalog.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnBrowseMaxValueAnalog.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseMaxValueAnalog.UniqueName = "17BA7218BD974E7F87B64F3A03F1FC49";
@@ -359,13 +361,13 @@
             this.txbDescriptionAnalog.Location = new System.Drawing.Point(97, 70);
             this.txbDescriptionAnalog.Multiline = true;
             this.txbDescriptionAnalog.Name = "txbDescriptionAnalog";
-            this.txbDescriptionAnalog.Size = new System.Drawing.Size(350, 48);
+            this.txbDescriptionAnalog.Size = new System.Drawing.Size(309, 48);
             this.txbDescriptionAnalog.TabIndex = 31;
             // 
             // btnAddAnalog
             // 
             this.btnAddAnalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddAnalog.Location = new System.Drawing.Point(312, 127);
+            this.btnAddAnalog.Location = new System.Drawing.Point(271, 127);
             this.btnAddAnalog.Name = "btnAddAnalog";
             this.btnAddAnalog.Size = new System.Drawing.Size(72, 25);
             this.btnAddAnalog.TabIndex = 29;
@@ -374,7 +376,7 @@
             // btnEditAnalog
             // 
             this.btnEditAnalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditAnalog.Location = new System.Drawing.Point(390, 127);
+            this.btnEditAnalog.Location = new System.Drawing.Point(349, 127);
             this.btnEditAnalog.Name = "btnEditAnalog";
             this.btnEditAnalog.Size = new System.Drawing.Size(72, 25);
             this.btnEditAnalog.TabIndex = 28;
@@ -383,7 +385,7 @@
             // btnDeleteAnalog
             // 
             this.btnDeleteAnalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDeleteAnalog.Location = new System.Drawing.Point(468, 127);
+            this.btnDeleteAnalog.Location = new System.Drawing.Point(427, 127);
             this.btnDeleteAnalog.Name = "btnDeleteAnalog";
             this.btnDeleteAnalog.Size = new System.Drawing.Size(72, 25);
             this.btnDeleteAnalog.TabIndex = 27;
@@ -392,7 +394,7 @@
             // btnSaveAnalog
             // 
             this.btnSaveAnalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveAnalog.Location = new System.Drawing.Point(546, 127);
+            this.btnSaveAnalog.Location = new System.Drawing.Point(505, 127);
             this.btnSaveAnalog.Name = "btnSaveAnalog";
             this.btnSaveAnalog.Size = new System.Drawing.Size(72, 25);
             this.btnSaveAnalog.TabIndex = 26;
@@ -401,7 +403,7 @@
             // btnCancelAnalog
             // 
             this.btnCancelAnalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancelAnalog.Location = new System.Drawing.Point(625, 127);
+            this.btnCancelAnalog.Location = new System.Drawing.Point(584, 127);
             this.btnCancelAnalog.Name = "btnCancelAnalog";
             this.btnCancelAnalog.Size = new System.Drawing.Size(72, 25);
             this.btnCancelAnalog.TabIndex = 25;
@@ -410,7 +412,7 @@
             // easyLabel7
             // 
             this.easyLabel7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel7.Location = new System.Drawing.Point(453, 97);
+            this.easyLabel7.Location = new System.Drawing.Point(412, 97);
             this.easyLabel7.Name = "easyLabel7";
             this.easyLabel7.Size = new System.Drawing.Size(98, 20);
             this.easyLabel7.TabIndex = 19;
@@ -419,7 +421,7 @@
             // easyLabel6
             // 
             this.easyLabel6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel6.Location = new System.Drawing.Point(453, 70);
+            this.easyLabel6.Location = new System.Drawing.Point(412, 70);
             this.easyLabel6.Name = "easyLabel6";
             this.easyLabel6.Size = new System.Drawing.Size(70, 20);
             this.easyLabel6.TabIndex = 18;
@@ -428,7 +430,7 @@
             // easyLabel5
             // 
             this.easyLabel5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel5.Location = new System.Drawing.Point(453, 42);
+            this.easyLabel5.Location = new System.Drawing.Point(412, 42);
             this.easyLabel5.Name = "easyLabel5";
             this.easyLabel5.Size = new System.Drawing.Size(68, 20);
             this.easyLabel5.TabIndex = 17;
@@ -437,7 +439,7 @@
             // easyLabel4
             // 
             this.easyLabel4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel4.Location = new System.Drawing.Point(453, 12);
+            this.easyLabel4.Location = new System.Drawing.Point(412, 12);
             this.easyLabel4.Name = "easyLabel4";
             this.easyLabel4.Size = new System.Drawing.Size(66, 20);
             this.easyLabel4.TabIndex = 16;
@@ -447,7 +449,7 @@
             // 
             this.cobCompareModeAnalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cobCompareModeAnalog.DropDownWidth = 140;
-            this.cobCompareModeAnalog.Location = new System.Drawing.Point(556, 97);
+            this.cobCompareModeAnalog.Location = new System.Drawing.Point(515, 97);
             this.cobCompareModeAnalog.Name = "cobCompareModeAnalog";
             this.cobCompareModeAnalog.Size = new System.Drawing.Size(140, 21);
             this.cobCompareModeAnalog.TabIndex = 11;
@@ -460,13 +462,13 @@
             this.btnBrowseTriggerTagAnalog});
             this.txbTriggerTagAnalog.Location = new System.Drawing.Point(97, 40);
             this.txbTriggerTagAnalog.Name = "txbTriggerTagAnalog";
-            this.txbTriggerTagAnalog.Size = new System.Drawing.Size(350, 24);
+            this.txbTriggerTagAnalog.Size = new System.Drawing.Size(309, 23);
             this.txbTriggerTagAnalog.TabIndex = 8;
             // 
             // btnBrowseTriggerTagAnalog
             // 
+            this.btnBrowseTriggerTagAnalog.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
             this.btnBrowseTriggerTagAnalog.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.InputControl;
-            this.btnBrowseTriggerTagAnalog.Text = "...";
             this.btnBrowseTriggerTagAnalog.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnBrowseTriggerTagAnalog.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseTriggerTagAnalog.UniqueName = "17BA7218BD974E7F87B64F3A03F1FC49";
@@ -507,24 +509,26 @@
             this.colAnalogDescription});
             this.analogGridView.GridStyles.Style = EasyScada.Winforms.Controls.DataGridViewStyle.Mixed;
             this.analogGridView.GridStyles.StyleBackground = EasyScada.Winforms.Controls.PaletteBackStyle.ControlClient;
+            this.analogGridView.HideOuterBorders = true;
             this.analogGridView.Location = new System.Drawing.Point(7, 158);
             this.analogGridView.Name = "analogGridView";
             this.analogGridView.RowHeadersVisible = false;
             this.analogGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.analogGridView.Size = new System.Drawing.Size(689, 477);
+            this.analogGridView.Size = new System.Drawing.Size(648, 411);
             this.analogGridView.TabIndex = 4;
             // 
             // colAnalogEnabled
             // 
             this.colAnalogEnabled.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.colAnalogEnabled.DataPropertyName = "Enabled";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.NullValue = false;
-            this.colAnalogEnabled.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.NullValue = false;
+            this.colAnalogEnabled.DefaultCellStyle = dataGridViewCellStyle10;
             this.colAnalogEnabled.FalseValue = null;
             this.colAnalogEnabled.HeaderText = "Enabled";
             this.colAnalogEnabled.IndeterminateValue = null;
             this.colAnalogEnabled.Name = "colAnalogEnabled";
+            this.colAnalogEnabled.ReadOnly = true;
             this.colAnalogEnabled.TrueValue = null;
             this.colAnalogEnabled.Width = 59;
             // 
@@ -534,6 +538,7 @@
             this.colAnalogTriggerTag.DataPropertyName = "TriggerTagPath";
             this.colAnalogTriggerTag.HeaderText = "Trigger Tag";
             this.colAnalogTriggerTag.Name = "colAnalogTriggerTag";
+            this.colAnalogTriggerTag.ReadOnly = true;
             this.colAnalogTriggerTag.Width = 93;
             // 
             // colAnalogMinValue
@@ -542,6 +547,7 @@
             this.colAnalogMinValue.DataPropertyName = "MinValue";
             this.colAnalogMinValue.HeaderText = "Min Value";
             this.colAnalogMinValue.Name = "colAnalogMinValue";
+            this.colAnalogMinValue.ReadOnly = true;
             this.colAnalogMinValue.Width = 88;
             // 
             // colAnalogMaxValue
@@ -550,6 +556,7 @@
             this.colAnalogMaxValue.DataPropertyName = "MaxValue";
             this.colAnalogMaxValue.HeaderText = "Max Value";
             this.colAnalogMaxValue.Name = "colAnalogMaxValue";
+            this.colAnalogMaxValue.ReadOnly = true;
             this.colAnalogMaxValue.Width = 90;
             // 
             // colAnalogCompareMode
@@ -559,6 +566,7 @@
             this.colAnalogCompareMode.DropDownWidth = 121;
             this.colAnalogCompareMode.HeaderText = "Compare Mode";
             this.colAnalogCompareMode.Name = "colAnalogCompareMode";
+            this.colAnalogCompareMode.ReadOnly = true;
             this.colAnalogCompareMode.Width = 100;
             // 
             // colAnalogDelay
@@ -567,6 +575,7 @@
             this.colAnalogDelay.DataPropertyName = "Delay";
             this.colAnalogDelay.HeaderText = "Delay";
             this.colAnalogDelay.Name = "colAnalogDelay";
+            this.colAnalogDelay.ReadOnly = true;
             this.colAnalogDelay.Width = 65;
             // 
             // colAnalogDescription
@@ -575,6 +584,7 @@
             this.colAnalogDescription.DataPropertyName = "Descripntion";
             this.colAnalogDescription.HeaderText = "Description";
             this.colAnalogDescription.Name = "colAnalogDescription";
+            this.colAnalogDescription.ReadOnly = true;
             this.colAnalogDescription.Width = 96;
             // 
             // easyPage2
@@ -585,7 +595,7 @@
             this.easyPage2.LastVisibleSet = true;
             this.easyPage2.MinimumSize = new System.Drawing.Size(50, 50);
             this.easyPage2.Name = "easyPage2";
-            this.easyPage2.Size = new System.Drawing.Size(703, 642);
+            this.easyPage2.Size = new System.Drawing.Size(662, 576);
             this.easyPage2.Text = "Discrete triggers";
             this.easyPage2.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage2.ToolTipTitle = "Page ToolTip";
@@ -614,7 +624,7 @@
             this.easyPanel3.Location = new System.Drawing.Point(0, 0);
             this.easyPanel3.Name = "easyPanel3";
             this.easyPanel3.Padding = new System.Windows.Forms.Padding(4);
-            this.easyPanel3.Size = new System.Drawing.Size(703, 642);
+            this.easyPanel3.Size = new System.Drawing.Size(662, 576);
             this.easyPanel3.TabIndex = 1;
             // 
             // numDelayDiscrete
@@ -625,7 +635,7 @@
             0,
             0,
             0});
-            this.numDelayDiscrete.Location = new System.Drawing.Point(556, 70);
+            this.numDelayDiscrete.Location = new System.Drawing.Point(515, 70);
             this.numDelayDiscrete.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -648,15 +658,15 @@
             this.txbTriggerValueDiscrete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txbTriggerValueDiscrete.ButtonSpecs.AddRange(new EasyScada.Winforms.Controls.ButtonSpecAny[] {
             this.btnBrowseTriggerValueDiscrete});
-            this.txbTriggerValueDiscrete.Location = new System.Drawing.Point(556, 40);
+            this.txbTriggerValueDiscrete.Location = new System.Drawing.Point(515, 40);
             this.txbTriggerValueDiscrete.Name = "txbTriggerValueDiscrete";
-            this.txbTriggerValueDiscrete.Size = new System.Drawing.Size(140, 24);
+            this.txbTriggerValueDiscrete.Size = new System.Drawing.Size(140, 23);
             this.txbTriggerValueDiscrete.TabIndex = 34;
             // 
             // btnBrowseTriggerValueDiscrete
             // 
+            this.btnBrowseTriggerValueDiscrete.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
             this.btnBrowseTriggerValueDiscrete.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.InputControl;
-            this.btnBrowseTriggerValueDiscrete.Text = "...";
             this.btnBrowseTriggerValueDiscrete.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnBrowseTriggerValueDiscrete.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseTriggerValueDiscrete.UniqueName = "17BA7218BD974E7F87B64F3A03F1FC49";
@@ -668,13 +678,13 @@
             this.txbDescriptionDiscrete.Location = new System.Drawing.Point(97, 70);
             this.txbDescriptionDiscrete.Multiline = true;
             this.txbDescriptionDiscrete.Name = "txbDescriptionDiscrete";
-            this.txbDescriptionDiscrete.Size = new System.Drawing.Size(350, 48);
+            this.txbDescriptionDiscrete.Size = new System.Drawing.Size(309, 48);
             this.txbDescriptionDiscrete.TabIndex = 31;
             // 
             // btnAddDiscrete
             // 
             this.btnAddDiscrete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddDiscrete.Location = new System.Drawing.Point(312, 127);
+            this.btnAddDiscrete.Location = new System.Drawing.Point(271, 127);
             this.btnAddDiscrete.Name = "btnAddDiscrete";
             this.btnAddDiscrete.Size = new System.Drawing.Size(72, 25);
             this.btnAddDiscrete.TabIndex = 29;
@@ -683,7 +693,7 @@
             // btnEditDiscrete
             // 
             this.btnEditDiscrete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditDiscrete.Location = new System.Drawing.Point(390, 127);
+            this.btnEditDiscrete.Location = new System.Drawing.Point(349, 127);
             this.btnEditDiscrete.Name = "btnEditDiscrete";
             this.btnEditDiscrete.Size = new System.Drawing.Size(72, 25);
             this.btnEditDiscrete.TabIndex = 28;
@@ -692,7 +702,7 @@
             // btnDeleteDiscrete
             // 
             this.btnDeleteDiscrete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDeleteDiscrete.Location = new System.Drawing.Point(468, 127);
+            this.btnDeleteDiscrete.Location = new System.Drawing.Point(427, 127);
             this.btnDeleteDiscrete.Name = "btnDeleteDiscrete";
             this.btnDeleteDiscrete.Size = new System.Drawing.Size(72, 25);
             this.btnDeleteDiscrete.TabIndex = 27;
@@ -701,7 +711,7 @@
             // btnSaveDiscrete
             // 
             this.btnSaveDiscrete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveDiscrete.Location = new System.Drawing.Point(546, 127);
+            this.btnSaveDiscrete.Location = new System.Drawing.Point(505, 127);
             this.btnSaveDiscrete.Name = "btnSaveDiscrete";
             this.btnSaveDiscrete.Size = new System.Drawing.Size(72, 25);
             this.btnSaveDiscrete.TabIndex = 26;
@@ -710,7 +720,7 @@
             // btnCancelDiscrete
             // 
             this.btnCancelDiscrete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancelDiscrete.Location = new System.Drawing.Point(625, 127);
+            this.btnCancelDiscrete.Location = new System.Drawing.Point(584, 127);
             this.btnCancelDiscrete.Name = "btnCancelDiscrete";
             this.btnCancelDiscrete.Size = new System.Drawing.Size(72, 25);
             this.btnCancelDiscrete.TabIndex = 25;
@@ -719,7 +729,7 @@
             // easyLabel3
             // 
             this.easyLabel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel3.Location = new System.Drawing.Point(453, 97);
+            this.easyLabel3.Location = new System.Drawing.Point(412, 97);
             this.easyLabel3.Name = "easyLabel3";
             this.easyLabel3.Size = new System.Drawing.Size(98, 20);
             this.easyLabel3.TabIndex = 19;
@@ -728,7 +738,7 @@
             // easyLabel8
             // 
             this.easyLabel8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel8.Location = new System.Drawing.Point(453, 70);
+            this.easyLabel8.Location = new System.Drawing.Point(412, 70);
             this.easyLabel8.Name = "easyLabel8";
             this.easyLabel8.Size = new System.Drawing.Size(70, 20);
             this.easyLabel8.TabIndex = 18;
@@ -737,7 +747,7 @@
             // easyLabel9
             // 
             this.easyLabel9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel9.Location = new System.Drawing.Point(453, 42);
+            this.easyLabel9.Location = new System.Drawing.Point(412, 42);
             this.easyLabel9.Name = "easyLabel9";
             this.easyLabel9.Size = new System.Drawing.Size(84, 20);
             this.easyLabel9.TabIndex = 17;
@@ -747,7 +757,7 @@
             // 
             this.cobCompareModeDiscrete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cobCompareModeDiscrete.DropDownWidth = 140;
-            this.cobCompareModeDiscrete.Location = new System.Drawing.Point(556, 97);
+            this.cobCompareModeDiscrete.Location = new System.Drawing.Point(515, 97);
             this.cobCompareModeDiscrete.Name = "cobCompareModeDiscrete";
             this.cobCompareModeDiscrete.Size = new System.Drawing.Size(140, 21);
             this.cobCompareModeDiscrete.TabIndex = 11;
@@ -760,13 +770,13 @@
             this.btnBrowseTriggerTagDiscrete});
             this.txbTriggerTagDiscrete.Location = new System.Drawing.Point(97, 40);
             this.txbTriggerTagDiscrete.Name = "txbTriggerTagDiscrete";
-            this.txbTriggerTagDiscrete.Size = new System.Drawing.Size(350, 24);
+            this.txbTriggerTagDiscrete.Size = new System.Drawing.Size(309, 23);
             this.txbTriggerTagDiscrete.TabIndex = 8;
             // 
             // btnBrowseTriggerTagDiscrete
             // 
+            this.btnBrowseTriggerTagDiscrete.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
             this.btnBrowseTriggerTagDiscrete.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.InputControl;
-            this.btnBrowseTriggerTagDiscrete.Text = "...";
             this.btnBrowseTriggerTagDiscrete.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnBrowseTriggerTagDiscrete.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseTriggerTagDiscrete.UniqueName = "17BA7218BD974E7F87B64F3A03F1FC49";
@@ -811,20 +821,21 @@
             this.discreteGridView.Name = "discreteGridView";
             this.discreteGridView.RowHeadersVisible = false;
             this.discreteGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.discreteGridView.Size = new System.Drawing.Size(689, 477);
+            this.discreteGridView.Size = new System.Drawing.Size(648, 411);
             this.discreteGridView.TabIndex = 4;
             // 
             // easyDataGridViewCheckBoxColumn1
             // 
             this.easyDataGridViewCheckBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.easyDataGridViewCheckBoxColumn1.DataPropertyName = "Enabled";
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.NullValue = false;
-            this.easyDataGridViewCheckBoxColumn1.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle11.NullValue = false;
+            this.easyDataGridViewCheckBoxColumn1.DefaultCellStyle = dataGridViewCellStyle11;
             this.easyDataGridViewCheckBoxColumn1.FalseValue = null;
             this.easyDataGridViewCheckBoxColumn1.HeaderText = "Enabled";
             this.easyDataGridViewCheckBoxColumn1.IndeterminateValue = null;
             this.easyDataGridViewCheckBoxColumn1.Name = "easyDataGridViewCheckBoxColumn1";
+            this.easyDataGridViewCheckBoxColumn1.ReadOnly = true;
             this.easyDataGridViewCheckBoxColumn1.TrueValue = null;
             this.easyDataGridViewCheckBoxColumn1.Width = 59;
             // 
@@ -834,6 +845,7 @@
             this.easyDataGridViewTextBoxColumn1.DataPropertyName = "TriggerTagPath";
             this.easyDataGridViewTextBoxColumn1.HeaderText = "Trigger Tag";
             this.easyDataGridViewTextBoxColumn1.Name = "easyDataGridViewTextBoxColumn1";
+            this.easyDataGridViewTextBoxColumn1.ReadOnly = true;
             this.easyDataGridViewTextBoxColumn1.Width = 93;
             // 
             // easyDataGridViewTextBoxColumn2
@@ -842,6 +854,7 @@
             this.easyDataGridViewTextBoxColumn2.DataPropertyName = "TriggerValue";
             this.easyDataGridViewTextBoxColumn2.HeaderText = "Trigger Value";
             this.easyDataGridViewTextBoxColumn2.Name = "easyDataGridViewTextBoxColumn2";
+            this.easyDataGridViewTextBoxColumn2.ReadOnly = true;
             this.easyDataGridViewTextBoxColumn2.Width = 103;
             // 
             // easyDataGridViewComboBoxColumn1
@@ -851,6 +864,7 @@
             this.easyDataGridViewComboBoxColumn1.DropDownWidth = 121;
             this.easyDataGridViewComboBoxColumn1.HeaderText = "Compare Mode";
             this.easyDataGridViewComboBoxColumn1.Name = "easyDataGridViewComboBoxColumn1";
+            this.easyDataGridViewComboBoxColumn1.ReadOnly = true;
             this.easyDataGridViewComboBoxColumn1.Width = 100;
             // 
             // easyDataGridViewTextBoxColumn4
@@ -859,6 +873,7 @@
             this.easyDataGridViewTextBoxColumn4.DataPropertyName = "Delay";
             this.easyDataGridViewTextBoxColumn4.HeaderText = "Delay";
             this.easyDataGridViewTextBoxColumn4.Name = "easyDataGridViewTextBoxColumn4";
+            this.easyDataGridViewTextBoxColumn4.ReadOnly = true;
             this.easyDataGridViewTextBoxColumn4.Width = 65;
             // 
             // easyDataGridViewTextBoxColumn5
@@ -866,6 +881,7 @@
             this.easyDataGridViewTextBoxColumn5.DataPropertyName = "Description";
             this.easyDataGridViewTextBoxColumn5.HeaderText = "Description";
             this.easyDataGridViewTextBoxColumn5.Name = "easyDataGridViewTextBoxColumn5";
+            this.easyDataGridViewTextBoxColumn5.ReadOnly = true;
             this.easyDataGridViewTextBoxColumn5.Width = 188;
             // 
             // easyPage3
@@ -876,7 +892,7 @@
             this.easyPage3.LastVisibleSet = true;
             this.easyPage3.MinimumSize = new System.Drawing.Size(50, 50);
             this.easyPage3.Name = "easyPage3";
-            this.easyPage3.Size = new System.Drawing.Size(703, 642);
+            this.easyPage3.Size = new System.Drawing.Size(662, 576);
             this.easyPage3.Text = "Quality triggers";
             this.easyPage3.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage3.ToolTipTitle = "Page ToolTip";
@@ -884,79 +900,168 @@
             // 
             // easyPanel4
             // 
-            this.easyPanel4.Controls.Add(this.numDelayQuality);
-            this.easyPanel4.Controls.Add(this.cobQuality);
-            this.easyPanel4.Controls.Add(this.ckbEnabledQuality);
-            this.easyPanel4.Controls.Add(this.txbDescriptionQuality);
+            this.easyPanel4.Controls.Add(this.tableLayoutPanel1);
             this.easyPanel4.Controls.Add(this.btnAddQuality);
             this.easyPanel4.Controls.Add(this.btnEditQuality);
             this.easyPanel4.Controls.Add(this.btnDeleteQuality);
             this.easyPanel4.Controls.Add(this.btnSaveQuality);
             this.easyPanel4.Controls.Add(this.btnCancelQuality);
-            this.easyPanel4.Controls.Add(this.easyLabel10);
-            this.easyPanel4.Controls.Add(this.easyLabel13);
-            this.easyPanel4.Controls.Add(this.easyLabel14);
-            this.easyPanel4.Controls.Add(this.cobCompareModeQuality);
-            this.easyPanel4.Controls.Add(this.txbTriggerTagQuality);
-            this.easyPanel4.Controls.Add(this.easyLabel15);
-            this.easyPanel4.Controls.Add(this.easyLabel16);
             this.easyPanel4.Controls.Add(this.qualityGridView);
             this.easyPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.easyPanel4.Location = new System.Drawing.Point(0, 0);
             this.easyPanel4.Name = "easyPanel4";
             this.easyPanel4.Padding = new System.Windows.Forms.Padding(4);
-            this.easyPanel4.Size = new System.Drawing.Size(703, 642);
+            this.easyPanel4.Size = new System.Drawing.Size(662, 576);
             this.easyPanel4.TabIndex = 2;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(206)))), ((int)(((byte)(230)))));
+            this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
+            this.tableLayoutPanel1.Controls.Add(this.numDelayQuality, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.cobCompareModeQuality, 3, 3);
+            this.tableLayoutPanel1.Controls.Add(this.cobQuality, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.themedLabel5, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.themedLabel3, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.themedLabel1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.ckbEnabledQuality, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txbTriggerTagQuality, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.themedLabel4, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txbDescriptionQuality, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.themedLabel2, 0, 3);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(7, 9);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(649, 112);
+            this.tableLayoutPanel1.TabIndex = 40;
             // 
             // numDelayQuality
             // 
-            this.numDelayQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numDelayQuality.Increment = new decimal(new int[] {
             100,
             0,
             0,
             0});
-            this.numDelayQuality.Location = new System.Drawing.Point(556, 70);
+            this.numDelayQuality.Location = new System.Drawing.Point(532, 56);
             this.numDelayQuality.Maximum = new decimal(new int[] {
             1000000,
             0,
             0,
             0});
             this.numDelayQuality.Name = "numDelayQuality";
-            this.numDelayQuality.Size = new System.Drawing.Size(140, 22);
-            this.numDelayQuality.TabIndex = 39;
+            this.numDelayQuality.Size = new System.Drawing.Size(114, 22);
+            this.numDelayQuality.TabIndex = 45;
+            // 
+            // cobCompareModeQuality
+            // 
+            this.cobCompareModeQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cobCompareModeQuality.DropDownWidth = 140;
+            this.cobCompareModeQuality.Location = new System.Drawing.Point(532, 84);
+            this.cobCompareModeQuality.Name = "cobCompareModeQuality";
+            this.cobCompareModeQuality.Size = new System.Drawing.Size(114, 21);
+            this.cobCompareModeQuality.TabIndex = 41;
             // 
             // cobQuality
             // 
             this.cobQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cobQuality.DropDownWidth = 140;
-            this.cobQuality.Location = new System.Drawing.Point(556, 42);
+            this.cobQuality.Location = new System.Drawing.Point(532, 29);
             this.cobQuality.Name = "cobQuality";
-            this.cobQuality.Size = new System.Drawing.Size(140, 21);
-            this.cobQuality.TabIndex = 38;
+            this.cobQuality.Size = new System.Drawing.Size(114, 21);
+            this.cobQuality.TabIndex = 41;
+            // 
+            // themedLabel5
+            // 
+            this.themedLabel5.Location = new System.Drawing.Point(428, 84);
+            this.themedLabel5.Name = "themedLabel5";
+            this.themedLabel5.Size = new System.Drawing.Size(98, 20);
+            this.themedLabel5.TabIndex = 41;
+            this.themedLabel5.Values.Text = "Compare mode:";
+            // 
+            // themedLabel3
+            // 
+            this.themedLabel3.Location = new System.Drawing.Point(428, 29);
+            this.themedLabel3.Name = "themedLabel3";
+            this.themedLabel3.Size = new System.Drawing.Size(92, 20);
+            this.themedLabel3.TabIndex = 41;
+            this.themedLabel3.Values.Text = "Trigger quality:";
+            // 
+            // themedLabel2
+            // 
+            this.themedLabel2.Location = new System.Drawing.Point(3, 84);
+            this.themedLabel2.Name = "themedLabel2";
+            this.themedLabel2.Size = new System.Drawing.Size(75, 20);
+            this.themedLabel2.TabIndex = 41;
+            this.themedLabel2.Values.Text = "Description:";
+            // 
+            // themedLabel1
+            // 
+            this.themedLabel1.Location = new System.Drawing.Point(3, 29);
+            this.themedLabel1.Name = "themedLabel1";
+            this.themedLabel1.Size = new System.Drawing.Size(73, 20);
+            this.themedLabel1.TabIndex = 41;
+            this.themedLabel1.Values.Text = "Trigger tag:";
             // 
             // ckbEnabledQuality
             // 
-            this.ckbEnabledQuality.Location = new System.Drawing.Point(97, 12);
+            this.ckbEnabledQuality.Location = new System.Drawing.Point(84, 3);
             this.ckbEnabledQuality.Name = "ckbEnabledQuality";
             this.ckbEnabledQuality.Size = new System.Drawing.Size(67, 20);
-            this.ckbEnabledQuality.TabIndex = 37;
+            this.ckbEnabledQuality.TabIndex = 41;
             this.ckbEnabledQuality.Values.Text = "Enabled";
+            // 
+            // txbTriggerTagQuality
+            // 
+            this.txbTriggerTagQuality.ButtonSpecs.AddRange(new EasyScada.Winforms.Controls.ButtonSpecAny[] {
+            this.btnBrowseTriggerTagQuality});
+            this.txbTriggerTagQuality.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txbTriggerTagQuality.Location = new System.Drawing.Point(84, 29);
+            this.txbTriggerTagQuality.Multiline = true;
+            this.txbTriggerTagQuality.Name = "txbTriggerTagQuality";
+            this.tableLayoutPanel1.SetRowSpan(this.txbTriggerTagQuality, 2);
+            this.txbTriggerTagQuality.Size = new System.Drawing.Size(338, 49);
+            this.txbTriggerTagQuality.TabIndex = 42;
+            // 
+            // btnBrowseTriggerTagQuality
+            // 
+            this.btnBrowseTriggerTagQuality.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
+            this.btnBrowseTriggerTagQuality.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.InputControl;
+            this.btnBrowseTriggerTagQuality.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
+            this.btnBrowseTriggerTagQuality.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
+            this.btnBrowseTriggerTagQuality.UniqueName = "17BA7218BD974E7F87B64F3A03F1FC49";
+            // 
+            // themedLabel4
+            // 
+            this.themedLabel4.Location = new System.Drawing.Point(428, 56);
+            this.themedLabel4.Name = "themedLabel4";
+            this.themedLabel4.Size = new System.Drawing.Size(70, 20);
+            this.themedLabel4.TabIndex = 41;
+            this.themedLabel4.Values.Text = "Delay (ms):";
             // 
             // txbDescriptionQuality
             // 
-            this.txbDescriptionQuality.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbDescriptionQuality.Location = new System.Drawing.Point(97, 70);
+            this.txbDescriptionQuality.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txbDescriptionQuality.Location = new System.Drawing.Point(84, 84);
             this.txbDescriptionQuality.Multiline = true;
             this.txbDescriptionQuality.Name = "txbDescriptionQuality";
-            this.txbDescriptionQuality.Size = new System.Drawing.Size(350, 48);
-            this.txbDescriptionQuality.TabIndex = 31;
+            this.txbDescriptionQuality.Size = new System.Drawing.Size(338, 25);
+            this.txbDescriptionQuality.TabIndex = 43;
             // 
             // btnAddQuality
             // 
             this.btnAddQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddQuality.Location = new System.Drawing.Point(312, 127);
+            this.btnAddQuality.Location = new System.Drawing.Point(271, 127);
             this.btnAddQuality.Name = "btnAddQuality";
             this.btnAddQuality.Size = new System.Drawing.Size(72, 25);
             this.btnAddQuality.TabIndex = 29;
@@ -965,7 +1070,7 @@
             // btnEditQuality
             // 
             this.btnEditQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditQuality.Location = new System.Drawing.Point(390, 127);
+            this.btnEditQuality.Location = new System.Drawing.Point(349, 127);
             this.btnEditQuality.Name = "btnEditQuality";
             this.btnEditQuality.Size = new System.Drawing.Size(72, 25);
             this.btnEditQuality.TabIndex = 28;
@@ -974,7 +1079,7 @@
             // btnDeleteQuality
             // 
             this.btnDeleteQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDeleteQuality.Location = new System.Drawing.Point(468, 127);
+            this.btnDeleteQuality.Location = new System.Drawing.Point(427, 127);
             this.btnDeleteQuality.Name = "btnDeleteQuality";
             this.btnDeleteQuality.Size = new System.Drawing.Size(72, 25);
             this.btnDeleteQuality.TabIndex = 27;
@@ -983,7 +1088,7 @@
             // btnSaveQuality
             // 
             this.btnSaveQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveQuality.Location = new System.Drawing.Point(546, 127);
+            this.btnSaveQuality.Location = new System.Drawing.Point(505, 127);
             this.btnSaveQuality.Name = "btnSaveQuality";
             this.btnSaveQuality.Size = new System.Drawing.Size(72, 25);
             this.btnSaveQuality.TabIndex = 26;
@@ -992,82 +1097,11 @@
             // btnCancelQuality
             // 
             this.btnCancelQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancelQuality.Location = new System.Drawing.Point(625, 127);
+            this.btnCancelQuality.Location = new System.Drawing.Point(584, 127);
             this.btnCancelQuality.Name = "btnCancelQuality";
             this.btnCancelQuality.Size = new System.Drawing.Size(72, 25);
             this.btnCancelQuality.TabIndex = 25;
             this.btnCancelQuality.Values.Text = "Cancel";
-            // 
-            // easyLabel10
-            // 
-            this.easyLabel10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel10.Location = new System.Drawing.Point(453, 97);
-            this.easyLabel10.Name = "easyLabel10";
-            this.easyLabel10.Size = new System.Drawing.Size(98, 20);
-            this.easyLabel10.TabIndex = 19;
-            this.easyLabel10.Values.Text = "Compare mode:";
-            // 
-            // easyLabel13
-            // 
-            this.easyLabel13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel13.Location = new System.Drawing.Point(453, 70);
-            this.easyLabel13.Name = "easyLabel13";
-            this.easyLabel13.Size = new System.Drawing.Size(70, 20);
-            this.easyLabel13.TabIndex = 18;
-            this.easyLabel13.Values.Text = "Delay (ms):";
-            // 
-            // easyLabel14
-            // 
-            this.easyLabel14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.easyLabel14.Location = new System.Drawing.Point(453, 42);
-            this.easyLabel14.Name = "easyLabel14";
-            this.easyLabel14.Size = new System.Drawing.Size(92, 20);
-            this.easyLabel14.TabIndex = 17;
-            this.easyLabel14.Values.Text = "Trigger quality:";
-            // 
-            // cobCompareModeQuality
-            // 
-            this.cobCompareModeQuality.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cobCompareModeQuality.DropDownWidth = 140;
-            this.cobCompareModeQuality.Location = new System.Drawing.Point(556, 97);
-            this.cobCompareModeQuality.Name = "cobCompareModeQuality";
-            this.cobCompareModeQuality.Size = new System.Drawing.Size(140, 21);
-            this.cobCompareModeQuality.TabIndex = 11;
-            // 
-            // txbTriggerTagQuality
-            // 
-            this.txbTriggerTagQuality.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbTriggerTagQuality.ButtonSpecs.AddRange(new EasyScada.Winforms.Controls.ButtonSpecAny[] {
-            this.btnBrowseTriggerTagQuality});
-            this.txbTriggerTagQuality.Location = new System.Drawing.Point(97, 40);
-            this.txbTriggerTagQuality.Name = "txbTriggerTagQuality";
-            this.txbTriggerTagQuality.Size = new System.Drawing.Size(350, 24);
-            this.txbTriggerTagQuality.TabIndex = 8;
-            // 
-            // btnBrowseTriggerTagQuality
-            // 
-            this.btnBrowseTriggerTagQuality.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.InputControl;
-            this.btnBrowseTriggerTagQuality.Text = "...";
-            this.btnBrowseTriggerTagQuality.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
-            this.btnBrowseTriggerTagQuality.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
-            this.btnBrowseTriggerTagQuality.UniqueName = "17BA7218BD974E7F87B64F3A03F1FC49";
-            // 
-            // easyLabel15
-            // 
-            this.easyLabel15.Location = new System.Drawing.Point(7, 70);
-            this.easyLabel15.Name = "easyLabel15";
-            this.easyLabel15.Size = new System.Drawing.Size(75, 20);
-            this.easyLabel15.TabIndex = 7;
-            this.easyLabel15.Values.Text = "Description:";
-            // 
-            // easyLabel16
-            // 
-            this.easyLabel16.Location = new System.Drawing.Point(7, 42);
-            this.easyLabel16.Name = "easyLabel16";
-            this.easyLabel16.Size = new System.Drawing.Size(73, 20);
-            this.easyLabel16.TabIndex = 6;
-            this.easyLabel16.Values.Text = "Trigger tag:";
             // 
             // qualityGridView
             // 
@@ -1097,16 +1131,16 @@
             this.qualityGridView.RowHeadersVisible = false;
             this.qualityGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.qualityGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.qualityGridView.Size = new System.Drawing.Size(689, 477);
+            this.qualityGridView.Size = new System.Drawing.Size(648, 411);
             this.qualityGridView.TabIndex = 4;
             // 
             // easyDataGridViewCheckBoxColumn2
             // 
             this.easyDataGridViewCheckBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.easyDataGridViewCheckBoxColumn2.DataPropertyName = "Enabled";
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.NullValue = false;
-            this.easyDataGridViewCheckBoxColumn2.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.NullValue = false;
+            this.easyDataGridViewCheckBoxColumn2.DefaultCellStyle = dataGridViewCellStyle12;
             this.easyDataGridViewCheckBoxColumn2.FalseValue = null;
             this.easyDataGridViewCheckBoxColumn2.HeaderText = "Enabled";
             this.easyDataGridViewCheckBoxColumn2.IndeterminateValue = null;
@@ -1173,7 +1207,7 @@
             // easyHeaderGroup2.Panel
             // 
             this.easyHeaderGroup2.Panel.Controls.Add(this.propertyGrid);
-            this.easyHeaderGroup2.Size = new System.Drawing.Size(321, 668);
+            this.easyHeaderGroup2.Size = new System.Drawing.Size(303, 602);
             this.easyHeaderGroup2.TabIndex = 2;
             this.easyHeaderGroup2.ValuesPrimary.Heading = "Animate Properties";
             this.easyHeaderGroup2.ValuesPrimary.Image = ((System.Drawing.Image)(resources.GetObject("easyHeaderGroup2.ValuesPrimary.Image")));
@@ -1195,7 +1229,7 @@
             this.propertyGrid.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid.Name = "propertyGrid";
             this.propertyGrid.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
-            this.propertyGrid.Size = new System.Drawing.Size(319, 636);
+            this.propertyGrid.Size = new System.Drawing.Size(301, 570);
             this.propertyGrid.TabIndex = 1;
             this.propertyGrid.ToolbarVisible = false;
             this.propertyGrid.ViewBorderColor = System.Drawing.SystemColors.Window;
@@ -1226,7 +1260,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1039, 676);
+            this.ClientSize = new System.Drawing.Size(980, 635);
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "AnimateDesignerForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -1263,8 +1297,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.easyPanel4)).EndInit();
             this.easyPanel4.ResumeLayout(false);
             this.easyPanel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cobQuality)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cobCompareModeQuality)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cobQuality)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.qualityGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.easyHeaderGroup2.Panel)).EndInit();
             this.easyHeaderGroup2.Panel.ResumeLayout(false);
@@ -1286,68 +1322,64 @@
         private Navigator.EasyPage easyPage3;
         private EasyPanel easyPanel2;
         private EasyDataGridView analogGridView;
-        private EasyLabel easyLabel7;
-        private EasyLabel easyLabel6;
-        private EasyLabel easyLabel5;
-        private EasyLabel easyLabel4;
+        private ThemedLabel easyLabel7;
+        private ThemedLabel easyLabel6;
+        private ThemedLabel easyLabel5;
+        private ThemedLabel easyLabel4;
         private EasyComboBox cobCompareModeAnalog;
-        private EasyTextBox txbTriggerTagAnalog;
+        private ThemedTextBox txbTriggerTagAnalog;
         private ButtonSpecAny btnBrowseTriggerTagAnalog;
-        private EasyLabel easyLabel2;
-        private EasyLabel easyLabel1;
-        private EasyButton btnAddAnalog;
-        private EasyButton btnEditAnalog;
-        private EasyButton btnDeleteAnalog;
-        private EasyButton btnSaveAnalog;
-        private EasyButton btnCancelAnalog;
-        private EasyTextBox txbMinValueAnalog;
+        private ThemedLabel easyLabel2;
+        private ThemedLabel easyLabel1;
+        private ThemedButton btnAddAnalog;
+        private ThemedButton btnEditAnalog;
+        private ThemedButton btnDeleteAnalog;
+        private ThemedButton btnSaveAnalog;
+        private ThemedButton btnCancelAnalog;
+        private ThemedTextBox txbMinValueAnalog;
         private ButtonSpecAny btnBrowseMinValueAnalog;
-        private EasyTextBox txbMaxValueAnalog;
+        private ThemedTextBox txbMaxValueAnalog;
         private ButtonSpecAny btnBrowseMaxValueAnalog;
-        private EasyTextBox txbDescriptionAnalog;
+        private ThemedTextBox txbDescriptionAnalog;
         private EasyCheckBox ckbEnabledAnalog;
         private EasyPanel easyPanel3;
         private EasyCheckBox ckbEnabledDiscrete;
-        private EasyTextBox txbTriggerValueDiscrete;
+        private ThemedTextBox txbTriggerValueDiscrete;
         private ButtonSpecAny btnBrowseTriggerValueDiscrete;
-        private EasyTextBox txbDescriptionDiscrete;
-        private EasyButton btnAddDiscrete;
-        private EasyButton btnEditDiscrete;
-        private EasyButton btnDeleteDiscrete;
-        private EasyButton btnSaveDiscrete;
-        private EasyButton btnCancelDiscrete;
-        private EasyLabel easyLabel3;
-        private EasyLabel easyLabel8;
-        private EasyLabel easyLabel9;
+        private ThemedTextBox txbDescriptionDiscrete;
+        private ThemedButton btnAddDiscrete;
+        private ThemedButton btnEditDiscrete;
+        private ThemedButton btnDeleteDiscrete;
+        private ThemedButton btnSaveDiscrete;
+        private ThemedButton btnCancelDiscrete;
+        private ThemedLabel easyLabel3;
+        private ThemedLabel easyLabel8;
+        private ThemedLabel easyLabel9;
         private EasyComboBox cobCompareModeDiscrete;
-        private EasyTextBox txbTriggerTagDiscrete;
+        private ThemedTextBox txbTriggerTagDiscrete;
         private ButtonSpecAny btnBrowseTriggerTagDiscrete;
-        private EasyLabel easyLabel11;
-        private EasyLabel easyLabel12;
+        private ThemedLabel easyLabel11;
+        private ThemedLabel easyLabel12;
         private EasyDataGridView discreteGridView;
         private EasyPanel easyPanel4;
-        private EasyComboBox cobQuality;
-        private EasyCheckBox ckbEnabledQuality;
-        private EasyTextBox txbDescriptionQuality;
-        private EasyButton btnAddQuality;
-        private EasyButton btnEditQuality;
-        private EasyButton btnDeleteQuality;
-        private EasyButton btnSaveQuality;
-        private EasyButton btnCancelQuality;
-        private EasyLabel easyLabel10;
-        private EasyLabel easyLabel13;
-        private EasyLabel easyLabel14;
-        private EasyComboBox cobCompareModeQuality;
-        private EasyTextBox txbTriggerTagQuality;
-        private ButtonSpecAny btnBrowseTriggerTagQuality;
-        private EasyLabel easyLabel15;
-        private EasyLabel easyLabel16;
+        private ThemedButton btnAddQuality;
+        private ThemedButton btnDeleteQuality;
         private EasyDataGridView qualityGridView;
-        private EasyNumericUpDown numDelayQuality;
         private EasyHeaderGroup easyHeaderGroup2;
         private System.Windows.Forms.PropertyGrid propertyGrid;
         private EasyNumericUpDown numDelayDiscrete;
         private EasyNumericUpDown numDelayAnalog;
+        private ButtonSpecHeaderGroup btnResetProperty;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem resetToDefaultToolStripMenuItem;
+        private EasyContextMenuItem easyContextMenuItem1;
+        private EasyContextMenuItem easyContextMenuItem2;
+        private EasyDataGridViewCheckBoxColumn easyDataGridViewCheckBoxColumn2;
+        private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn3;
+        private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn6;
+        private EasyDataGridViewTextBoxColumn easyDataGridViewComboBoxColumn2;
+        private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn7;
+        private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn8;
         private EasyDataGridViewCheckBoxColumn colAnalogEnabled;
         private EasyDataGridViewTextBoxColumn colAnalogTriggerTag;
         private EasyDataGridViewTextBoxColumn colAnalogMinValue;
@@ -1361,16 +1393,21 @@
         private EasyDataGridViewComboBoxColumn easyDataGridViewComboBoxColumn1;
         private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn4;
         private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn5;
-        private EasyDataGridViewCheckBoxColumn easyDataGridViewCheckBoxColumn2;
-        private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn3;
-        private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn6;
-        private EasyDataGridViewTextBoxColumn easyDataGridViewComboBoxColumn2;
-        private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn7;
-        private EasyDataGridViewTextBoxColumn easyDataGridViewTextBoxColumn8;
-        private ButtonSpecHeaderGroup btnResetProperty;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem resetToDefaultToolStripMenuItem;
-        private EasyContextMenuItem easyContextMenuItem1;
-        private EasyContextMenuItem easyContextMenuItem2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private EasyNumericUpDown numDelayQuality;
+        private EasyComboBox cobCompareModeQuality;
+        private EasyComboBox cobQuality;
+        private ThemedLabel themedLabel5;
+        private ThemedLabel themedLabel3;
+        private ThemedLabel themedLabel2;
+        private ThemedLabel themedLabel1;
+        private EasyCheckBox ckbEnabledQuality;
+        private ThemedTextBox txbTriggerTagQuality;
+        private ButtonSpecAny btnBrowseTriggerTagQuality;
+        private ThemedLabel themedLabel4;
+        private ThemedTextBox txbDescriptionQuality;
+        private ThemedButton btnEditQuality;
+        private ThemedButton btnSaveQuality;
+        private ThemedButton btnCancelQuality;
     }
 }

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnComfirm = new EasyScada.Winforms.Controls.EasyButton();
+            this.btnComfirm = new EasyScada.Winforms.Controls.ThemedButton();
             this.dtpFromDate = new System.Windows.Forms.DateTimePicker();
             this.dtpFromTime = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
@@ -121,7 +121,7 @@
         }
 
         #endregion
-        private EasyScada.Winforms.Controls.EasyButton btnComfirm;
+        private EasyScada.Winforms.Controls.ThemedButton btnComfirm;
         private System.Windows.Forms.DateTimePicker dtpFromDate;
         private System.Windows.Forms.DateTimePicker dtpFromTime;
         private System.Windows.Forms.Label label1;

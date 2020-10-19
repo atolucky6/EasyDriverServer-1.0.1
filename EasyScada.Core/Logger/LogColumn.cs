@@ -12,7 +12,6 @@ namespace EasyScada.Core
         public string TagPath { get; set; }
         public string DefaultValue { get; set; }
         public LogColumnMode Mode { get; set; }
-        public bool UseDefaultValueWhenQualityBad { get; set; }
         public string Description { get; set; }
 
         public LogColumn()
@@ -47,7 +46,7 @@ namespace EasyScada.Core
                 if (Tag.Quality == Quality.Good)
                     return Tag.Value;
                 else if (Tag.Quality == Quality.Bad)
-                    return UseDefaultValueWhenQualityBad ? DefaultValue : Tag.Value;
+                    return Mode == LogColumnMode.UseDefaultValueWhenTagBad ? DefaultValue : Tag.Value;
 
                 return DefaultValue;
             }

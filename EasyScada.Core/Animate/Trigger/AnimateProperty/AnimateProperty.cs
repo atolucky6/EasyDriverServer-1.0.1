@@ -1,16 +1,21 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace EasyScada.Core
 {
     public class AnimateProperty<T> : AnimatePropertyBase
     {
-        public AnimateProperty(object targetControl, PropertyInfo property, T defaultValue)
+        public AnimateProperty(object targetControl,T defaultValue)
         {
             TargetControl = targetControl;
-            AnimatePropertyInfo = property;
             this.defaultValue = defaultValue;
+        }
+
+        public AnimateProperty()
+        {
+
         }
 
         private T defaultValue;
@@ -43,11 +48,8 @@ namespace EasyScada.Core
             }
             set
             {
-                if (!Equals(value, this.value))
-                {
-                    this.value = value;
-                    IsDirty = true;
-                }
+                IsDirty = true;
+                this.value = value;
             }
         }
 
@@ -56,9 +58,23 @@ namespace EasyScada.Core
             try
             {
                 if (Enabled && TargetControl != null && AnimatePropertyInfo != null)
-                    AnimatePropertyInfo.SetValue(TargetControl, Value);
+                {
+                    if (TargetControl is Control winformControl)
+                    {
+                        winformControl.Invoke(new Action(() =>
+                        {
+                            if (!Equals(AnimatePropertyInfo.GetValue(TargetControl), Value))
+                                AnimatePropertyInfo.SetMethod.Invoke(TargetControl, new object[] { Value });
+                        }));
+                    }
+                    else
+                    {
+                        AnimatePropertyInfo.SetValue(TargetControl, Value);
+                    }
+                }
             }
             catch { }
         }
+
     }
 }

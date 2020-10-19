@@ -6,6 +6,7 @@ using EasyDriverPlugin;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Text;
 
 namespace EasyDriver.ModbusRTU
 {
@@ -36,6 +37,7 @@ namespace EasyDriver.ModbusRTU
                 new DInt() { Name = "Long" },
                 new Real() { Name = "Float" },
                 new LReal() { Name = "Double" },
+                new ModbusRTU.String() { Name = "String" },
             };
         }
 
@@ -207,6 +209,7 @@ namespace EasyDriver.ModbusRTU
                             if (!(channelChild is IDeviceCore device))
                                 continue; // Nếu không phải thì bỏ qua vòng lặp này
 
+
                             byte deviceId = byte.Parse(device.ParameterContainer.Parameters["DeviceId"].ToString());
                             ByteOrder byteOrder = device.ByteOrder;
                             // Lấy số lần thử đọc tối đa nếu đọc không thành công
@@ -263,6 +266,13 @@ namespace EasyDriver.ModbusRTU
                             {
                                 if (!(childDevice is ITagCore tag))
                                     continue;
+
+                                if (tag.IsInternalTag)
+                                {
+                                    tag.Quality = Quality.Good;
+                                    tag.TimeStamp = DateTime.Now;
+                                    continue;
+                                }
 
                                 if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
                                     tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
@@ -416,9 +426,12 @@ namespace EasyDriver.ModbusRTU
                         {
                             foreach (var tag in device.GetAllTags())
                             {
-                                tag.TimeStamp = DateTime.Now;
-                                tag.Quality = Quality.Bad;
-                                tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+                                if (!tag.IsInternalTag)
+                                {
+                                    tag.TimeStamp = DateTime.Now;
+                                    tag.Quality = Quality.Bad;
+                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+                                }
                             }
                         }
                     }
@@ -597,6 +610,12 @@ namespace EasyDriver.ModbusRTU
                     if (tag != null && tag.DataType != null && 
                         tag.FindParent<IDeviceCore>(x => x is IDeviceCore) is IDeviceCore device && tag.AccessPermission == AccessPermission.ReadAndWrite)
                     {
+                        if (tag.IsInternalTag)
+                        {
+                            tag.Value = value;
+                            return Quality.Good;
+                        }
+
                         // Lấy thông tin của địa chỉ Tag như kiểu địa chỉ và vị trí bắt đầu của thanh ghi
                         if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
                             tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
@@ -742,5 +761,25 @@ namespace EasyDriver.ModbusRTU
         }
 
         #endregion
+    }
+
+    public class String : EasyDriverPlugin.String
+    {
+        public override bool TryParseToByteArray(object value, double gain, double offset, out byte[] buffer, ByteOrder byteOrder = ByteOrder.ABCD)
+        {
+            buffer = null;
+            if (value == null)
+                return false;
+            buffer = new byte[value.ToString().Length];
+            ByteHelper.SetStringAt(buffer, 0, buffer.Length, value.ToString());
+            return true;
+        }
+
+        public override string ConvertToValue(byte[] buffer, double gain, double offset, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD)
+        {
+            int size = buffer.Length;
+            return Encoding.ASCII.GetString(buffer, 0, size);
+
+        }
     }
 }

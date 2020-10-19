@@ -65,35 +65,42 @@ namespace EasyScada.ServerApplication
         {
             while (true)
             {
-                if (projectManagerService.CurrentProject == null)
+                try
                 {
-                    Thread.Sleep(5000);
-                }
-                else
-                {
-                    // Do authenticate every 30 minutes
-                    Thread.Sleep(30 * 60 * 1000);
-
-                    string url = $"http://eslic.xyz/EasyScadaLicenseService/Authentication?" +
-                        $"serialKey={SerialKey}&product={Product}&computerId={ComputerId}";
-                    int limitTagCount = 0;
-
-                    if (!string.IsNullOrEmpty(SerialKey))
+                    if (projectManagerService != null)
                     {
-                        limitTagCount = await LicenseManager.AuthenticateAsync(url, Product, ComputerId);
-                        LimitTagCount = limitTagCount;
-                    }
+                        if (projectManagerService.CurrentProject == null)
+                        {
+                            Thread.Sleep(5000);
+                        }
+                        else
+                        {
+                            // Do authenticate every 30 minutes
+                            Thread.Sleep(30 * 60 * 1000);
 
-                    if (projectManagerService.CurrentProject != null)
-                    {
-                        int tagCounts = projectManagerService.CurrentProject.LocalStation.Find(x => x is ITagCore, true).Count();
-                        bool isAuthenticated = false;
-                        string message = "";
-                        if (tagCounts <= limitTagCount || tagCounts <= 256)
-                            isAuthenticated = true;
-                        Messenger.Default.Send(new AuthenticateLicenseMessage(isAuthenticated, limitTagCount, message));
+                            string url = $"http://eslic.xyz/EasyScadaLicenseService/Authentication?" +
+                                $"serialKey={SerialKey}&product={Product}&computerId={ComputerId}";
+                            int limitTagCount = 0;
+
+                            if (!string.IsNullOrEmpty(SerialKey))
+                            {
+                                limitTagCount = await LicenseManager.AuthenticateAsync(url, Product, ComputerId);
+                                LimitTagCount = limitTagCount;
+                            }
+
+                            if (projectManagerService.CurrentProject != null)
+                            {
+                                int tagCounts = projectManagerService.CurrentProject.LocalStation.Find(x => x is ITagCore, true).Count();
+                                bool isAuthenticated = false;
+                                string message = "";
+                                if (tagCounts <= limitTagCount || tagCounts <= 256)
+                                    isAuthenticated = true;
+                                Messenger.Default.Send(new AuthenticateLicenseMessage(isAuthenticated, limitTagCount, message));
+                            }
+                        }
                     }
                 }
+                catch { }
             }
         }
     }

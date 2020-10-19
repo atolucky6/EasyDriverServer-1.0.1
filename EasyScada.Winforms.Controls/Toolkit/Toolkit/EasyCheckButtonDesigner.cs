@@ -19,7 +19,7 @@ using System.Windows.Forms.Design;
 
 namespace EasyScada.Winforms.Controls
 {
-    internal class EasyCheckButtonDesigner : EasyButtonDesigner
+    internal class EasyCheckButtonDesigner : ThemedButtonDesigner
 	{
         #region Public Overrides
         /// <summary>

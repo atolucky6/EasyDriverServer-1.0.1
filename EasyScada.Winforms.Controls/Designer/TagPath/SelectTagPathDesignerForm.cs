@@ -13,12 +13,12 @@ namespace EasyScada.Winforms.Controls
             InitializeComponent();
             this.serviceProvider = serviceProvider;
             projectTree.LabelEdit = false;
+
             Load += SelectTagDesignerForm_Load;
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += BtnCancel_Click;
             projectTree.AfterSelect += ProjectTree_AfterSelect;
             searchTagControl1.CoreItemSource = new List<ICoreItem>();
-            projectTree.AfterSelect += ProjectTree_AfterSelect;
             searchTagControl1.SelectedItemDoubleClick += SearchTagControl1_SelectedItemDoubleClick;
         }
 
@@ -30,8 +30,6 @@ namespace EasyScada.Winforms.Controls
         #region Event handlers
         private void SelectTagDesignerForm_Load(object sender, EventArgs e)
         {
-            if (serviceProvider == null)
-                Close();
             connectionSchema = DesignerHelper.GetDesignConnectionSchema(serviceProvider);
             if (connectionSchema == null)
             {
@@ -40,7 +38,17 @@ namespace EasyScada.Winforms.Controls
                     "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                 if (mbr == DialogResult.Yes)
                 {
+                    ConnectionSchemeDesignerForm form = new ConnectionSchemeDesignerForm(null, serviceProvider);
+                    form.ShowDialog();
 
+                    connectionSchema = DesignerHelper.GetDesignConnectionSchema(serviceProvider);
+
+                    if (connectionSchema == null)
+                        Close();
+                    if (connectionSchema.Childs == null)
+                        Close();
+                    if (connectionSchema.Childs.Count == 0)
+                        Close();
                 }
                 else
                 {
@@ -48,11 +56,8 @@ namespace EasyScada.Winforms.Controls
                 }
             }
 
-            if (connectionSchema != null)
-            {
-                ReloadTreeNode(connectionSchema);
-                Show();
-            }
+            ReloadTreeNode(connectionSchema);
+            Show();
         }
 
         private void SearchTagControl1_SelectedItemDoubleClick(object obj)
@@ -96,7 +101,15 @@ namespace EasyScada.Winforms.Controls
         private void ReloadTreeNode(ConnectionSchema connectionSchema)
         {
             projectTree.Nodes.Clear();
-            projectTree.Nodes.Add(connectionSchema.ToTreeNode(true, false));
+
+            if (connectionSchema != null && connectionSchema.Childs != null)
+            {
+                foreach (var item in connectionSchema.Childs)
+                {
+                    projectTree.Nodes.Add(item.ToTreeNode(true, false));
+                }
+            }
+
             int tagCount = 0;
             var tags = connectionSchema.GetAllTags();
             if (tags != null)
@@ -108,13 +121,23 @@ namespace EasyScada.Winforms.Controls
         private void ExpandAllNode()
         {
             if (projectTree.Nodes.Count > 0)
-                projectTree.Nodes[0].ExpandAll();
+            {
+                foreach (TreeNode node in projectTree.Nodes)
+                {
+                    node.ExpandAll();
+                }
+            }
         }
 
         private void CollapseAllNode()
         {
             if (projectTree.Nodes.Count > 0)
-                projectTree.Nodes[0].Collapse();
+            {
+                foreach (TreeNode node in projectTree.Nodes)
+                {
+                    node.Collapse();
+                }
+            }
         }
         #endregion
     }

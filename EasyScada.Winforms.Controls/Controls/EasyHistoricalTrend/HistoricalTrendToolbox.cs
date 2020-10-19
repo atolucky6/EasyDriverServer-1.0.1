@@ -88,14 +88,14 @@ namespace EasyScada.Winforms.Controls
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
                             var currentRow = dt.Rows[i];
-                            for (int j = 0; j < dt.Columns.Count - 1; j++)
+                            for (int j = 0; j < dt.Columns.Count; j++)
                             {
                                 try
                                 {
                                     if (j == 0)
                                         times[i] = Convert.ToDateTime(currentRow[j]);
                                     else
-                                        datas[j][i] = Convert.ToSingle(currentRow[j]);
+                                        datas[j - 1][i] = Convert.ToSingle(currentRow[j]);
                                 }
                                 catch { }
                             }
@@ -105,6 +105,10 @@ namespace EasyScada.Winforms.Controls
                         {
                             Invoke(new System.Action(() =>
                             {
+                                float maxLeft = _HistoricalTrend.LeftAxisMaxValue;
+                                float minLeft = _HistoricalTrend.LeftAxisMinValue;
+                                float maxRight = _HistoricalTrend.RightAxisMaxValue;
+                                float minRight = _HistoricalTrend.RightAxisMinValue;
                                 for (int i = 1; i < dt.Columns.Count; i++)
                                 {
                                     TrendLine line = Lines.FirstOrDefault(x => x.ColumnName == dt.Columns[i].ColumnName);
@@ -113,9 +117,29 @@ namespace EasyScada.Winforms.Controls
                                         switch (line.Alignment)
                                         {
                                             case TrendLineAlignment.Left:
+                                                if (datas[i - 1].Any())
+                                                {
+                                                    var max = datas[i - 1].Max();
+                                                    if (max > maxLeft)
+                                                        maxLeft = max;
+
+                                                    var min = datas[i - 1].Min();
+                                                    if (min < minLeft)
+                                                        minLeft = min;
+                                                }
                                                 _HistoricalTrend.SetLeftCurve(line.ColumnName, datas[i - 1], line.Color, false);
                                                 break;
                                             case TrendLineAlignment.Right:
+                                                if (datas[i - 1].Any())
+                                                {
+                                                    var maxr = datas[i - 1].Max();
+                                                    if (maxr > maxRight)
+                                                        maxRight = maxr;
+
+                                                    var minr = datas[i - 1].Min();
+                                                    if (minr < minRight)
+                                                        minRight = minr;
+                                                }
                                                 _HistoricalTrend.SetRightCurve(line.ColumnName, datas[i - 1], line.Color, false);
                                                 break;
                                             default:
@@ -124,6 +148,11 @@ namespace EasyScada.Winforms.Controls
                                     }
                                 }
 
+                                _HistoricalTrend.LeftAxisMaxValue = maxLeft;
+                                _HistoricalTrend.LeftAxisMinValue = minLeft;
+                                _HistoricalTrend.RightAxisMaxValue = maxRight;
+                                _HistoricalTrend.RightAxisMinValue = minRight;
+                                _HistoricalTrend.RoundAxisValue = true;
                                 _HistoricalTrend.SetDateTimes(times);
                                 _HistoricalTrend.SetScaleByXAxis(1.0f);
                                 _HistoricalTrend.RenderCurveUI();

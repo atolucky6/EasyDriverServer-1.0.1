@@ -41,6 +41,14 @@ namespace EasyScada.Winforms.Controls
             btnSave.Click += BtnSave_Click;
             btnCancel.Click += BtnCancel_Click;
             btnBrowseTagPath.Click += BtnBrowseTagPath_Click;
+            btnExport.Click += BtnExport_Click;
+            btnImport.Click += BtnImport_Click;
+            btnClear.Click += BtnClear_Click;
+
+            foreach (DataGridViewColumn column in gridView.Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            }
 
             foreach (var item in Enum.GetValues(typeof(LogColumnMode)))
                 cobMode.Items.Add(item.ToString());
@@ -86,6 +94,14 @@ namespace EasyScada.Winforms.Controls
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     txbTag.Text = form.SelectedTagPath;
+                    if (string.IsNullOrEmpty(txbColumnName.Text))
+                    {
+                        string[] tagPathSplit = form.SelectedTagPath.Split('/');
+                        if (tagPathSplit != null && tagPathSplit.Length > 0)
+                        {
+                            txbColumnName.Text = tagPathSplit[tagPathSplit.Length - 1]?.Trim()?.Replace(" ", "_");
+                        }
+                    }
                 }
             }
         }
@@ -104,6 +120,7 @@ namespace EasyScada.Winforms.Controls
                 {
                     MessageBox.Show("The column name was not in correct format.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txbColumnName.Focus();
+                    return;
                 }
 
                 Enum.TryParse(cobMode.Text, out LogColumnMode colMode);
@@ -172,6 +189,112 @@ namespace EasyScada.Winforms.Controls
             }
             else
                 SelectedItem = null;
+            UpdateButtons();
+        }
+
+        private void BtnExport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                saveFileDialog1.Title = "Export";
+                saveFileDialog1.Filter = "CSV file (*.csv)|*.csv";
+                saveFileDialog1.FileName = "ColumnsConfig.csv";
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    CsvBuilder builder = new CsvBuilder();
+                    builder.
+                        AddColumn("Enabled").
+                        AddColumn("ColumnName").
+                        AddColumn("TagPath").
+                        AddColumn("DefaultValue").
+                        AddColumn("Mode").
+                        AddColumn("Description");
+
+                    foreach (var col in Columns)
+                    {
+                        builder.AddRow(col.Enabled.ToString(), col.ColumnName, col.TagPath, col.DefaultValue, col.Mode.ToString(), col.Description);
+                    }
+
+                    File.WriteAllText(saveFileDialog1.FileName, builder.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Some error occur when export columns config. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnImport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                openFileDialog1.Title = "Import";
+                openFileDialog1.Filter = "CSV file (*.csv)|*.csv";
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    List<LogColumn> result = new List<LogColumn>();
+                    string[] lines = File.ReadAllLines(openFileDialog1.FileName);
+                    if (lines.Length > 1)
+                    {
+                        string[] columnNames = lines[0].Split(',');
+                        if (columnNames.Length == 6)
+                        {
+                            for (int i = 1; i < lines.Length; i++)
+                            {
+                                try
+                                {
+                                    string[] values = lines[i].Split(',');
+                                    if (values.Length == 6)
+                                    {
+                                        LogColumn column = new LogColumn();
+                                        column.Enabled = bool.Parse(values[0]);
+                                        column.ColumnName = values[1];
+                                        column.TagPath = values[2]; ;
+                                        column.DefaultValue = values[3];
+                                        column.Mode = (LogColumnMode)Enum.Parse(typeof(LogColumnMode), values[4]);
+                                        column.Description = values[5];
+                                        result.Add(column);
+                                    }
+                                }
+                                catch { }
+                            }
+                        }
+                    }
+
+                    if (result.Count > 0)
+                    {
+                        if (Columns != null)
+                        {
+                            Columns.ToList().ForEach(x => Columns.Remove(x));
+
+                            foreach (var col in result)
+                            {
+                                Columns.Add(col);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Found 0 columns.", "Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Some error occur when import columns config. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnClear_Click(object sender, EventArgs e)
+        {
+            var mbr = MessageBox.Show("Do you want to clear all columns ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (mbr == DialogResult.Yes)
+            {
+                if (Columns != null)
+                {
+                    Columns.ToList().ForEach(x => Columns.Remove(x));
+                }
+            }
         }
         #endregion
 

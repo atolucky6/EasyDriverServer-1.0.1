@@ -41,26 +41,60 @@ namespace EasyDriver.ModbusRTU
             return "The tag address was not in correct format.";
         }
 
-        public static string IsValidAddress(this string str, AccessPermission accessPermission, out bool isBitAddress)
+        public static string IsValidAddress(this string str, IDataType dataType, AccessPermission accessPermission, out bool isBitAddress)
         {
             isBitAddress = false;
             if (!string.IsNullOrWhiteSpace(str))
             {
-                if (uint.TryParse(str, out uint adrNumber))
+                if (dataType.GetType() == typeof(EasyDriver.ModbusRTU.String))
                 {
-                    int type = (int)(adrNumber / 100000);
-                    int offset = (int)(adrNumber % 100000) - 1;
-                    if ((ushort)offset <= 0xFFFFU && offset >= 0)
+                    string[] splitStr = str.Split('.');
+                    if (splitStr.Length == 2)
                     {
-                        if (type == (int)AddressType.InputContact ||
-                            type == (int)AddressType.OutputCoil ||
-                            type == (int)AddressType.InputRegister ||
-                            type == (int)AddressType.HoldingRegister)
+                        str = splitStr[0];
+                        if (uint.TryParse(str, out uint adrNumber))
                         {
-                            isBitAddress = type == (int)AddressType.InputContact || type == (int)AddressType.OutputCoil;
-                            if ((type == (int)AddressType.InputContact || type == (int)AddressType.InputRegister) && accessPermission == AccessPermission.ReadAndWrite)
-                                return "The current tag address doesn't support write function.";
-                            return string.Empty;
+                            int type = (int)(adrNumber / 100000);
+                            int offset = (int)(adrNumber % 100000) - 1;
+                            if ((ushort)offset <= 0xFFFFU && offset >= 0)
+                            {
+                                if (type == (int)AddressType.InputRegister ||
+                                    type == (int)AddressType.HoldingRegister)
+                                {
+                                    isBitAddress = false;
+                                    if ((type == (int)AddressType.InputContact || type == (int)AddressType.InputRegister) && accessPermission == AccessPermission.ReadAndWrite)
+                                        return "The current tag address doesn't support write function.";
+
+                                    if (byte.TryParse(splitStr[1], out byte length))
+                                    {
+                                        if (length <= 250)
+                                        {
+                                            return string.Empty;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (uint.TryParse(str, out uint adrNumber))
+                    {
+                        int type = (int)(adrNumber / 100000);
+                        int offset = (int)(adrNumber % 100000) - 1;
+                        if ((ushort)offset <= 0xFFFFU && offset >= 0)
+                        {
+                            if (type == (int)AddressType.InputContact ||
+                                type == (int)AddressType.OutputCoil ||
+                                type == (int)AddressType.InputRegister ||
+                                type == (int)AddressType.HoldingRegister)
+                            {
+                                isBitAddress = type == (int)AddressType.InputContact || type == (int)AddressType.OutputCoil;
+                                if ((type == (int)AddressType.InputContact || type == (int)AddressType.InputRegister) && accessPermission == AccessPermission.ReadAndWrite)
+                                    return "The current tag address doesn't support write function.";
+                                return string.Empty;
+                            }
                         }
                     }
                 }

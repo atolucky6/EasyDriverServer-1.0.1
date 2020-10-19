@@ -17,7 +17,7 @@ namespace EasyDriverServer
             };
             app.MapSignalR("/easyScada", configuration);
             GlobalHost.Configuration.DefaultMessageBufferSize = 30;
-            GlobalHost.Configuration.MaxIncomingWebSocketMessageSize = 20 * 1024;
+            GlobalHost.Configuration.MaxIncomingWebSocketMessageSize = null;
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
         }
     }

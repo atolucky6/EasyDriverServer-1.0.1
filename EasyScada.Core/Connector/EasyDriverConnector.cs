@@ -217,6 +217,7 @@ namespace EasyScada.Core
                 hubProxy = hubConnection.CreateHubProxy("EasyDriverServerHub");
                 // Handle all message received from server
                 hubProxy.On<string>("broadcastSubscribeData", OnReceivedBroadcastMessage);
+
                 // Start connection
                 await hubConnection.Start(new LongPollingTransport());
 
@@ -258,51 +259,51 @@ namespace EasyScada.Core
                 {
                     SetAllTagBad();
                 }
-                else if (stateChange.NewState == ConnectionState.Connected && !IsDisposed)
-                {
-                    Debug.WriteLine($"The easy driver connector was connected to server {ServerAddress}:{Port}");
-                    // Create tag cache and start the refresh timer in the first load
-                    if (!isFirstLoad)
-                    {
-                        // Create tag cache
-                        foreach (var tag in connectionSchema.GetAllTags())
-                        {
-                            (tag as Tag).quality = Quality.Uncertain;
-                            (tag as Tag).value = string.Empty;
-                            if (!tagsCache.ContainsKey(tag.Path))
-                                tagsCache.Add(tag.Path, tag);
-                        }
-                        // Set a first load flag to determine we are already loaded
-                        isFirstLoad = true;
-                    }
-
-                    // Check requires condition before subscribe
-                    if (isTagFileLoaded && connectionSchema != null && connectionSchema.Childs != null && connectionSchema.Childs.Count > 0)
-                    {
-                        // Delay a little bit before subscribe to server
-                        Thread.Sleep(1000);
-                        IsSubscribed = false;
-                        if (requestTask == null)
-                            requestTask = Task.Factory.StartNew(RefreshData, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-                    }
-                }
-                else if (stateChange.NewState == ConnectionState.Reconnecting)
-                {
-                    Debug.WriteLine($"Begin tring to reconnect to server {ServerAddress}:{Port}");
-                }
-                else if (stateChange.NewState == ConnectionState.Connecting)
-                {
-
-                }
-                else if (stateChange.NewState == ConnectionState.Disconnected)
-                {
-                    SetAllTagBad();
-                }
-
-                var oldConnectionStatus = ConnectionStatus;
-                ConnectionStatus = (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), stateChange.NewState.ToString());
-                ConnectionStatusChaged?.Invoke(this, new ConnectionStatusChangedEventArgs(oldConnectionStatus, ConnectionStatus));
             }
+            else if (stateChange.NewState == ConnectionState.Connected && !IsDisposed)
+            {
+                Debug.WriteLine($"The easy driver connector was connected to server {ServerAddress}:{Port}");
+                // Create tag cache and start the refresh timer in the first load
+                if (!isFirstLoad)
+                {
+                    // Create tag cache
+                    foreach (var tag in connectionSchema.GetAllTags())
+                    {
+                        (tag as Tag).quality = Quality.Uncertain;
+                        (tag as Tag).value = string.Empty;
+                        if (!tagsCache.ContainsKey(tag.Path))
+                            tagsCache.Add(tag.Path, tag);
+                    }
+                    // Set a first load flag to determine we are already loaded
+                    isFirstLoad = true;
+                }
+
+                // Check requires condition before subscribe
+                if (isTagFileLoaded && connectionSchema != null && connectionSchema.Childs != null && connectionSchema.Childs.Count > 0)
+                {
+                    // Delay a little bit before subscribe to server
+                    Thread.Sleep(1000);
+                    IsSubscribed = false;
+                    if (requestTask == null)
+                        requestTask = Task.Factory.StartNew(RefreshData, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                }
+            }
+            else if (stateChange.NewState == ConnectionState.Reconnecting)
+            {
+                Debug.WriteLine($"Begin tring to reconnect to server {ServerAddress}:{Port}");
+            }
+            else if (stateChange.NewState == ConnectionState.Connecting)
+            {
+
+            }
+            else if (stateChange.NewState == ConnectionState.Disconnected)
+            {
+                SetAllTagBad();
+            }
+
+            var oldConnectionStatus = ConnectionStatus;
+            ConnectionStatus = (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), stateChange.NewState.ToString());
+            ConnectionStatusChaged?.Invoke(this, new ConnectionStatusChangedEventArgs(oldConnectionStatus, ConnectionStatus));
         }
 
         /// <summary>

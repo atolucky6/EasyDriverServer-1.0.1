@@ -49,9 +49,9 @@ namespace EasyScada.Winforms.Controls
         private string _defaultResponse;
         private EasyPanel _panelMessage;
         private EasyWrapLabel _labelPrompt;
-        private EasyTextBox _textBoxResponse;
-        private EasyButton _buttonOK;
-        private EasyButton _buttonCancel;
+        private ThemedTextBox _textBoxResponse;
+        private ThemedButton _buttonOK;
+        private ThemedButton _buttonCancel;
         #endregion
 
         #region Identity
@@ -274,10 +274,10 @@ namespace EasyScada.Winforms.Controls
         private void InitializeComponent()
         {
             this._panelMessage = new EasyScada.Winforms.Controls.EasyPanel();
-            this._textBoxResponse = new EasyScada.Winforms.Controls.EasyTextBox();
+            this._textBoxResponse = new EasyScada.Winforms.Controls.ThemedTextBox();
             this._labelPrompt = new EasyScada.Winforms.Controls.EasyWrapLabel();
-            this._buttonCancel = new EasyScada.Winforms.Controls.EasyButton();
-            this._buttonOK = new EasyScada.Winforms.Controls.EasyButton();
+            this._buttonCancel = new EasyScada.Winforms.Controls.ThemedButton();
+            this._buttonOK = new EasyScada.Winforms.Controls.ThemedButton();
             ((System.ComponentModel.ISupportInitialize)(this._panelMessage)).BeginInit();
             this._panelMessage.SuspendLayout();
             this.SuspendLayout();

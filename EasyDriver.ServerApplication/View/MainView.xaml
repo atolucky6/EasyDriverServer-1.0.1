@@ -135,6 +135,13 @@
                             Content="Add Group"
                             Glyph="/EasyDriverServer;component/Resources/Images/folder_48px.png"
                             KeyGesture="Ctrl + 5" />
+                        <dxb:BarButtonItem
+                            x:Name="btnAddInternal"
+                            Command="{Binding AddInternalTagCommand}"
+                            Content="Add internal tag"
+                            Glyph="{dx:DXImage 'SvgImages/Reports/AddCalculatedField.svg'}"
+                            GlyphSize="Default"
+                            KeyGesture="Ctrl + 6" />
                         <dxb:BarItemSeparator />
                         <dxb:BarButtonItem
                             x:Name="btnUndo"
@@ -291,6 +298,13 @@
                         Content="Add Group"
                         Glyph="/EasyDriverServer;component/Resources/Images/folder_48px.png"
                         KeyGesture="Ctrl + 5" />
+                    <dxb:BarButtonItem
+                            x:Name="bAddInternal"
+                            Command="{Binding AddInternalTagCommand}"
+                            Content="Add internal tag"
+                            Glyph="{dx:DXImage 'SvgImages/Reports/AddCalculatedField.svg'}"
+                            GlyphSize="Default"
+                            KeyGesture="Ctrl + 6" />
                 </dxb:Bar>
 
                 <dxb:Bar

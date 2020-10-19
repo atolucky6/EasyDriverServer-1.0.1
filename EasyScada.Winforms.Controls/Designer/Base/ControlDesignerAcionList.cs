@@ -2,10 +2,8 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms;
-using System.Windows.Forms.Design.Behavior;
 
 namespace EasyScada.Winforms.Controls
 {
@@ -51,7 +49,7 @@ namespace EasyScada.Winforms.Controls
 
             if (BaseControl is ISupportWriteSingleTag)
             {
-                actionItems.Add(new DesignerActionPropertyItem("WriteTrigger", "Write Trigger", DesignerCategory.EASYSCADA, ""));
+                actionItems.Add(new DesignerActionPropertyItem("WriteTrigger", "WriteTrigger", DesignerCategory.EASYSCADA, ""));
                 actionItems.Add(new DesignerActionPropertyItem("WriteDelay", "Write Delay", DesignerCategory.EASYSCADA, ""));
             }
 

@@ -18,7 +18,7 @@ namespace EasyScada.Winforms.Controls.Charts
     {
         private LogProfile _database = new LogProfile();
         [Category("EasyScada")]
-        [Editor(typeof(LogProfilePropertyEditor), typeof(UITypeEditor))]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public LogProfile Database { get => _database; set => _database = value; }
 
         internal TrendLineCollection _lines = new TrendLineCollection();

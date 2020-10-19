@@ -1,5 +1,4 @@
-﻿using ComponentFactory.Easy.Toolkit;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -57,7 +56,7 @@ namespace EasyScada.Winforms.Controls
 
         public Color ForeColor
         {
-            get { return ForeColor; }
+            get { return BaseControl.ForeColor; }
             set { BaseControl.SetValue(value); }
         }
 

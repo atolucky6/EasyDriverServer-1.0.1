@@ -34,8 +34,8 @@ namespace EasyDriver.ModbusTCP
                 if (IsChanged)
                 {
                     isValid = Enabled && string.IsNullOrEmpty(this["StartAddress"]) && string.IsNullOrEmpty(this["EndAddress"]);
-                    isValid = StartAddress.DecomposeAddress(out AddressType startAddressType, out startOffset);
-                    isValid = EndAddress.DecomposeAddress(out AddressType endAddressType, out endOffset);
+                    isValid = StartAddress.DecomposeAddress(null, out AddressType startAddressType, out startOffset, out byte stringLength1);
+                    isValid = EndAddress.DecomposeAddress(null, out AddressType endAddressType, out endOffset, out byte stringLength2);
                     Count = (ushort)(endOffset - startOffset + 1);
 
                     if (AddressType == AddressType.InputContact ||

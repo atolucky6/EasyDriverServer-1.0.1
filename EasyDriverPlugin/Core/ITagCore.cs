@@ -77,6 +77,8 @@ namespace EasyDriverPlugin
 
         ConnectionStatus ConnectionStatus { get; set; }
 
+        bool IsInternalTag { get; set; }
+
         /// <summary>
         /// Hàm lấy tất cả các <see cref="ITagCore"/> bên trong Tag này
         /// </summary>

@@ -21,7 +21,7 @@ namespace EasyScada.Winforms.Controls
                 cobCommunicationMode.Items.Add(item.ToString());
 
             Load += ConnectionSchemeDesignerForm_Load;
-            projectTree.AfterCheck += ProjectTree_AfterCheck;
+            projectTree.AfterSelect += ProjectTree_AfterSelect;
 
             openToolStripMenuItem.Click += OpenToolStripMenuItem_Click;
             btnOpen.Click += OpenToolStripMenuItem_Click;
@@ -31,30 +31,22 @@ namespace EasyScada.Winforms.Controls
             closeToolStripMenuItem.Click += CloseToolStripMenuItem_Click;
             getConnectionSchemaToolStripMenuItem.Click += GetConnectionSchemaToolStripMenuItem_Click;
             btnGetConnectionSchema.Click += GetConnectionSchemaToolStripMenuItem_Click;
+
+            projectTree.EndInit();
         }
 
         #region Fields
-        private CoreItem selectedItem;
+        private ICoreItem selectedItem;
         private EasyDriverConnector driverConnector;
         private IServiceProvider serviceProvider;
         private ConnectionSchema connectionSchema;
         #endregion
 
         #region Event handlers
-        private void ProjectTree_AfterCheck(object sender, TreeViewEventArgs e)
+        private void ProjectTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            try
-            {
-                if (e.Action == TreeViewAction.ByMouse ||
-                    e.Action == TreeViewAction.ByKeyboard)
-                {
-                    if (e.Node.Tag is CoreItem coreItem)
-                    {
-                        DisplayTagCollection(coreItem);
-                    }
-                } 
-            }
-            catch { }
+            if (e.Node.Tag is ICoreItem coreItem)
+                DisplayTagCollection(coreItem);
         }
 
         private void GetConnectionSchemaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -68,7 +60,11 @@ namespace EasyScada.Winforms.Controls
             GetConnectionSchemaForm form = new GetConnectionSchemaForm(txbServerAddress.Text?.Trim(), decimal.ToUInt16(txbPort.Value));
             if (form.ShowDialog() == DialogResult.OK)
             {
-
+                connectionSchema = form.ConnectionSchema;
+                connectionSchema.ServerAddress = txbServerAddress.Text?.Trim();
+                connectionSchema.Port = decimal.ToUInt16(txbPort.Value);
+                connectionSchema.RefreshRate = decimal.ToInt32(txbRefreshRate.Value);
+                ReloadTreeNode(connectionSchema);
             }
         }
 
@@ -173,29 +169,33 @@ namespace EasyScada.Winforms.Controls
                     "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                 if (mbr == DialogResult.Yes)
                 {
-
+                    if (!txbServerAddress.Text.IsIpAddress())
+                        txbServerAddress.Text = "127.0.0.1";
+                    GetConnectionSchemaToolStripMenuItem_Click(null, null);
                 }
                 else
                 {
                     Close();
                 }
             }
-
-            if (connectionSchema != null)
+            else
+            {
                 ReloadTreeNode(connectionSchema);
+            }
+
             DisplayConnectionParameters(connectionSchema);
         }
         #endregion
 
         #region Methods
-        private void DisplayTagCollection(CoreItem coreItem)
+        private void DisplayTagCollection(ICoreItem coreItem)
         {
             selectedItem = coreItem;
             if (coreItem != null)
             {
                 searchTagControl.CoreItemSource = coreItem.Childs.Where(x => x is ITag).Select(x => x as ICoreItem).ToList();
                 groupTagCollection.ValuesPrimary.Heading = $"{coreItem.Name} - Tag Collection";
-                groupTagCollection.ValuesSecondary.Heading = $"Total: {coreItem.Childs.Count}";
+                groupTagCollection.ValuesSecondary.Heading = $"Total: {coreItem.Childs?.Count}";
             }
             else
             {
@@ -216,8 +216,8 @@ namespace EasyScada.Winforms.Controls
             }
             else
             {
-                txbServerAddress.Clear();
-                txbPort.Value = 8810;
+                txbServerAddress.Text = "127.0.0.1";
+                txbPort.Value = 8800;
                 txbRefreshRate.Value = 500;
                 cobCommunicationMode.SelectedIndex = 0;
             }
@@ -227,7 +227,15 @@ namespace EasyScada.Winforms.Controls
         {
             projectTree.Nodes.Clear();
             if (connectionSchema != null)
-                projectTree.Nodes.Add(connectionSchema.ToTreeNode(true, false));
+            {
+                if (connectionSchema.Childs != null)
+                {
+                    foreach (var item in connectionSchema.Childs)
+                    {
+                        projectTree.Nodes.Add(item.ToTreeNode(true, false));
+                    }
+                }
+            }
             int tagCount = 0;
             var tags = connectionSchema?.GetAllTags();
             if (tags != null)
@@ -239,13 +247,23 @@ namespace EasyScada.Winforms.Controls
         private void ExpandAllNode()
         {
             if (projectTree.Nodes.Count > 0)
-                projectTree.Nodes[0].ExpandAll();
+            {
+                foreach (TreeNode node in projectTree.Nodes)
+                {
+                    node.ExpandAll();
+                }
+            }
         }
 
         private void CollapseAllNode()
         {
             if (projectTree.Nodes.Count > 0)
-                projectTree.Nodes[0].Collapse();
+            {
+                foreach (TreeNode node in projectTree.Nodes)
+                {
+                    node.Collapse();
+                }
+            }
         }
         #endregion
     }

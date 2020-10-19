@@ -977,6 +977,7 @@ namespace EasyDriverPlugin
             int size = (int)Buffer[Pos + 1];
             return Encoding.ASCII.GetString(Buffer, Pos + 2, size);
         }
+
         public static void SetStringAt(byte[] Buffer, int Pos, int MaxLen, string Value)
         {
             int size = Value.Length;

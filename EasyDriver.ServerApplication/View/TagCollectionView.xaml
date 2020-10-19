@@ -53,6 +53,12 @@
                     Glyph="{dx:DXImage SvgImages/Icon Builder/Actions_Add.svg}"
                     GlyphSize="Default" />
                 <dxb:BarButtonItem
+                    x:Name="bAddInternal"
+                    Command="{Binding AddInternalCommand}"
+                    Content="Add internal tag"
+                    Glyph="{dx:DXImage 'SvgImages/Reports/AddCalculatedField.svg'}"
+                    GlyphSize="Default" />
+                <dxb:BarButtonItem
                     x:Name="bInsertAbove"
                     Command="{Binding InsertAboveCommand}"
                     Content="Insert above"
@@ -143,6 +149,7 @@
                         <dxb:BarButtonItemLink BarItemName="bExport" />
                         <dxb:BarItemLinkSeparator BarItemName="bSeperator" />
                         <dxb:BarButtonItemLink BarItemName="bAdd" />
+                        <dxb:BarButtonItemLink BarItemName="bAddInternal" />
                         <dxb:BarButtonItemLink BarItemName="bInsertAbove" />
                         <dxb:BarButtonItemLink BarItemName="bInsertBelow" />
                         <dxb:BarItemLinkSeparator BarItemName="bSeperator" />
@@ -256,6 +263,7 @@
                                     <dxb:BarButtonItemLink BarItemName="bWriteTag" />
                                     <dxb:BarItemSeparator />
                                     <dxb:BarButtonItemLink BarItemName="bAdd" />
+                                    <dxb:BarButtonItemLink BarItemName="bAddInternal" />
                                     <dxb:BarSubItem Content="Insert tag" GlyphSize="Default">
                                         <dxb:BarSubItem.Items>
                                             <dxb:BarButtonItemLink BarItemName="bInsertAbove" />
@@ -402,6 +410,7 @@
                         <dxb:BarManager.DXContextMenu>
                             <dxb:PopupMenu>
                                 <dxb:BarButtonItemLink BarItemName="bAdd" />
+                                <dxb:BarButtonItemLink BarItemName="bAddInternal" />
                                 <dxb:BarItemSeparator />
                                 <dxb:BarButtonItemLink BarItemName="bCopy" />
                                 <dxb:BarButtonItemLink BarItemName="bCut" />

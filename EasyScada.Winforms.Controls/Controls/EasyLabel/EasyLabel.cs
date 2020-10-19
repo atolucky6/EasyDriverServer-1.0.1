@@ -8,11 +8,16 @@ using System.Security.Permissions;
 namespace EasyScada.Winforms.Controls
 {
     [ToolboxItem(true)]
-    [DefaultBindingProperty("Text")]
-    [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     [Designer(typeof(EasyLabelDesigner))]
     public class EasyLabel : Label, ISupportConnector, ISupportTag, ISupportInitialize
     {
+        #region Constructors
+        public EasyLabel() : base()
+        {
+
+        }
+        #endregion
+
         #region ISupportConnector
         [Description("Select driver connector for control")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]

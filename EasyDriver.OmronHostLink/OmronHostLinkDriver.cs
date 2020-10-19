@@ -463,10 +463,12 @@ namespace EasyDriver.OmronHostLink
                             }
                             tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
                         }
+
                         if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString)
                         {
                             // Lấy thông tin byte order của device parent
                             ByteOrder byteOrder = device.ByteOrder;
+
                             // Chuyển đổi giá trị cần ghi thành chuỗi byte nếu thành công thì mới ghi
                             if (tag.DataType.TryParseToByteArray(value, tag.Gain, tag.Offset, out byte[] writeBuffer, byteOrder))
                             {
@@ -516,6 +518,7 @@ namespace EasyDriver.OmronHostLink
                                         }
                                         finally { semaphore.Release(); }   
                                     }
+
                                     // Trả về kết quả 'Good' nếu ghi thành công, 'Bad' nếu không thành công
                                     return writeResult ? Quality.Good : Quality.Bad;
                                 }

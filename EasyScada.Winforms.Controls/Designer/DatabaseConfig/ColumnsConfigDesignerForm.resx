@@ -141,6 +141,22 @@
         0v8pzgAAAABJRU5ErkJggg==
 </value>
   </data>
+  <data name="btnImport.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAIdJREFUOE9j
+        gIFpVS7/ScFQbQgAEvx6rpUoPAQNeH6oBoVPkgF3d5b+n9PggSEO1YYA2Ay4vDH//8xaN7CN6HJQbQiA
+        rujc6qz/06tdwZrxYah2TANOLk//P40SA0D4yiagF2rI9AIMP9xT/n9+kzeGOFQbAuAyAIQpikZseBAb
+        QAqG6GJgAACA6j3K+XcGAAAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="btnExport.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAIhJREFUOE9j
+        gIGSaUf+k4Kh2hAAJHjoxX+i8MAbMHPPA/IN2HTjK5iGakMAYg0Ia9z1f9m5t+Qb4Fe19X9g7XYgvSUC
+        qhUC0A0AKSSA//lWbSmHaqeBAbgwSHNIw87/fhVbPaBaIYBYA6La9v5fc/njAEYjCFOUkEAYpBaqDQGo
+        YgApGKKLgQEA6P+LaeZXp4MAAAAASUVORK5CYII=
+</value>
+  </data>
   <data name="easyHeaderGroup1.ValuesPrimary.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAABl0RVh0U29m

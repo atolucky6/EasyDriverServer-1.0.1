@@ -42,7 +42,6 @@ namespace EasyScada.Core
         event EventHandler<TagWritedEventArgs> TagWrited;
     }
 
-    [TypeConverter(typeof(WriteTriggerConverter))]
     public enum WriteTrigger
     {
         OnEnter,

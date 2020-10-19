@@ -103,5 +103,11 @@
       <Name>EasyScada.Winforms.Controls</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\add_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Motor 14.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

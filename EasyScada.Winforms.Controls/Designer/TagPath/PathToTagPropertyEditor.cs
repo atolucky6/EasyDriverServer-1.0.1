@@ -6,7 +6,6 @@ namespace EasyScada.Winforms.Controls
 {
     public class PathToTagPropertyEditor : PropertyEditorBase
     {
-        //SearchListViewControl editControl;
         SearchTagControl editControl;
         string selectedTag = "";
 

@@ -1,4 +1,4 @@
-﻿namespace EasyScada.Winforms.Controls.Controls.EasyAlarmLogger
+﻿namespace EasyScada.Winforms.Controls
 {
     partial class EasyAlarmLogger
     {

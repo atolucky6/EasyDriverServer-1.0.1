@@ -100,7 +100,7 @@ namespace EasyDriver.ModbusTCP
 
             string address = txbAddress.Text?.Trim();
             AccessPermission accessPermission = (AccessPermission)cobPermission.SelectedItem;
-            string error = address.IsValidAddress(accessPermission, out bool isBitAddress);
+            string error = address.IsValidAddress(cobDataType.SelectedItem as IDataType, accessPermission, out bool isBitAddress);
             if (!string.IsNullOrEmpty(error))
             {
                 DXMessageBox.Show(error, "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);

@@ -88,6 +88,9 @@
     <Reference Include="DevExpress.Xpf.Themes.Office2019Colorful.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Themes.VS2017Dark.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpf.Themes.VS2019Dark.v20.1, Version=20.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="LiteDB, Version=5.0.9.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.5.0.9\lib\net45\LiteDB.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.4.1\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
     </Reference>
@@ -130,6 +133,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Reactive, Version=1.0.2856.104, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.Cors, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -152,7 +156,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IoC\Service\IInternalStorageService.cs" />
+    <Compile Include="Model\InternalTagModel.cs" />
     <Compile Include="ViewModel\GroupViewModel.cs" />
+    <Compile Include="ViewModel\InternalTagViewModel.cs" />
     <Compile Include="View\GroupView.xaml.cs">
       <DependentUpon>GroupView.xaml</DependentUpon>
     </Compile>
@@ -355,6 +362,9 @@
     <Compile Include="Resources\Converters\StringEmptyToVisibilityConverter.cs" />
     <Compile Include="ViewModel\ImportTagViewModel.cs" />
     <Compile Include="ViewModel\RemoteOpcDaProjectTreeViewModel.cs" />
+    <Compile Include="View\InternalTagView.xaml.cs">
+      <DependentUpon>InternalTagView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\RemoteOpcDaProjectTreeView.xaml.cs">
       <DependentUpon>RemoteOpcDaProjectTreeView.xaml</DependentUpon>
     </Compile>
@@ -504,6 +514,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\InternalTagView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\RemoteOpcDaProjectTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -542,6 +556,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest" />
+    <Content Include="internal.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

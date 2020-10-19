@@ -465,6 +465,29 @@ namespace EasyScada.ServerApplication
             return false;
         }
 
+        /// <summary>
+        /// Lệnh thêm <see cref="ITag"/> vào <see cref="IDevice"/>
+        /// </summary>
+        public void AddInternalTag()
+        {
+            // Đảm bảo ActivePanel là một TagCollectionDocument
+            if (WorkspaceManagerService.CurrentActivePanel is TagCollectionViewModel tagCollection)
+                tagCollection.AddInternal(); // Gọi hàm thêm tag của Panel đó
+        }
+
+        /// <summary>
+        /// Điều kiện để thực thi lệnh <see cref="AddTag"/>
+        /// </summary>
+        /// <returns></returns>
+        public bool CanAddInternalTag()
+        {
+            // Điều kiện để có thể thêm Tag là có một ActivePanel là TagCollectionDocument
+            // và Panel đó phải cho phép thêm Tag
+            if (WorkspaceManagerService.CurrentActivePanel is TagCollectionViewModel tagCollection)
+                return tagCollection.CanAddInternal();
+            return false;
+        }
+
         public void AddGroup()
         {
             ProjectTreeWorkspace.AddGroup();

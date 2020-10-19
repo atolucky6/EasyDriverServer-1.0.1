@@ -78,7 +78,7 @@ namespace EasyDriver.ModbusTCP
                 return;
             }
 
-            ushort currentPort = Convert.ToUInt16(Driver.Channel.ParameterContainer.Parameters["Port"].ToString());
+            ushort currentPort = Convert.ToUInt16(spnPort.EditValue);
             if (currentPort != (ushort)(spnPort.Value))
             {
                 (Driver as ModbusTCPDriver).NotifyPortChanged();
