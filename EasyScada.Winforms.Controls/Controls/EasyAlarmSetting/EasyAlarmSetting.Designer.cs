@@ -31,12 +31,12 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EasyAlarmSetting));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
@@ -156,6 +156,14 @@
             this.btnBrowseTriggerTagQuality = new EasyScada.Winforms.Controls.ButtonSpecAny();
             this.cobTriggerQuality = new EasyScada.Winforms.Controls.EasyComboBox();
             this.gridViewQuality = new EasyScada.Winforms.Controls.EasyDataGridView();
+            this.easyDataGridViewCheckBoxColumn5 = new EasyScada.Winforms.Controls.EasyDataGridViewCheckBoxColumn();
+            this.easyDataGridViewTextBoxColumn20 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
+            this.easyDataGridViewTextBoxColumn21 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
+            this.easyDataGridViewTextBoxColumn22 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
+            this.easyDataGridViewTextBoxColumn23 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
+            this.easyDataGridViewTextBoxColumn24 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
+            this.easyDataGridViewTextBoxColumn25 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
+            this.easyDataGridViewTextBoxColumn26 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
             this.easyPage3 = new EasyScada.Winforms.Controls.Navigator.EasyPage();
             this.easyPanel3 = new EasyScada.Winforms.Controls.EasyPanel();
             this.btnClearClass = new EasyScada.Winforms.Controls.ThemedButton();
@@ -269,14 +277,6 @@
             this.btnImport = new System.Windows.Forms.ToolStripButton();
             this.btnExport = new System.Windows.Forms.ToolStripButton();
             this.btnSave = new System.Windows.Forms.ToolStripButton();
-            this.easyDataGridViewCheckBoxColumn5 = new EasyScada.Winforms.Controls.EasyDataGridViewCheckBoxColumn();
-            this.easyDataGridViewTextBoxColumn20 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
-            this.easyDataGridViewTextBoxColumn21 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
-            this.easyDataGridViewTextBoxColumn22 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
-            this.easyDataGridViewTextBoxColumn23 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
-            this.easyDataGridViewTextBoxColumn24 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
-            this.easyDataGridViewTextBoxColumn25 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
-            this.easyDataGridViewTextBoxColumn26 = new EasyScada.Winforms.Controls.EasyDataGridViewTextBoxColumn();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -379,34 +379,14 @@
             // 
             // easyNavigator1
             // 
-            this.easyNavigator1.Bar.BarMapExtraText = EasyScada.Winforms.Controls.Navigator.MapEasyPageText.None;
-            this.easyNavigator1.Bar.BarMapImage = EasyScada.Winforms.Controls.Navigator.MapEasyPageImage.Small;
-            this.easyNavigator1.Bar.BarMapText = EasyScada.Winforms.Controls.Navigator.MapEasyPageText.TextTitle;
-            this.easyNavigator1.Bar.CheckButtonStyle = EasyScada.Winforms.Controls.ButtonStyle.Standalone;
             this.easyNavigator1.Bar.ItemSizing = EasyScada.Winforms.Controls.Navigator.BarItemSizing.SameWidthAndHeight;
             this.easyNavigator1.Bar.TabBorderStyle = EasyScada.Winforms.Controls.TabBorderStyle.RoundedEqualSmall;
-            this.easyNavigator1.Bar.TabStyle = EasyScada.Winforms.Controls.TabStyle.HighProfile;
             this.easyNavigator1.Button.ButtonDisplayLogic = EasyScada.Winforms.Controls.Navigator.ButtonDisplayLogic.None;
             this.easyNavigator1.Button.CloseButtonAction = EasyScada.Winforms.Controls.Navigator.CloseButtonAction.None;
             this.easyNavigator1.Button.CloseButtonDisplay = EasyScada.Winforms.Controls.Navigator.ButtonDisplay.Hide;
-            this.easyNavigator1.Button.ContextButtonAction = EasyScada.Winforms.Controls.Navigator.ContextButtonAction.SelectPage;
-            this.easyNavigator1.Button.ContextButtonDisplay = EasyScada.Winforms.Controls.Navigator.ButtonDisplay.Logic;
-            this.easyNavigator1.Button.ContextMenuMapImage = EasyScada.Winforms.Controls.Navigator.MapEasyPageImage.Small;
-            this.easyNavigator1.Button.ContextMenuMapText = EasyScada.Winforms.Controls.Navigator.MapEasyPageText.TextTitle;
-            this.easyNavigator1.Button.NextButtonAction = EasyScada.Winforms.Controls.Navigator.DirectionButtonAction.ModeAppropriateAction;
-            this.easyNavigator1.Button.NextButtonDisplay = EasyScada.Winforms.Controls.Navigator.ButtonDisplay.Logic;
-            this.easyNavigator1.Button.PreviousButtonAction = EasyScada.Winforms.Controls.Navigator.DirectionButtonAction.ModeAppropriateAction;
-            this.easyNavigator1.Button.PreviousButtonDisplay = EasyScada.Winforms.Controls.Navigator.ButtonDisplay.Logic;
             this.easyNavigator1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.easyNavigator1.Group.GroupBackStyle = EasyScada.Winforms.Controls.PaletteBackStyle.ControlClient;
-            this.easyNavigator1.Group.GroupBorderStyle = EasyScada.Winforms.Controls.PaletteBorderStyle.ControlClient;
-            this.easyNavigator1.Header.HeaderStyleBar = EasyScada.Winforms.Controls.HeaderStyle.Secondary;
-            this.easyNavigator1.Header.HeaderStylePrimary = EasyScada.Winforms.Controls.HeaderStyle.Primary;
-            this.easyNavigator1.Header.HeaderStyleSecondary = EasyScada.Winforms.Controls.HeaderStyle.Secondary;
             this.easyNavigator1.Location = new System.Drawing.Point(4, 4);
             this.easyNavigator1.Name = "easyNavigator1";
-            this.easyNavigator1.NavigatorMode = EasyScada.Winforms.Controls.Navigator.NavigatorMode.BarTabGroup;
-            this.easyNavigator1.PageBackStyle = EasyScada.Winforms.Controls.PaletteBackStyle.ControlClient;
             this.easyNavigator1.Pages.AddRange(new EasyScada.Winforms.Controls.Navigator.EasyPage[] {
             this.easyPage2,
             this.easyPage1,
@@ -415,7 +395,6 @@
             this.easyPage4,
             this.emailPage,
             this.easyPage6});
-            this.easyNavigator1.Panel.PanelBackStyle = EasyScada.Winforms.Controls.PaletteBackStyle.PanelClient;
             this.easyNavigator1.SelectedIndex = 2;
             this.easyNavigator1.Size = new System.Drawing.Size(790, 520);
             this.easyNavigator1.TabIndex = 0;
@@ -431,7 +410,6 @@
             this.easyPage2.Name = "easyPage2";
             this.easyPage2.Size = new System.Drawing.Size(788, 494);
             this.easyPage2.Text = "Discrete alarms";
-            this.easyPage2.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage2.ToolTipTitle = "Page ToolTip";
             this.easyPage2.UniqueName = "ECF356094A2646E49599CACBFB9B5F65";
             // 
@@ -596,8 +574,6 @@
             // 
             // btnClearAlarmGroupDiscrete
             // 
-            this.btnClearAlarmGroupDiscrete.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnClearAlarmGroupDiscrete.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnClearAlarmGroupDiscrete.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Close;
             this.btnClearAlarmGroupDiscrete.UniqueName = "1F020BB41B684CC69F8A4A00C9DA1D51";
             // 
@@ -633,8 +609,6 @@
             // 
             // btnClearAlarmClassDiscrete
             // 
-            this.btnClearAlarmClassDiscrete.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnClearAlarmClassDiscrete.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnClearAlarmClassDiscrete.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Close;
             this.btnClearAlarmClassDiscrete.UniqueName = "782FF7DE0FB1412A988C0F667FB4A0EA";
             // 
@@ -687,9 +661,6 @@
             // btnBrowseTriggerTagDiscrete
             // 
             this.btnBrowseTriggerTagDiscrete.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
-            this.btnBrowseTriggerTagDiscrete.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnBrowseTriggerTagDiscrete.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
-            this.btnBrowseTriggerTagDiscrete.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseTriggerTagDiscrete.UniqueName = "2381795CB10748B459BB6579FFD88D14";
             // 
             // txbTriggerValueDiscrete
@@ -707,9 +678,6 @@
             // btnBrowseTriggerValueDiscrete
             // 
             this.btnBrowseTriggerValueDiscrete.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
-            this.btnBrowseTriggerValueDiscrete.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnBrowseTriggerValueDiscrete.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
-            this.btnBrowseTriggerValueDiscrete.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseTriggerValueDiscrete.UniqueName = "2381795CB10748B459BB6579FFD88D14";
             // 
             // gridViewDiscrete
@@ -826,7 +794,6 @@
             this.easyPage1.Name = "easyPage1";
             this.easyPage1.Size = new System.Drawing.Size(788, 494);
             this.easyPage1.Text = "Analog alarms";
-            this.easyPage1.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage1.ToolTipTitle = "Page ToolTip";
             this.easyPage1.UniqueName = "0ACF4F7866CF4D27268A41CDAE106993";
             // 
@@ -994,9 +961,6 @@
             // btnBrowseDeadbandAnalog
             // 
             this.btnBrowseDeadbandAnalog.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
-            this.btnBrowseDeadbandAnalog.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnBrowseDeadbandAnalog.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
-            this.btnBrowseDeadbandAnalog.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseDeadbandAnalog.UniqueName = "2381795CB10748B459BB6579FFD88D14";
             // 
             // themedLabel28
@@ -1063,8 +1027,6 @@
             // 
             // btnClearAlarmGroupAnalog
             // 
-            this.btnClearAlarmGroupAnalog.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnClearAlarmGroupAnalog.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnClearAlarmGroupAnalog.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Close;
             this.btnClearAlarmGroupAnalog.UniqueName = "7166E12A4D064C968C9AB7EB4FABEA1A";
             // 
@@ -1082,8 +1044,6 @@
             // 
             // btnClearAlarmClassAnalog
             // 
-            this.btnClearAlarmClassAnalog.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnClearAlarmClassAnalog.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnClearAlarmClassAnalog.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Close;
             this.btnClearAlarmClassAnalog.UniqueName = "14C71E6B54AF44A2A68CB12A5E2A177D";
             // 
@@ -1138,9 +1098,6 @@
             // btnBrowseLimitAnalog
             // 
             this.btnBrowseLimitAnalog.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
-            this.btnBrowseLimitAnalog.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnBrowseLimitAnalog.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
-            this.btnBrowseLimitAnalog.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseLimitAnalog.UniqueName = "2381795CB10748B459BB6579FFD88D14";
             // 
             // txbTriggerTagAnalog
@@ -1158,9 +1115,6 @@
             // btnBrowseTriggerTagAnalog
             // 
             this.btnBrowseTriggerTagAnalog.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
-            this.btnBrowseTriggerTagAnalog.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnBrowseTriggerTagAnalog.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
-            this.btnBrowseTriggerTagAnalog.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseTriggerTagAnalog.UniqueName = "2381795CB10748B459BB6579FFD88D14";
             // 
             // themedLabel17
@@ -1343,7 +1297,6 @@
             this.easyPage5.Name = "easyPage5";
             this.easyPage5.Size = new System.Drawing.Size(788, 494);
             this.easyPage5.Text = "Quality alarms";
-            this.easyPage5.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage5.ToolTipTitle = "Page ToolTip";
             this.easyPage5.UniqueName = "C9E4281F54EF460B7A9D87F455A7233D";
             // 
@@ -1508,8 +1461,6 @@
             // 
             // btnClearGroupQuality
             // 
-            this.btnClearGroupQuality.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnClearGroupQuality.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnClearGroupQuality.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Close;
             this.btnClearGroupQuality.UniqueName = "1F020BB41B684CC69F8A4A00C9DA1D51";
             // 
@@ -1545,8 +1496,6 @@
             // 
             // btnClearClassQuality
             // 
-            this.btnClearClassQuality.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnClearClassQuality.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnClearClassQuality.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Close;
             this.btnClearClassQuality.UniqueName = "782FF7DE0FB1412A988C0F667FB4A0EA";
             // 
@@ -1599,9 +1548,6 @@
             // btnBrowseTriggerTagQuality
             // 
             this.btnBrowseTriggerTagQuality.Image = global::EasyScada.Winforms.Controls.Properties.Resources.script_edit;
-            this.btnBrowseTriggerTagQuality.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnBrowseTriggerTagQuality.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
-            this.btnBrowseTriggerTagQuality.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Generic;
             this.btnBrowseTriggerTagQuality.UniqueName = "2381795CB10748B459BB6579FFD88D14";
             // 
             // cobTriggerQuality
@@ -1645,6 +1591,84 @@
             this.gridViewQuality.Size = new System.Drawing.Size(774, 258);
             this.gridViewQuality.TabIndex = 7;
             // 
+            // easyDataGridViewCheckBoxColumn5
+            // 
+            this.easyDataGridViewCheckBoxColumn5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.easyDataGridViewCheckBoxColumn5.DataPropertyName = "Enabled";
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.NullValue = false;
+            this.easyDataGridViewCheckBoxColumn5.DefaultCellStyle = dataGridViewCellStyle4;
+            this.easyDataGridViewCheckBoxColumn5.FalseValue = null;
+            this.easyDataGridViewCheckBoxColumn5.HeaderText = "Enabled";
+            this.easyDataGridViewCheckBoxColumn5.IndeterminateValue = null;
+            this.easyDataGridViewCheckBoxColumn5.Name = "easyDataGridViewCheckBoxColumn5";
+            this.easyDataGridViewCheckBoxColumn5.ReadOnly = true;
+            this.easyDataGridViewCheckBoxColumn5.TrueValue = null;
+            this.easyDataGridViewCheckBoxColumn5.Width = 59;
+            // 
+            // easyDataGridViewTextBoxColumn20
+            // 
+            this.easyDataGridViewTextBoxColumn20.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.easyDataGridViewTextBoxColumn20.DataPropertyName = "Name";
+            this.easyDataGridViewTextBoxColumn20.HeaderText = "Name";
+            this.easyDataGridViewTextBoxColumn20.Name = "easyDataGridViewTextBoxColumn20";
+            this.easyDataGridViewTextBoxColumn20.ReadOnly = true;
+            this.easyDataGridViewTextBoxColumn20.Width = 68;
+            // 
+            // easyDataGridViewTextBoxColumn21
+            // 
+            this.easyDataGridViewTextBoxColumn21.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.easyDataGridViewTextBoxColumn21.DataPropertyName = "AlarmText";
+            this.easyDataGridViewTextBoxColumn21.HeaderText = "Alarm text";
+            this.easyDataGridViewTextBoxColumn21.Name = "easyDataGridViewTextBoxColumn21";
+            this.easyDataGridViewTextBoxColumn21.ReadOnly = true;
+            this.easyDataGridViewTextBoxColumn21.Width = 91;
+            // 
+            // easyDataGridViewTextBoxColumn22
+            // 
+            this.easyDataGridViewTextBoxColumn22.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.easyDataGridViewTextBoxColumn22.DataPropertyName = "AlarmClassName";
+            this.easyDataGridViewTextBoxColumn22.HeaderText = "Alarm class";
+            this.easyDataGridViewTextBoxColumn22.Name = "easyDataGridViewTextBoxColumn22";
+            this.easyDataGridViewTextBoxColumn22.ReadOnly = true;
+            this.easyDataGridViewTextBoxColumn22.Width = 96;
+            // 
+            // easyDataGridViewTextBoxColumn23
+            // 
+            this.easyDataGridViewTextBoxColumn23.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.easyDataGridViewTextBoxColumn23.DataPropertyName = "AlarmGroupName";
+            this.easyDataGridViewTextBoxColumn23.HeaderText = "Alarm group";
+            this.easyDataGridViewTextBoxColumn23.Name = "easyDataGridViewTextBoxColumn23";
+            this.easyDataGridViewTextBoxColumn23.ReadOnly = true;
+            this.easyDataGridViewTextBoxColumn23.Width = 103;
+            // 
+            // easyDataGridViewTextBoxColumn24
+            // 
+            this.easyDataGridViewTextBoxColumn24.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.easyDataGridViewTextBoxColumn24.DataPropertyName = "TriggerTagPath";
+            this.easyDataGridViewTextBoxColumn24.HeaderText = "Trigger Tag";
+            this.easyDataGridViewTextBoxColumn24.Name = "easyDataGridViewTextBoxColumn24";
+            this.easyDataGridViewTextBoxColumn24.ReadOnly = true;
+            this.easyDataGridViewTextBoxColumn24.Width = 93;
+            // 
+            // easyDataGridViewTextBoxColumn25
+            // 
+            this.easyDataGridViewTextBoxColumn25.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.easyDataGridViewTextBoxColumn25.DataPropertyName = "TriggerQuality";
+            this.easyDataGridViewTextBoxColumn25.HeaderText = "Trigger Quality";
+            this.easyDataGridViewTextBoxColumn25.Name = "easyDataGridViewTextBoxColumn25";
+            this.easyDataGridViewTextBoxColumn25.ReadOnly = true;
+            this.easyDataGridViewTextBoxColumn25.Width = 113;
+            // 
+            // easyDataGridViewTextBoxColumn26
+            // 
+            this.easyDataGridViewTextBoxColumn26.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.easyDataGridViewTextBoxColumn26.DataPropertyName = "Description";
+            this.easyDataGridViewTextBoxColumn26.HeaderText = "Description";
+            this.easyDataGridViewTextBoxColumn26.Name = "easyDataGridViewTextBoxColumn26";
+            this.easyDataGridViewTextBoxColumn26.ReadOnly = true;
+            this.easyDataGridViewTextBoxColumn26.Width = 96;
+            // 
             // easyPage3
             // 
             this.easyPage3.AutoHiddenSlideSize = new System.Drawing.Size(200, 200);
@@ -1655,7 +1679,6 @@
             this.easyPage3.Name = "easyPage3";
             this.easyPage3.Size = new System.Drawing.Size(788, 494);
             this.easyPage3.Text = "Alarm class";
-            this.easyPage3.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage3.ToolTipTitle = "Page ToolTip";
             this.easyPage3.UniqueName = "31C82A5A7A9C44EA679F16D8411D7803";
             // 
@@ -1925,7 +1948,6 @@
             this.easyPage4.Name = "easyPage4";
             this.easyPage4.Size = new System.Drawing.Size(788, 494);
             this.easyPage4.Text = "Alarm group";
-            this.easyPage4.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage4.ToolTipTitle = "Page ToolTip";
             this.easyPage4.UniqueName = "FE74423479A1496B57AF4231D0706A6A";
             // 
@@ -2021,8 +2043,6 @@
             // 
             // btnClearEmailSettingGroup
             // 
-            this.btnClearEmailSettingGroup.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnClearEmailSettingGroup.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnClearEmailSettingGroup.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Close;
             this.btnClearEmailSettingGroup.UniqueName = "BD9A2F644895427117AFA93F08C13D99";
             // 
@@ -2097,8 +2117,6 @@
             // 
             // btnClearSMSSettingGroup
             // 
-            this.btnClearSMSSettingGroup.Style = EasyScada.Winforms.Controls.PaletteButtonStyle.Inherit;
-            this.btnClearSMSSettingGroup.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.btnClearSMSSettingGroup.Type = EasyScada.Winforms.Controls.PaletteButtonSpecStyle.Close;
             this.btnClearSMSSettingGroup.UniqueName = "BD9A2F644895427117AFA93F08C13D99";
             // 
@@ -2189,7 +2207,6 @@
             this.emailPage.Name = "emailPage";
             this.emailPage.Size = new System.Drawing.Size(788, 494);
             this.emailPage.Text = "Email settings";
-            this.emailPage.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.emailPage.ToolTipTitle = "Page ToolTip";
             this.emailPage.UniqueName = "002DE63930534135E8B32B609BB7FF9E";
             // 
@@ -2380,8 +2397,6 @@
             this.themedLabel25.Name = "themedLabel25";
             this.themedLabel25.Size = new System.Drawing.Size(180, 20);
             this.themedLabel25.StateCommon.ShortText.Color1 = System.Drawing.Color.Gray;
-            this.themedLabel25.StateCommon.ShortText.ImageStyle = EasyScada.Winforms.Controls.PaletteImageStyle.Inherit;
-            this.themedLabel25.StateCommon.ShortText.Trim = EasyScada.Winforms.Controls.PaletteTextTrim.Inherit;
             this.themedLabel25.TabIndex = 47;
             this.themedLabel25.Values.Text = "Ex: mail1@gmail.com,mail2@gmail.com...";
             // 
@@ -2521,7 +2536,6 @@
             this.easyPage6.Name = "easyPage6";
             this.easyPage6.Size = new System.Drawing.Size(788, 494);
             this.easyPage6.Text = "SMS settings";
-            this.easyPage6.ToolTipStyle = EasyScada.Winforms.Controls.LabelStyle.ToolTip;
             this.easyPage6.ToolTipTitle = "Page ToolTip";
             this.easyPage6.UniqueName = "94639A830BCB4CF03E80CCAA97059CCB";
             // 
@@ -2637,8 +2651,6 @@
             this.themedLabel32.Name = "themedLabel32";
             this.themedLabel32.Size = new System.Drawing.Size(172, 20);
             this.themedLabel32.StateCommon.ShortText.Color1 = System.Drawing.Color.Gray;
-            this.themedLabel32.StateCommon.ShortText.ImageStyle = EasyScada.Winforms.Controls.PaletteImageStyle.Inherit;
-            this.themedLabel32.StateCommon.ShortText.Trim = EasyScada.Winforms.Controls.PaletteTextTrim.Inherit;
             this.themedLabel32.TabIndex = 47;
             this.themedLabel32.Values.Text = "Ex: 0123456789,1234567890...";
             // 
@@ -2899,84 +2911,6 @@
             this.btnSave.Size = new System.Drawing.Size(23, 22);
             this.btnSave.Text = "toolStripButton1";
             this.btnSave.ToolTipText = "Save";
-            // 
-            // easyDataGridViewCheckBoxColumn5
-            // 
-            this.easyDataGridViewCheckBoxColumn5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.easyDataGridViewCheckBoxColumn5.DataPropertyName = "Enabled";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.NullValue = false;
-            this.easyDataGridViewCheckBoxColumn5.DefaultCellStyle = dataGridViewCellStyle4;
-            this.easyDataGridViewCheckBoxColumn5.FalseValue = null;
-            this.easyDataGridViewCheckBoxColumn5.HeaderText = "Enabled";
-            this.easyDataGridViewCheckBoxColumn5.IndeterminateValue = null;
-            this.easyDataGridViewCheckBoxColumn5.Name = "easyDataGridViewCheckBoxColumn5";
-            this.easyDataGridViewCheckBoxColumn5.ReadOnly = true;
-            this.easyDataGridViewCheckBoxColumn5.TrueValue = null;
-            this.easyDataGridViewCheckBoxColumn5.Width = 59;
-            // 
-            // easyDataGridViewTextBoxColumn20
-            // 
-            this.easyDataGridViewTextBoxColumn20.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.easyDataGridViewTextBoxColumn20.DataPropertyName = "Name";
-            this.easyDataGridViewTextBoxColumn20.HeaderText = "Name";
-            this.easyDataGridViewTextBoxColumn20.Name = "easyDataGridViewTextBoxColumn20";
-            this.easyDataGridViewTextBoxColumn20.ReadOnly = true;
-            this.easyDataGridViewTextBoxColumn20.Width = 68;
-            // 
-            // easyDataGridViewTextBoxColumn21
-            // 
-            this.easyDataGridViewTextBoxColumn21.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.easyDataGridViewTextBoxColumn21.DataPropertyName = "AlarmText";
-            this.easyDataGridViewTextBoxColumn21.HeaderText = "Alarm text";
-            this.easyDataGridViewTextBoxColumn21.Name = "easyDataGridViewTextBoxColumn21";
-            this.easyDataGridViewTextBoxColumn21.ReadOnly = true;
-            this.easyDataGridViewTextBoxColumn21.Width = 91;
-            // 
-            // easyDataGridViewTextBoxColumn22
-            // 
-            this.easyDataGridViewTextBoxColumn22.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.easyDataGridViewTextBoxColumn22.DataPropertyName = "AlarmClassName";
-            this.easyDataGridViewTextBoxColumn22.HeaderText = "Alarm class";
-            this.easyDataGridViewTextBoxColumn22.Name = "easyDataGridViewTextBoxColumn22";
-            this.easyDataGridViewTextBoxColumn22.ReadOnly = true;
-            this.easyDataGridViewTextBoxColumn22.Width = 96;
-            // 
-            // easyDataGridViewTextBoxColumn23
-            // 
-            this.easyDataGridViewTextBoxColumn23.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.easyDataGridViewTextBoxColumn23.DataPropertyName = "AlarmGroupName";
-            this.easyDataGridViewTextBoxColumn23.HeaderText = "Alarm group";
-            this.easyDataGridViewTextBoxColumn23.Name = "easyDataGridViewTextBoxColumn23";
-            this.easyDataGridViewTextBoxColumn23.ReadOnly = true;
-            this.easyDataGridViewTextBoxColumn23.Width = 103;
-            // 
-            // easyDataGridViewTextBoxColumn24
-            // 
-            this.easyDataGridViewTextBoxColumn24.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.easyDataGridViewTextBoxColumn24.DataPropertyName = "TriggerTagPath";
-            this.easyDataGridViewTextBoxColumn24.HeaderText = "Trigger Tag";
-            this.easyDataGridViewTextBoxColumn24.Name = "easyDataGridViewTextBoxColumn24";
-            this.easyDataGridViewTextBoxColumn24.ReadOnly = true;
-            this.easyDataGridViewTextBoxColumn24.Width = 93;
-            // 
-            // easyDataGridViewTextBoxColumn25
-            // 
-            this.easyDataGridViewTextBoxColumn25.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.easyDataGridViewTextBoxColumn25.DataPropertyName = "TriggerQuality";
-            this.easyDataGridViewTextBoxColumn25.HeaderText = "Trigger Quality";
-            this.easyDataGridViewTextBoxColumn25.Name = "easyDataGridViewTextBoxColumn25";
-            this.easyDataGridViewTextBoxColumn25.ReadOnly = true;
-            this.easyDataGridViewTextBoxColumn25.Width = 113;
-            // 
-            // easyDataGridViewTextBoxColumn26
-            // 
-            this.easyDataGridViewTextBoxColumn26.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.easyDataGridViewTextBoxColumn26.DataPropertyName = "Description";
-            this.easyDataGridViewTextBoxColumn26.HeaderText = "Description";
-            this.easyDataGridViewTextBoxColumn26.Name = "easyDataGridViewTextBoxColumn26";
-            this.easyDataGridViewTextBoxColumn26.ReadOnly = true;
-            this.easyDataGridViewTextBoxColumn26.Width = 96;
             // 
             // EasyAlarmSetting
             // 

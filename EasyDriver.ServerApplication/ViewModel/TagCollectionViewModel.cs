@@ -494,7 +494,15 @@ namespace EasyScada.ServerApplication
                                     newTag.AccessPermission = tagCore.AccessPermission;
                                     newTag.Description = tagCore.Description;
                                     newTag.ParameterContainer = tagCore.ParameterContainer.DeepCopy();
-                                    newTag.DataType = dataTypesSource.FirstOrDefault(x => x.Name == tagCore.DataType.Name);
+                                    newTag.IsInternalTag = tagCore.IsInternalTag;
+                                    if (newTag.IsInternalTag)
+                                    {
+                                        newTag.DataTypeName = tagCore.DataTypeName;
+                                    }
+                                    else
+                                    {
+                                        newTag.DataType = dataTypesSource.FirstOrDefault(x => x.Name == tagCore.DataType.Name);
+                                    }
                                     reversibleCollection.Add(newTag);
                                 }
                             }

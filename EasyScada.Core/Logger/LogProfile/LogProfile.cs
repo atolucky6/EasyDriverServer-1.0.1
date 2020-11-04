@@ -16,7 +16,7 @@ namespace EasyScada.Core
         public DbType DatabaseType { get; set; } = DbType.MySql;
         public string TableName { get; set; } = "table1";
         public string DatabaseName { get; set; } = "easyScada";
-        public string IpAddress { get; set; } = "localhost";
+        public string IpAddress { get; set; } = "192.168.1.10";
         public ushort Port { get; set; } = 3306;
         public string Username { get; set; } = "root";
         public string Password { get; set; } = "100100";

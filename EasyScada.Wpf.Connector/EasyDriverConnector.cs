@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,6 +44,8 @@ namespace EasyScada.Wpf.Connector
 
         [Description("Set port number for connector")]
         [Browsable(true), Category("Easy Scada")]
+        [EditorBrowsable(EditorBrowsableState.Always)]
+        [Editor(typeof(TestEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ushort Port
         {
             get { return EasyDriverConnectorCore.Port; }

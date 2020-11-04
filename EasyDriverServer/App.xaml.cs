@@ -104,7 +104,6 @@ namespace EasyDriverServer
             }
         }
 
-
         static App()
         {
         }
