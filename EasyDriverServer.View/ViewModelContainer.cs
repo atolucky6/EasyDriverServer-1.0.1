@@ -15,7 +15,7 @@ namespace EasyDriverServer.View
         public ViewModelContainerExtension(Type type, bool isUnique)
         {
             _type = type;
-            _isUnique = false;
+            _isUnique = isUnique;
         }
 
         public ViewModelContainerExtension(Type type)

@@ -122,76 +122,12 @@ namespace EasyScada.Winforms.Controls
                 sw.Start();
                 try
                 {
-                    if (isStarted && EasyDriverConnectorProvider.GetEasyDriverConnector().IsStarted)
-                    {
-                        System.Action logAct = new System.Action(() =>
-                        {
-                            DateTime logTime = DateTime.Now;
-                            LogColumn[] columns = this.columns.ToArray();
-                            bool isTagBad = false;
-                            foreach (LogColumn col in columns)
-                            {
-                                if (!(col.Quality == Quality.Good))
-                                {
-                                    isTagBad = true;
-                                    break;
-                                }
-                            }
-
-                            if (AllowLogWhenTagBad || (!AllowLogWhenTagBad && !isTagBad))
-                            {
-                                foreach (LogProfile profile in profiles)
-                                {
-                                    if (profile != null)
-                                    {
-                                        string insertQuery = profile.GetInsertQuery(logTime, columns);
-                                        try
-                                        {
-                                            LoggingEventArgs args = new LoggingEventArgs(insertQuery, profile, columns);
-                                            Logging?.Invoke(this, args);
-                                            if (args.Cancel)
-                                                continue;
-                                            // Create database schema if not exists
-                                            profile.GetCommand(out DbConnection conn, out DbCommand cmd, false);
-                                            conn.Open();
-                                            cmd.CommandText = profile.GetCreateSchemaQuery();
-                                            cmd.ExecuteNonQuery();
-                                            conn.Close();
-                                            conn.Dispose();
-                                            cmd.Dispose();
-                                            // Create table if not exists
-                                            profile.GetCommand(out conn, out cmd, out DbDataAdapter adp, true);
-                                            conn.Open();
-                                            cmd.CommandText = profile.GetCreateTableQuery(columns);
-                                            int createTableRes = cmd.ExecuteNonQuery();
-
-                                            // Create table result = 0. It means table already exists
-                                            if (createTableRes == 0)
-                                            {
-                                                // We need to check the columns name
-                                                cmd.CommandText = profile.GetSelectQuery(1);
-                                                adp.SelectCommand = cmd;
-                                                DataTable dt = new DataTable();
-                                                adp.Fill(dt);
-                                            }
-                                            cmd.CommandText = insertQuery;
-                                            int logRes = cmd.ExecuteNonQuery();
-                                            Logged?.Invoke(this, new LoggedEventArgs(insertQuery, logRes, profile, columns));
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Failed?.Invoke(this, new LogErrorEventArgs(insertQuery, ex, profile, columns));
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                        Task.Factory.StartNew(logAct);
-                    }
+                    if (Enabled)
+                        Log();
                 }
                 catch (Exception)
                 {
-
+                    
                 }
                 finally
                 {
@@ -200,6 +136,101 @@ namespace EasyScada.Winforms.Controls
                     if (nextInterval < 1)
                         nextInterval = 1;
                     Thread.Sleep(nextInterval);
+                }
+            }
+        }
+
+        public void Log()
+        {
+            if (isStarted && EasyDriverConnectorProvider.GetEasyDriverConnector().IsStarted)
+            {
+                Action logAct = new Action(() =>
+                {
+                    DateTime logTime = DateTime.Now;
+                    LogColumn[] columns = this.columns.ToArray();
+                    bool isTagBad = false;
+                    foreach (LogColumn col in columns)
+                    {
+                        if (!(col.Quality == Quality.Good))
+                        {
+                            isTagBad = true;
+                            break;
+                        }
+                    }
+
+                    if (AllowLogWhenTagBad || (!AllowLogWhenTagBad && !isTagBad))
+                    {
+                        foreach (LogProfile profile in profiles)
+                        {
+                            if (profile != null)
+                            {
+                                string insertQuery = profile.GetInsertQuery(logTime, columns);
+                                try
+                                {
+                                    LoggingEventArgs args = new LoggingEventArgs(insertQuery, profile, columns);
+                                    Logging?.Invoke(this, args);
+                                    if (args.Cancel)
+                                        continue;
+
+                                    // Create database schema if not exists
+                                    profile.GetCommand(out DbConnection conn, out DbCommand cmd, false);
+                                    conn.Open();
+                                    cmd.CommandText = profile.GetCreateSchemaQuery();
+                                    cmd.ExecuteNonQuery();
+                                    conn.Close();
+                                    conn.Dispose();
+                                    cmd.Dispose();
+                                    // Create table if not exists
+                                    profile.GetCommand(out conn, out cmd, out DbDataAdapter adp, true);
+                                    conn.Open();
+                                    cmd.CommandText = profile.GetCreateTableQuery(columns);
+                                    int createTableRes = cmd.ExecuteNonQuery();
+
+                                    // Create table result = 0. It means table already exists
+                                    if (createTableRes == 0)
+                                    {
+                                        // We need to check the columns name
+                                        cmd.CommandText = profile.GetSelectQuery(1);
+                                        adp.SelectCommand = cmd;
+                                        DataTable dt = new DataTable();
+                                        adp.Fill(dt);
+                                    }
+                                    cmd.CommandText = insertQuery;
+                                    int logRes = cmd.ExecuteNonQuery();
+                                    Logged?.Invoke(this, new LoggedEventArgs(insertQuery, logRes, profile, columns));
+                                }
+                                catch (Exception ex)
+                                {
+                                    Failed?.Invoke(this, new LogErrorEventArgs(insertQuery, ex, profile, columns));
+                                }
+                            }
+                        }
+                    }
+                });
+                Task.Factory.StartNew(logAct);
+            }
+        }
+
+        public void CreateTable()
+        {
+            LogColumn[] columns = this.columns.ToArray();
+            foreach (LogProfile profile in profiles)
+            {
+                if (profile != null)
+                {
+                    // Create database schema if not exists
+                    profile.GetCommand(out DbConnection conn, out DbCommand cmd, false);
+                    conn.Open();
+                    cmd.CommandText = profile.GetCreateSchemaQuery();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    conn.Dispose();
+                    cmd.Dispose();
+                    // Create table if not exists
+                    profile.GetCommand(out conn, out cmd, out DbDataAdapter adp, true);
+                    conn.Open();
+                    cmd.CommandText = profile.GetCreateTableQuery(columns);
+                    int createTableRes = cmd.ExecuteNonQuery();
                 }
             }
         }

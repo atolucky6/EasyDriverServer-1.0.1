@@ -99,7 +99,7 @@ namespace EasyDriver.Core
         [JsonIgnore]
         public Quality Quality
         {
-            get => quality;
+            get => IsInternalTag ? Quality.Good : quality;
             set
             {
                 try

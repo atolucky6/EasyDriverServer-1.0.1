@@ -79,23 +79,9 @@ namespace EasyDriver.DPA870
         {
             try
             {
-                byte[] buffer = new byte[serial.SerialPort.BytesToRead];
-                serial.SerialPort.Read(buffer, 0, buffer.Length);
-
-                receivedLine = Encoding.ASCII.GetString(buffer);
-                //receivedLine = ASCIIEncoding.UTF8.GetString(buffer);
-                //receivedLine = ASCIIEncoding.Default.GetString(buffer);
-                //receivedLine = ASCIIEncoding.UTF7.GetString(buffer);
-                //receivedLine = ASCIIEncoding.UTF32.GetString(buffer);
-                //receivedLine = Encoding.GetEncoding(1252).GetString(buffer);
-
-                //foreach (var item in Encoding.GetEncodings())
-                //{
-                //    var encode = item.GetEncoding();
-                //    var res = encode.GetString(buffer);
-                //    Debug.WriteLine($"{encode.CodePage} - {encode.HeaderName}: {res}");
-                //}
-
+                serial.SerialPort.ReadTimeout = 5000;
+                serial.SerialPort.WriteTimeout = 5000;
+                receivedLine = serial.SerialPort.ReadLine();
                 if (!string.IsNullOrEmpty(receivedLine))
                 {
                     string[] splitData = receivedLine.Split(' ');
@@ -134,6 +120,8 @@ namespace EasyDriver.DPA870
                     }
                 }
 
+                serial.SerialPort.DiscardOutBuffer();
+                serial.SerialPort.DiscardInBuffer();
             }
             catch
             {
@@ -149,6 +137,7 @@ namespace EasyDriver.DPA870
             }
             finally
             {
+                Thread.Sleep(500);
                 Refreshed?.Invoke(this, EventArgs.Empty);
             }
         }
