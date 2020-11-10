@@ -9,40 +9,7 @@ namespace EasyDriverPlugin
         /// <summary>
         /// Danh sách con của đối tượng này
         /// </summary>
-        ObservableCoreItems Childs { get; }
-
-        /// <summary>
-        /// Hàm thêm <see cref="ICoreItem"/> vào danh sách con
-        /// </summary>
-        /// <param name="item">Đối tượng cần thêm</param>
-        /// <returns></returns>
-        bool Add(ICoreItem item);
-
-        /// <summary>
-        /// Hàm thêm một danh sách <see cref="ICoreItem"/> vào danh sách con
-        /// </summary>
-        /// <param name="items">Danh sách đối tượng cần thêm</param>
-        void Add(IEnumerable<ICoreItem> items);
-
-        /// <summary>
-        /// Xóa <see cref="ICoreItem"/> khỏi danh sách con
-        /// </summary>
-        /// <param name="item">Đối tượng cần xóa</param>
-        /// <returns></returns>
-        bool Remove(ICoreItem item);
-
-        /// <summary>
-        /// Hàm xóa một danh sách <see cref="ICoreItem"/> trong danh sách con
-        /// </summary>
-        /// <param name="items">Danh sách đối tượng cần xóa</param>
-        void Remove(IEnumerable<ICoreItem> items);
-
-        /// <summary>
-        /// Hàm kiểm tra <see cref="ICoreItem"/> có tồn tại trong danh sách con không
-        /// </summary>
-        /// <param name="item">Đối tượng cần kiểm tra</param>
-        /// <returns></returns>
-        bool Contains(ICoreItem item);
+        NotifyCollection Childs { get; }
 
         /// <summary>
         /// Hàm kiểm tra xem <see cref="ICoreItem"/> trong danh sách con có thỏa mãn điều kiện truyền vào hay không
@@ -74,12 +41,12 @@ namespace EasyDriverPlugin
         /// <param name="e"></param>
         void ChildCollectionChangedCallback(NotifyCollectionChangedEventArgs e);
 
+        /// <summary>
+        /// Hàm tìm đối tượng con dựa vào đường dẫn
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <param name="nameIndex"></param>
+        /// <returns></returns>
         object Browse(string[] paths, int nameIndex);
-
-        IEnumerable<ITagCore> GetAllTags(bool findDeep = true);
-
-        IEnumerable<IDeviceCore> GetAllDevices(bool findDeep = true);
-
-        IEnumerable<IChannelCore> GetAllChannels(bool findDeep = true);
     }
 }

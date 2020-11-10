@@ -6,7 +6,6 @@ namespace EasyDriverPlugin
 {
     public interface IDataType 
     {
-
         string Name { get; set; }
 
         string Description { get; set; }

@@ -5,11 +5,12 @@ namespace EasyDriverPlugin
 {
     public interface IEasyDriverPlugin : IDisposable
     {
+        WriteQueue WriteQueue { get; }
         IChannelCore Channel { get; set; }
-        bool Connect();
-        bool Disconnect();
-        Quality Write(ITagCore tag, string value);
-        IEnumerable<IDataType> GetSupportDataTypes();
+        List<IDataType> SupportDataTypes { get; }
+
+        bool Start();
+        bool Stop();
 
         object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null);
         object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null);

@@ -16,6 +16,11 @@ namespace EasyDriverPlugin
         string Path { get; }
 
         /// <summary>
+        /// Cấp độ của đối tượng trong cây
+        /// </summary>
+        int Level { get; }
+
+        /// <summary>
         /// Thời gian tạo đối tượng
         /// </summary>
         DateTime CreatedDate { get; set; }
@@ -40,6 +45,9 @@ namespace EasyDriverPlugin
         /// </summary>
         bool IsReadOnly { get; set; }
 
+        /// <summary>
+        /// Bit cho phép đối tượng hoạt động
+        /// </summary>
         bool Enabled { get; set; }
      
         bool? IsChecked { get; set; }
@@ -81,12 +89,6 @@ namespace EasyDriverPlugin
         void RefreshPath();
 
         /// <summary>
-        /// Hàm lấy <see cref="IErrorInfo"/> của đối tượng
-        /// </summary>
-        /// <param name="errorInfo"></param>
-        void GetErrors(ref IErrorInfo errorInfo);
-
-        /// <summary>
         /// Sự kiện giá trị của <see cref="ITagCore"/> thay đổi
         /// </summary>
         event EventHandler<TagValueChangedEventArgs> ValueChanged;
@@ -95,5 +97,10 @@ namespace EasyDriverPlugin
         /// Sự kiện trạng thái của <see cref="ITagCore"/> thay đổi
         /// </summary>
         event EventHandler<TagQualityChangedEventArgs> QualityChanged;
+
+        /// <summary>
+        /// Sự kiện khi tên thay đổi
+        /// </summary>
+        event EventHandler<NameChangedEventArgs> NameChanged;
     }
 }

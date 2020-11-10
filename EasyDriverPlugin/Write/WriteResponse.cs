@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EasyDriver.Core
+namespace EasyDriverPlugin
 {
     public class WriteResponse
     {

@@ -6,7 +6,6 @@ namespace EasyDriverPlugin
     {
         ConnectionStatus ConnectionStatus { get; set; }
         string DriverPath { get; set; }
-        string CommunicationError { get; set; }
         DateTime LastRefreshTime { get; set; }
     }
 }

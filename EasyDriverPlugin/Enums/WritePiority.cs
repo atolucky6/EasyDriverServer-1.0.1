@@ -1,13 +1,10 @@
 ﻿using System;
 
-namespace EasyDriver.Core
+namespace EasyDriverPlugin
 {
-    [Serializable]
     public enum WritePiority
     {
         Default,
-        Medium,
         High,
-        Highest,
     }
 }

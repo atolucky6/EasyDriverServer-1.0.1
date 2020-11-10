@@ -166,57 +166,13 @@
     <Resource Include="Images\tag_48px.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EasyDriver.ContextWindow\EasyDriver.ContextWindow.csproj">
-      <Project>{420E4897-82A5-4888-A176-9E3F14B4479A}</Project>
-      <Name>EasyDriver.ContextWindow</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.CopyPaste\EasyDriver.CopyPaste.csproj">
-      <Project>{51216A76-E992-45D7-9C5F-3E094C3B0E92}</Project>
-      <Name>EasyDriver.CopyPaste</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.CoreItemFactory\EasyDriver.CoreItemFactory.csproj">
-      <Project>{e4f1317c-b5b5-4ade-a24b-f32aef011223}</Project>
-      <Name>EasyDriver.CoreItemFactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.DriverManager\EasyDriver.DriverManager.csproj">
-      <Project>{6EF333EB-4AE1-4E3B-B79F-CE8E3E7D1E2A}</Project>
-      <Name>EasyDriver.DriverManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.Helper\EasyDriver.Helper.csproj">
-      <Project>{91d4b09d-53b7-464d-9fc7-1b03a33eebde}</Project>
-      <Name>EasyDriver.Helper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.ProjectManager\EasyDriver.ProjectManager.csproj">
-      <Project>{DDE2B76B-C794-45E1-852D-538BC35609B0}</Project>
-      <Name>EasyDriver.ProjectManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.RemoteConnectionManager\EasyDriver.RemoteConnectionManager.csproj">
-      <Project>{3256F18B-6815-4BF8-8020-1736F88A2798}</Project>
-      <Name>EasyDriver.RemoteConnectionManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.Reversible\EasyDriver.Reversible.csproj">
-      <Project>{E4D82CAD-7B55-484E-8F88-AC6996477181}</Project>
-      <Name>EasyDriver.Reversible</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EasyDriver.Server.Models\EasyDriver.Core.csproj">
       <Project>{67089d82-2fde-46c7-9264-ed5c066dc8ad}</Project>
       <Name>EasyDriver.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.ServicePlugin\EasyDriver.ServicePlugin.csproj">
-      <Project>{D1836482-3072-483C-92E6-4C9742D9FCCB}</Project>
-      <Name>EasyDriver.ServicePlugin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.SyncContext\EasyDriver.SyncContext.csproj">
-      <Project>{DB049D20-9A04-4F7A-955C-612A60D227AC}</Project>
-      <Name>EasyDriver.SyncContext</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EasyDriverPlugin\EasyDriverPlugin.csproj">
       <Project>{5CBCE8B3-27A3-4D71-B38A-9CEEEF539F0A}</Project>
       <Name>EasyDriverPlugin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriverServer.ViewModel\EasyDriverServer.ViewModel.csproj">
-      <Project>{e15427a1-140d-474b-a2af-c48d8562e938}</Project>
-      <Name>EasyDriverServer.ViewModel</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -76,6 +76,7 @@ namespace EasyDriver.ModbusRTU
                 spnScanRate.EditValue = TagEdit.RefreshRate;
                 spnGain.EditValue = TagEdit.Gain;
                 spnOffset.EditValue = TagEdit.Offset;
+                txbDescription.Text = TagEdit.Description;
 
                 int dtIndex = DataTypeSource.FindIndex(x => x.Name == TagEdit.DataType.Name);
                 if (dtIndex > -1)
@@ -140,6 +141,7 @@ namespace EasyDriver.ModbusRTU
             }
 
             TagEdit.Name = txbName.Text?.Trim();
+            TagEdit.Description = txbDescription.Text?.Trim();
             TagEdit.AccessPermission = accessPermission;
             TagEdit.DataType = (IDataType)cobDataType.SelectedItem;
             TagEdit.Address = address.ToString();

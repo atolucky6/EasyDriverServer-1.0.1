@@ -154,6 +154,7 @@ namespace EasyDriver.ModbusTCP
                 ITagCore tag = new TagCore(ParentItem)
                 {
                     Name = HaveTagObj.GetUniqueNameInGroupTags(string.Format(nameFormat, number)),
+                    Description = txbDescription.Text?.Trim(),
                     AccessPermission = accessPermission,
                     DataType = (IDataType)cobDataType.SelectedItem,
                     Address = adrString,

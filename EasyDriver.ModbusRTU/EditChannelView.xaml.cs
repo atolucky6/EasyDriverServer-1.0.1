@@ -102,6 +102,7 @@ namespace EasyDriver.ModbusRTU
                 cobStopBits.Text = Channel.ParameterContainer.Parameters["StopBits"];
                 spnDelayPool.Text = Channel.ParameterContainer.Parameters["DelayBetweenPool"];
                 spnScanRate.Text = Channel.ParameterContainer.Parameters["ScanRate"];
+                txbDescription.Text = Channel.Description;
             }
         }
 
@@ -133,6 +134,7 @@ namespace EasyDriver.ModbusRTU
                 Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem.ToString();
                 Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
                 Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
+                Driver.Channel.Description = txbDescription.Text;
 
                 ((Parent as FrameworkElement).Parent as Window).Tag = Channel;
                 ((Parent as FrameworkElement).Parent as Window).Close();

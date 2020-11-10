@@ -1,4 +1,4 @@
-﻿namespace EasyDriver.Core
+﻿namespace EasyDriverPlugin
 {
     public enum WriteMode
     {

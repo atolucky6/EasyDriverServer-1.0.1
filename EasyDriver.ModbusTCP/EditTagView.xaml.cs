@@ -68,6 +68,7 @@ namespace EasyDriver.ModbusTCP
         {
             if (TagEdit != null)
             {
+                txbDescription.Text = TagEdit.Description;
                 txbName.Text = TagEdit.Name;
                 cobPermission.SelectedItem = TagEdit.AccessPermission;
                 cobDataType.SelectedItem = TagEdit.DataType;
@@ -139,6 +140,7 @@ namespace EasyDriver.ModbusTCP
             }
 
             TagEdit.Name = txbName.Text?.Trim();
+            TagEdit.Description = txbDescription.Text?.Trim();
             TagEdit.AccessPermission = accessPermission;
             TagEdit.DataType = (IDataType)cobDataType.SelectedItem;
             TagEdit.Address = address.ToString();

@@ -1,4 +1,5 @@
 ﻿using DevExpress.Xpf.Core;
+using DevExpress.XtraEditors.Filtering.Templates;
 using EasyDriverPlugin;
 using System;
 using System.Collections.Generic;
@@ -111,6 +112,7 @@ namespace EasyDriver.ModbusRTU
         {   
             if (CheckPortNotIsInUse(cobPort.SelectedItem?.ToString()))
             {
+                Driver.Channel.Description = txbDescription.Text?.Trim();
                 Driver.Channel.ParameterContainer.DisplayName = "ModbusRTU Comunication Parameters";
                 Driver.Channel.ParameterContainer.DisplayParameters = "ModbusRTU Comunication Parameters";
                 Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem.ToString();

@@ -71,6 +71,8 @@ namespace EasyDriver.ModbusTCP
             if (Device != null)
             {
                 txbName.Text = Device.Name;
+                txbDescription.Text = Device.Description;
+
                 txbIpAddress.Text = Device.ParameterContainer.Parameters["IpAddress"]?.ToString();
                 if (decimal.TryParse(Device.ParameterContainer.Parameters["Timeout"], out decimal timeout))
                     spnTimeout.Value = timeout;
@@ -193,6 +195,7 @@ namespace EasyDriver.ModbusTCP
             if (Validate())
             {
                 Device.Name = txbName.Text?.Trim();
+                Device.Description = txbDescription.Text?.Trim();
                 Device.ParameterContainer.DisplayName = "ModbusRTU Device Parameter";
                 Device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";
 
