@@ -113,7 +113,7 @@ namespace EasyDriver.Core
         /// </summary>
         [Browsable(false)]
         [JsonIgnore]
-        public ObservableCoreItems Childs { get; private set; }
+        public NotifyCollection Childs { get; private set; }
 
         #endregion
 
@@ -127,7 +127,7 @@ namespace EasyDriver.Core
             Parent = parent;
             SetProperty(DateTime.Now, nameof(CreatedDate), false);
             SetProperty(DateTime.Now, nameof(ModifiedDate), false);
-            Childs = new ObservableCoreItems(this);
+            Childs = new NotifyCollection(this);
             IsChanged = false;
         }
 

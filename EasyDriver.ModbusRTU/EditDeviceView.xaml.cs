@@ -78,6 +78,7 @@ namespace EasyDriver.ModbusRTU
                     spnTryReadWrite.Value = tryReadWriteTimes;
                 if (decimal.TryParse(Device.ParameterContainer.Parameters["DeviceId"], out decimal deviceId))
                     spnDeviceId.Value = deviceId;
+                txbDescription.Text = Device.Description;
 
                 if (Device.ParameterContainer.Parameters.ContainsKey("ReadInputContactsBlockSetting"))
                 {
@@ -190,7 +191,7 @@ namespace EasyDriver.ModbusRTU
                 Device.Name = txbName.Text?.Trim();
                 Device.ParameterContainer.DisplayName = "ModbusRTU Device Parameter";
                 Device.ParameterContainer.DisplayParameters = "ModbusRTU Device Parameter";
-
+                Device.Description = txbDescription.Text?.Trim();
                 Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value.ToString();
                 Device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
                 Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();

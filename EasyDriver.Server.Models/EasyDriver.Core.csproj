@@ -58,12 +58,9 @@
     <Compile Include="Base\Commons\BindableCore.cs" />
     <Compile Include="Base\CoreItem\CoreItemBase.cs" />
     <Compile Include="Base\GroupItem\GroupItemBase.cs" />
-    <Compile Include="Base\IErrorInfo.cs" />
     <Compile Include="Base\Commons\PropertyCategory.cs" />
     <Compile Include="Server\DeviceCore.cs" />
     <Compile Include="EasyScadaProject.cs" />
-    <Compile Include="Enum\WriteMode.cs" />
-    <Compile Include="Enum\WritePiority.cs" />
     <Compile Include="Extensions\AssemblyHelper.cs" />
     <Compile Include="Extensions\CopyHelper.cs" />
     <Compile Include="IEasyScadaProject.cs" />
@@ -76,8 +73,6 @@
     <Compile Include="Utils\CoreItemJsonConverter.cs" />
     <Compile Include="Utils\EasyScadaProjectJsonConverter.cs" />
     <Compile Include="Utils\Helper.cs" />
-    <Compile Include="Clients\WriteCommand.cs" />
-    <Compile Include="Clients\WriteResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyDriverPlugin\EasyDriverPlugin.csproj">

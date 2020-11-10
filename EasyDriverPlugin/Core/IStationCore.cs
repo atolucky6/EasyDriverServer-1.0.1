@@ -6,12 +6,11 @@ namespace EasyDriverPlugin
     {
         string RemoteAddress { get; set; }
         ushort Port { get; set; }
+        string ConnectionString { get; set; }
         CommunicationMode CommunicationMode { get; set; }
         ConnectionStatus ConnectionStatus { get; set; }
         string StationType { get; set; }
         int RefreshRate { get; set; }
-        string CommunicationError { get; set; }
         DateTime LastRefreshTime { get; set; }
-        string OpcDaServerName { get; set; }
     }
 }

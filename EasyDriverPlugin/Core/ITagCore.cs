@@ -75,8 +75,14 @@ namespace EasyDriverPlugin
         /// </summary>
         string CommunicationError { get; set; }
 
+        /// <summary>
+        /// Trạng thái kết nối
+        /// </summary>
         ConnectionStatus ConnectionStatus { get; set; }
 
+        /// <summary>
+        /// Bit để biết tag là tag nội
+        /// </summary>
         bool IsInternalTag { get; set; }
 
         /// <summary>
@@ -84,7 +90,5 @@ namespace EasyDriverPlugin
         /// </summary>
         /// <returns></returns>
         IEnumerable<ITagCore> GetAllChildTag();
-
-        event EventHandler<NameChangedEventArgs> NameChanged;
     }
 }

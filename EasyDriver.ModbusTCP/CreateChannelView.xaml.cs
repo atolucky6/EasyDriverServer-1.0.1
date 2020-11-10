@@ -60,7 +60,7 @@ namespace EasyDriver.ModbusTCP
             Driver.Channel.ParameterContainer.DisplayName = "ModbusTCP Comunication Parameters";
             Driver.Channel.ParameterContainer.DisplayParameters = "ModbusTCP Comunication Parameters";
             Driver.Channel.ParameterContainer.Parameters["Port"] = spnPort.Value.ToString();
-
+            Driver.Channel.Description = txbDescription.Text?.Trim();
             Driver.Connect();
             ((Parent as FrameworkElement).Parent as Window).Tag = Driver.Channel;
             ((Parent as FrameworkElement).Parent as Window).Close();

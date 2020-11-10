@@ -51,14 +51,6 @@
       <Project>{67089D82-2FDE-46C7-9264-ED5C066DC8AD}</Project>
       <Name>EasyDriver.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.ServiceContainer\EasyDriver.ServiceContainer.csproj">
-      <Project>{4DA21CDA-B01B-4890-83E4-E1CDE9E0B13A}</Project>
-      <Name>EasyDriver.ServiceContainer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.ServicePlugin\EasyDriver.ServicePlugin.csproj">
-      <Project>{D1836482-3072-483C-92E6-4C9742D9FCCB}</Project>
-      <Name>EasyDriver.ServicePlugin</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EasyDriverPlugin\EasyDriverPlugin.csproj">
       <Project>{5CBCE8B3-27A3-4D71-B38A-9CEEEF539F0A}</Project>
       <Name>EasyDriverPlugin</Name>

@@ -195,7 +195,8 @@ namespace EasyScada.ServerApplication
                                 ReversibleCollection<object> reversibleCollection = ObjectHaveTag.Tags.AsReversibleCollection();
                                 for (int i = newTags.Count - 1; i <= 0; i--)
                                 {
-                                    reversibleCollection.Insert(selectedIndex, newTags[i]);
+                                    if (i >= 0)
+                                        reversibleCollection.Insert(selectedIndex, newTags[i]);
                                 }
                                 ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, false);
                                 ObjectHaveTag.Tags.NotifyResetCollection();
@@ -239,9 +240,10 @@ namespace EasyScada.ServerApplication
                             {
                                 ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, true);
                                 ReversibleCollection<object> reversibleCollection = ObjectHaveTag.Tags.AsReversibleCollection();
-                                for (int i = newTags.Count - 1; i <= 0; i--)
+                                for (int i = newTags.Count - 1; i >= 0; i--)
                                 {
-                                    reversibleCollection.Insert(selectedIndex + 1, newTags[i]);
+                                    if (i >= 0)
+                                        reversibleCollection.Insert(selectedIndex + 1, newTags[i]);
                                 }
                                 ObjectHaveTag.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, false);
                                 ObjectHaveTag.Tags.NotifyResetCollection();

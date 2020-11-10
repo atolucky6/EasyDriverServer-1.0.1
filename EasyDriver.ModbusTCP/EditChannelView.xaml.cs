@@ -58,6 +58,7 @@ namespace EasyDriver.ModbusTCP
         {
             if (Channel != null)
             {
+                txbDescription.Text = Channel.Description;
                 txbName.Text = Channel.Name;
                 spnPort.EditValue = Convert.ToUInt16(Channel.ParameterContainer.Parameters["Port"]);
             }
@@ -88,6 +89,7 @@ namespace EasyDriver.ModbusTCP
             Driver.Channel.ParameterContainer.DisplayName = "ModbusTCP Comunication Parameters";
             Driver.Channel.ParameterContainer.DisplayParameters = "ModbusTCP Comunication Parameters";
             Driver.Channel.ParameterContainer.Parameters["Port"] = currentPort.ToString();
+            Driver.Channel.Description = txbDescription.Text?.Trim();
 
             ((Parent as FrameworkElement).Parent as Window).Tag = Channel;
             ((Parent as FrameworkElement).Parent as Window).Close();

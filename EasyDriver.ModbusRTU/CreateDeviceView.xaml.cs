@@ -201,6 +201,7 @@ namespace EasyDriver.ModbusRTU
             device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
             device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();
             device.ParameterContainer.Parameters["DeviceId"] = spnDeviceId.Value.ToString();
+            device.Description = txbDescription.Text?.Trim();
 
             DisableErrorBlockSettings(blockInputContacts.ReadBlockSettings);
             DisableErrorBlockSettings(blockOutputCoils.ReadBlockSettings);

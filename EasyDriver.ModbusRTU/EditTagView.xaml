@@ -86,6 +86,15 @@
                                                 SelectedIndex="0" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Description">
+                                            <dxe:TextEdit
+                                                x:Name="txbDescription"
+                                                Height="44"
+                                                HorizontalContentAlignment="Left"
+                                                VerticalContentAlignment="Top" />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
                             </dxlc:LayoutControl>
                         </dxdo:LayoutControlItem>

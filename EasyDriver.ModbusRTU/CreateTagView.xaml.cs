@@ -169,6 +169,7 @@ namespace EasyDriver.ModbusRTU
                 number++;
                 tag.ParameterContainer.DisplayName = "Tag Parameters";
                 tag.ParameterContainer.DisplayParameters = "Tag Parameters";
+                tag.Description = txbDescription.Text?.Trim();
                 currentTagName = tag.Name;
                 createTags.Add(tag);
                 adrNumber++;

@@ -45,16 +45,6 @@
     <Compile Include="IApplicationSyncService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EasyDriver.ServiceContainer\EasyDriver.ServiceContainer.csproj">
-      <Project>{4da21cda-b01b-4890-83e4-e1cde9e0b13a}</Project>
-      <Name>EasyDriver.ServiceContainer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.ServicePlugin\EasyDriver.ServicePlugin.csproj">
-      <Project>{d1836482-3072-483c-92e6-4c9742d9fccb}</Project>
-      <Name>EasyDriver.ServicePlugin</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

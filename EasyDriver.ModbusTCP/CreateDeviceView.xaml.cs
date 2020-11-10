@@ -199,6 +199,7 @@ namespace EasyDriver.ModbusTCP
 
             IDeviceCore device = new DeviceCore(ParentItem);
             device.Name = txbName.Text?.Trim();
+            device.Description = txbDescription.Text?.Trim();
             device.ParameterContainer.DisplayName = "ModbusTCP Device Parameter";
             device.ParameterContainer.DisplayParameters = "ModbusTCP Device Parameter";
 

@@ -78,13 +78,13 @@
     <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Enums\ErrorMessageType.cs" />
     <Compile Include="Enums\Quality.cs" />
+    <Compile Include="EventArgs\CommandExecutedEventArgs.cs" />
     <Compile Include="EventArgs\TagQualityChangedEventArgs.cs" />
     <Compile Include="EventArgs\TagValueChangedEventArgs.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Core\IChannelCore.cs" />
     <Compile Include="Core\ICoreItem.cs" />
     <Compile Include="Core\IDeviceCore.cs" />
-    <Compile Include="Core\IErrorInfo.cs" />
     <Compile Include="Core\IGroupItem.cs" />
     <Compile Include="Helper\Extensions.cs" />
     <Compile Include="Helper\Utils.cs" />
@@ -95,10 +95,15 @@
     <Compile Include="Interfaces\ISupportParameters.cs" />
     <Compile Include="Interfaces\ISupportSynchronization.cs" />
     <Compile Include="Core\ITagCore.cs" />
-    <Compile Include="Core\ObservableCoreItems.cs" />
-    <Compile Include="NameChangedEventArgs.cs" />
+    <Compile Include="Core\NotifyCollection.cs" />
+    <Compile Include="EventArgs\NameChangedEventArgs.cs" />
     <Compile Include="Plugin\IEasyDriverPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Write\WriteCommand.cs" />
+    <Compile Include="Write\WriteMode.cs" />
+    <Compile Include="Enums\WritePiority.cs" />
+    <Compile Include="Write\WriteQueue.cs" />
+    <Compile Include="Write\WriteResponse.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

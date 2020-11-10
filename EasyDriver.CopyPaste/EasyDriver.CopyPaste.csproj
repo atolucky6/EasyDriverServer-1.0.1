@@ -46,16 +46,6 @@
     <Compile Include="ISupportCopyPaste.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EasyDriver.ServiceContainer\EasyDriver.ServiceContainer.csproj">
-      <Project>{4DA21CDA-B01B-4890-83E4-E1CDE9E0B13A}</Project>
-      <Name>EasyDriver.ServiceContainer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyDriver.ServicePlugin\EasyDriver.ServicePlugin.csproj">
-      <Project>{D1836482-3072-483C-92E6-4C9742D9FCCB}</Project>
-      <Name>EasyDriver.ServicePlugin</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\Services\</PostBuildEvent>
