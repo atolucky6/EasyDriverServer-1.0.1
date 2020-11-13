@@ -18,14 +18,14 @@ namespace EasyScada.ServerApplication
         #region Constructors
 
         public RemoteOpcDaProjectTreeViewModel(
-            IOpcDaClientManagerService opcDaClientManagerService,
+            IRemoteConnectionManagerService remoteConnectionManagerService,
             IProjectManagerService projectManagerService)
         {
             Title = "Easy Driver Server";
             SizeToContent = SizeToContent.Manual;
             Height = 600;
             Width = 800;
-            OpcDaClientManagerService = opcDaClientManagerService;
+            RemoteConnectionManagerService = remoteConnectionManagerService;
             ProjectManagerService = projectManagerService;
             Source = new List<IGroupItem>();
         }
@@ -35,7 +35,7 @@ namespace EasyScada.ServerApplication
         #region Injected services
 
         protected IProjectManagerService ProjectManagerService { get; set; }
-        protected IOpcDaClientManagerService OpcDaClientManagerService { get; set; }
+        protected IRemoteConnectionManagerService RemoteConnectionManagerService { get; set; }
 
         #endregion
 
@@ -157,7 +157,7 @@ namespace EasyScada.ServerApplication
                             }
                             else
                             {
-                                groupItem.Add(x);
+                                groupItem.Childs.Add(x);
                             }
                         });
                     }
@@ -263,7 +263,7 @@ namespace EasyScada.ServerApplication
                 {
                     if (coreItem.IsChecked.HasValue && !coreItem.IsChecked.Value)
                     {
-                        groupItem.Remove(coreItem);
+                        groupItem.Childs.Remove(coreItem);
                     }
                     else
                     {

@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 
 namespace EasyDriver.Core
 {
-    [JsonConverter(typeof(EasyScadaProjectJsonConverter))]
     [Serializable]
     public class EasyScadaProject : GroupItemBase, IEasyScadaProject
     {
@@ -14,8 +13,10 @@ namespace EasyDriver.Core
         {
             Stations = new Indexer<IStationCore>(this);
             LocalStation = new LocalStation(this);
-            Add(LocalStation);
+            Childs.Add(LocalStation);
         }
+
+        public override ItemType ItemType { get; set; } = ItemType.ConnectionSchema;
 
         [JsonIgnore]
         public override string Path => string.Empty;
@@ -41,11 +42,6 @@ namespace EasyDriver.Core
         public override string GetErrorOfProperty(string propertyName)
         {
             return string.Empty;
-        }
-
-        public override void GetErrors(ref IErrorInfo errorInfo)
-        {
-
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using EasyDriver.Core;
+using EasyDriverPlugin;
 using System.Collections.Generic;
 using System.ComponentModel;
 

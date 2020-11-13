@@ -153,20 +153,21 @@ namespace EasyScada.ServerApplication
             string url = $"http://*:{IoC.Instance.Get<ApplicationViewModel>().ServerConfiguration.Port}";
             WebApp.Start(url);
             Current.MainWindow.Show();
-            string startUpFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\startup.ini";
-            if (File.Exists(startUpFilePath))
-            {
-                string startUpProjectPath = File.ReadAllText(startUpFilePath);
-                if (File.Exists(startUpProjectPath))
-                {
-                    var projectManager = IoC.Instance.Get<IProjectManagerService>();
-                    var loadedProject = projectManager.OpenProject(startUpProjectPath);
-                    if (loadedProject != null)
-                    {
-                        projectManager.CurrentProject = loadedProject;
-                    }
-                }
-            }
+
+            //string startUpFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\startup.ini";
+            //if (File.Exists(startUpFilePath))
+            //{
+            //    string startUpProjectPath = File.ReadAllText(startUpFilePath);
+            //    if (File.Exists(startUpProjectPath))
+            //    {
+            //        var projectManager = IoC.Instance.Get<IProjectManagerService>();
+            //        var loadedProject = projectManager.OpenProject(startUpProjectPath);
+            //        if (loadedProject != null)
+            //        {
+            //            projectManager.CurrentProject = loadedProject;
+            //        }
+            //    }
+            //}
             manager.Close();
         }
 

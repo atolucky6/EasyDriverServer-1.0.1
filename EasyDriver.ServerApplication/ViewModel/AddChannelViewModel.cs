@@ -65,12 +65,6 @@ namespace EasyScada.ServerApplication
         public virtual bool IsBusy { get; set; }
         #endregion
 
-        #region Private members
-
-        private string startPath { get; set; }
-
-        #endregion
-
         #region Commands
 
         public void Save()
@@ -84,20 +78,17 @@ namespace EasyScada.ServerApplication
                 else
                 {
                     IsBusy = true;
-                    IChannelCore channel = new ChannelCore(Parent)
-                    {
-                        Name = Name,
-                        DriverPath = $"{ApplicationViewModel.DriverFolderPath}\\{SelectedDriver}.dll"
-                    };
-                    IEasyDriverPlugin driver = AssemblyHelper.LoadAndCreateInstance<IEasyDriverPlugin>(channel.DriverPath);
+                    string driverPath = $"{ApplicationViewModel.DriverFolderPath}\\{SelectedDriver}.dll";
+                    IEasyDriverPlugin driver = AssemblyHelper.LoadAndCreateInstance<IEasyDriverPlugin>(driverPath);
                     if (driver != null)
                     {
                         CurrentWindowService.Hide();
-                        driver.Channel = channel;
-                        if (ContextWindowService.Show(driver.GetCreateChannelControl(ProjectManagerService.CurrentProject.Childs[0] as LocalStation), "Add Channel") == channel)
+                        if (ContextWindowService.Show(driver.GetCreateChannelControl(ProjectManagerService.CurrentProject.Childs[0] as LocalStation), "Add Channel") is IChannelCore channel)
                         {
-                            Parent.Add(channel);
+                            channel.Name = Name;
+                            Parent.Childs.Add(channel);
                             DriverManagerService.AddDriver(channel, driver);
+                            driver.Start(channel);
                         }
                         CurrentWindowService.Close();
                     }

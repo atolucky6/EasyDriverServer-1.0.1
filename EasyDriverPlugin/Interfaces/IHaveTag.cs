@@ -9,6 +9,6 @@ namespace EasyDriverPlugin
     public interface IHaveTag
     {
         bool HaveTags { get; set; }
-        TagCollection Tags { get; }
+        NotifyCollection Tags { get; }
     }
 }

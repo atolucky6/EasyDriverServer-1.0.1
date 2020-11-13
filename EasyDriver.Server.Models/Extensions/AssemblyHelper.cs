@@ -19,11 +19,23 @@ namespace EasyDriver.Core
         {
             try
             {
-                if (path.EndsWith(".dll") && File.Exists(path))
+                string driverPath = "";
+                if (path.EndsWith(".dll"))
+                {
+                    driverPath = path;
+                    if (!File.Exists(driverPath))
+                        return null;
+                }
+                else
+                {
+                    driverPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Driver\\" + path + ".dll";
+                }
+
+                if (driverPath.EndsWith(".dll") && File.Exists(driverPath))
                 {
                     Type interfaceType = typeof(T);
                     var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                    string fullPath = Path.GetFullPath(path);
+                    string fullPath = Path.GetFullPath(driverPath);
                     Assembly loadedAssembly = null;
                     foreach (var assembly in assemblies)
                     {

@@ -156,8 +156,13 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IoC\CoreItemJsonConverter.cs" />
+    <Compile Include="IoC\EasyScadaProjectJsonConverter.cs" />
     <Compile Include="IoC\Service\IInternalStorageService.cs" />
     <Compile Include="Model\InternalTagModel.cs" />
+    <Compile Include="RemoteConnection\IRemoteConnection.cs" />
+    <Compile Include="RemoteConnection\OpcDaRemoteStationConnection.cs" />
+    <Compile Include="RemoteConnection\RemoteStationConnection.cs" />
     <Compile Include="ViewModel\GroupViewModel.cs" />
     <Compile Include="ViewModel\InternalTagViewModel.cs" />
     <Compile Include="View\GroupView.xaml.cs">
@@ -187,7 +192,6 @@
     </Compile>
     <Compile Include="IoC\Behaviors\KeyDownBehavior.cs" />
     <Compile Include="IoC\Service\ILicenseManagerService.cs" />
-    <Compile Include="IoC\Service\IOpcDaClientManagerService.cs" />
     <Compile Include="OPC DA\OpcDaBootstrap.cs" />
     <Compile Include="OPC DA\Common\ComProxyBlanket.cs" />
     <Compile Include="OPC DA\Common\ComWrapper.cs" />
@@ -418,7 +422,7 @@
     </Compile>
     <Compile Include="Hub\IHubFactory.cs" />
     <Compile Include="IoC\Behaviors\FindImageForBreadcrumb.cs" />
-    <Compile Include="IoC\Service\IHubConnectionManagerService.cs" />
+    <Compile Include="IoC\Service\IRemoteConnectionManagerService.cs" />
     <Compile Include="IoC\Service\IServerBroadcastService.cs" />
     <Compile Include="IoC\Service\ITableViewUtilities.cs" />
     <Compile Include="Model\HubModel.cs" />

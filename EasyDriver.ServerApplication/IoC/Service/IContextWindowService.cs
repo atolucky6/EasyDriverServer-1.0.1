@@ -22,7 +22,7 @@ namespace EasyScada.ServerApplication
             };
             contextWindow.Owner = Application.Current.MainWindow;
             contextWindow.ShowDialog();
-            Tag = contextWindow.Tag;
+            Tag = contextWindow.GetTag();
             return Tag;
         }
     }

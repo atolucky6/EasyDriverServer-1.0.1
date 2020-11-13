@@ -1,6 +1,8 @@
 ﻿using EasyDriverPlugin;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -9,60 +11,10 @@ namespace EasyDriver.ModbusRTU
     [Serializable]
     public class ReadBlockSetting : INotifyPropertyChanged, IDataErrorInfo
     {
-        public ReadBlockSetting()
-        {
-            IsChanged = true;
-            tagCache = new Hashtable();
-        }
-
-        readonly Hashtable tagCache;
-
-        public bool ReadResult { get; set; }
-
-        public DateTime LastReadTime { get; set; }
-
-        public bool[] BoolBuffer;
-        public byte[] ByteBuffer;
-
-        public bool IsChanged { get; set; }
-
-        bool isValid;
-        public bool IsValid
-        {
-            get
-            {
-                if (IsChanged)
-                {
-                    isValid = Enabled && string.IsNullOrEmpty(this["StartAddress"]) && string.IsNullOrEmpty(this["EndAddress"]);
-                    isValid = StartAddress.DecomposeAddress(out AddressType startAddressType, out startOffset);
-                    isValid = EndAddress.DecomposeAddress(out AddressType endAddressType, out endOffset);
-                    Count = (ushort)(endOffset - startOffset + 1);
-
-                    if (AddressType == AddressType.InputContact ||
-                        AddressType == AddressType.OutputCoil)
-                    {
-                        BoolBuffer = new bool[Count];
-                    }
-                    else
-                    {
-                        ByteBuffer = new byte[Count * 2];
-                    }
-                    IsChanged = false;
-                }
-                return isValid;
-            }
-        }
-
-        private ushort startOffset;
-        public ushort StartOffset { get { return startOffset; } }
-
-        private ushort endOffset;
-        public ushort EndOffset { get { return endOffset; } }
-
-        public ushort Count { get; private set; }
-
+        #region Public properties
         public AddressType AddressType { get; set; }
 
+        [JsonIgnore]
         bool enabled;
         public bool Enabled
         {
@@ -72,12 +24,13 @@ namespace EasyDriver.ModbusRTU
                 if (enabled != value)
                 {
                     enabled = value;
-                    IsChanged = true;
+                    InitializeAddress();
                     RaisePropertyChanged(null);
                 }
             }
         }
 
+        [JsonIgnore]
         string startAddress;
         public string StartAddress
         {
@@ -87,12 +40,13 @@ namespace EasyDriver.ModbusRTU
                 if (startAddress != value)
                 {
                     startAddress = value;
-                    IsChanged = true;
                     RaisePropertyChanged(null);
+                    InitializeAddress();
                 }
             }
         }
 
+        [JsonIgnore]
         string endAddress;
         public string EndAddress
         {
@@ -102,12 +56,184 @@ namespace EasyDriver.ModbusRTU
                 if (endAddress != value)
                 {
                     endAddress = value;
-                    IsChanged = true;
                     RaisePropertyChanged(null);
+                    InitializeAddress();
                 }
             }
         }
 
+        [JsonIgnore]
+        private ushort startOffset;
+        [JsonIgnore]
+        public ushort StartOffset { get { return startOffset; } }
+
+        [JsonIgnore]
+        private ushort endOffset;
+        [JsonIgnore]
+        public ushort EndOffset { get { return endOffset; } }
+
+        [JsonIgnore]
+        public ushort BufferCount { get; private set; }
+
+        [JsonIgnore]
+        public bool ReadResult { get; set; }
+
+        [JsonIgnore]
+        public DateTime LastReadTime { get; set; }
+
+        [JsonIgnore]
+        public bool IsValid { get; set; }
+
+        [JsonIgnore]
+        private Device device;
+        [JsonIgnore]
+        public Device Device
+        {
+            get => device;
+            set
+            {
+                if (device != value)
+                {
+                    device = value;
+
+                }
+            }
+        }
+
+        [JsonIgnore]
+        public List<Tag> RegisterTags { get; set; }
+        #endregion
+
+        #region Members
+        [JsonIgnore]
+        private bool isEditing;
+        [JsonIgnore]
+        public bool[] BoolBuffer;
+        [JsonIgnore]
+        public byte[] ByteBuffer;
+        #endregion
+
+        #region Constructors
+        public ReadBlockSetting()
+        {
+            RegisterTags = new List<Tag>();
+        }
+        #endregion
+
+        #region Methods
+        public void InitializeAddress()
+        {
+            if (!isEditing)
+            {
+                bool isValid = Enabled && string.IsNullOrEmpty(this["StartAddress"]) && string.IsNullOrEmpty(this["EndAddress"]);
+                StartAddress.DecomposeAddress(out AddressType startAddressType, out startOffset);
+                EndAddress.DecomposeAddress(out AddressType endAddressType, out endOffset);
+                IsValid = isValid && AddressType == startAddressType && AddressType == endAddressType;
+
+                BufferCount = (ushort)(endOffset - startOffset + 1);
+
+                if (AddressType == AddressType.InputContact ||
+                    AddressType == AddressType.OutputCoil)
+                {
+                    BoolBuffer = new bool[BufferCount];
+                }
+                else
+                {
+                    ByteBuffer = new byte[BufferCount * 2];
+                }
+
+                if (RegisterTags.Count > 0)
+                {
+                    foreach (var tag in RegisterTags.ToArray())
+                    {
+                        if (IsTagInRange(tag, out int index))
+                            tag.IndexOfDataInBlockSetting = index;
+                        else
+                        {
+                            tag.IndexOfDataInBlockSetting = 0;
+                            tag.ReadBlockSetting = null;
+                            RegisterTags.Remove(tag);
+                        }
+                    }
+                }
+
+                if (!IsValid || !Enabled)
+                {
+                    foreach (var item in RegisterTags)
+                    {
+                        item.UnregisterReadBlock();
+                        item.AddToUndifinedTags();
+                    }
+                }
+            }
+        }
+        
+        public bool IsTagInRange(Tag tag, out int index)
+        {
+            index = 0;
+            bool result = false;
+            if (Enabled && IsValid && tag != null && tag.DataType != null)
+            {
+                if (tag.AddressType == AddressType)
+                {
+                    if (AddressType == AddressType.InputContact || AddressType == AddressType.OutputCoil)
+                    {
+                        result = tag.AddressOffset <= EndOffset && tag.AddressOffset >= StartOffset;
+                        if (result)
+                        {
+                            if (tag.DataType.BitLength == 1)
+                                index = tag.AddressOffset - StartOffset;
+                            else result = false;
+                        }
+                    }
+                    else
+                    {
+                        result = (tag.AddressOffset + (tag.RequireByteLength / 2) - 1) <= EndOffset && tag.AddressOffset >= startOffset;
+                        if (result)
+                        {
+                            if (tag.DataType.BitLength != 1)
+                                index = (tag.AddressOffset - startOffset) * 2;
+                            else
+                                result = false;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public void Clear()
+        {
+            foreach (var item in RegisterTags)
+            {
+                item.UnregisterReadBlock();
+                item.AddToUndifinedTags();
+            }
+        }
+
+        public void BeginEdit()
+        {
+            isEditing = true;
+        }
+
+        public void EndEdit()
+        {
+            isEditing = false;
+            InitializeAddress();
+        }
+        #endregion
+
+        #region INotifyPropertyChanged
+        [field: NonSerialized]
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void RaisePropertyChanged([CallerMemberName]string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
+        #region IDataErrorInfo
+        [JsonIgnore]
         public string Error { get; set; }
 
         public string this[string columnName]
@@ -199,66 +325,6 @@ namespace EasyDriver.ModbusRTU
                 return Error;
             }
         }
-
-        public bool CheckTagIsInReadBlockRange(ITagCore tag, AddressType addressType, ushort offset, int dtByteLength, out int index)
-        {
-            index = 0;
-            if (tagCache.Contains(tag))
-            {
-                index = (int)tagCache[tag];
-                return true;
-            }
-            else
-            {
-                bool result = false;
-                if (AddressType == addressType)
-                {
-                    if (addressType == AddressType.InputContact ||
-                        addressType == AddressType.OutputCoil)
-                    {
-                        index = offset - StartOffset;
-                        result = offset <= EndOffset && offset >= StartOffset;
-                    }
-                    else
-                    {
-                        index = (offset - StartOffset) * 2;
-                        result = (offset + (dtByteLength / 2) - 1) <= EndOffset && offset >= startOffset;
-                    }
-                }
-                if (result)
-                    tagCache.Add(tag, index);
-                return result;
-            }
-        }
-
-        [field: NonSerialized]
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void RaisePropertyChanged([CallerMemberName]string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public override string ToString()
-        {
-            return $"{Enabled}-{StartAddress}-{EndAddress}";
-        }
-
-        public static ReadBlockSetting Convert(string value)
-        {
-            try
-            {
-                string[] split = value.Split('-');
-                if (split.Length == 3)
-                {
-                    ReadBlockSetting readBlockSetting = new ReadBlockSetting();
-                    readBlockSetting.Enabled = bool.Parse(split[0]);
-                    readBlockSetting.StartAddress = split[1];
-                    readBlockSetting.EndAddress = split[2];
-                    return readBlockSetting;
-                }
-                return null;
-            }
-            catch { return null; }
-        }
+        #endregion
     }
 }

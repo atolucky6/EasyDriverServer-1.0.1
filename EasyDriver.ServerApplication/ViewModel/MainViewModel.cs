@@ -203,7 +203,7 @@ namespace EasyScada.ServerApplication
                 // Xóa lịch sử hoạt động của dịch vụ Reverse
                 ReverseService.ClearHistory();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -348,7 +348,7 @@ namespace EasyScada.ServerApplication
                     // Xác nhận là thoát chương trình
                     ApplicationViewModel.IsMainWindowExit = true;
                     // Tắt chương trình 
-                    DispatcherService.BeginInvoke(() => Application.Current.MainWindow.Close());
+                    DispatcherService.Invoke(() => Application.Current.MainWindow.Close());
                 }
             }
         }

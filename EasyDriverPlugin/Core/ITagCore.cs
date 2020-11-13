@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Bson;
+using System;
 using System.Collections.Generic;
 
 namespace EasyDriverPlugin
@@ -59,6 +60,12 @@ namespace EasyDriverPlugin
         /// Hệ số bù cộng với Value
         /// </summary>
         double Offset { get; set; }
+
+        string ExpressionString { get; set; }
+
+        bool Retain { get; set; }
+
+        string GUID { get; set; }
 
         /// <summary>
         /// Kiểu dữ liệu của Tag

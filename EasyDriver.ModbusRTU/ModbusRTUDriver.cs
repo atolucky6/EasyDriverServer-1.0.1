@@ -7,13 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
+using DevExpress.Mvvm.POCO;
 
 namespace EasyDriver.ModbusRTU
 {
     /// <summary>
     /// Driver thực hiện việc đọc ghi giá trị
     /// </summary>
-    public class ModbusRTUDriver : IEasyDriverPlugin
+    public class ModbusRTUDriver : EasyDriverPluginBase
     {
         #region Static
         
@@ -55,11 +56,57 @@ namespace EasyDriver.ModbusRTU
             DeviceToReadBlockString = new Dictionary<IDeviceCore, List<string>>();
             semaphore = new SemaphoreSlim(1, 1);
             stopwatch = new Stopwatch();
+            WriteQueue.Enqueued += OnWriteQueueAdded;
+
+            BaudRateSource = new List<int>()
+            {
+                300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 56000, 57600, 115200, 128000, 256000
+            };
+
+            DataBitsSource = new List<int>()
+            {
+                5, 6, 7, 8
+            };
+
+            ComPortSource = new List<string>();
+            for (int i = 1; i <= 100; i++)
+            {
+                ComPortSource.Add($"COM{i}");
+            }
+
+            ParitySource = Enum.GetValues(typeof(Parity)).Cast<Parity>().ToList();
+            StopBitsSource = Enum.GetValues(typeof(StopBits)).Cast<StopBits>().ToList();
+            AddressTypeSource = Enum.GetValues(typeof(AddressType)).Cast<AddressType>().ToList();
+            ByteOrderSource = Enum.GetValues(typeof(ByteOrder)).Cast<ByteOrder>().ToList();
+            ReadModeSource = Enum.GetValues(typeof(ReadMode)).Cast<ReadMode>().ToList();
+            AccessPermissionSource = Enum.GetValues(typeof(AccessPermission)).Cast<AccessPermission>().ToList();
         }
 
         #endregion
 
         #region Members
+
+        readonly ModbusSerialRTU mbMaster;
+        private Task refreshTask;
+        readonly SemaphoreSlim semaphore;
+        readonly Stopwatch stopwatch;
+
+        public List<string> ComPortSource { get; set; }
+        public List<int> BaudRateSource { get; set; }
+        public List<int> DataBitsSource { get; set; }
+        public List<Parity> ParitySource { get; set; }
+        public List<StopBits> StopBitsSource { get; set; }
+        public List<ByteOrder> ByteOrderSource { get; set; }
+        public List<AddressType> AddressTypeSource { get; set; }
+        public List<ReadMode> ReadModeSource { get; set; }
+        public List<AccessPermission> AccessPermissionSource { get; set; }
+
+        public Channel Channel { get; set; }
+        public override List<IDataType> SupportDataTypes 
+        { 
+            get => supportDataTypes;
+            protected set => base.SupportDataTypes = value; 
+        }
 
         /// <summary>
         /// Dictionary ReadBlockSetting của Device
@@ -70,11 +117,6 @@ namespace EasyDriver.ModbusRTU
         /// Dictionary chuổi cấu hình ReadBlockSetting của Device
         /// </summary>
         public Dictionary<IDeviceCore, List<string>> DeviceToReadBlockString { get; set; }
-
-        /// <summary>
-        /// Channel chạy driver này
-        /// </summary>
-        public IChannelCore Channel { get; set; }
 
         /// <summary>
         /// Bit xác định driver này đã bị dispose
@@ -88,17 +130,8 @@ namespace EasyDriver.ModbusRTU
         {
             get
             {
-                if (Channel != null)
-                {
-                    if (Channel.ParameterContainer != null && Channel.ParameterContainer.Parameters != null)
-                    {
-                        if (Channel.ParameterContainer.Parameters.ContainsKey("ScanRate"))
-                        {
-                            if (int.TryParse(Channel.ParameterContainer.Parameters["ScanRate"].ToString(), out int scanRate))
-                                return scanRate;
-                        }
-                    }
-                }
+                if (Channel != null && Channel.ParameterContainer != null && Channel.ParameterContainer.Parameters != null)
+                    return Channel.ParameterContainer.GetValue<int>("ScanRate");
                 return 1000;
             }
         }
@@ -110,29 +143,16 @@ namespace EasyDriver.ModbusRTU
         {
             get
             {
-                if (Channel != null)
-                {
-                    if (Channel.ParameterContainer != null && Channel.ParameterContainer.Parameters != null)
-                    {
-                        if (Channel.ParameterContainer.Parameters.ContainsKey("DelayBetweenPool"))
-                        {
-                            if (int.TryParse(Channel.ParameterContainer.Parameters["DelayBetweenPool"].ToString(), out int delay))
-                                return delay;
-                        }
-                    }
-                }
-                return 10;
+                if (Channel != null && Channel.ParameterContainer != null && Channel.ParameterContainer.Parameters != null)
+                    return Channel.ParameterContainer.GetValue<int>("DelayBetweenPool");
+                return 5;
             }
         }
+        #endregion
 
-        readonly ModbusSerialRTU mbMaster;
-        private Task refreshTask;
-        readonly SemaphoreSlim semaphore;
-        readonly Stopwatch stopwatch;
-
-        public event EventHandler Disposed;
-        public event EventHandler Refreshed;
-
+        #region Events
+        public override event EventHandler Refreshed;
+        public override event EventHandler Disposed;
         #endregion
 
         #region Methods
@@ -141,8 +161,10 @@ namespace EasyDriver.ModbusRTU
         /// Hàm bắt đầu kết nối
         /// </summary>
         /// <returns></returns>
-        public bool Connect()
+        public override bool Start(IChannelCore channel)
         {
+            Channel = (Channel)channel;
+
             // Đảm bảo channel có các thông số cần thiết để thực hiện việc kết nối
             if (Channel.ParameterContainer.Parameters.Count < 5)
                 return false;
@@ -168,20 +190,28 @@ namespace EasyDriver.ModbusRTU
         }
 
         /// <summary>
+        /// Hàm ngắt kết nối
+        /// </summary>
+        /// <returns></returns>
+        public override bool Stop()
+        {
+            try
+            {
+                semaphore.Wait();
+                return mbMaster.Close();
+            }
+            catch { return false; }
+            finally { semaphore.Release(); }
+        }
+
+        /// <summary>
         /// Hàm khởi tạo cổng serial
         /// </summary>
         private void InitializeSerialPort()
         {
             if (Channel.ParameterContainer.Parameters.Count >= 5)
             {
-                var port = Channel.ParameterContainer.Parameters["Port"].ToString();
-                if (int.TryParse(Channel.ParameterContainer.Parameters["Baudrate"], out int baudRate) &&
-                    int.TryParse(Channel.ParameterContainer.Parameters["DataBits"], out int dataBits) &&
-                    Enum.TryParse(Channel.ParameterContainer.Parameters["StopBits"], out StopBits stopBits) &&
-                    Enum.TryParse(Channel.ParameterContainer.Parameters["Parity"], out Parity parity))
-                {
-                    mbMaster.Init(port, baudRate, dataBits, parity, stopBits);
-                }
+                mbMaster.Init(Channel.Port, Channel.Baudrate, Channel.DataBits, Channel.Parity, Channel.StopBits);
             }
         }
 
@@ -245,11 +275,11 @@ namespace EasyDriver.ModbusRTU
                                     {
                                         case AddressType.InputContact:
                                         case AddressType.OutputCoil:
-                                            block.ReadResult = ReadBits(deviceId, block.AddressType, block.StartOffset, block.Count, ref block.BoolBuffer);
+                                            block.ReadResult = ReadBits(deviceId, block.AddressType, block.StartOffset, block.BufferCount, ref block.BoolBuffer);
                                             break;
                                         case AddressType.InputRegister:
                                         case AddressType.HoldingRegister:
-                                            block.ReadResult = ReadRegisters(deviceId, block.AddressType, block.StartOffset, block.Count, ref block.ByteBuffer);
+                                            block.ReadResult = ReadRegisters(deviceId, block.AddressType, block.StartOffset, block.BufferCount, ref block.ByteBuffer);
                                             break;
                                         default:
                                             break;
@@ -307,35 +337,35 @@ namespace EasyDriver.ModbusRTU
                                                 {
                                                     if (block.AddressType == addressType)
                                                     {
-                                                        if (block.CheckTagIsInReadBlockRange(
-                                                            tag,
-                                                            block.AddressType,
-                                                            offset,
-                                                            tag.DataType.RequireByteLength,
-                                                            out int index))
-                                                        {
-                                                            containInBlock = true;
-                                                            readSuccess = block.ReadResult;
-                                                            if (readSuccess)
-                                                            {
-                                                                switch (block.AddressType)
-                                                                {
-                                                                    case AddressType.InputContact:
-                                                                    case AddressType.OutputCoil:
-                                                                        tag.Value = block.BoolBuffer[index] ?
-                                                                            (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
-                                                                        break;
-                                                                    case AddressType.InputRegister:
-                                                                    case AddressType.HoldingRegister:
-                                                                        tag.Value = tag.DataType.ConvertToValue(
-                                                                            block.ByteBuffer, tag.Gain, tag.Offset, index, 0, byteOrder);
-                                                                        break;
-                                                                    default:
-                                                                        break;
-                                                                }
-                                                            }
-                                                            break;
-                                                        }
+                                                        //if (block.CheckTagIsInReadBlockRange(
+                                                        //    tag,
+                                                        //    block.AddressType,
+                                                        //    offset,
+                                                        //    tag.DataType.RequireByteLength,
+                                                        //    out int index))
+                                                        //{
+                                                        //    containInBlock = true;
+                                                        //    readSuccess = block.ReadResult;
+                                                        //    if (readSuccess)
+                                                        //    {
+                                                        //        switch (block.AddressType)
+                                                        //        {
+                                                        //            case AddressType.InputContact:
+                                                        //            case AddressType.OutputCoil:
+                                                        //                tag.Value = block.BoolBuffer[index] ?
+                                                        //                    (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+                                                        //                break;
+                                                        //            case AddressType.InputRegister:
+                                                        //            case AddressType.HoldingRegister:
+                                                        //                tag.Value = tag.DataType.ConvertToValue(
+                                                        //                    block.ByteBuffer, tag.Gain, tag.Offset, index, 0, byteOrder);
+                                                        //                break;
+                                                        //            default:
+                                                        //                break;
+                                                        //        }
+                                                        //    }
+                                                        //    break;
+                                                        //}
                                                     }
                                                 }
                                             }
@@ -452,7 +482,7 @@ namespace EasyDriver.ModbusRTU
             // Nếu đã bị dispose thì khởi tạo event dispose
             Disposed?.Invoke(this, EventArgs.Empty);
             // Ngắt kết nối serial
-            Disconnect();
+            Stop();
             // Dispose đối tượng phụ trách đọc ghi modbus
             mbMaster.Dispose();
         }
@@ -498,13 +528,13 @@ namespace EasyDriver.ModbusRTU
                     {
                         foreach (var item in readBlockSplit)
                         {
-                            if (item.StartsWith("True"))
-                            {
-                                ReadBlockSetting newBlock = ReadBlockSetting.Convert(item);
-                                newBlock.AddressType = addressType;
-                                if (newBlock.IsValid)
-                                    DeviceToReadBlockSettings[device].Add(newBlock);
-                            }
+                            //if (item.StartsWith("True"))
+                            //{
+                            //    ReadBlockSetting newBlock = ReadBlockSetting.Convert(item);
+                            //    newBlock.AddressType = addressType;
+                            //    if (newBlock.IsValid)
+                            //        DeviceToReadBlockSettings[device].Add(newBlock);
+                            //}
                         }
                     }
                 }
@@ -567,30 +597,6 @@ namespace EasyDriver.ModbusRTU
             }
             catch { return false; }
             finally { Thread.Sleep(DelayBetweenPool); semaphore.Release(); }
-        }
-
-        /// <summary>
-        /// Hàm ngắt kết nối
-        /// </summary>
-        /// <returns></returns>
-        public bool Disconnect()
-        {
-            try
-            {
-                semaphore.Wait();
-                return mbMaster.Close();
-            }
-            catch { return false; }
-            finally { semaphore.Release(); }
-        }
-
-        /// <summary>
-        /// Hàm lấy các kiệu dự liệu mà driver này hỗ trợ
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<IDataType> GetSupportDataTypes()
-        {
-            return supportDataTypes;
         }
 
         /// <summary>
@@ -710,76 +716,84 @@ namespace EasyDriver.ModbusRTU
             return Quality.Bad;
         }
 
-        public void Dispose()
+        private void OnWriteQueueAdded(object sender, EventArgs e)
+        {
+
+        }
+
+        public override void Dispose()
         {
             IsDisposed = true;
         }
 
-        public object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null)
+        public override object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null)
         {
-            return new CreateChannelView(this, parent, templateItem);
+            CreateChannelView view = new CreateChannelView()
+            {
+                DataContext = ViewModelSource.Create(() => new AddChannelViewModel(this, parent, templateItem))
+            };
+            return view;
         }
 
-        public object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
+        public override object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
         {
-            return new CreateDeviceView(this, parent, templateItem);
+            CreateDeviceView view = new CreateDeviceView()
+            {
+                DataContext = ViewModelSource.Create(() => new AddDeviceViewModel(this, parent, templateItem))
+            };
+            return view;
         }
 
-        public object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
+        public override object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
         {
-            return new CreateTagView(this, parent, templateItem);
+            CreateTagView view = new CreateTagView()
+            {
+                DataContext = ViewModelSource.Create(() => new AddTagViewModel(this, parent, templateItem))
+            };
+            return view;
         }
 
-        public object GetEditChannelControl(IChannelCore channel)
+        public override object GetEditChannelControl(IChannelCore channel)
         {
-            return new EditChannelView(this, channel);
+            EditChannelView view = new EditChannelView()
+            {
+                DataContext = ViewModelSource.Create(() => new EditChannelViewModel(this, channel))
+            };
+            return view;
         }
 
-        public object GetEditDeviceControl(IDeviceCore device)
+        public override object GetEditDeviceControl(IDeviceCore device)
         {
-            return new EditDeviceView(this, device);
+            EditDeviceView view = new EditDeviceView()
+            {
+                DataContext = ViewModelSource.Create(() => new EditDeviceViewModel(this, device))
+            };
+            return view;
         }
 
-        public object GetEditTagControl(ITagCore tag)
+        public override object GetEditTagControl(ITagCore tag)
         {
-            return new EditTagView(this, tag);
+            EditTagView view = new EditTagView()
+            {
+                DataContext = ViewModelSource.Create(() => new EditTagViewModel(this, tag))
+            };
+            return view;
         }
 
-        public IChannelCore ConvertToChannel(IChannelCore baseChannel)
+        public override IChannelCore CreateChannel(IGroupItem parent)
         {
-            return baseChannel;
+            return new Channel(parent);
         }
 
-        public IDeviceCore ConverrtToDevice(IDeviceCore baseDevice)
+        public override IDeviceCore CreateDevice(IGroupItem parent)
         {
-            return baseDevice;
+            return new Device(parent);
         }
 
-        public ITagCore ConvertToTag(ITagCore tagCore)
+        public override ITagCore CreateTag(IGroupItem parent)
         {
-            return tagCore;
+            return new Tag(parent);
         }
-
         #endregion
-    }
-
-    public class String : EasyDriverPlugin.String
-    {
-        public override bool TryParseToByteArray(object value, double gain, double offset, out byte[] buffer, ByteOrder byteOrder = ByteOrder.ABCD)
-        {
-            buffer = null;
-            if (value == null)
-                return false;
-            buffer = new byte[value.ToString().Length];
-            ByteHelper.SetStringAt(buffer, 0, buffer.Length, value.ToString());
-            return true;
-        }
-
-        public override string ConvertToValue(byte[] buffer, double gain, double offset, int pos = 0, int bit = 0, ByteOrder byteOrder = ByteOrder.ABCD)
-        {
-            int size = buffer.Length;
-            return Encoding.ASCII.GetString(buffer, 0, size);
-
-        }
     }
 }

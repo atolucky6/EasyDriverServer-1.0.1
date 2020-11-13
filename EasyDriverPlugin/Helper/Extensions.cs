@@ -115,5 +115,80 @@ namespace EasyDriverPlugin
                 return FindParent<T>(item.Parent, predicate);
             }
         }
+
+        public static IEnumerable<ITagCore> GetAllTags(this IGroupItem groupItem, bool findDeep = true)
+        {
+            if (groupItem is IHaveTag haveTagObj)
+            {
+                if (haveTagObj.HaveTags)
+                {
+                    foreach (var item in haveTagObj.Tags)
+                    {
+                        if (item is ITagCore tag)
+                            yield return tag;
+                    }
+                }
+            }
+
+            if (findDeep)
+            {
+                foreach (var childItem in groupItem.Find(x => x is IHaveTag, true))
+                {
+                    if (childItem is IHaveTag haveTag)
+                    {
+                        if (haveTag.HaveTags)
+                        {
+                            foreach (var item in haveTag.Tags)
+                            {
+                                if (item is ITagCore tag)
+                                    yield return tag;
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<IChannelCore> GetAllChannels(this IGroupItem groupItem, bool findDeep = true)
+        {
+            if (!(groupItem is IDeviceCore) || !(groupItem is ITagCore))
+            {
+                foreach (var item in groupItem.Childs)
+                {
+                    if (item is IChannelCore)
+                        yield return item as IChannelCore;
+                    if (findDeep && !(item is ITagCore) && !(item is IDeviceCore) && !(item is IChannelCore) && item is IGroupItem childGroup)
+                    {
+                        foreach (var childChannel in childGroup.GetAllChannels())
+                        {
+                            if (childChannel is IChannelCore)
+                                yield return childChannel as IChannelCore;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<IDeviceCore> GetAllDevices(this IGroupItem groupItem, bool findDeep = true)
+        {
+            if (!(groupItem is ITagCore))
+            {
+                foreach (var item in groupItem.Childs)
+                {
+                    if (item is IDeviceCore device)
+                        yield return device;
+
+                    if (findDeep && !(item is ITagCore) && !(item is IDeviceCore) && item is IGroupItem childGroup)
+                    {
+                        foreach (var childDevice in childGroup.GetAllDevices())
+                        {
+                            if (childDevice is IDeviceCore)
+                                yield return childDevice as IDeviceCore;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

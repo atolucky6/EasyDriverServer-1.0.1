@@ -32,8 +32,7 @@ namespace EasyScada.ServerApplication
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
         protected IHubFactory HubFactory { get; set; }
-        protected IHubConnectionManagerService HubConnectionManagerService { get; set; }
-        protected IOpcDaClientManagerService OpcDaClientManagerService { get; set; }
+        protected IRemoteConnectionManagerService RemoteConnectionManagerService { get; set; }
 
         #endregion
 
@@ -55,8 +54,7 @@ namespace EasyScada.ServerApplication
             IProjectManagerService projectManagerService,
             IDriverManagerService driverManagerService,
             IHubFactory hubFactory,
-            IHubConnectionManagerService hubConnectionManagerService,
-            IOpcDaClientManagerService opcDaClientManagerService,
+            IRemoteConnectionManagerService remoteConnectionManagerService,
             IInternalStorageService internalStorageService) : base(null, workspaceManagerService)
         {
             WorkspaceName = WorkspaceRegion.ProjectTree;
@@ -66,8 +64,7 @@ namespace EasyScada.ServerApplication
             ProjectManagerService = projectManagerService;
             DriverManagerService = driverManagerService;
             HubFactory = hubFactory;
-            HubConnectionManagerService = hubConnectionManagerService;
-            OpcDaClientManagerService = opcDaClientManagerService;
+            RemoteConnectionManagerService = remoteConnectionManagerService;
             InternalStorageService = internalStorageService;
 
             ProjectManagerService.ProjectChanged += OnProjectChanged;
@@ -91,9 +88,14 @@ namespace EasyScada.ServerApplication
         #endregion
 
         #region Property changed handlers
-
+            
+        /// <summary>
+        /// Hảm xử lý sự kiện khi click vào item trên project tree
+        /// </summary>
+        /// <param name="item"></param>
         public virtual void ShowPropertyOnClick(object item)
         {
+            // Gửi message tới Properties page để hiện thị item đã chọn 
             if (item != null)
                 Messenger.Default.Send(new ShowPropertiesMessage(this, item));
         }
@@ -136,16 +138,8 @@ namespace EasyScada.ServerApplication
                     // Nếu đối tượng con là 1 RemoteStation
                     else if (item is RemoteStation remoteStation)
                     {
-                        if (remoteStation.StationType == "OPC_DA")
-                        {
-                            // Xóa connection liên quan tới RemoteStation
-                            OpcDaClientManagerService.RemoveConnection(remoteStation);
-                        }
-                        else if (remoteStation.StationType == "Remote")
-                        {
-                            // Xóa connection liên quan tới RemoteStation
-                            HubConnectionManagerService.RemoveConnection(remoteStation);
-                        }
+                        // Xóa connection liên quan tới RemoteStation
+                        RemoteConnectionManagerService.RemoveConnection(remoteStation);
                     }
                 }
             }
@@ -165,39 +159,38 @@ namespace EasyScada.ServerApplication
                             {
                                 string driverPath = channel.DriverPath;
                                 string driverName = Path.GetFileName(driverPath);
-                                driverPath = $"{Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\Driver\\{driverName}";
+                                driverPath = $"{Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)}\\Driver\\{driverName}.dll";
 
                                 // Thêm driver tương ứng với channel vào DriverManagerService
                                 IEasyDriverPlugin driver = DriverManagerService.AddDriver(channel, driverPath); 
                                 if (driver != null)
                                 {
                                     // Khởi động driver bằng hàm connect
-                                    driver?.Connect();
-                                    var dataTypes = driver.GetSupportDataTypes().ToList();
+                                    driver?.Start(channel);
+                                    var dataTypes = driver.SupportDataTypes;
                                     foreach (var tag in channel.GetAllTags())
                                     {
+                                        // Gán data type cho tag. Danh sách DataType lấy từ driver
                                         tag.DataType = dataTypes.FirstOrDefault(x => x.Name == tag.DataTypeName);
+
+                                        // Nếu tag là internal tag thì phục hồi lại giá trị nếu tag được set retain
                                         if (tag.IsInternalTag)
                                         {
-                                            if (!tag.ParameterContainer.Parameters.ContainsKey("GUID"))
+                                            // Nếu tag ko có GUID thì tạo mới GUID và lưu vào store nếu cần thiết
+                                            if (!string.IsNullOrEmpty(tag.GUID))
                                             {
                                                 tag.ParameterContainer.Parameters["GUID"] = Guid.NewGuid().ToString();
-                                                if (tag.ParameterContainer.Parameters.ContainsKey("Retain"))
+                                                if (tag.Retain)
                                                     InternalStorageService.AddOrUpdateInternalTag(tag);
                                             }
                                             else
                                             {
-                                                if (tag.ParameterContainer.Parameters.ContainsKey("Retain"))
+                                                if (tag.Retain)
                                                 {
-                                                    if (tag.ParameterContainer.Parameters["Retain"] == bool.TrueString)
-                                                    {
-                                                        string guid = tag.ParameterContainer.Parameters["GUID"];
-                                                        var internalValue = InternalStorageService.GetInternalTagValue(guid);
-                                                        if (internalValue != null && internalValue.GUID == guid)
-                                                        {
-                                                            tag.Value = internalValue.Value;
-                                                        }
-                                                    }
+                                                    // Nếu tag được set retain thì lấy giá trị từ trong store và set lại cho tag
+                                                    var internalValue = InternalStorageService.GetInternalTagValue(tag.GUID);
+                                                    if (internalValue != null && internalValue.GUID == tag.GUID)
+                                                        tag.Value = internalValue.Value;
                                                 }
                                             }
                                         }
@@ -209,21 +202,17 @@ namespace EasyScada.ServerApplication
                     /// Nếu đối tượng là một RemoteStation thì khởi tạo các HubConnection tương ứng với các RemoteStation
                     else if (item is RemoteStation remoteStation)
                     {
-                        if (remoteStation.StationType == "OPC_DA")
-                        {
-                            // Xóa connection liên quan tới RemoteStation
-                            OpcDaClientManagerService.AddConnection(remoteStation);
-                        }
-                        else if (remoteStation.StationType == "Remote")
-                        {
-                            // Xóa connection liên quan tới RemoteStation
-                            HubConnectionManagerService.AddConnection(remoteStation);
-                        }
+                        // Xóa connection liên quan tới RemoteStation
+                        RemoteConnectionManagerService.AddConnection(remoteStation);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Hàm sử lý sự kiện double click trên project tree
+        /// </summary>
+        /// <param name="item"></param>
         public virtual void OpenOnDoubleClick(object item)
         {
             if (IsBusy)
@@ -232,7 +221,9 @@ namespace EasyScada.ServerApplication
             IsBusy = true;
             if (item != null)
             {
+                // Đóng hoặc mở tree node
                 TreeListViewUtilities.ToggleCurrentNode();
+                // Mở document nếu có
                 WorkspaceManagerService.OpenPanel(item, true, true, ParentViewModel);
             }
             IsBusy = false;
@@ -242,21 +233,26 @@ namespace EasyScada.ServerApplication
 
         #region Commands
 
+        /// <summary>
+        /// Lệnh tạo một OPC DA Station
+        /// </summary>
         public void AddOpcDaStation()
         {
             try
             {
                 IsBusy = true;
+                // Mở cửa số tạo remote opc da
                 WindowService.Show("RemoteOpcDaStationView", ProjectManagerService.CurrentProject, this);
                 IsBusy = false;
             }
-            catch (Exception ex)
-            {
-
-            }
+            catch (Exception) { }
             finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="AddOpcDaStation"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanAddOpcDaStation()
         {
             if (ProjectManagerService.CurrentProject != null)
@@ -264,21 +260,26 @@ namespace EasyScada.ServerApplication
             return false;
         }
 
+        /// <summary>
+        /// Lệnh tạo một Easy Remote Station
+        /// </summary>
         public void AddStation()
         {
             try
             {
                 IsBusy = true;
+                // Mở cửa sổ tạo remote station
                 WindowService.Show("RemoteStationView", ProjectManagerService.CurrentProject, this);
                 IsBusy = false;
             }
-            catch (Exception ex)
-            {
-
-            }
+            catch (Exception) { }
             finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="AddStation"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanAddStation()
         {
             if (ProjectManagerService.CurrentProject != null)
@@ -286,71 +287,107 @@ namespace EasyScada.ServerApplication
             return false;
         }
 
+        /// <summary>
+        /// Lệnh tạo một channel
+        /// </summary>
         public void AddChannel()
         {
             try
             {
                 IsBusy = true;
+                // Mở cửa số tạo channel
                 WindowService.Show("AddChannelView", SelectedItem, this);
             }
-            catch (Exception ex)
-            {
-
-            }
+            catch (Exception) { }
             finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="AddChannel"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanAddChannel()
         {
+            // Điều kiện để tạo channel là item đang chọn trên project tree phải là LocalStation
             if (SelectedItem is LocalStation localStation)
                 return !IsBusy && localStation.Parent is IEasyScadaProject;
             return false;
         }
 
+        /// <summary>
+        /// Lệnh tạo một device
+        /// </summary>
         public void AddDevice()
         {
             try
             {
+                // Đánh dấu chương trình đang bận
                 IsBusy = true;
+
+                // Lấy driver của đối tượng được chọn
                 IEasyDriverPlugin driver = DriverManagerService.GetDriver(SelectedItem as IGroupItem);
                 if (driver != null)
                 {
-                    if (ContextWindowService.Show(driver.GetCreateDeviceControl(SelectedItem as IGroupItem), "Add Device") is IDeviceCore deviceCore)
+                    // Lấy Create Device View từ driver
+                    object addDeviceView = driver.GetCreateDeviceControl(SelectedItem as IGroupItem);
+                    // Hiện thị create device view
+                    if (ContextWindowService.Show(addDeviceView, "Add Device") is IDeviceCore deviceCore)
                     { 
+                        // Bắt đầu undo redo transaction
                         using (Transaction transaction = ReverseService.Begin("Add Device"))
                         {
                             IGroupItem parent = (SelectedItem as IGroupItem);
+
                             parent.Childs.AsReversibleCollection().Add(deviceCore);
                             this.SetPropertyReversible(x => x.SelectedItem, deviceCore);
                             this.SetPropertyReversible(x => x.CurrentItem, deviceCore);
+
+                            // Đăng ký sự kiện khi transaction undo hoặc redo
                             transaction.Reversing += (s, e) =>
                             {
+                                // Mở lại trang này nếu nó tắt
                                 WorkspaceManagerService.OpenPanel(this);
                                 if (e.Direction == ReverseDirection.Undo)
                                 {
+                                    // Khi thực hiện undo việc tạo device thì có nghĩa là 
+                                    // device đã tạo sẽ bị xóa khỏi parent của nó
+                                    // cho nên ta sẽ xóa các trang device 
                                     WorkspaceManagerService.RemovePanel(x => x.Token == deviceCore);
                                 }
                                 else
                                 {
+                                    // Nếu thực hiện redo thì device sẽ thêm vào parent của nó
+                                    // cho nên cần kiểm tra tên hoặc tạo mới tên device nếu cần thiết
+                                    // làm như vậy để đảm bảo tên của các đối tượng trong cùng một level phải là duy nhất
                                     deviceCore.Name = parent.GetUniqueNameInGroup(deviceCore.Name);
                                 }
                                 TreeListViewUtilities.ExpandNodeByContent(deviceCore);
                             };
+                            // Xác nhận transaction hoàn tất
                             transaction.Commit();
                         }
                         TreeListViewUtilities.ExpandCurrentNode();
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
+            // Đánh dấu chương trình hết bận
             finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="AddDevice"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanAddDevice()
         {
+            // Điều kiện để tạo device là item được chọn trên project tree là một channel 
+            // hoặc là một group với parent là một channel
+            // Và item được chọn đó được đánh dấu không phải là ReadOnly
+           
             if (SelectedItem is ICoreItem coreItem)
                 if (coreItem.IsReadOnly)
                     return false;
@@ -367,58 +404,89 @@ namespace EasyScada.ServerApplication
             return false;
         }
         
+        /// <summary>
+        /// Lệnh tạo một group
+        /// </summary>
         public void AddGroup()
         {
             try
             {
+                // Đánh dấu chương trình đang bận
                 IsBusy = true;
+
+                // Đối tượng đang chọn trên project tree là cha của group sẽ tạo
                 IGroupItem parent = SelectedItem as IGroupItem;
+                // Khởi tạo group mới
                 GroupCore groupItem = null;
 
+                // Xác định xem group nằm trong device hay channel
                 if (parent.FindParent<IDeviceCore>(x => x is IDeviceCore) is IDeviceCore)
+                    // Nếu là device thì group này có chứa tag
                     groupItem = new GroupCore(parent, true, false);
                 else
+                    // Nếu là channel thì group này không chứa tag mà sẽ chứa device
                     groupItem = new GroupCore(parent, false, false);
 
+                // Gán tên cho group. Phải đảm bảo tên của group phải là duy nhất trong cung một level
                 groupItem.Name = parent.GetUniqueNameInGroup("Group1");
+
+                // Bắt đầu undo redo transaction
                 using (Transaction transaction = ReverseService.Begin("Add group"))
                 {
                     parent.Childs.AsReversibleCollection().Add(groupItem);
                     this.SetPropertyReversible(x => x.SelectedItem, groupItem);
                     this.SetPropertyReversible(x => x.CurrentItem, groupItem);
+
+                    // Đăng ký sự kiện khi transaction undo hoặc redo
                     transaction.Reversing += (s, e) =>
                     {
+                        // Mở lại trang này nếu nó tắt
                         WorkspaceManagerService.OpenPanel(this);
+
                         if (e.Direction == ReverseDirection.Undo)
                         {
+                            // Khi thực hiện undo việc tạo group thì có nghĩa là 
+                            // group đã tạo sẽ bị xóa khỏi parent của nó
+                            // cho nên ta sẽ xóa các trang group 
                             WorkspaceManagerService.RemovePanel(x => x.Token == groupItem);
                         }
                         else
                         {
+                            // Nếu thực hiện redo thì group sẽ thêm vào parent của nó
+                            // cho nên cần kiểm tra tên hoặc tạo mới tên group nếu cần thiết
+                            // làm như vậy để đảm bảo tên của các đối tượng trong cùng một level phải là duy nhất
                             groupItem.Name = parent.GetUniqueNameInGroup(groupItem.Name);
                         }
                         TreeListViewUtilities.ExpandNodeByContent(groupItem);
                     };
+                    // Xác nhận transaction hoàn tất
                     transaction.Commit();
                 }
                 TreeListViewUtilities.ExpandCurrentNode();
             }
-            catch (Exception)
-            {
-
-            }
+            catch (Exception) { }
+            // Đánh dấu chương trình hết bận
             finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="AddGroup"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanAddGroup()
         {
-            if (SelectedItem is IStationCore stationCore)
+            // Để tạo group thì đối tượng đang chọn trên project tree phải là một group
+            // và nó không phải là Station
+            if (SelectedItem is IStationCore)
                 return false;
             if (SelectedItem is IGroupItem groupItem)
                 return !IsBusy && !groupItem.IsReadOnly;
             return false;
         }
 
+        /// <summary>
+        /// Lệnh mở document
+        /// </summary>
         public void Open()
         {
             IsBusy = true;
@@ -426,6 +494,10 @@ namespace EasyScada.ServerApplication
             IsBusy = false;
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="Open"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanOpen()
         {
             if (SelectedItem is IHaveTag groupItem)
@@ -433,11 +505,16 @@ namespace EasyScada.ServerApplication
             return false;
         }
 
+        /// <summary>
+        /// Lệnh chỉnh sửa một đối tượng
+        /// </summary>
         public void Edit()
         {
             try
             {
+                // Đánh dấu chương trình đang bận
                 IsBusy = true;
+                // Nếu đối tượng đang chọn là channel hoặc device thì lấy edit view từ driver và hiện thị nó
                 if (SelectedItem is IChannelCore channel)
                 {
                     IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
@@ -448,11 +525,13 @@ namespace EasyScada.ServerApplication
                     IEasyDriverPlugin driver = DriverManagerService.GetDriver(device);
                     ContextWindowService.Show(driver.GetEditDeviceControl(device), $"Edit Device - {device.Name}");
                 }
+                // Nếu là một group thì mở GroupView
                 else if (SelectedItem is GroupCore group)
                 {
                     if (!group.IsReadOnly)
                         WindowService.Show("GroupView", group, this);
                 }
+                // Nếu là station thì mở các edit view tương ứng với StationType
                 else if (SelectedItem is RemoteStation remoteStation)
                 {
                     if (remoteStation.StationType == "OPC_DA")
@@ -465,15 +544,22 @@ namespace EasyScada.ServerApplication
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
+            // Đánh dấu chương trình hết bận
             finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="Edit"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanEdit()
         {
+            // Điều kiện để thực hiện lệnh edit là đối tượng được
+            // đánh dấu không phải là ReadOnly
             if (SelectedItem is ICoreItem coreItem && !IsBusy)
             {
                 if (!coreItem.IsReadOnly)
@@ -487,26 +573,43 @@ namespace EasyScada.ServerApplication
             return false;
         }
 
+        /// <summary>
+        /// Lệnh mở tất cả các node trên tree
+        /// </summary>
         public void ExpandAll()
         {
             TreeListViewUtilities.ExpandAll();
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện <see cref="CanExpandAll"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanExpandAll()
         {
             return !IsBusy;
         }
 
+        /// <summary>
+        /// Lệnh đóng tất cả các node trên tree
+        /// </summary>
         public void CollapseAll()
         {
             TreeListViewUtilities.CollapseAll();
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện <see cref="CollapseAll"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanCollapseAll()
         {
             return !IsBusy;
         }
 
+        /// <summary>
+        /// Lệnh export đối tượng thành file csv
+        /// </summary>
         public void Export()
         {
             try
@@ -525,6 +628,7 @@ namespace EasyScada.ServerApplication
                         csv.AddColumn("Name").AddColumn("Address").
                             AddColumn("DataType").AddColumn("RefreshRate").AddColumn("AccessPermission").
                             AddColumn("Gain").AddColumn("Offset").AddColumn("Description");
+
                         foreach (var item in device.Childs)
                         {
                             if (item is ITagCore tag)
@@ -563,16 +667,27 @@ namespace EasyScada.ServerApplication
             finally { IsBusy = false; }
         }
 
+        /// <summary>
+        /// Điều kiện để thực hện lệnh <see cref="Export"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanExport()
         {
             return !IsBusy && SelectedItem is IDeviceCore;
         }
 
+        /// <summary>
+        /// Lệnh import tag file vào device hoặc group
+        /// </summary>
         public void Import()
         {
 
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện kệnh <see cref="Import"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanImport()
         {
             return !IsBusy && SelectedItem is IDeviceCore;
@@ -582,11 +697,18 @@ namespace EasyScada.ServerApplication
 
         #region ISupportEdit
 
+        /// <summary>
+        /// Lệnh copy đối tượng
+        /// </summary>
         public void Copy()
         {
             ClipboardManager.CopyToClipboard(SelectedItem, this);
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="Copy"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanCopy()
         {
             if (IsBusy || CurrentProject == null)
@@ -598,10 +720,17 @@ namespace EasyScada.ServerApplication
             return false;
         }
 
+        /// <summary>
+        /// Lệnh cut đối tượng 
+        /// </summary>
         public void Cut()
         {
         }
 
+        /// <summary>
+        /// Điều kiện để thực hiện lệnh <see cref="Cut"/>
+        /// </summary>
+        /// <returns></returns>
         public bool CanCut()
         {
             return false;
@@ -622,7 +751,6 @@ namespace EasyScada.ServerApplication
                     IEasyDriverPlugin driver = AssemblyHelper.LoadAndCreateInstance<IEasyDriverPlugin>(newChannelCore.DriverPath);
                     if (driver != null)
                     {
-                        driver.Channel = newChannelCore;
                         if (ContextWindowService.Show(driver.GetCreateChannelControl(localStation, channelCore), "Add Channel") == newChannelCore)
                         {
                             using (Transaction transaction = ReverseService.Begin("Paste Channel"))
@@ -648,12 +776,11 @@ namespace EasyScada.ServerApplication
                                     else
                                     {
                                         IEasyDriverPlugin driverPlugin = AssemblyHelper.LoadAndCreateInstance<IEasyDriverPlugin>(newChannelCore.DriverPath);
-                                        driverPlugin.Channel = newChannelCore;
                                         if (driverPlugin != null)
                                         {
                                             newChannelCore.Name = newChannelCore.Parent.GetUniqueNameInGroup(newChannelCore.Name);
                                             DriverManagerService.AddDriver(newChannelCore, driver);
-                                            driverPlugin.Connect();
+                                            driverPlugin.Start(newChannelCore);
                                         }
                                         else
                                         {
@@ -743,7 +870,7 @@ namespace EasyScada.ServerApplication
                     // Nếu đối tượng là một RemoteStation thì ta cần phải xóa
                     // HubConnection liên quan đến nó ở IHubConnectionManagerService
                     if (SelectedItem is RemoteStation remoteStation)
-                        HubConnectionManagerService.RemoveConnection(remoteStation);
+                        RemoteConnectionManagerService.RemoveConnection(remoteStation);
 
                     // Nếu đối tượng là một Channel thì ta cần phải xỏa
                     // DriverPlugin liên quan đến nó ở IDriverManagerService
@@ -779,10 +906,8 @@ namespace EasyScada.ServerApplication
                                 }
                                 else if (itemToRemote is RemoteStation station)
                                 {
-                                    if (HubConnectionManagerService.ConnectionDictonary.ContainsKey(station))
-                                        HubConnectionManagerService.RemoveConnection(station);
-                                    if (OpcDaClientManagerService.ConnectionDictonary.ContainsKey(station))
-                                        OpcDaClientManagerService.RemoveConnection(station);
+                                    if (RemoteConnectionManagerService.ConnectionDictonary.ContainsKey(station))
+                                        RemoteConnectionManagerService.RemoveConnection(station);
                                 }
                             }
                             else if (e.Direction == ReverseDirection.Undo)
@@ -790,12 +915,11 @@ namespace EasyScada.ServerApplication
                                 if (itemToRemote is IChannelCore channel)
                                 {
                                     IEasyDriverPlugin driver = AssemblyHelper.LoadAndCreateInstance<IEasyDriverPlugin>(channel.DriverPath);
-                                    driver.Channel = channel;
                                     if (driver != null)
                                     {
                                         channel.Name = channel.Parent.GetUniqueNameInGroup(channel.Name);
                                         DriverManagerService.AddDriver(channel, driver);
-                                        driver.Connect();
+                                        driver.Start(channel);
                                     }
                                     else
                                     {
@@ -805,16 +929,8 @@ namespace EasyScada.ServerApplication
                                 }
                                 else if (itemToRemote is RemoteStation station)
                                 {
-                                    if (station.StationType == "OPC_DA")
-                                    {
-                                        station.Name = station.Parent.GetUniqueNameInGroup(station.Name);
-                                        OpcDaClientManagerService.AddConnection(station);
-                                    }
-                                    else if (station.StationType == "Remote")
-                                    {
-                                        station.Name = station.Parent.GetUniqueNameInGroup(station.Name);
-                                        HubConnectionManagerService.AddConnection(station);
-                                    }
+                                    station.Name = station.Parent.GetUniqueNameInGroup(station.Name);
+                                    RemoteConnectionManagerService.AddConnection(station);
                                 }
                             }
                         };

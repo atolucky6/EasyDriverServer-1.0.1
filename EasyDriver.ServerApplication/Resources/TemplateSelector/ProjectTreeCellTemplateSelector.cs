@@ -22,7 +22,22 @@ namespace EasyScada.ServerApplication
             if (item != null)
             {
                 var row = (item as GridCellData).Row;
-                if (row is IClientObject clientObject)
+                if (row is IGroupItem coreItem)
+                {
+                    if (coreItem is IStationCore station)
+                    {
+                        if (station.StationType == "Local")
+                            return LocalStationTemplate;
+                        else
+                            return RemoteStationTemplate;
+                    }
+                    else if (coreItem is IChannelCore)
+                        return ChannelTemplate;
+                    else if (coreItem is IDeviceCore)
+                        return DeviceTemplate;
+                    return GroupTemplate;
+                }
+                else if (row is IClientObject clientObject)
                 {
                     switch (clientObject.ItemType)
                     {

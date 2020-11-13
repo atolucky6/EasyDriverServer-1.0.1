@@ -213,7 +213,7 @@ namespace EasyScada.ServerApplication
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             finally

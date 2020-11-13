@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 
 namespace EasyDriverPlugin
 {
@@ -49,7 +50,12 @@ namespace EasyDriverPlugin
         /// <param name="collection"></param>
         public void AddRange(IEnumerable<ICoreItem> collection)
         {
-            foreach (var item in collection) { Items.Add(item); item.Parent = Owner; }
+            foreach (var item in collection) 
+            { 
+                Items.Add(item); 
+                item.Parent = Owner;
+                item.RaiseAddedEvent();
+            }
             NotifyResetCollection();
         }
 
@@ -60,7 +66,10 @@ namespace EasyDriverPlugin
         public void RemoveRange(IEnumerable<object> collection)
         {
             foreach (var item in collection)
+            {
                 Items.Remove(item);
+                (item as ICoreItem)?.RaiseRemovedEvent();
+            }
             NotifyResetCollection();
         }
 
@@ -81,6 +90,22 @@ namespace EasyDriverPlugin
             where T : ICoreItem
         {
             foreach (var item in Items) { action.Invoke((T)item); }
+        }
+
+        protected override void InsertItem(int index, object item)
+        {
+            base.InsertItem(index, item);
+            (item as ICoreItem)?.RaiseAddedEvent();
+        }
+
+        protected override void ClearItems()
+        {
+            var items = Items.ToArray();
+            base.ClearItems();
+            foreach (var item in items)
+            {
+                (item as ICoreItem)?.RaiseRemovedEvent();
+            }
         }
 
         /// <summary>

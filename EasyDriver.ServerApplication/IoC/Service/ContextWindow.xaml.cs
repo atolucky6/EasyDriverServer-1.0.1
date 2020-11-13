@@ -7,6 +7,7 @@ namespace EasyScada.ServerApplication
     /// </summary>
     public partial class ContextWindow : ThemedWindow
     {
+        private System.Windows.Controls.UserControl userControl;
         public ContextWindow()
         {
             InitializeComponent();
@@ -17,8 +18,14 @@ namespace EasyScada.ServerApplication
             InitializeComponent();
             if (context is System.Windows.Controls.UserControl wpfUserControl)
             {
-                Panel.Children.Add(wpfUserControl);
+                userControl = wpfUserControl;
+                Panel.Children.Add(userControl);
             }
+        }
+
+        public object GetTag()
+        {
+            return userControl?.Tag;
         }
     }
 }

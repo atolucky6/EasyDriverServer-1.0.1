@@ -1,6 +1,7 @@
 ﻿using DevExpress.Mvvm.UI.Interactivity;
 using DevExpress.Xpf.Controls;
 using EasyDriver.Core;
+using EasyDriverPlugin;
 using System.Windows;
 using System.Windows.Media;
 
@@ -40,6 +41,13 @@ namespace EasyScada.ServerApplication
         public static readonly DependencyProperty DeviceImageSourceProperty =
             DependencyProperty.Register("DeviceImageSource", typeof(ImageSource), typeof(FindImageForBreadcrumb), new PropertyMetadata(null));
 
+        public ImageSource GroupImageSource
+        {
+            get { return (ImageSource)GetValue(GroupImageSourceProperty); }
+            set { SetValue(GroupImageSourceProperty, value); }
+        }
+        public static readonly DependencyProperty GroupImageSourceProperty =
+            DependencyProperty.Register("GroupImageSource", typeof(ImageSource), typeof(FindImageForBreadcrumb), new PropertyMetadata(null));
 
         protected override void OnAttached()
         {
@@ -49,14 +57,19 @@ namespace EasyScada.ServerApplication
 
         private void GetCustomImage(object sender, BreadcrumbCustomImageEventArgs e)
         {
-            if (e.Item is LocalStation)
-                e.Image = LocalStationImageSource;
-            else if (e.Item is RemoteStation)
-                e.Image = RemoteStationImageSource;
-            else if (e.Item is ChannelCore)
+            if (e.Item is IStationCore station)
+            {
+                if (station.Name?.Replace(" ", "") == "LocalStation")
+                    e.Image = LocalStationImageSource;
+                else
+                    e.Image = RemoteStationImageSource;
+            }
+            else if (e.Item is IChannelCore)
                 e.Image = ChannelImageSource;
-            else if (e.Item is DeviceCore)
+            else if (e.Item is IDeviceCore)
                 e.Image = DeviceImageSource;
+            else if (e.Item is GroupItemBase)
+                e.Image = GroupImageSource;
         }
     }
 }
