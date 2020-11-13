@@ -52,6 +52,8 @@ namespace EasyDriverPlugin
      
         bool? IsChecked { get; set; }
 
+        ItemType ItemType { get; set; }
+
         /// <summary>
         /// Clone đối tượng và trả về kết quả. Hàm chỉ clone lại các kiểu dữ liệu nguyên thủy
         /// </summary>
@@ -71,12 +73,6 @@ namespace EasyDriverPlugin
         bool HasChanges();
 
         /// <summary>
-        /// Hàm kiểm tra đối tượng có lỗi hay không
-        /// </summary>
-        /// <returns></returns>
-        bool HasError();
-
-        /// <summary>
         /// Hàm lấy thông tin lỗi của thuộc tính
         /// </summary>
         /// <param name="propertyName">Tên thuộc tính cần lấy lỗi</param>
@@ -87,6 +83,10 @@ namespace EasyDriverPlugin
         /// Cập nhật lại đường dẫn
         /// </summary>
         void RefreshPath();
+
+        void RaiseAddedEvent();
+
+        void RaiseRemovedEvent();
 
         /// <summary>
         /// Sự kiện giá trị của <see cref="ITagCore"/> thay đổi
@@ -102,5 +102,15 @@ namespace EasyDriverPlugin
         /// Sự kiện khi tên thay đổi
         /// </summary>
         event EventHandler<NameChangedEventArgs> NameChanged;
+
+        /// <summary>
+        /// Sự kiện khi đối tượng bị xóa khỏi parent
+        /// </summary>
+        event EventHandler Removed;
+
+        /// <summary>
+        /// Sự kiện khi đối tượng được thêm vào parent
+        /// </summary>
+        event EventHandler Added;
     }
 }

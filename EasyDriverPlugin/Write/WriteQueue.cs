@@ -55,6 +55,7 @@ namespace EasyDriverPlugin
                                 {
                                     HighCommandQueue.Enqueue(command);
                                     command.Executed += OnCommandExecuted;
+                                    Enqueued?.Invoke(this, EventArgs.Empty);
                                     return true;
                                 }
                                 else
@@ -63,6 +64,7 @@ namespace EasyDriverPlugin
                                     {
                                         HighCommandQueue.Enqueue(command);
                                         command.Executed += OnCommandExecuted;
+                                        Enqueued?.Invoke(this, EventArgs.Empty);
                                         return true;
                                     }
                                 }
@@ -74,6 +76,7 @@ namespace EasyDriverPlugin
                                 {
                                     NormalCommandQueue.Enqueue(command);
                                     command.Executed += OnCommandExecuted;
+                                    Enqueued?.Invoke(this, EventArgs.Empty);
                                     return true;
                                 }
                                 else
@@ -82,6 +85,7 @@ namespace EasyDriverPlugin
                                     {
                                         NormalCommandQueue.Enqueue(command);
                                         command.Executed += OnCommandExecuted;
+                                        Enqueued?.Invoke(this, EventArgs.Empty);
                                         return true;
                                     }
                                 }
@@ -102,5 +106,7 @@ namespace EasyDriverPlugin
         {
             CommandExecuted?.Invoke(sender, e);
         }
+
+        public event EventHandler Enqueued;
     }
 }

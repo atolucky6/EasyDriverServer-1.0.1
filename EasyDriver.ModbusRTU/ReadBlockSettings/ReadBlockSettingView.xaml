@@ -15,7 +15,6 @@
     <UserControl.Resources>
         <Style TargetType="dxg:GridColumnHeader">
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#F1FA8C" />
         </Style>
     </UserControl.Resources>
     <Grid>
@@ -26,7 +25,9 @@
         <dxg:GridControl
             x:Name="grcBlock"
             DockPanel.Dock="Left"
-            SelectionMode="Row"
+            ItemsSource="{Binding ReadBlockSettingSource}"
+            SelectedItem="{Binding SelectedSetting, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            SelectionMode="Cell"
             ShowBorder="True">
             <dxg:GridControl.View>
                 <dxg:TableView
@@ -38,13 +39,14 @@
                     AllowScrollToFocusedRow="True"
                     AllowSorting="False"
                     EditorShowMode="MouseDown"
+                    EnableImmediatePosting="True"
                     HorizontalScrollbarVisibility="Auto"
                     SearchDelay="100"
                     SearchPanelFindFilter="Default"
                     SearchPanelHighlightResults="True"
                     ShowAutoFilterRow="False"
                     ShowGroupPanel="False"
-                    ShowIndicator="False"
+                    ShowIndicator="True"
                     ShowSelectionRectangle="False"
                     ValidatesOnNotifyDataErrors="True"
                     VerticalScrollbarVisibility="Auto" />
@@ -76,35 +78,35 @@
                     Width="24"
                     Height="24"
                     Margin="0,8,0,0"
-                    Click="BtnAdd_Click"
+                    Command="{Binding AddSettingCommand}"
                     Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Add.svg'}" />
                 <dx:SimpleButton
                     x:Name="btnRemove"
                     Width="24"
                     Height="24"
                     Margin="0,8,0,0"
-                    Click="BtnRemove_Click"
+                    Command="{Binding RemoveSettingCommand}"
                     Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Remove.svg'}" />
                 <dx:SimpleButton
                     x:Name="btnMoveUp"
                     Width="24"
                     Height="24"
                     Margin="0,8,0,0"
-                    Click="BtnMoveUp_Click"
+                    Command="{Binding MoveUpSettingCommand}"
                     Glyph="{dx:DXImage 'SvgImages/Arrows/MoveUp.svg'}" />
                 <dx:SimpleButton
                     x:Name="btnMoveDown"
                     Width="24"
                     Height="24"
                     Margin="0,8,0,0"
-                    Click="BtnMoveDown_Click"
+                    Command="{Binding MoveDownSettingCommand}"
                     Glyph="{dx:DXImage 'SvgImages/Arrows/MoveDown.svg'}" />
                 <dx:SimpleButton
                     x:Name="btnClear"
                     Width="24"
                     Height="24"
                     Margin="0,8,0,0"
-                    Click="BtnClear_Click"
+                    Command="{Binding ClearSettingCommand}"
                     Glyph="{dx:DXImage 'SvgImages/Icon Builder/Actions_Delete.svg'}" />
             </StackPanel>
         </Grid>

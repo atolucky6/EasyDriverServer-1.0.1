@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace EasyDriver.Core
 {
-    [JsonConverter(typeof(EasyScadaProjectJsonConverter))]
     public interface IEasyScadaProject : IGroupItem, ISupportParameters, ISupportSynchronization
     { 
         string Username { get; set; }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using EasyDriver.Core;
+using EasyDriverPlugin;
 
 namespace EasyScada.ServerApplication
 {
@@ -17,7 +18,7 @@ namespace EasyScada.ServerApplication
         #region Constructors
 
         public RemoteProjectTreeViewModel(
-            IHubConnectionManagerService hubConnectionManagerService,
+            IRemoteConnectionManagerService hubConnectionManagerService,
             IHubFactory hubFactory)
         {
             Title = "Easy Driver Server";
@@ -33,7 +34,7 @@ namespace EasyScada.ServerApplication
         #region Injected services
 
         protected IHubFactory HubFactory { get; set; }
-        protected IHubConnectionManagerService HubConnectionManagerService { get; set; }
+        protected IRemoteConnectionManagerService HubConnectionManagerService { get; set; }
 
         #endregion
 

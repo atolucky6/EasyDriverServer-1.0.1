@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 
 namespace EasyDriverPlugin
@@ -6,10 +8,9 @@ namespace EasyDriverPlugin
     public interface IEasyDriverPlugin : IDisposable
     {
         WriteQueue WriteQueue { get; }
-        IChannelCore Channel { get; set; }
         List<IDataType> SupportDataTypes { get; }
 
-        bool Start();
+        bool Start(IChannelCore channel);
         bool Stop();
 
         object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null);
@@ -19,9 +20,9 @@ namespace EasyDriverPlugin
         object GetEditDeviceControl(IDeviceCore device);
         object GetEditTagControl(ITagCore tag);
 
-        IChannelCore ConvertToChannel(IChannelCore baseChannel);
-        IDeviceCore ConverrtToDevice(IDeviceCore baseDevice);
-        ITagCore ConvertToTag(ITagCore tagCore);
+        IChannelCore CreateChannel(IGroupItem parent);
+        IDeviceCore CreateDevice(IGroupItem parent);
+        ITagCore CreateTag(IGroupItem parent);
 
         event EventHandler Disposed;
         event EventHandler Refreshed;

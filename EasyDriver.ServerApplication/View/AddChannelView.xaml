@@ -26,7 +26,7 @@
             <dxdo:DockLayoutManager>
                 <dxdo:LayoutGroup Orientation="Vertical">
                     <dxdo:LayoutGroup
-                        Caption="Select the driver"
+                        Caption="Select driver for channel"
                         GroupBorderStyle="Group"
                         ItemHeight="Auto"
                         ShowCaption="True">

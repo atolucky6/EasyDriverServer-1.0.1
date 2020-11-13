@@ -136,9 +136,9 @@ namespace EasyScada.ServerApplication
             IEasyDriverPlugin driver = DriverManagerService.GetDriver(channel);
             if (driver != null)
             {
-                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is List<ITagCore> newTags)
+                if (ContextWindowService.Show(driver.GetCreateTagControl(Parent), "Add Tag") is IEnumerable<ITagCore> newTags)
                 {
-                    if (newTags.Count > 0)
+                    if (newTags.Count() > 0)
                     {
                         using (Transaction transaction = ReverseService.Begin("Add Tag"))
                         {
@@ -476,7 +476,7 @@ namespace EasyScada.ServerApplication
                     if (ClipboardManager.ObjectToCopy is List<object> tagsToCopy)
                     {
                         IEasyDriverPlugin driver = DriverManagerService.GetDriver(Parent.Parent);
-                        IEnumerable<IDataType> dataTypesSource = driver.GetSupportDataTypes();
+                        IEnumerable<IDataType> dataTypesSource = driver.SupportDataTypes;
                         using (Transaction transaction = ReverseService.Begin("Paste Tags"))
                         {
 

@@ -12,11 +12,17 @@ namespace EasyDriverPlugin
         public WritePiority WritePiority { get; set; }
         public WriteMode WriteMode { get; set; }
         public int TryTimes { get; set; }
+        public int Timeout { get; set; } = 1000;
         public bool IsCustomWrite { get; set; }
         public int Delay { get; set; }
         public string CustomWriteAddress { get; set; }
         public byte[] CustomWriteValue { get; set; }
         public List<WriteCommand> NextCommands { get; set; }
         public event EventHandler<CommandExecutedEventArgs> Executed;
+
+        public void OnExecuted(CommandExecutedEventArgs args)
+        {
+            Executed?.Invoke(this, args);
+        }
     }
 }

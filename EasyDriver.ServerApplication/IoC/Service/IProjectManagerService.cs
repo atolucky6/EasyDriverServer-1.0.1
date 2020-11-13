@@ -72,7 +72,8 @@ namespace EasyScada.ServerApplication
                     project.ModifiedDate = DateTime.Now;
                     project.AcceptChanges();
                     ProjectSaving?.Invoke(this, new ProjectSavingEventArgs(CurrentProject, project));
-                    string resJson = JsonConvert.SerializeObject(project, Formatting.Indented, new EasyScadaProjectJsonConverter());
+                    var converter = new EasyScadaProjectJsonConverter();
+                    string resJson = JsonConvert.SerializeObject(project, Formatting.Indented, converter);
                     File.WriteAllText(project.ProjectPath, resJson);
                     ProjectSaved?.Invoke(this, new ProjectSavedEventArgs(CurrentProject, project));
                 }

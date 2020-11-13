@@ -4,6 +4,7 @@ using System.Windows.Data;
 using System;
 using System.Globalization;
 using EasyDriver.Core;
+using EasyDriverPlugin;
 
 namespace EasyScada.ServerApplication
 {
@@ -25,20 +26,20 @@ namespace EasyScada.ServerApplication
         {
             if (value is BreadcrumbNode node)
             {
-                if (node.Item is LocalStation)
-                    return LocalStationImageSource;
-                else if (node.Item is RemoteStation station)
+                if (node.Item is IStationCore station)
                 {
-                    if (station.StationType == "Remote")
+                    if (station.StationType == "Local")
+                        return LocalStationImageSource;
+                    else if (station.StationType == "Remote")
                         return RemoteStationImageSource;
                     else if (station.StationType == "OPC_DA")
                         return RemoteOpcDaStationImageSource;
                 }
-                else if (node.Item is ChannelCore)
+                else if (node.Item is IChannelCore)
                     return ChannelImageSource;
-                else if (node.Item is DeviceCore)
+                else if (node.Item is IDeviceCore)
                     return DeviceImageSource;
-                else if (node.Item is GroupCore)
+                else if (node.Item is IGroupItem)
                     return GroupImageSource;
             }
             return null;

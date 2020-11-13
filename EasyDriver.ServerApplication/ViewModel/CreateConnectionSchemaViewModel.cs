@@ -26,7 +26,7 @@ namespace EasyScada.ServerApplication
 
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
-        protected IHubConnectionManagerService HubConnectionManagerService { get; set; }
+        protected IRemoteConnectionManagerService HubConnectionManagerService { get; set; }
         protected IHubFactory HubFactory { get; set; }
         protected ApplicationViewModel ApplicationViewModel { get; set; }
 
@@ -38,7 +38,7 @@ namespace EasyScada.ServerApplication
             IProjectManagerService projectManagerService,
             IDriverManagerService driverManagerService,
             IHubFactory hubFactory,
-            IHubConnectionManagerService hubConnectionManagerService,
+            IRemoteConnectionManagerService hubConnectionManagerService,
             ApplicationViewModel applicationViewModel)
         {
             SizeToContent = SizeToContent.WidthAndHeight;

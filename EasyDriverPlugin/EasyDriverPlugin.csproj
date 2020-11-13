@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -31,10 +31,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -48,9 +51,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\ClientTag.cs" />
+    <Compile Include="Clients\ICheckable.cs" />
+    <Compile Include="Clients\IClientObject.cs" />
+    <Compile Include="Clients\IClientTag.cs" />
+    <Compile Include="Clients\ItemType.cs" />
     <Compile Include="Converters\ByteOrderConverter.cs" />
     <Compile Include="Converters\StringLookupConverrter.cs" />
-    <Compile Include="Core\TagCollection.cs" />
+    <Compile Include="Core\Base\Commons\BindableCore.cs" />
+    <Compile Include="Core\Base\Commons\ParameterContainer.cs" />
+    <Compile Include="Core\Base\Commons\PropertyCategory.cs" />
+    <Compile Include="Core\Base\CoreItem\CoreItemBase.cs" />
+    <Compile Include="Core\Base\GroupItem\GroupItemBase.cs" />
     <Compile Include="Enums\AccessPermission.cs" />
     <Compile Include="Enums\ByteOrder.cs" />
     <Compile Include="DataTypes\Base\IDataType.cs" />
@@ -86,7 +98,9 @@
     <Compile Include="Core\ICoreItem.cs" />
     <Compile Include="Core\IDeviceCore.cs" />
     <Compile Include="Core\IGroupItem.cs" />
+    <Compile Include="Helper\CopyHelper.cs" />
     <Compile Include="Helper\Extensions.cs" />
+    <Compile Include="Helper\Helper.cs" />
     <Compile Include="Helper\Utils.cs" />
     <Compile Include="Interfaces\IHaveTag.cs" />
     <Compile Include="Interfaces\Indexer.cs" />
@@ -97,13 +111,23 @@
     <Compile Include="Core\ITagCore.cs" />
     <Compile Include="Core\NotifyCollection.cs" />
     <Compile Include="EventArgs\NameChangedEventArgs.cs" />
+    <Compile Include="Plugin\EasyDriverPluginBase.cs" />
     <Compile Include="Plugin\IEasyDriverPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server\ChannelCore.cs" />
+    <Compile Include="Server\DeviceCore.cs" />
+    <Compile Include="Server\GroupCore.cs" />
+    <Compile Include="Server\LocalStation.cs" />
+    <Compile Include="Server\RemoteStation.cs" />
+    <Compile Include="Server\TagCore.cs" />
     <Compile Include="Write\WriteCommand.cs" />
     <Compile Include="Write\WriteMode.cs" />
     <Compile Include="Enums\WritePiority.cs" />
     <Compile Include="Write\WriteQueue.cs" />
     <Compile Include="Write\WriteResponse.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

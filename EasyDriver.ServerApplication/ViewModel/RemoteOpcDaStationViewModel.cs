@@ -31,7 +31,7 @@ namespace EasyScada.ServerApplication
 
         protected IProjectManagerService ProjectManagerService { get; set; }
         protected IDriverManagerService DriverManagerService { get; set; }
-        protected IOpcDaClientManagerService OpcDaClientManagerService { get; set; }
+        protected IRemoteConnectionManagerService RemoteConnectionManagerService { get; set; }
         protected IHubFactory HubFactory { get; set; }
 
         #endregion
@@ -41,14 +41,14 @@ namespace EasyScada.ServerApplication
         public RemoteOpcDaStationViewModel(
             IProjectManagerService projectManagerService,
             IDriverManagerService driverManagerService,
-            IOpcDaClientManagerService opcDaClientManagerService)
+            IRemoteConnectionManagerService remoteConnectionManagerService)
         {
             SizeToContent = SizeToContent.WidthAndHeight;
             Width = 400;
             Height = 260;
             ProjectManagerService = projectManagerService;
             DriverManagerService = driverManagerService;
-            OpcDaClientManagerService = opcDaClientManagerService;
+            RemoteConnectionManagerService = remoteConnectionManagerService;
             OpcServerSource = IoC.Instance.OpcDaServerHosts;
             Messenger.Default.Register<CreateRemoteOpcDaStationSuccessMessage>(this, OnCreateRemoteOpcDaStationSuccessMessage);
         }
@@ -98,17 +98,17 @@ namespace EasyScada.ServerApplication
                     }
                     else
                     {
-                        if (OpcDaClientManagerService.ConnectionDictonary.ContainsKey(RemoteStation))
+                        if (RemoteConnectionManagerService.ConnectionDictonary.ContainsKey(RemoteStation))
                         {
                             RemoteStation.Name = Name;
                             RemoteStation.RemoteAddress = RemoteAddress;
                             RemoteStation.Port = Port;
                             RemoteStation.CommunicationMode = CommunicationMode;
                             RemoteStation.RefreshRate = RefreshRate;
-                            RemoteStation.OpcDaServerName = UrlBuilder.Build(OpcServer).ToString();
+                            RemoteStation.ConnectionString = UrlBuilder.Build(OpcServer).ToString();
                             RemoteStation.Parent.Childs.NotifyItemInCollectionChanged(RemoteStation);
                             RemoteStation.RaisePropertyChanged("OpcDaServerName");
-                            OpcDaClientManagerService.ReloadConnection(RemoteStation);
+                            RemoteConnectionManagerService.ReloadConnection(RemoteStation);
                             IsBusy = false;
                             CurrentWindowService.Close();
                         }
@@ -154,7 +154,7 @@ namespace EasyScada.ServerApplication
                 }
                 IsBusy = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 IsBusy = false;
                 MessageBoxService.ShowMessage($"Can't connect to OPC server '{UrlBuilder.Build(OpcServer).ToString()}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
@@ -187,13 +187,13 @@ namespace EasyScada.ServerApplication
                         RefreshRate = RefreshRate,
                         StationType = "OPC_DA"
                     };
-                    remoteStation.OpcDaServerName = UrlBuilder.Build(OpcServer).ToString();
+                    remoteStation.ConnectionString = UrlBuilder.Build(OpcServer).ToString();
                     foreach (var item in message.Parent.Childs)
                         remoteStation.Childs.Add(item);
 
                     ProjectManagerService.CurrentProject.Childs.Add(remoteStation);
                     Thread.Sleep(100);
-                    OpcDaClientManagerService.AddConnection(remoteStation, OpcDaServer);
+                    RemoteConnectionManagerService.AddConnection(remoteStation, OpcDaServer);
                     IsBusy = false;
                     ProjectTreeWorkspaceViewModel.IsBusy = false;
                     CreateSuccess = true;
@@ -227,9 +227,9 @@ namespace EasyScada.ServerApplication
                 RemoteStation = remoteStation;
                 Parent = remoteStation.Parent as IEasyScadaProject;
 
-                if (!string.IsNullOrEmpty(remoteStation.OpcDaServerName))
+                if (!string.IsNullOrEmpty(remoteStation.ConnectionString))
                 {
-                    string[] split = remoteStation.OpcDaServerName.Split('/');
+                    string[] split = remoteStation.ConnectionString.Split('/');
                     OpcServer = split[split.Length - 1];
                 }
             }

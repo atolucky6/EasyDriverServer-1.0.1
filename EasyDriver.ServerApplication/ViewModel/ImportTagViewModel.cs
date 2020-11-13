@@ -136,7 +136,7 @@ namespace EasyScada.ServerApplication
                     var driver = DriverManagerService.GetDriver(channel);
                     if (driver == null)
                         return;
-                    List<string> supportDTs = driver.GetSupportDataTypes().Select(x => x.Name).ToList();
+                    List<string> supportDTs = driver.SupportDataTypes.Select(x => x.Name).ToList();
 
                     string[] lines = File.ReadAllLines(CsvPath);
                     if (lines.Length > 1)
@@ -228,7 +228,7 @@ namespace EasyScada.ServerApplication
                                 {
                                     ITagCore tag = new TagCore(Parent);
                                     tag.Name = name;
-                                    tag.DataType = driver.GetSupportDataTypes().FirstOrDefault(x => x.Name == dataType);
+                                    tag.DataType = driver.SupportDataTypes.FirstOrDefault(x => x.Name == dataType);
                                     tag.Address = address;
                                     tag.RefreshRate = refreshRate;
                                     tag.AccessPermission = accessPermission;

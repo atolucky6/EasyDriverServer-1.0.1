@@ -122,7 +122,7 @@ namespace EasyDriver.ModbusRTU
 
         public static bool DecomposeAddress(this string address, out AddressType addressType, out ushort offset)
         {
-            addressType = AddressType.InputContact;
+            addressType = AddressType.Undefined;
             offset = 0;
             try
             {

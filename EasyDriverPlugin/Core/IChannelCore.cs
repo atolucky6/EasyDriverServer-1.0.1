@@ -2,7 +2,7 @@
 
 namespace EasyDriverPlugin
 {
-    public interface IChannelCore : IGroupItem, ISupportParameters, ISupportSynchronization, IHaveTag
+    public interface IChannelCore : IGroupItem, ISupportParameters, ISupportSynchronization
     {
         ConnectionStatus ConnectionStatus { get; set; }
         string DriverPath { get; set; }

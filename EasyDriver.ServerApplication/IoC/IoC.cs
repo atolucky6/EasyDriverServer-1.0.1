@@ -83,8 +83,7 @@ namespace EasyScada.ServerApplication
             Kernel.BindPOCOViewModel<ApplicationViewModel>().InSingletonScope();
             var applicationViewModel = Kernel.Get<ApplicationViewModel>();
             Kernel.Bind<IHubFactory>().ToConstant(new HubFactory("EasyDriverServerHub"));
-            Kernel.Bind<IHubConnectionManagerService>().ToConstant(new HubConnectionManagerService());
-            Kernel.Bind<IOpcDaClientManagerService>().ToConstant(new OpcDaClientManagerService());
+            Kernel.Bind<IRemoteConnectionManagerService>().ToConstant(new RemoteConnectionManagerService());
             Kernel.Bind<IDriverManagerService>().ToConstant(new DriverManagerService());
             Kernel.Bind<IReverseService>().ToConstant(new ReverseService());
 
@@ -96,8 +95,7 @@ namespace EasyScada.ServerApplication
             Kernel.Bind<ITagWriterService>().ToConstant(new TagWriterService(
                 ProjectManagerService,
                 Get<IDriverManagerService>(),
-                Get<IHubConnectionManagerService>(),
-                Get<IOpcDaClientManagerService>(),
+                Get<IRemoteConnectionManagerService>(),
                 Get<IInternalStorageService>()));
             Kernel.Bind<ILicenseManagerService>().ToConstant(new LicenseManagerService("EasyScada", Get<IProjectManagerService>()));
         }
