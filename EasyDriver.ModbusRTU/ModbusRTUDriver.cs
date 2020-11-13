@@ -50,7 +50,7 @@ namespace EasyDriver.ModbusRTU
         /// Constructor
         /// </summary>
         public ModbusRTUDriver()
-        {
+        { //sdfsdfsf
             mbMaster = new ModbusSerialRTU();
             DeviceToReadBlockSettings = new Dictionary<IDeviceCore, List<ReadBlockSetting>>();
             DeviceToReadBlockString = new Dictionary<IDeviceCore, List<string>>();
