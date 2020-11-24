@@ -90,9 +90,11 @@ namespace EasyScada.ServerApplication
         {
             if (ioc.ProjectManagerService.CurrentProject != null)
             {
-                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject.Childs.Select(x => x as IClientObject)?.ToList(), Formatting.Indented);
+                CoreItemToClientJsonObjectConverter converter = new CoreItemToClientJsonObjectConverter();
+
+                return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject, Formatting.Indented, converter);
             }
-            return null;
+            return null; 
         }
 
         public async Task<string> GetAllElementsAsync()

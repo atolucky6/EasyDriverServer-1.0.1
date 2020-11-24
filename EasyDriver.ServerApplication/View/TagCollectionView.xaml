@@ -44,7 +44,7 @@
                 <dxb:BarStaticItem
                     x:Name="bTotal"
                     Alignment="Far"
-                    Content="{DXBinding '`Count: ` + Token.Childs.Count'}" />
+                    Content="{DXBinding '`Count: ` + Token.Tags.Count'}" />
                 <dxb:BarItemSeparator x:Name="bSeperator" />
                 <dxb:BarButtonItem
                     x:Name="bAdd"
@@ -161,15 +161,18 @@
             </dxb:BarManager.Bars>
             <DockPanel>
                 <Border
+                    Height="28"
                     Padding="8,0,0,0"
-                    BorderBrush="#44475a"
+                    BorderBrush="{DynamicResource GrayBorderSolidBrush}"
                     BorderThickness="0,0,0,1"
                     DockPanel.Dock="Top">
                     <dxco:BreadcrumbControl
+                        VerticalAlignment="Center"
                         ChildMember="Childs"
                         DisplayMember="Name"
                         EditMode="Both"
-                        Foreground="{StaticResource CyanBrush}"
+                        FontSize="14"
+                        Foreground="{DynamicResource BlackSolidBrush}"
                         IsEnabled="False"
                         ItemsSource="{Binding ProjectChilds}"
                         SelectedItem="{Binding Parent}"
@@ -201,12 +204,12 @@
                     </dxco:BreadcrumbControl>
                 </Border>
                 <Border
-                    BorderBrush="#44475a"
+                    BorderBrush="{DynamicResource GrayBorderSolidBrush}"
                     BorderThickness="0,0,0,0"
                     DockPanel.Dock="Top">
                     <dxb:BarContainerControl x:Name="barContainer" />
                 </Border>
-                <Border BorderBrush="#44475a" BorderThickness="0,1,0,0">
+                <Border BorderBrush="{DynamicResource GrayBorderSolidBrush}" BorderThickness="0,1,0,0">
                     <!--#region TreeListControl-->
                     <dxg:GridControl
                         CurrentItem="{Binding CurrentItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -239,8 +242,10 @@
                                 AllowScrollToFocusedRow="True"
                                 AllowSorting="False"
                                 EditorShowMode="MouseUpFocused"
+                                FontSize="14"
                                 HorizontalScrollbarVisibility="Auto"
-                                IndicatorWidth="24"
+                                IndicatorWidth="30"
+                                RowMinHeight="28"
                                 SearchDelay="100"
                                 SearchPanelFindFilter="Default"
                                 SearchPanelHighlightResults="True"
@@ -284,6 +289,7 @@
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn
                                 Width="{Binding Token.Childs.Count, Converter={StaticResource TextToWidthConverter}}"
+                                MinWidth="30"
                                 AllowColumnFiltering="False"
                                 AllowEditing="False"
                                 AllowMoving="False"
@@ -295,7 +301,8 @@
                                         <TextBlock
                                             x:Name="PART_Editor"
                                             HorizontalAlignment="Center"
-                                            VerticalAlignment="Bottom"
+                                            VerticalAlignment="Center"
+                                            FontSize="14"
                                             Text="{DXBinding 'RowData.RowHandle.Value + 1'}"
                                             TextAlignment="Center" />
                                     </DataTemplate>
@@ -305,6 +312,12 @@
                                 AllowSearchPanel="True"
                                 FieldName="Name"
                                 Header="Name">
+                                <dxg:GridColumn.HeaderStyle>
+                                    <Style TargetType="dxg:BaseGridHeader">
+                                        <Setter Property="FontWeight" Value="SemiBold" />
+                                        <Setter Property="Height" Value="30" />
+                                    </Style>
+                                </dxg:GridColumn.HeaderStyle>
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
@@ -360,7 +373,7 @@
                                 </dxg:GridColumn.CellDisplayTemplate>-->
                             </dxg:GridColumn>
                             <dxg:GridColumn
-                                Width="105"
+                                Width="120"
                                 AllowSearchPanel="False"
                                 FieldName="RefreshRate"
                                 Header="Refresh rate (ms)">

@@ -1,12 +1,8 @@
 ﻿using EasyDriverPlugin;
 using LiteDB;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyScada.ServerApplication
 {
@@ -23,37 +19,37 @@ namespace EasyScada.ServerApplication
         {
             try
             {
-                if (tagCore != null && tagCore.IsInternalTag)
+                if (tagCore != null && tagCore.IsInternalTag && tagCore.Retain)
                 {
-                    if (tagCore.ParameterContainer.Parameters.ContainsKey("GUID"))
+                    if (string.IsNullOrWhiteSpace(tagCore.GUID))
+                        tagCore.GUID = new Guid().ToString();
+
+                    using (var db = new LiteDatabase(GetConnectionString()))
                     {
-                        using (var db = new LiteDatabase(GetConnectionString()))
+                        string guid = tagCore.GUID;
+                        var collection = db.GetCollection<InternalTagModel>("internal_tags");
+                        InternalTagModel model = new InternalTagModel()
                         {
-                            string guid = tagCore.ParameterContainer.Parameters["GUID"];
-                            var collection = db.GetCollection<InternalTagModel>("internal_tags");
-                            InternalTagModel model = new InternalTagModel()
-                            {
-                                GUID = guid,
-                                LastUpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                                Value = tagCore.Value
-                            };
-                            collection.EnsureIndex(x => x.GUID);
-                            if (collection.Exists(x => x.GUID == guid))
-                            {
-                                var res = collection.Update(model);
-                                return res;
-                            }
-                            else
-                            {
-                                var res = collection.Insert(model);
-                                return true;
-                            }
+                            GUID = guid,
+                            LastUpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            Value = tagCore.Value
+                        };
+                        collection.EnsureIndex(x => x.GUID);
+                        if (collection.Exists(x => x.GUID == guid))
+                        {
+                            var res = collection.Update(model);
+                            return res;
+                        }
+                        else
+                        {
+                            var res = collection.Insert(model);
+                            return true;
                         }
                     }
                 }
                 return false;
             }
-            catch (Exception ex) { return false; }
+            catch (Exception) { return false; }
         }
 
         public InternalTagModel GetInternalTagValue(string guid)
@@ -94,7 +90,6 @@ namespace EasyScada.ServerApplication
 
         private ConnectionString GetConnectionString()
         {
-
             string dbPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\internal.db";
             ConnectionString constr = new ConnectionString();
             constr.Filename = dbPath;

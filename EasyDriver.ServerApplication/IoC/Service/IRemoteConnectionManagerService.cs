@@ -30,15 +30,27 @@ namespace EasyScada.ServerApplication
             await Task.Run(() =>
             {
                 if (!ConnectionDictonary.ContainsKey(stationCore) && stationCore != null)
-                {
+                { 
+                    object param1 = null;
+                    object param2 = null;
+
+                    if (parameters != null)
+                    {
+                        if (parameters.Length > 0)
+                            param1 = parameters[0];
+
+                        if (parameters.Length > 1)
+                            param2 = parameters[1];
+                    }
+
                     Thread.Sleep(100);
                     switch (stationCore.StationType)
                     {
                         case "OPC_DA":
-                            ConnectionDictonary[stationCore] = new OpcDaRemoteStationConnection(stationCore, parameters[0] as OpcDaServer);
+                            ConnectionDictonary[stationCore] = new OpcDaRemoteStationConnection(stationCore, param1 as OpcDaServer);
                             break;
-                        case "RemoteStation":
-                            ConnectionDictonary[stationCore] = new RemoteStationConnection(stationCore, parameters[0] as HubConnection, parameters[1] as IHubProxy);
+                        case "Remote":
+                            ConnectionDictonary[stationCore] = new RemoteStationConnection(stationCore, param1 as HubConnection, param2 as IHubProxy);
                             break;
                         default:
                             break;

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="EasyDriver.Service.BarManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.BarManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.InternalStorage">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.InternalStorage.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.LayoutManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.LayoutManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.Notifier">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.Notifier.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.Reversible">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.Reversible.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.WorkspaceManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.WorkspaceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.ServicePlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.ServicePlugin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\netcoreapp3.1\Workspaces\&#xD;&#xA;xcopy /y $(TargetPath) $(SolutionDir)\bin\Release\netcoreapp3.1\Workspaces\" />
+  </Target>
+
+</Project>

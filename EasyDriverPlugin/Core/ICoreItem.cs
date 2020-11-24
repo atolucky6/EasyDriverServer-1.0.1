@@ -20,6 +20,8 @@ namespace EasyDriverPlugin
         /// </summary>
         int Level { get; }
 
+        string DisplayInformation { get; set; }
+
         /// <summary>
         /// Thời gian tạo đối tượng
         /// </summary>
@@ -112,5 +114,7 @@ namespace EasyDriverPlugin
         /// Sự kiện khi đối tượng được thêm vào parent
         /// </summary>
         event EventHandler Added;
+
+        public bool GetActualEnabledProperty();
     }
 }

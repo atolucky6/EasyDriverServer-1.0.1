@@ -309,23 +309,25 @@
 
                 <dxb:Bar
                     AllowCustomizationMenu="False"
+                    BorderBrush="{DynamicResource GrayBorderSolidBrush}"
+                    BorderThickness="0,1,0,0"
                     IsMainMenu="False"
                     IsStatusBar="True">
                     <dxb:Bar.Resources>
                         <ControlTemplate x:Key="{dxbt:BarControlThemeKey ResourceKey=BarTemplate, IsThemeIndependent=True}" TargetType="{x:Type ContentControl}">
-                            <Border x:Name="Background" Background="#FF262626">
+                            <Border x:Name="Background">
                                 <ContentPresenter />
                             </Border>
                         </ControlTemplate>
 
                         <ControlTemplate x:Key="{dxbt:BarControlThemeKey ResourceKey=MainMenuTemplate}" TargetType="{x:Type ContentControl}">
-                            <Border x:Name="Background" Background="#FF262626">
+                            <Border x:Name="Background">
                                 <ContentPresenter />
                             </Border>
                         </ControlTemplate>
 
                         <ControlTemplate x:Key="{dxbt:BarContainerControlThemeKey ResourceKey=BackgroundTemplate, IsThemeIndependent=True}" TargetType="{x:Type ContentControl}">
-                            <Border x:Name="Background" Background="#FF262626">
+                            <Border x:Name="Background">
                                 <ContentPresenter Content="{TemplateBinding Content}" />
                             </Border>
                         </ControlTemplate>
@@ -337,7 +339,7 @@
                         <dxb:BarStaticItem Content="{Binding Source={x:Static local:IoC.Instance}, Path=ApplicationViewModel.ServerConfiguration.Port}">
                             <dxb:BarStaticItem.ContentTemplate>
                                 <DataTemplate>
-                                    <TextBlock Margin="4,0,0,0" Foreground="{StaticResource GreenBrush}">
+                                    <TextBlock Margin="4,0,0,0" Foreground="{DynamicResource FocusBrush}">
                                         <Run Text="Server running on port " />
                                         <Run Text="{Binding Mode=OneWay}" />
                                     </TextBlock>
@@ -358,7 +360,7 @@
                         <dxb:BarStaticItem Alignment="Far" Content="{Binding Source={x:Static local:IoC.Instance}, Path=ApplicationViewModel.CurrentOpenedProjectPath}">
                             <dxb:BarStaticItem.ContentTemplate>
                                 <DataTemplate>
-                                    <TextBlock Margin="4,0,0,0" Foreground="{StaticResource CyanBrush}">
+                                    <TextBlock Margin="4,0,0,0" Foreground="{DynamicResource FocusBrush}">
                                         <Run Text="Project path: " />
                                         <Run Text="{Binding Mode=OneWay}" />
                                         <!--<TextBlock.Style>
@@ -379,7 +381,7 @@
                 </dxb:Bar>
 
             </dxb:BarManager.Bars>
-            <Border BorderBrush="#44475a" BorderThickness="0,1,0,1">
+            <Border BorderBrush="{DynamicResource GrayBorderSolidBrush}" BorderThickness="0,1,0,0">
                 <Grid>
                     <dxdo:DockLayoutManager
                         x:Name="dockContainer"

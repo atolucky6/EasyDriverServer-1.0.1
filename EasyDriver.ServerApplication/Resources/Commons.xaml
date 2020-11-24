@@ -1,11 +1,144 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
     xmlns:dxbt="http://schemas.devexpress.com/winfx/2008/xaml/bars/themekeys"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
     xmlns:local="clr-namespace:EasyScada.ServerApplication">
+
+    <local:EnabledItemToOpacityConverter x:Key="EnabledItemToOpacityConverter" />
+    <local:TextToWidthConverter x:Key="TextToWidthConverter" />
+    <local:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter" />
+    <local:ConnectionStatusToImageSourceConverter
+        x:Key="ConnectionStatusToImageSourceConverter"
+        ConnectedImageSource="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
+        DisconnectedImageSource="/EasyDriverServer;component/Resources/Images/cloud_cross_48px.png" />
+    <local:ClientObjectToDisplayInfoConverter x:Key="ClientObjectToDisplayInfoConverter" />
+    <DataTemplate x:Key="ChannelTemplate">
+        <Grid Height="30" Opacity="{Binding Path=Row.Enabled, Converter={StaticResource EnabledItemToOpacityConverter}, UpdateSourceTrigger=PropertyChanged}">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <dx:DXImage
+                    Width="24"
+                    Height="20"
+                    Source="/EasyDriverServer;component/Resources/Images/channel_24px.png" />
+                <dxe:TextEdit
+                    x:Name="PART_Editor"
+                    VerticalContentAlignment="Center"
+                    FontSize="14"
+                    ShowError="False" />
+                <TextBlock
+                    Margin="0,0,0,2"
+                    VerticalAlignment="Bottom"
+                    FontSize="12"
+                    Foreground="{Binding ElementName=PART_Editor, Path=Foreground}"
+                    Opacity="0.8"
+                    Text="{Binding Mode=OneWay, Path=Row.DisplayInformation}"
+                    Visibility="{Binding Mode=OneWay, Path=Row.DisplayInformation, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="DeviceTemplate">
+        <Grid Height="30" Opacity="{Binding Path=Row.Enabled, Converter={StaticResource EnabledItemToOpacityConverter}, UpdateSourceTrigger=PropertyChanged}">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <dx:DXImage
+                    Width="24"
+                    Height="20"
+                    Source="/EasyDriverServer;component/Resources/Images/device_24px.png" />
+                <dxe:TextEdit
+                    x:Name="PART_Editor"
+                    VerticalContentAlignment="Center"
+                    FontSize="14"
+                    ShowError="False" />
+                <TextBlock
+                    Margin="0,0,0,2"
+                    VerticalAlignment="Bottom"
+                    FontSize="12"
+                    Foreground="{Binding ElementName=PART_Editor, Path=Foreground}"
+                    Opacity="0.8"
+                    Text="{Binding Mode=OneWay, Path=Row.DisplayInformation}"
+                    Visibility="{Binding Mode=OneWay, Path=Row.DisplayInformation, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="GroupTemplate">
+        <Grid Height="30" Opacity="{Binding Path=Row.Enabled, Converter={StaticResource EnabledItemToOpacityConverter}, UpdateSourceTrigger=PropertyChanged}">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <dx:DXImage
+                    Width="24"
+                    Height="20"
+                    Source="/EasyDriverServer;component/Resources/Images/folder_48px.png" />
+                <dxe:TextEdit
+                    x:Name="PART_Editor"
+                    VerticalContentAlignment="Center"
+                    FontSize="14"
+                    ShowError="False" />
+                <TextBlock
+                    Margin="0,0,0,2"
+                    VerticalAlignment="Bottom"
+                    FontSize="12"
+                    Foreground="{Binding ElementName=PART_Editor, Path=Foreground}"
+                    Opacity="0.8"
+                    Text="{Binding Mode=OneWay, Path=Row.DisplayInformation}"
+                    Visibility="{Binding Mode=OneWay, Path=Row.DisplayInformation, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="RemoteStationTemplate">
+        <Grid Height="30" Opacity="{Binding Path=Row.Enabled, Converter={StaticResource EnabledItemToOpacityConverter}, UpdateSourceTrigger=PropertyChanged}">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <dx:DXImage
+                    Width="24"
+                    Height="20"
+                    Source="{Binding Row.ConnectionStatus, Converter={StaticResource ConnectionStatusToImageSourceConverter}}" />
+                <dxe:TextEdit
+                    x:Name="PART_Editor"
+                    VerticalContentAlignment="Center"
+                    FontSize="14"
+                    ShowError="False" />
+                <TextBlock
+                    Margin="0,0,0,2"
+                    VerticalAlignment="Bottom"
+                    FontSize="12"
+                    Foreground="{Binding ElementName=PART_Editor, Path=Foreground}"
+                    Opacity="0.8"
+                    Text="{Binding Mode=OneWay, Path=Row.DisplayInformation}"
+                    Visibility="{Binding Mode=OneWay, Path=Row.DisplayInformation, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="LocalStationTemplate">
+        <Grid Height="30" Opacity="{Binding Path=Row.Enabled, Converter={StaticResource EnabledItemToOpacityConverter}, UpdateSourceTrigger=PropertyChanged}">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <dx:DXImage
+                    Width="24"
+                    Height="20"
+                    Source="/EasyDriverServer;component/Resources/Images/local_station_16px.png" />
+                <dxe:TextEdit
+                    x:Name="PART_Editor"
+                    VerticalContentAlignment="Center"
+                    FontSize="14"
+                    ShowError="False" />
+                <TextBlock
+                    Margin="0,0,0,2"
+                    VerticalAlignment="Bottom"
+                    FontSize="12"
+                    Foreground="{Binding ElementName=PART_Editor, Path=Foreground}"
+                    Opacity="0.8"
+                    Text="{Binding Mode=OneWay, Path=Row.DisplayInformation}"
+                    Visibility="{Binding Mode=OneWay, Path=Row.DisplayInformation, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <local:ProjectTreeCellTemplateSelector
+        x:Key="ProjectTreeCellTemplateSelector"
+        ChannelTemplate="{StaticResource ChannelTemplate}"
+        DeviceTemplate="{StaticResource DeviceTemplate}"
+        GroupTemplate="{StaticResource GroupTemplate}"
+        LocalStationTemplate="{StaticResource LocalStationTemplate}"
+        RemoteStationTemplate="{StaticResource RemoteStationTemplate}" />
 
     <!--<ControlTemplate x:Key="{dxbt:BarControlThemeKey ResourceKey=BarTemplate, IsThemeIndependent=True}" TargetType="{x:Type ContentControl}">
         <Border x:Name="Background" Background="#FF262626">
@@ -29,17 +162,19 @@
         <Setter Property="Background" Value="#FF262626"/>
     </Style>-->
 
-    <Style TargetType="{x:Type dxlc:LayoutItem}">
+    <!--<Style TargetType="{x:Type dxlc:LayoutItem}">
         <Setter Property="AddColonToLabel" Value="True" />
         <Setter Property="ElementSpace" Value="16" />
     </Style>
+
     <Style TargetType="{x:Type dxlc:LayoutControl}">
         <Setter Property="ItemSpace" Value="8" />
-    </Style>
+    </Style>-->
 
     <Style TargetType="dxg:GridColumnHeader">
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource YellowBrush}" />
+        <Setter Property="Height" Value="30" />
+        <!--<Setter Property="Foreground" Value="{StaticResource YellowBrush}" />-->
     </Style>
 
 </ResourceDictionary>

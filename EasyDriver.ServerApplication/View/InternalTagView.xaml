@@ -11,7 +11,7 @@
     xmlns:local="clr-namespace:EasyScada.ServerApplication"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     MinWidth="600"
-    d:DesignHeight="170"
+    d:DesignHeight="300"
     d:DesignWidth="600"
     DataContext="{local:ViewModelContainer local:InternalTagViewModel}"
     mc:Ignorable="d">
@@ -22,62 +22,58 @@
     </dxmvvm:Interaction.Behaviors>
     <dx:BackgroundPanel>
         <Grid>
-            <dxdo:DockLayoutManager>
+            <dxdo:DockLayoutManager AllowCustomization="False" FontSize="14">
                 <dxdo:LayoutGroup Orientation="Vertical">
-                    <dxdo:LayoutGroup
-                        Caption="Internal tag properties"
-                        GroupBorderStyle="Group"
-                        ItemHeight="Auto"
-                        ShowCaption="True">
-                        <dxdo:LayoutGroup.CaptionTemplate>
-                            <DataTemplate>
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="{StaticResource PinkBrush}"
-                                    Text="{Binding}" />
-                            </DataTemplate>
-                        </dxdo:LayoutGroup.CaptionTemplate>
+                    <dxdo:LayoutControlItem>
+                        <TextBlock Style="{DynamicResource HeaderGroupTextStyle}" Text="Internal tag parameters" />
+                    </dxdo:LayoutControlItem>
+                    <dxdo:LayoutGroup ItemHeight="Auto">
                         <dxdo:LayoutControlItem>
                             <dxlc:LayoutControl>
                                 <dxlc:LayoutGroup
                                     ItemLabelsAlignment="Local"
-                                    ItemSpace="8"
+                                    ItemSpace="24"
                                     Orientation="Vertical">
                                     <dxlc:LayoutItem
                                         AddColonToLabel="True"
-                                        Foreground="{StaticResource YellowBrush}"
-                                        Label="Name">
-                                        <dxe:TextEdit Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}" />
+                                        ElementSpace="6"
+                                        Label="Name"
+                                        LabelPosition="Top">
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:FocusBehavior />
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </TextBox>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem
                                         AddColonToLabel="True"
-                                        Foreground="{StaticResource YellowBrush}"
-                                        Label="Description">
-                                        <dxe:TextEdit Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}" />
+                                        ElementSpace="6"
+                                        Label="Description"
+                                        LabelPosition="Top">
+                                        <TextBox
+                                            Height="60"
+                                            HorizontalContentAlignment="Left"
+                                            VerticalContentAlignment="Top"
+                                            Text="{Binding Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                            TextWrapping="Wrap" />
                                     </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem
-                                        AddColonToLabel="False"
-                                        Foreground="{StaticResource YellowBrush}"
-                                        Label=" ">
-                                        <dxe:CheckEdit
-                                            Content="Retain"
-                                            IsChecked="{Binding IsRetain, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}"
-                                            IsThreeState="False" />
-                                    </dxlc:LayoutItem>
-
                                     <dxlc:LayoutGroup Orientation="Horizontal">
-                                        <dxlc:LayoutGroup HorizontalAlignment="Right" Orientation="Horizontal">
-                                            <dxlc:LayoutItem Width="70">
-                                                <dx:SimpleButton
-                                                    Command="{Binding SaveCommand}"
-                                                    Content="Ok"
-                                                    Foreground="{StaticResource GreenBrush}" />
+                                        <dxlc:LayoutItem HorizontalAlignment="Left">
+                                            <CheckBox
+                                                Content="Retain"
+                                                FontWeight="SemiBold"
+                                                IsChecked="{Binding IsRetain, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                                IsThreeState="False" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutGroup
+                                            HorizontalAlignment="Right"
+                                            ItemSpace="12"
+                                            Orientation="Horizontal">
+                                            <dxlc:LayoutItem>
+                                                <Button Command="{Binding SaveCommand}" Content="Ok" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Width="70">
-                                                <dx:SimpleButton
-                                                    Command="{Binding CloseCommand}"
-                                                    Content="Cancel"
-                                                    Foreground="{StaticResource RedBrush}" />
+                                            <dxlc:LayoutItem>
+                                                <Button Command="{Binding CloseCommand}" Content="Cancel" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                     </dxlc:LayoutGroup>

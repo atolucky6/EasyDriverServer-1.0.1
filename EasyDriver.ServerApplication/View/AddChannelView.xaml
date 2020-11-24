@@ -11,7 +11,7 @@
     xmlns:local="clr-namespace:EasyScada.ServerApplication"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     MinWidth="600"
-    d:DesignHeight="170"
+    d:DesignHeight="250"
     d:DesignWidth="600"
     DataContext="{local:ViewModelContainer local:AddChannelViewModel}"
     mc:Ignorable="d">
@@ -21,72 +21,65 @@
         <local:KeyDownBehavior Key="Enter" Command="{Binding SaveCommand}" />
         <local:KeyDownBehavior Key="Esc" Command="{Binding CloseCommand}" />
     </dxmvvm:Interaction.Behaviors>
-    <dx:BackgroundPanel>
-        <Grid>
-            <dxdo:DockLayoutManager>
-                <dxdo:LayoutGroup Orientation="Vertical">
-                    <dxdo:LayoutGroup
-                        Caption="Select driver for channel"
-                        GroupBorderStyle="Group"
-                        ItemHeight="Auto"
-                        ShowCaption="True">
-                        <dxdo:LayoutGroup.CaptionTemplate>
-                            <DataTemplate>
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="{StaticResource PinkBrush}"
-                                    Text="{Binding}" />
-                            </DataTemplate>
-                        </dxdo:LayoutGroup.CaptionTemplate>
-                        <dxdo:LayoutControlItem>
-                            <dxlc:LayoutControl>
-                                <dxlc:LayoutGroup
-                                    ItemLabelsAlignment="Local"
-                                    ItemSpace="8"
-                                    Orientation="Vertical">
-                                    <dxlc:LayoutItem
-                                        AddColonToLabel="True"
-                                        Foreground="{StaticResource YellowBrush}"
-                                        Label="Name">
-                                        <dxe:TextEdit Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem
-                                        AddColonToLabel="True"
-                                        Foreground="{StaticResource YellowBrush}"
-                                        Label="Driver">
-                                        <dxe:ComboBoxEdit
-                                            AllowNullInput="False"
-                                            IsTextEditable="False"
-                                            ItemsSource="{Binding DriverNameSource}"
-                                            NullText="Click here to select the driver"
-                                            SelectedItem="{Binding SelectedDriver, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    </dxlc:LayoutItem>
-                                    <dxlc:LayoutGroup Orientation="Horizontal">
-                                        <dxlc:LayoutGroup HorizontalAlignment="Right" Orientation="Horizontal">
-                                            <dxlc:LayoutItem Width="70">
-                                                <dx:SimpleButton
-                                                    Command="{Binding SaveCommand}"
-                                                    Content="Ok"
-                                                    Foreground="{StaticResource GreenBrush}" />
-                                            </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Width="70">
-                                                <dx:SimpleButton
-                                                    Command="{Binding CloseCommand}"
-                                                    Content="Cancel"
-                                                    Foreground="{StaticResource RedBrush}" />
-                                            </dxlc:LayoutItem>
-                                        </dxlc:LayoutGroup>
+    <Grid>
+        <dxdo:DockLayoutManager>
+            <dxdo:LayoutGroup Orientation="Vertical">
+                <dxdo:LayoutControlItem>
+                    <TextBlock Style="{DynamicResource HeaderGroupTextStyle}" Text="Please select driver for channel." />
+                </dxdo:LayoutControlItem>
+                <dxdo:LayoutGroup ItemHeight="Auto">
+                    <dxdo:LayoutControlItem>
+                        <dxlc:LayoutControl>
+                            <dxlc:LayoutGroup
+                                ItemLabelsAlignment="Local"
+                                ItemSpace="24"
+                                Orientation="Vertical">
+                                <dxlc:LayoutItem
+                                    AddColonToLabel="True"
+                                    ElementSpace="6"
+                                    Label="Name"
+                                    LabelPosition="Top">
+                                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ValidatesOnDataErrors=True}">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:FocusBehavior />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </TextBox>
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutItem
+                                    AddColonToLabel="True"
+                                    ElementSpace="6"
+                                    Label="Driver"
+                                    LabelPosition="Top">
+                                    <ComboBox
+                                        FontSize="14"
+                                        IsEditable="False"
+                                        ItemsSource="{Binding DriverNameSource}"
+                                        SelectedItem="{Binding SelectedDriver, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </dxlc:LayoutItem>
+                                <dxlc:LayoutGroup Margin="0,0,0,0" Orientation="Horizontal">
+                                    <dxlc:LayoutGroup
+                                        HorizontalAlignment="Right"
+                                        ItemSpace="8"
+                                        Orientation="Horizontal">
+                                        <dxlc:LayoutItem>
+                                            <Button Command="{Binding SaveCommand}" Content="Ok" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <Button Command="{Binding CloseCommand}" Content="Cancel" />
+                                        </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
-                            </dxlc:LayoutControl>
-                        </dxdo:LayoutControlItem>
-                    </dxdo:LayoutGroup>
+                            </dxlc:LayoutGroup>
+                        </dxlc:LayoutControl>
+                    </dxdo:LayoutControlItem>
                 </dxdo:LayoutGroup>
-            </dxdo:DockLayoutManager>
-            <dx:WaitIndicator
-                Panel.ZIndex="99"
-                Content="Please wait..."
-                DeferedVisibility="{Binding IsBusy, UpdateSourceTrigger=PropertyChanged}" />
-        </Grid>
-    </dx:BackgroundPanel>
+            </dxdo:LayoutGroup>
+        </dxdo:DockLayoutManager>
+
+        <dx:WaitIndicator
+            Panel.ZIndex="99"
+            Content="Please wait..."
+            DeferedVisibility="{Binding IsBusy, UpdateSourceTrigger=PropertyChanged}" />
+    </Grid>
+
 </UserControl>

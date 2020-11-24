@@ -28,14 +28,29 @@ namespace EasyDriverPlugin
             set { SetProperty(value); }
         }
 
+        public override string DisplayInformation { get => ConnectionString; set => base.DisplayInformation = value; }
+
         [JsonIgnore]
         public string CommunicationError { get; set; }
 
         [JsonIgnore]
         public string StationType { get; set; }
 
+        private string connectionString;
         [JsonIgnore]
-        public string ConnectionString { get; set; }
+        public string ConnectionString
+        {
+            get => connectionString;
+            set 
+            { 
+                if (connectionString != value)
+                {
+                    connectionString = value;
+                    RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(DisplayInformation));
+                }
+            }
+        }
 
         [JsonIgnore]
         public ushort Port

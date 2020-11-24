@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\netcoreapp3.1\Services\&#xD;&#xA;xcopy /y $(TargetPath) $(SolutionDir)\bin\Release\netcoreapp3.1\Services\" />
+  </Target>
+
+</Project>

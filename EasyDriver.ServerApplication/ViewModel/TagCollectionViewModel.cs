@@ -54,7 +54,7 @@ namespace EasyScada.ServerApplication
         protected ITableViewUtilities TableViewUtilities { get => this.GetService<ITableViewUtilities>(); }
 
         #endregion
-
+            
         #region Public members
 
         public override string WorkspaceName { get; protected set; }
@@ -370,17 +370,17 @@ namespace EasyScada.ServerApplication
                     {
                         MessageBoxService.ShowMessage($"The specified path or file name exceed the maximun " +
                             $"length. The path must be less than 248 characters, and file names must be less " +
-                            $"than 260 character", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                            $"than 260 character", "Message", MessageButton.OK, MessageIcon.Error);
                     }
                     catch (UnauthorizedAccessException)
                     {
                         MessageBoxService.ShowMessage("The specified path file is read-only or you does " +
-                            "not have required permissions", "Easy DriverServer", MessageButton.OK, MessageIcon.Error);
+                            "not have required permissions", "Message", MessageButton.OK, MessageIcon.Error);
                     }
                     catch (Exception)
                     {
                         MessageBoxService.ShowMessage("An error occurred while opening the file.",
-                            "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                            "Message", MessageButton.OK, MessageIcon.Error);
                     }
                 }
             }
@@ -553,7 +553,7 @@ namespace EasyScada.ServerApplication
                 {
                     // Hỏi người dùng có muốn xóa đối tượng đang chọn hay không
                     var mbr = MessageBoxService.ShowMessage($"Do you want to delete all selected items and all object associated with it?",
-                        "Easy Driver Server",
+                        "Message",
                         MessageButton.YesNo, MessageIcon.Question);
 
                     // Nếu người dùng chọn 'Yes' thì thực hiện việc xóa đối tượng

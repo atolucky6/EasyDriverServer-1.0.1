@@ -91,8 +91,10 @@
     <Compile Include="Enums\ErrorMessageType.cs" />
     <Compile Include="Enums\Quality.cs" />
     <Compile Include="EventArgs\CommandExecutedEventArgs.cs" />
+    <Compile Include="EventArgs\ParameterChangedEventArgs.cs" />
     <Compile Include="EventArgs\TagQualityChangedEventArgs.cs" />
     <Compile Include="EventArgs\TagValueChangedEventArgs.cs" />
+    <Compile Include="Helper\AssemblyHelper.cs" />
     <Compile Include="Helper\ByteHelper.cs" />
     <Compile Include="Core\IChannelCore.cs" />
     <Compile Include="Core\ICoreItem.cs" />

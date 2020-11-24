@@ -1,0 +1,144 @@
+﻿using DevExpress.Mvvm;
+using DevExpress.Mvvm.POCO;
+using EasyDriver.Service.Reversible;
+using EasyDriverPlugin;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace EasyDriver.Workspace.Main
+{
+    public class GroupViewModel : ISupportParentViewModel, ISupportParameter, IDataErrorInfo
+    {
+        #region Constructors
+        public GroupViewModel()
+        {
+            Title = "Edit Group";
+            SizeToContent = SizeToContent.WidthAndHeight;
+            Width = 600;
+            Height = 80;
+        }
+        #endregion
+
+        #region UI services
+
+        protected ICurrentWindowService CurrentWindowService { get => this.GetService<ICurrentWindowService>(); }
+        protected IMessageBoxService MessageBoxService { get => this.GetService<IMessageBoxService>(); }
+        protected ITreeListViewUtilities TreeListViewUtilities { get; set; }
+
+        #endregion
+
+        #region Public properties
+        public virtual string Name { get; set; }
+        public virtual string Description { get; set; }
+        public virtual IGroupItem GroupItem { get; set; }
+        public object Parameter { get; set; }
+        public object ParentViewModel { get; set; }
+        public string Title { get; set; }
+        public SizeToContent SizeToContent { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public virtual bool IsBusy { get; set; }
+        #endregion
+
+        #region Commands
+
+        public void Save()
+        {
+            try
+            {
+                if (GroupItem.Parent.Childs.FirstOrDefault(x => x != GroupItem && (x as ICoreItem).Name == Name?.Trim()) != null)
+                {
+                    MessageBoxService.ShowMessage($"The group name '{Name?.Trim()}' is already in use.", "Message", MessageButton.OK, MessageIcon.Warning);
+                }
+                else
+                {
+                    IsBusy = true;
+
+                    string oldName = GroupItem.Name;
+                    string oldDescription = GroupItem.Description;
+                    GroupItem.Name = Name?.Trim();
+                    GroupItem.Description = Description?.Trim();
+
+                    if (GroupItem.HasChanges())
+                    {
+                        using (Transaction transaction = ServiceLocator.ReversibleService.Begin("Edit group"))
+                        {
+                            if (oldName != GroupItem.Name)
+                                GroupItem.AddPropertyChangedReversible(nameof(Name), oldName, GroupItem.Name?.Trim());
+                            if (oldDescription != GroupItem.Description)
+                                GroupItem.AddPropertyChangedReversible(nameof(Description), oldDescription, GroupItem.Description?.Trim());
+                            transaction.Commit();
+                        }
+                    }
+
+                    CurrentWindowService.Close();
+                }
+            }
+            catch (Exception) { }
+            finally { IsBusy = false; }
+        }
+
+        public bool CanSave() => string.IsNullOrEmpty(Error) && !IsBusy;
+
+        public void Close() => CurrentWindowService.Close();
+
+        public bool CanClose() => !IsBusy;
+
+        #endregion
+
+        #region Event handlers
+
+        public void OnLoaded()
+        {
+            if (Parameter == null)
+                CurrentWindowService.Close();
+
+            if (Parameter is IGroupItem groupItem)
+            {
+                GroupItem = groupItem;
+                Name = groupItem.Name;
+                Description = groupItem.Description;
+                this.RaisePropertyChanged(x => x.Description);
+                this.RaisePropertyChanged(x => x.Name);
+            }
+            else
+            {
+                CurrentWindowService.Close();
+            }
+        }
+
+        #endregion
+
+        #region IDataErrorInfo
+        public string Error { get; private set; }
+        public string this[string columnName]
+        {
+            get
+            {
+                Error = string.Empty;
+                switch (columnName)
+                {
+                    case nameof(Name):
+                        Error = Name.ValidateFileName();
+                        if (string.IsNullOrWhiteSpace(Error))
+                        {
+                            if (!Name.IsUniqueNameInGroup(GroupItem.Parent, GroupItem))
+                            {
+                                Error = $"The group name '{Name}' is already exists";
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return Error;
+            }
+        }
+        #endregion
+    }
+}

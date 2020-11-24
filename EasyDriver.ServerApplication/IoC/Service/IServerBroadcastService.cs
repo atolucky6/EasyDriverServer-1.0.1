@@ -42,7 +42,7 @@ namespace EasyScada.ServerApplication
         public long BroadcastExecuteInterval { get; private set; }
         public BroadcastMode BroadcastMode { get; set; }
         public int BroadcastRate { get; set; }
-
+        ListClientTagJsonConverter converter = new ListClientTagJsonConverter();
         #endregion
 
         #region Constructors
@@ -86,10 +86,10 @@ namespace EasyScada.ServerApplication
                                 break;
                             case BroadcastMode.SendAllData:
                                 List<string> receivedClients = new List<string>(BroadcastEndpoints.Select(x => x.ConnectionId));
-                                List<IClientTag> clientTags = projectManagerService.CurrentProject.GetAllTags()?.Select(x => x as IClientTag).ToList();
+                                List<ITagCore> clientTags = projectManagerService.CurrentProject.GetAllTags()?.ToList();
                                 if (clientTags == null)
-                                    clientTags = new List<IClientTag>();
-                                Clients.Clients(receivedClients).broadcastSubscribeData(JsonConvert.SerializeObject(clientTags));
+                                    clientTags = new List<ITagCore>();
+                                Clients.Clients(receivedClients).broadcastSubscribeData(JsonConvert.SerializeObject(clientTags, Formatting.Indented, converter));
                                 break;
                             default:
                                 break;
@@ -228,7 +228,7 @@ namespace EasyScada.ServerApplication
 
         public string GetBroadcastResponse()
         {
-            List<IClientTag> tags = new List<IClientTag>();
+            List<object> tags = new List<object>();
             if (ProjectManagerService != null && ProjectManagerService.CurrentProject != null)
             {
                 Dictionary<string, List<string>> groupTagPathDic = new Dictionary<string, List<string>>();
@@ -268,13 +268,14 @@ namespace EasyScada.ServerApplication
                         {
                             foreach (var tagName in kvp.Value)
                             {
-                                if (haveTagObj.Tags.Find(tagName) is IClientTag clientTag)
+                                if (haveTagObj.Tags.Find(tagName) is ICoreItem clientTag && clientTag.ItemType == ItemType.Tag)
                                     tags.Add(clientTag);
                             }
                         }
                     }
                 }
             }
+
             return JsonConvert.SerializeObject(tags, Formatting.Indented, new ListClientTagJsonConverter());
         }
 

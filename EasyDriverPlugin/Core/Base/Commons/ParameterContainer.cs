@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace EasyDriverPlugin
 {
@@ -20,11 +21,16 @@ namespace EasyDriverPlugin
 
         public Dictionary<string, string> Parameters { get; set; }
 
+        [JsonIgnore]
+        IReadOnlyDictionary<string, string> IParameterContainer.Parameters { get => Parameters; }
+
         [JsonConstructor]
         public ParameterContainer()
         {
             Parameters = new Dictionary<string, string>();
         }
+
+        public event EventHandler<ParameterChangedEventArgs> ParameterChanged;
 
         public T GetValue<T>(string key) where T : IConvertible
         {
@@ -41,7 +47,22 @@ namespace EasyDriverPlugin
 
         public void SetValue(string key, string value)
         {
-            Parameters[key] = value;
+            if (Parameters.ContainsKey(key))
+            {
+                string oldValue = Parameters[key];
+                Parameters[key] = value;
+                if (oldValue != value)
+                {
+                    var kvp = Parameters.FirstOrDefault(x => x.Key == key);
+                    ParameterChanged?.Invoke(this, new ParameterChangedEventArgs(kvp));
+                }
+            }
+            else
+            {
+                Parameters[key] = value;
+                var kvp = Parameters.FirstOrDefault(x => x.Key == key);
+                ParameterChanged?.Invoke(this, new ParameterChangedEventArgs(kvp));
+            }
         }
 
         public bool Contains(string key)

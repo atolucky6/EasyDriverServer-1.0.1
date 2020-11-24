@@ -7,14 +7,16 @@
     xmlns:dxcore="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:dxt="http://schemas.devexpress.com/winfx/2008/xaml/core/themekeys"
     xmlns:local="clr-namespace:EasyScada.ServerApplication"
-    Title="Easy Driver Server"
+    Title="Message"
     Width="1100"
     Height="700"
     Padding="0"
+    Background="White"
     Icon="EasyScadaLogo.ico"
     ShowIcon="True"
     ShowInTaskbar="True"
-    ShowTitle="False">
+    ShowTitle="False"
+    TitleAlignment="Center">
     <dx:ThemedWindow.ToolbarItems>
         <dxb:MainMenuControl VerticalAlignment="Center" dxb:MergingProperties.AllowMerging="True" />
     </dx:ThemedWindow.ToolbarItems>

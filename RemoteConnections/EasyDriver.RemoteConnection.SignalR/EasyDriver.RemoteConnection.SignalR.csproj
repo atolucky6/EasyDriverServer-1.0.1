@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>DriverServer</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="devexpress.windowsdesktop.wpf.docking" Version="20.2.3" />
+    <PackageReference Include="devexpress.windowsdesktop.wpf.layoutcontrol" Version="20.2.3" />
+    <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.4.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EasyDriver.RemoteConnectionPlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\RemoteConnections\EasyDriver.RemoteConnectionPlugin.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriverPlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Drivers\EasyDriverPlugin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\netcoreapp3.1\RemoteConnections\&#xD;&#xA;xcopy /y $(TargetPath) $(SolutionDir)\bin\Release\netcoreapp3.1\RemoteConnections\" />
+  </Target>
+
+</Project>

@@ -242,15 +242,15 @@ namespace EasyScada.ServerApplication
                                 if (getDataTask.IsCompleted)
                                 {
                                     string resJson = getDataTask.Result;
-                                    List<IClientTag> clientObjects = JsonConvert.DeserializeObject<List<IClientTag>>(resJson);
+                                    List<IClientTag> clientObjects = JsonConvert.DeserializeObject<List<IClientTag>>(resJson, new ListClientTagJsonConverter());
                                     Hashtable cache = new Hashtable();
-                                    clientObjects.ForEach(x => cache.Add(x.Path, x));
+                                    clientObjects.ForEach(x => cache.Add(Station.Name + "/" + x.Path, x));
                                     var tags = Station.GetAllTags()?.ToList();
                                     if (tags != null)
                                     {
                                         tags.ForEach(x =>
                                         {
-                                            if (cache.ContainsKey(x.Parent))
+                                            if (cache.ContainsKey(x.Path))
                                             {
                                                 IClientTag clientTag = cache[x.Path] as IClientTag;
                                                 x.Value = clientTag.Value;

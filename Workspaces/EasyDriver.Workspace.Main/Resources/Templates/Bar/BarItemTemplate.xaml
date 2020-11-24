@@ -1,0 +1,132 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:bar="clr-namespace:EasyDriver.Service.BarManager;assembly=EasyDriver.Service.BarManager"
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:local="clr-namespace:EasyDriver.Workspace.Main">
+    <local:BarItemAlignmentConverter x:Key="BarItemAlignmentConverter" />
+    <DataTemplate x:Key="BarStaticTemplate">
+        <ContentControl>
+            <dxb:BarStaticItem
+                Alignment="{Binding Alignment, Converter={StaticResource BarItemAlignmentConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                BarItemDisplayMode="ContentAndGlyph"
+                Content="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                Glyph="{Binding Glyph}"
+                GlyphSize="Medium"
+                IsEnabled="{Binding Enabled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+        </ContentControl>
+    </DataTemplate>
+    <DataTemplate x:Key="BarSeparatorTemplate">
+        <ContentControl>
+            <dxb:BarItemSeparator />
+        </ContentControl>
+    </DataTemplate>
+    <DataTemplate x:Key="BarButtonTemplate">
+        <ContentControl>
+            <dxb:BarButtonItem
+                Alignment="{Binding Alignment, Converter={StaticResource BarItemAlignmentConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Command="{Binding Command}"
+                Content="{Binding DisplayName}"
+                Glyph="{Binding Glyph}"
+                GlyphSize="Medium"
+                IsEnabled="{Binding Enabled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                KeyGesture="{Binding KeyGesture}" />
+        </ContentControl>
+    </DataTemplate>
+    <DataTemplate x:Key="BarCheckTemplate">
+        <ContentControl>
+            <dxb:BarCheckItem
+                Alignment="{Binding Alignment, Converter={StaticResource BarItemAlignmentConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Command="{Binding Command}"
+                Content="{Binding DisplayName}"
+                Glyph="{Binding Glyph}"
+                GlyphSize="Medium"
+                IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                IsEnabled="{Binding Enabled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsVisible="{Binding IsVisible}" />
+        </ContentControl>
+    </DataTemplate>
+    <local:BarItemTemplateSelector
+        x:Key="BarItemTemplateSelector"
+        BarButtonTemplate="{StaticResource BarButtonTemplate}"
+        BarCheckTemplate="{StaticResource BarCheckTemplate}"
+        BarSeparatorTemplate="{StaticResource BarSeparatorTemplate}"
+        BarStaticTemplate="{StaticResource BarStaticTemplate}" />
+    <HierarchicalDataTemplate DataType="{x:Type bar:BarSubItem}" ItemsSource="{Binding BarItems, UpdateSourceTrigger=PropertyChanged}">
+        <ContentControl>
+            <dxb:BarSubItem
+                Alignment="{Binding Alignment, Converter={StaticResource BarItemAlignmentConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Command="{Binding Command}"
+                Content="{Binding DisplayName}"
+                Glyph="{Binding Glyph}"
+                GlyphSize="Medium"
+                IsEnabled="{Binding Enabled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                ItemLinksSource="{Binding BarItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                ItemTemplateSelector="{StaticResource BarItemTemplateSelector}" />
+        </ContentControl>
+    </HierarchicalDataTemplate>
+    <HierarchicalDataTemplate DataType="{x:Type bar:BarSplitButtonItem}" ItemsSource="{Binding BarItems, UpdateSourceTrigger=PropertyChanged}">
+        <ContentControl>
+            <dxb:BarSplitButtonItem
+                Alignment="{Binding Alignment, Converter={StaticResource BarItemAlignmentConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Command="{Binding Command}"
+                Content="{Binding DisplayName}"
+                Glyph="{Binding Glyph}"
+                GlyphSize="Medium"
+                IsEnabled="{Binding Enabled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsVisible="{Binding IsVisible, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                KeyGesture="{Binding KeyGesture}">
+                <dxb:BarSplitButtonItem.PopupControl>
+                    <dxb:PopupMenu ItemLinksSource="{Binding DataContext.BarItems, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type dxb:BarSplitButtonItem}}}" ItemTemplateSelector="{StaticResource BarItemTemplateSelector}" />
+                </dxb:BarSplitButtonItem.PopupControl>
+            </dxb:BarSplitButtonItem>
+        </ContentControl>
+    </HierarchicalDataTemplate>
+    <DataTemplate x:Key="MainMenuTemplate">
+        <ContentControl>
+            <dxb:Bar
+                dxb:MergingProperties.ElementMergingBehavior="All"
+                Caption="{Binding DisplayName}"
+                IsEnabled="{Binding Enabled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsMainMenu="True">
+                <dxb:BarLinkContainerItem ItemLinksSource="{Binding BarItems}" />
+            </dxb:Bar>
+        </ContentControl>
+    </DataTemplate>
+    <DataTemplate x:Key="ToolBarTemplate">
+        <ContentControl>
+            <dxb:Bar
+                AllowCustomizationMenu="False"
+                Caption="{Binding DisplayName}"
+                IsEnabled="{Binding Enabled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                IsMainMenu="False"
+                ItemLinksSource="{Binding BarItems}"
+                ItemTemplateSelector="{StaticResource BarItemTemplateSelector}" />
+        </ContentControl>
+    </DataTemplate>
+    <DataTemplate x:Key="StatusBarTemplate">
+        <dxb:Bar
+            AllowCustomizationMenu="False"
+            Caption="{Binding DisplayName}"
+            IsEnabled="{Binding Enabled, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            IsMainMenu="False"
+            IsStatusBar="True"
+            ItemLinksSource="{Binding BarItems}"
+            ItemTemplateSelector="{StaticResource BarItemTemplateSelector}">
+            <dxb:Bar.DockInfo>
+                <dxb:BarDockInfo ContainerType="Bottom" />
+            </dxb:Bar.DockInfo>
+        </dxb:Bar>
+    </DataTemplate>
+    <local:BarContainerTemplateSelector
+        x:Key="BarTemplateSelector"
+        MainMenuTemplate="{StaticResource MainMenuTemplate}"
+        StatusBarTemplate="{StaticResource StatusBarTemplate}"
+        ToolBarTemplate="{StaticResource ToolBarTemplate}" />
+    <Style TargetType="{x:Type dxb:BarManager}">
+        <Setter Property="BarTemplateSelector" Value="{StaticResource BarTemplateSelector}" />
+    </Style>
+</ResourceDictionary>

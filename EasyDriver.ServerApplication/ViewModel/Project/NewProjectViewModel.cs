@@ -197,7 +197,7 @@ namespace EasyScada.ServerApplication
                 CurrentSelectedPath = FolderBrowserDialogService.ResultPath;
             this.RaisePropertyChanged(x => Path);
         }
-        public bool CanBrowse() => !IsBusy;
+        //public bool CanBrowse() => !IsBusy;
 
         /// <summary>
         /// The command to close the view

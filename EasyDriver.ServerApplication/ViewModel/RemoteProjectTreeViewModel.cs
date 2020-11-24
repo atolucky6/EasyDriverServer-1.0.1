@@ -21,7 +21,7 @@ namespace EasyScada.ServerApplication
             IRemoteConnectionManagerService hubConnectionManagerService,
             IHubFactory hubFactory)
         {
-            Title = "Easy Driver Server";
+            Title = "Message";
             SizeToContent = SizeToContent.Manual;
             Height = 600;
             Width = 800;
@@ -94,8 +94,8 @@ namespace EasyScada.ServerApplication
                     if (hubConnection.State == ConnectionState.Connected)
                     {
                         string resJson = await hubProxy.Invoke<string>("getAllElementsAsync");
-                        List<ClientObject> clientObjects = JsonConvert.DeserializeObject<List<ClientObject>>(resJson);
-                        HubModel.Childs = new List<IClientObject>(clientObjects);
+                        ClientObject rootObject = JsonConvert.DeserializeObject<ClientObject>(resJson);
+                        HubModel.Childs = new List<IClientObject>(rootObject.Childs);
                         HubModel.IsChecked = true;
                         HubModel.Childs.ForEach(x => CheckAllChildItems(x));
                         Source = new List<HubModel>() { HubModel };
@@ -104,14 +104,14 @@ namespace EasyScada.ServerApplication
                     }
                     else
                     {
-                        MessageBoxService.ShowMessage($"Can't connect to server {HubModel.RemoteAddress}:{HubModel.Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                        MessageBoxService.ShowMessage($"Can't connect to server {HubModel.RemoteAddress}:{HubModel.Port}", "Message", MessageButton.OK, MessageIcon.Warning);
                     }
                 });
             }
             catch
             {
                 IsBusy = false;
-                MessageBoxService.ShowMessage($"Can't connect to server {HubModel.RemoteAddress}:{HubModel.Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                MessageBoxService.ShowMessage($"Can't connect to server {HubModel.RemoteAddress}:{HubModel.Port}", "Message", MessageButton.OK, MessageIcon.Warning);
             }
         }
 
@@ -147,14 +147,14 @@ namespace EasyScada.ServerApplication
                         try
                         {
                             File.WriteAllText(savePath, connectionSchemaJson);
-                            MessageBoxService.ShowMessage("Create connection schema successfully!", "Easy Driver Server", MessageButton.OK, MessageIcon.Information);
+                            MessageBoxService.ShowMessage("Create connection schema successfully!", "Message", MessageButton.OK, MessageIcon.Information);
                             Messenger.Default.Send(new CreateConnectionSchemaSuccessMessage(ConnectionSchema, savePath));
                             CurrentWindowService.Close();
                             IsBusy = false;
                         }
                         catch
                         {
-                            MessageBoxService.ShowMessage($"Can' create connection schema file at '{savePath}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                            MessageBoxService.ShowMessage($"Can' create connection schema file at '{savePath}'", "Message", MessageButton.OK, MessageIcon.Error);
                         }
                     }
                 }
