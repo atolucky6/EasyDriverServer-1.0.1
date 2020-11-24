@@ -20,27 +20,28 @@
         <dxmvvm:EventToCommand Command="{Binding OnLoadedCommand}" EventName="Loaded" />
         <dxmvvm:EventToCommand Command="{Binding OnUnloadedCommand}" EventName="Unloaded" />
         <dxmvvm:CurrentWindowService />
+        <local:KeyDownBehavior Key="Enter" Command="{Binding OpenOnDoubleClickCommand}" />
+        <local:KeyDownBehavior Key="Esc" Command="{Binding CloseCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <dx:BackgroundPanel>
         <Grid>
-            <dxdo:DockLayoutManager>
+            <dxdo:DockLayoutManager FontSize="14">
                 <dxdo:LayoutGroup Orientation="Vertical">
                     <dxdo:LayoutControlItem>
                         <dxlc:LayoutControl Orientation="Vertical">
                             <dxlc:LayoutItem
                                 VerticalAlignment="Stretch"
-                                ElementSpace="8"
+                                ElementSpace="12"
                                 Label="Recents Project"
                                 LabelPosition="Top">
                                 <dxlc:LayoutItem.LabelTemplate>
                                     <DataTemplate>
-                                        <TextBlock
-                                            FontWeight="Bold"
-                                            Foreground="{StaticResource PinkBrush}"
-                                            Text="{Binding}" />
+                                        <TextBlock Style="{DynamicResource HeaderGroupTextStyle}" Text="{Binding}" />
                                     </DataTemplate>
                                 </dxlc:LayoutItem.LabelTemplate>
                                 <dxg:GridControl
+                                    FontSize="14"
+                                    Foreground="{DynamicResource BlackSolidBrush}"
                                     ItemsSource="{Binding RecentOpenProjects}"
                                     SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                     SelectionMode="Row">
@@ -56,6 +57,9 @@
                                             AllowColumnMoving="False"
                                             AllowEditing="False"
                                             AllowGrouping="False"
+                                            FontSize="14"
+                                            IndicatorWidth="30"
+                                            RowMinHeight="30"
                                             ShowGroupPanel="False">
                                             <dxg:TableView.RowCellMenuCustomizations>
                                                 <dxb:BarButtonItem
@@ -74,7 +78,14 @@
                                         <dxg:GridColumn
                                             Width="1*"
                                             FieldName="Name"
-                                            Header="Project" />
+                                            Header="Project">
+                                            <dxg:GridColumn.HeaderStyle>
+                                                <Style TargetType="dxg:BaseGridHeader">
+                                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                                    <Setter Property="Height" Value="30" />
+                                                </Style>
+                                            </dxg:GridColumn.HeaderStyle>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn
                                             Width="2*"
                                             FieldName="Path"
@@ -97,25 +108,20 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
                                 </dxg:GridControl>
+
                             </dxlc:LayoutItem>
-                            <dxlc:LayoutGroup Margin="0,10,0,0" Orientation="Horizontal">
-                                <dxlc:LayoutItem Width="70" HorizontalAlignment="Left">
-                                    <dx:SimpleButton
-                                        Command="{Binding BrowseCommand}"
-                                        Content="Browse"
-                                        Foreground="{StaticResource OrganeBrush}" />
+                            <dxlc:LayoutGroup
+                                Margin="0,-12,0,0"
+                                ItemSpace="12"
+                                Orientation="Horizontal">
+                                <dxlc:LayoutItem HorizontalAlignment="Left">
+                                    <Button Command="{Binding BrowseCommand}" Content="Browse" />
                                 </dxlc:LayoutItem>
-                                <dxlc:LayoutItem Width="70" HorizontalAlignment="Left">
-                                    <dx:SimpleButton
-                                        Command="{Binding RemoveCommand}"
-                                        Content="Remove"
-                                        Foreground="{StaticResource RedBrush}" />
+                                <dxlc:LayoutItem HorizontalAlignment="Left">
+                                    <Button Command="{Binding RemoveCommand}" Content="Remove" />
                                 </dxlc:LayoutItem>
-                                <dxlc:LayoutItem Width="70" HorizontalAlignment="Right">
-                                    <dx:SimpleButton
-                                        Command="{Binding OpenCommand}"
-                                        Content="Open"
-                                        Foreground="{StaticResource GreenBrush}" />
+                                <dxlc:LayoutItem HorizontalAlignment="Right">
+                                    <Button Command="{Binding OpenCommand}" Content="Open" />
                                 </dxlc:LayoutItem>
                             </dxlc:LayoutGroup>
                         </dxlc:LayoutControl>

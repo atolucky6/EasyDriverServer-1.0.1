@@ -8,6 +8,7 @@ using EasyScada.ServerApplication.Reversible;
 using EasyDriver.Core;
 using System.IO;
 using System.Linq;
+using AssemblyHelper = EasyDriver.Core.AssemblyHelper;
 
 namespace EasyScada.ServerApplication
 {
@@ -104,6 +105,11 @@ namespace EasyScada.ServerApplication
 
         #region Event handlers
 
+        public virtual void OnLoaded()
+        {
+            IoC.Instance.Kernel.Bind<ITreeListViewUtilities>().ToConstant(TreeListViewUtilities);
+        }
+
         /// <summary>
         /// Hàm sử lý sự kiện khi project đang xử lý của chương trình thay đổi 
         /// </summary>
@@ -177,9 +183,9 @@ namespace EasyScada.ServerApplication
                                         if (tag.IsInternalTag)
                                         {
                                             // Nếu tag ko có GUID thì tạo mới GUID và lưu vào store nếu cần thiết
-                                            if (!string.IsNullOrEmpty(tag.GUID))
+                                            if (string.IsNullOrEmpty(tag.GUID))
                                             {
-                                                tag.ParameterContainer.Parameters["GUID"] = Guid.NewGuid().ToString();
+                                                tag.GUID = Guid.NewGuid().ToString();
                                                 if (tag.Retain)
                                                     InternalStorageService.AddOrUpdateInternalTag(tag);
                                             }
@@ -217,7 +223,7 @@ namespace EasyScada.ServerApplication
         {
             if (IsBusy)
                 return;
-
+                
             IsBusy = true;
             if (item != null)
             {
@@ -648,17 +654,17 @@ namespace EasyScada.ServerApplication
                         {
                             MessageBoxService.ShowMessage($"The specified path or file name exceed the maximun " +
                                 $"length. The path must be less than 248 characters, and file names must be less " +
-                                $"than 260 character", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                                $"than 260 character", "Message", MessageButton.OK, MessageIcon.Error);
                         }
                         catch (UnauthorizedAccessException)
                         {
                             MessageBoxService.ShowMessage("The specified path file is read-only or you does " +
-                                "not have required permissions", "Easy DriverServer", MessageButton.OK, MessageIcon.Error);
+                                "not have required permissions", "Message", MessageButton.OK, MessageIcon.Error);
                         }
                         catch (Exception)
                         {
                             MessageBoxService.ShowMessage("An error occurred while opening the file.",
-                                "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                                "Message", MessageButton.OK, MessageIcon.Error);
                         }
                     }
                 }
@@ -691,6 +697,19 @@ namespace EasyScada.ServerApplication
         public bool CanImport()
         {
             return !IsBusy && SelectedItem is IDeviceCore;
+        }
+
+        public void ChangeEnabledState()
+        {
+            //if (SelectedItem is ICoreItem coreItem)
+            //{
+            //    coreItem.Enabled = !coreItem.Enabled;
+            //}
+        }
+
+        public bool CanChangeEnabledState()
+        {
+            return !IsBusy && SelectedItem != null;
         }
 
         #endregion
@@ -785,7 +804,7 @@ namespace EasyScada.ServerApplication
                                         else
                                         {
                                             e.Handled = true;
-                                            MessageBoxService.ShowMessage($"Could not load driver '{Path.GetFileNameWithoutExtension(newChannelCore.DriverPath)}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                                            MessageBoxService.ShowMessage($"Could not load driver '{Path.GetFileNameWithoutExtension(newChannelCore.DriverPath)}'", "Message", MessageButton.OK, MessageIcon.Error);
                                         }
                                     }
                                     TreeListViewUtilities.ExpandNodeByContent(newChannelCore);
@@ -796,7 +815,7 @@ namespace EasyScada.ServerApplication
                     }
                     else
                     {
-                        MessageBoxService.ShowMessage($"Could not load the driver {Path.GetFileNameWithoutExtension(channelCore.DriverPath)}.", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                        MessageBoxService.ShowMessage($"Could not load the driver {Path.GetFileNameWithoutExtension(channelCore.DriverPath)}.", "Message", MessageButton.OK, MessageIcon.Error);
                     }
                 }
                 else if (SelectedItem is IChannelCore selectedChannel && !selectedChannel.IsReadOnly && ClipboardManager.ObjectToCopy is IDeviceCore deviceCore)
@@ -856,7 +875,7 @@ namespace EasyScada.ServerApplication
             {
                 // Hỏi người dùng có muốn xóa đối tượng đang chọn hay không
                 var mbr = MessageBoxService.ShowMessage($"Do you want to delete '{(SelectedItem as ICoreItem).Name}' and all object associated with it?",
-                    "Easy Driver Server",
+                    "Message",
                     MessageButton.YesNo, MessageIcon.Question);
 
                 // Nếu người dùng chọn 'Yes' thì thực hiện việc xóa đối tượng
@@ -924,7 +943,7 @@ namespace EasyScada.ServerApplication
                                     else
                                     {
                                         e.Handled = true;
-                                        MessageBoxService.ShowMessage($"Could not load driver '{Path.GetFileNameWithoutExtension(channel.DriverPath)}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                                        MessageBoxService.ShowMessage($"Could not load driver '{Path.GetFileNameWithoutExtension(channel.DriverPath)}'", "Message", MessageButton.OK, MessageIcon.Error);
                                     }
                                 }
                                 else if (itemToRemote is RemoteStation station)

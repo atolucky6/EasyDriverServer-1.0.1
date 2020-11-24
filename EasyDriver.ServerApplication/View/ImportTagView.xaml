@@ -22,206 +22,200 @@
         <dxmvvm:EventToCommand Command="{Binding OnLoadedCommand}" EventName="Loaded" />
         <dxmvvm:OpenFileDialogService />
         <dxmvvm:CurrentWindowService />
+        <local:KeyDownBehavior Key="Enter" Command="{Binding ImportCommand}" />
+        <local:KeyDownBehavior Key="Esc" Command="{Binding CancelCommand}" />
         <dx:DXMessageBoxService />
     </dxmvvm:Interaction.Behaviors>
     <UserControl.Resources>
         <local:TextToWidthConverter x:Key="TextToWidthConverter" />
     </UserControl.Resources>
-    <dx:BackgroundPanel>
+    <dx:BackgroundPanel FontSize="14">
         <Grid>
-            <DockPanel LastChildFill="True">
-                <DockPanel Margin="8,8,8,0" DockPanel.Dock="Top">
+            <DockPanel Margin="12" LastChildFill="True">
+                <DockPanel Margin="12,12,12,0" DockPanel.Dock="Top">
                     <TextBlock
-                        Margin="0,0,4,0"
+                        Margin="0,0,8,0"
                         VerticalAlignment="Center"
                         DockPanel.Dock="Left"
-                        Foreground="{StaticResource YellowBrush}"
                         Text="CSV Path:" />
-                    <dx:SimpleButton
-                        Width="70"
+
+                    <Button
                         HorizontalAlignment="Right"
                         Command="{Binding ImportCommand}"
                         Content="Import"
-                        DockPanel.Dock="Right"
-                        Foreground="#50FA7B" />
-                    <dxe:ButtonEdit
-                        Margin="0,0,4,0"
-                        AllowDefaultButton="False"
-                        IsTextEditable="False"
-                        Text="{Binding CsvPath, Mode=OneWay}">
-                        <dxe:ButtonInfo
-                            ButtonKind="Simple"
-                            Command="{Binding BrowseCommand}"
-                            GlyphKind="Regular" />
-                    </dxe:ButtonEdit>
+                        DockPanel.Dock="Right" />
+
+                    <Button
+                        Margin="0,0,8,0"
+                        HorizontalAlignment="Right"
+                        Command="{Binding BrowseCommand}"
+                        Content="Browse"
+                        DockPanel.Dock="Right" />
+
+                    <TextBox
+                        Margin="0,0,12,0"
+                        IsReadOnly="True"
+                        Text="{Binding CsvPath, Mode=OneWay}" />
                 </DockPanel>
-                <dxlc:GroupBox
-                    Margin="8"
-                    Padding="0"
-                    Foreground="{StaticResource CyanBrush}"
-                    Header="Import tag results"
-                    TitleVisibility="Visible">
-                    <dxlc:GroupBox.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock
-                                Margin="0"
-                                Padding="2"
-                                FontSize="12"
-                                FontWeight="Bold"
-                                Foreground="{StaticResource CyanBrush}"
-                                Text="{Binding}" />
-                        </DataTemplate>
-                    </dxlc:GroupBox.HeaderTemplate>
-                    <DockPanel LastChildFill="True">
-                        <Grid
-                            Height="20"
-                            Margin="8,4,8,0"
-                            DockPanel.Dock="Top">
-                            <TextBlock
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Text="{Binding Tags.Count, StringFormat=Total: {0}}" />
-                            <TextBlock
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Text="{Binding SelectedItems.Count, StringFormat=Selected: {0}}" />
-                        </Grid>
-                        <dxg:GridControl
-                            Margin="8,4,8,8"
-                            ItemsSource="{Binding Tags}"
-                            SelectedItems="{Binding SelectedItems, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
-                            SelectionMode="Row"
-                            ShowBorder="True">
-                            <!--#region TreeListView-->
-                            <dxg:GridControl.View>
-                                <dxg:TableView
-                                    AllowColumnMoving="False"
-                                    AllowDragDrop="True"
-                                    AllowEditing="False"
-                                    AllowFilterEditor="False"
-                                    AllowFixedColumnMenu="False"
-                                    AllowScrollToFocusedRow="True"
-                                    AllowSorting="False"
-                                    CheckBoxSelectorColumnWidth="50"
-                                    EditorShowMode="MouseUpFocused"
-                                    HorizontalScrollbarVisibility="Auto"
-                                    IndicatorWidth="24"
-                                    SearchDelay="100"
-                                    SearchPanelFindFilter="Default"
-                                    SearchPanelHighlightResults="True"
-                                    ShowCheckBoxSelectorColumn="True"
-                                    ShowGroupPanel="False"
-                                    ShowIndicator="True"
-                                    ShowSelectionRectangle="True"
-                                    VerticalScrollbarVisibility="Auto">
-                                    <dxg:TableView.RowIndicatorContentTemplate>
-                                        <DataTemplate>
-                                            <Image
-                                                Width="16"
-                                                Height="16"
-                                                Source="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
-                                        </DataTemplate>
-                                    </dxg:TableView.RowIndicatorContentTemplate>
-                                </dxg:TableView>
-                            </dxg:GridControl.View>
-                            <!--#endregion-->
-                            <!--#region Columns-->
-                            <dxg:GridControl.Columns>
-                                <dxg:GridColumn
-                                    Width="{Binding Tags.Count, Converter={StaticResource TextToWidthConverter}}"
-                                    AllowColumnFiltering="False"
-                                    AllowEditing="False"
-                                    AllowMoving="False"
-                                    AllowResizing="False"
-                                    AllowSearchPanel="False"
-                                    ReadOnly="True">
-                                    <dxg:GridColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock
-                                                x:Name="PART_Editor"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Bottom"
-                                                Text="{DXBinding 'RowData.RowHandle.Value + 1'}"
-                                                TextAlignment="Center" />
-                                        </DataTemplate>
-                                    </dxg:GridColumn.CellTemplate>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn
-                                    AllowSearchPanel="True"
-                                    FieldName="Name"
-                                    Header="Name">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn
-                                    Width="90"
-                                    AllowSearchPanel="True"
-                                    FieldName="Address"
-                                    Header="Address">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn
-                                    Width="80"
-                                    AllowSearchPanel="True"
-                                    FieldName="DataTypeName"
-                                    Header="Data type">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn
-                                    Width="105"
-                                    AllowSearchPanel="False"
-                                    FieldName="RefreshRate"
-                                    Header="Refresh rate (ms)">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn
-                                    Width="110"
-                                    AllowSearchPanel="True"
-                                    FieldName="AccessPermission"
-                                    Header="Access permission">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn
-                                    Width="50"
-                                    AllowSearchPanel="True"
-                                    FieldName="Gain"
-                                    Header="Gain">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn
-                                    Width="50"
-                                    AllowSearchPanel="True"
-                                    FieldName="Offset"
-                                    Header="Offset">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                                <dxg:GridColumn
-                                    Width="*"
-                                    AllowSearchPanel="False"
-                                    FieldName="Description"
-                                    Header="Description">
-                                    <dxg:GridColumn.EditSettings>
-                                        <dxe:TextEditSettings />
-                                    </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
-                            </dxg:GridControl.Columns>
-                            <!--#endregion-->
-                        </dxg:GridControl>
-                    </DockPanel>
-                </dxlc:GroupBox>
+                <DockPanel Margin="12" LastChildFill="True">
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        FontSize="20"
+                        Style="{DynamicResource HeaderGroupTextStyle}"
+                        Text="Import tag result" />
+                    <Grid
+                        Height="30"
+                        Margin="8,4,8,0"
+                        DockPanel.Dock="Top">
+                        <TextBlock
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            Text="{Binding Tags.Count, StringFormat=Total: {0}}" />
+                        <TextBlock
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            Text="{Binding SelectedItems.Count, StringFormat=Selected: {0}}" />
+                    </Grid>
+                    <dxg:GridControl
+                        Margin="8,4,8,8"
+                        FontSize="14"
+                        ItemsSource="{Binding Tags}"
+                        SelectedItems="{Binding SelectedItems, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                        SelectionMode="Row"
+                        ShowBorder="True">
+                        <!--#region TreeListView-->
+                        <dxg:GridControl.View>
+                            <dxg:TableView
+                                AllowColumnMoving="False"
+                                AllowDragDrop="True"
+                                AllowEditing="False"
+                                AllowFilterEditor="False"
+                                AllowFixedColumnMenu="False"
+                                AllowScrollToFocusedRow="True"
+                                AllowSorting="False"
+                                CheckBoxSelectorColumnWidth="50"
+                                EditorShowMode="MouseUpFocused"
+                                HorizontalScrollbarVisibility="Auto"
+                                IndicatorWidth="30"
+                                SearchDelay="100"
+                                SearchPanelFindFilter="Default"
+                                SearchPanelHighlightResults="True"
+                                ShowCheckBoxSelectorColumn="True"
+                                ShowGroupPanel="False"
+                                ShowIndicator="True"
+                                ShowSelectionRectangle="True"
+                                VerticalScrollbarVisibility="Auto">
+                                <dxg:TableView.RowIndicatorContentTemplate>
+                                    <DataTemplate>
+                                        <Image
+                                            Width="16"
+                                            Height="16"
+                                            Source="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
+                                    </DataTemplate>
+                                </dxg:TableView.RowIndicatorContentTemplate>
+                            </dxg:TableView>
+                        </dxg:GridControl.View>
+                        <!--#endregion-->
+                        <!--#region Columns-->
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn
+                                Width="{Binding Tags.Count, Converter={StaticResource TextToWidthConverter}}"
+                                MinWidth="30"
+                                AllowColumnFiltering="False"
+                                AllowEditing="False"
+                                AllowMoving="False"
+                                AllowResizing="False"
+                                AllowSearchPanel="False"
+                                ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            x:Name="PART_Editor"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Bottom"
+                                            Text="{DXBinding 'RowData.RowHandle.Value + 1'}"
+                                            TextAlignment="Center" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn
+                                Width="Auto"
+                                AllowSearchPanel="True"
+                                FieldName="Name"
+                                Header="Name">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn
+                                Width="Auto"
+                                AllowSearchPanel="True"
+                                FieldName="Address"
+                                Header="Address">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn
+                                Width="Auto"
+                                AllowSearchPanel="True"
+                                FieldName="DataTypeName"
+                                Header="Data type">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn
+                                Width="Auto"
+                                AllowSearchPanel="False"
+                                FieldName="RefreshRate"
+                                Header="Refresh rate (ms)">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn
+                                Width="Auto"
+                                AllowSearchPanel="True"
+                                FieldName="AccessPermission"
+                                Header="Access permission">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn
+                                Width="Auto"
+                                AllowSearchPanel="True"
+                                FieldName="Gain"
+                                Header="Gain">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn
+                                Width="Auto"
+                                AllowSearchPanel="True"
+                                FieldName="Offset"
+                                Header="Offset">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn
+                                Width="Auto"
+                                AllowSearchPanel="False"
+                                FieldName="Description"
+                                Header="Description">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
+                        <!--#endregion-->
+                    </dxg:GridControl>
+                </DockPanel>
             </DockPanel>
         </Grid>
     </dx:BackgroundPanel>

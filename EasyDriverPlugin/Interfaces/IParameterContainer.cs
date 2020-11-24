@@ -22,7 +22,7 @@ namespace EasyDriverPlugin
         /// Dictionary lưuu trữ các thông số
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, string> Parameters { get; set; }
+        IReadOnlyDictionary<string, string> Parameters { get; }
 
         /// <summary>
         /// Hàm lấy giá trị từ parameters
@@ -54,5 +54,10 @@ namespace EasyDriverPlugin
         /// <param name="key"></param>
         /// <returns></returns>
         bool Contains(string key);
+
+        /// <summary>
+        /// Sự kiện khi parameter thay đổi
+        /// </summary>
+        event EventHandler<ParameterChangedEventArgs> ParameterChanged;
     }
 }

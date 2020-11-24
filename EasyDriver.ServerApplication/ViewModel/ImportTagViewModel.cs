@@ -92,28 +92,45 @@ namespace EasyScada.ServerApplication
             try
             {
                 IsBusy = true;
-                List<ITagCore> tags = SelectedItems.Select(x => x as ITagCore).ToList();
-                if (Parent is IHaveTag haveTagObj)
+                IEasyDriverPlugin driver = DriverManagerService.GetDriver(Parent);
+                if (driver != null)
                 {
-                    using (Transaction transaction = ReverseService.Begin("Import tags"))
+                    List<ITagCore> tags = new List<ITagCore>();
+                    foreach (var item in SelectedItems.Select(x => x as ITagCore))
                     {
-                        haveTagObj.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, true);
-                        ReversibleCollection<object> reversibleCollection = haveTagObj.Tags.AsReversibleCollection();
-                        tags.ForEach(x =>
+                        ITagCore tag = driver.CreateTag(Parent);
+                        tag.Name = item.Name;
+                        tag.Address = item.Address;
+                        tag.Description = item.Description;
+                        tag.Gain = item.Gain;
+                        tag.Offset = item.Offset;
+                        tag.DataType = item.DataType;
+                        tag.RefreshRate = item.RefreshRate;
+                        tag.AccessPermission = item.AccessPermission;
+                        tags.Add(tag);
+                    }
+
+                    if (Parent is IHaveTag haveTagObj)
+                    {
+                        using (Transaction transaction = ReverseService.Begin("Import tags"))
                         {
-                            x.Name = haveTagObj.GetUniqueNameInGroupTags(x.Name, false);
-                            reversibleCollection.Add(x);
-                        });
-                        haveTagObj.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, false);
-                        haveTagObj.Tags.NotifyResetCollection();
-                        transaction.Reversed += (s, e) =>
-                        {
+                            haveTagObj.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, true);
+                            ReversibleCollection<object> reversibleCollection = haveTagObj.Tags.AsReversibleCollection();
+                            tags.ForEach(x =>
+                            {
+                                x.Name = haveTagObj.GetUniqueNameInGroupTags(x.Name, false);
+                                reversibleCollection.Add(x);
+                            });
+                            haveTagObj.Tags.SetPropertyReversible(x => x.DisableNotifyChanged, false);
                             haveTagObj.Tags.NotifyResetCollection();
-                        };
-                        transaction.Commit();
+                            transaction.Reversed += (s, e) =>
+                            {
+                                haveTagObj.Tags.NotifyResetCollection();
+                            };
+                            transaction.Commit();
+                        }
                     }
                 }
-
                 CurrentWindowService.Close();
             }
             catch { }

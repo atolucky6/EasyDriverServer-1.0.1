@@ -155,6 +155,34 @@ namespace EasyDriverPlugin
         }
 
         /// <summary>
+        /// Kiểm tra giá trị có nằm trong khoảng 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static bool IsInRange(this double value, double min, double max)
+        {
+            if (value > max || value < min)
+                return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Kiểm tra giá trị có nằm trong khoảng 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static bool IsInRange(this float value, float min, float max)
+        {
+            if (value > max || value < min)
+                return false;
+            return true;
+        }
+
+        /// <summary>
         /// Kiểm tra số có phải là số chẵn
         /// </summary>
         /// <param name="value"></param>

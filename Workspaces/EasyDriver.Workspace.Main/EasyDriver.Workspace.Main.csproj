@@ -1,0 +1,213 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Images\add_file_48px.png" />
+    <None Remove="Resources\Images\alarm_clock_48px.png" />
+    <None Remove="Resources\Images\bug_48px.png" />
+    <None Remove="Resources\Images\cancel_48px.png" />
+    <None Remove="Resources\Images\checkmark_48px.png" />
+    <None Remove="Resources\Images\close_window_48px.png" />
+    <None Remove="Resources\Images\clouds_48px.png" />
+    <None Remove="Resources\Images\cloud_backup_restore_48px.png" />
+    <None Remove="Resources\Images\cloud_cross_48px.png" />
+    <None Remove="Resources\Images\cloud_sync_48px.png" />
+    <None Remove="Resources\Images\collapse_arrow_48px.png" />
+    <None Remove="Resources\Images\computer_48px.png" />
+    <None Remove="Resources\Images\control_panel_48px.png" />
+    <None Remove="Resources\Images\copy_48px.png" />
+    <None Remove="Resources\Images\cut_48px.png" />
+    <None Remove="Resources\Images\delete_48px.png" />
+    <None Remove="Resources\Images\deviation_48px.png" />
+    <None Remove="Resources\Images\downloading_updates_48px.png" />
+    <None Remove="Resources\Images\download_from_the_cloud_48px.png" />
+    <None Remove="Resources\Images\drag_48px.png" />
+    <None Remove="Resources\Images\drag_reorder_48px.png" />
+    <None Remove="Resources\Images\edit_property_48px.png" />
+    <None Remove="Resources\Images\error_48px.png" />
+    <None Remove="Resources\Images\excel_import_32px.png" />
+    <None Remove="Resources\Images\execel_export_32px.png" />
+    <None Remove="Resources\Images\expand_48px.png" />
+    <None Remove="Resources\Images\expand_arrow_48px.png" />
+    <None Remove="Resources\Images\filter_48px.png" />
+    <None Remove="Resources\Images\flow_chart_48px.png" />
+    <None Remove="Resources\Images\folder_48px.png" />
+    <None Remove="Resources\Images\help_48px.png" />
+    <None Remove="Resources\Images\high_priority_48px.png" />
+    <None Remove="Resources\Images\input_48px.png" />
+    <None Remove="Resources\Images\key_2_96px.png" />
+    <None Remove="Resources\Images\link_48px.png" />
+    <None Remove="Resources\Images\mind_map_48px.png" />
+    <None Remove="Resources\Images\module_48px.png" />
+    <None Remove="Resources\Images\monitor_48px.png" />
+    <None Remove="Resources\Images\multichannel_48px.png" />
+    <None Remove="Resources\Images\offline_48px.png" />
+    <None Remove="Resources\Images\online_48px.png" />
+    <None Remove="Resources\Images\opened_folder_48px.png" />
+    <None Remove="Resources\Images\open_document_48px.png" />
+    <None Remove="Resources\Images\paste_48px.png" />
+    <None Remove="Resources\Images\plus_math_48px.png" />
+    <None Remove="Resources\Images\processor_48px.png" />
+    <None Remove="Resources\Images\redo_48px.png" />
+    <None Remove="Resources\Images\refresh_48px.png" />
+    <None Remove="Resources\Images\save_48px.png" />
+    <None Remove="Resources\Images\search_48px.png" />
+    <None Remove="Resources\Images\settings_48px.png" />
+    <None Remove="Resources\Images\stack_48px.png" />
+    <None Remove="Resources\Images\subtract_48px.png" />
+    <None Remove="Resources\Images\support_48px.png" />
+    <None Remove="Resources\Images\tag_48px.png" />
+    <None Remove="Resources\Images\tag_window_48px.png" />
+    <None Remove="Resources\Images\test_passed_48px.png" />
+    <None Remove="Resources\Images\unavailable_48px.png" />
+    <None Remove="Resources\Images\undo_48px.png" />
+    <None Remove="Resources\Images\upload_to_the_cloud_48px.png" />
+    <None Remove="Resources\Images\urgent_message_48px.png" />
+    <None Remove="Resources\Images\usb_2_48px.png" />
+    <None Remove="Resources\Images\workstation_48px.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EasyDriver.RemoteConnectionPlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\RemoteConnections\EasyDriver.RemoteConnectionPlugin.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.ApplicationProperties">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.ApplicationProperties.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.BarManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.BarManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.Clipboard">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.Clipboard.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.ContextWindow">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.ContextWindow.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.DriverManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.DriverManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.InternalStorage">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.InternalStorage.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.LayoutManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.LayoutManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.Notifier">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.Notifier.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.ProjectManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.ProjectManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.RemoteConnectionManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.RemoteConnectionManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.Reversible">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.Reversible.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.TagWriter">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.TagWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.Service.WorkspaceManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.WorkspaceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.ServicePlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.ServicePlugin.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.WorkspacePlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Workspaces\EasyDriver.WorkspacePlugin.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriverPlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Drivers\EasyDriverPlugin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="devexpress.windowsdesktop.wpf.controls" Version="20.2.3" />
+    <PackageReference Include="devexpress.windowsdesktop.wpf.core" Version="20.2.3" />
+    <PackageReference Include="devexpress.windowsdesktop.wpf.docking" Version="20.2.3" />
+    <PackageReference Include="devexpress.windowsdesktop.wpf.grid.core" Version="20.2.3" />
+    <PackageReference Include="devexpress.windowsdesktop.wpf.layoutcontrol" Version="20.2.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Images\add_file_48px.png" />
+    <Resource Include="Resources\Images\alarm_clock_48px.png" />
+    <Resource Include="Resources\Images\bug_48px.png" />
+    <Resource Include="Resources\Images\cancel_48px.png" />
+    <Resource Include="Resources\Images\checkmark_48px.png" />
+    <Resource Include="Resources\Images\close_window_48px.png" />
+    <Resource Include="Resources\Images\clouds_48px.png" />
+    <Resource Include="Resources\Images\cloud_backup_restore_48px.png" />
+    <Resource Include="Resources\Images\cloud_cross_48px.png" />
+    <Resource Include="Resources\Images\cloud_sync_48px.png" />
+    <Resource Include="Resources\Images\collapse_arrow_48px.png" />
+    <Resource Include="Resources\Images\computer_48px.png" />
+    <Resource Include="Resources\Images\control_panel_48px.png" />
+    <Resource Include="Resources\Images\copy_48px.png" />
+    <Resource Include="Resources\Images\cut_48px.png" />
+    <Resource Include="Resources\Images\delete_48px.png" />
+    <Resource Include="Resources\Images\deviation_48px.png" />
+    <Resource Include="Resources\Images\downloading_updates_48px.png" />
+    <Resource Include="Resources\Images\download_from_the_cloud_48px.png" />
+    <Resource Include="Resources\Images\drag_48px.png" />
+    <Resource Include="Resources\Images\drag_reorder_48px.png" />
+    <Resource Include="Resources\Images\edit_property_48px.png" />
+    <Resource Include="Resources\Images\error_48px.png" />
+    <Resource Include="Resources\Images\excel_import_32px.png" />
+    <Resource Include="Resources\Images\execel_export_32px.png" />
+    <Resource Include="Resources\Images\expand_48px.png" />
+    <Resource Include="Resources\Images\expand_arrow_48px.png" />
+    <Resource Include="Resources\Images\filter_48px.png" />
+    <Resource Include="Resources\Images\flow_chart_48px.png" />
+    <Resource Include="Resources\Images\folder_48px.png" />
+    <Resource Include="Resources\Images\help_48px.png" />
+    <Resource Include="Resources\Images\high_priority_48px.png" />
+    <Resource Include="Resources\Images\input_48px.png" />
+    <Resource Include="Resources\Images\key_2_96px.png" />
+    <Resource Include="Resources\Images\link_48px.png" />
+    <Resource Include="Resources\Images\mind_map_48px.png" />
+    <Resource Include="Resources\Images\module_48px.png" />
+    <Resource Include="Resources\Images\monitor_48px.png" />
+    <Resource Include="Resources\Images\multichannel_48px.png" />
+    <Resource Include="Resources\Images\offline_48px.png" />
+    <Resource Include="Resources\Images\online_48px.png" />
+    <Resource Include="Resources\Images\opened_folder_48px.png" />
+    <Resource Include="Resources\Images\open_document_48px.png" />
+    <Resource Include="Resources\Images\paste_48px.png" />
+    <Resource Include="Resources\Images\plus_math_48px.png" />
+    <Resource Include="Resources\Images\processor_48px.png" />
+    <Resource Include="Resources\Images\redo_48px.png" />
+    <Resource Include="Resources\Images\refresh_48px.png" />
+    <Resource Include="Resources\Images\save_48px.png" />
+    <Resource Include="Resources\Images\search_48px.png" />
+    <Resource Include="Resources\Images\settings_48px.png" />
+    <Resource Include="Resources\Images\stack_48px.png" />
+    <Resource Include="Resources\Images\subtract_48px.png" />
+    <Resource Include="Resources\Images\support_48px.png" />
+    <Resource Include="Resources\Images\tag_48px.png" />
+    <Resource Include="Resources\Images\tag_window_48px.png" />
+    <Resource Include="Resources\Images\test_passed_48px.png" />
+    <Resource Include="Resources\Images\unavailable_48px.png" />
+    <Resource Include="Resources\Images\undo_48px.png" />
+    <Resource Include="Resources\Images\upload_to_the_cloud_48px.png" />
+    <Resource Include="Resources\Images\urgent_message_48px.png" />
+    <Resource Include="Resources\Images\usb_2_48px.png" />
+    <Resource Include="Resources\Images\workstation_48px.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Resources\Templates\Workspace\WorkspaceTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\netcoreapp3.1\Workspaces\&#xD;&#xA;xcopy /y $(TargetPath) $(SolutionDir)\bin\Release\netcoreapp3.1\Workspaces\" />
+  </Target>
+
+</Project>

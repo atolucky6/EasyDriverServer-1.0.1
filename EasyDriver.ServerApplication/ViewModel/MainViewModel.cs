@@ -142,7 +142,7 @@ namespace EasyScada.ServerApplication
                 // Mở NewProjectView với ParentViewModel là MainViewModel
                 WindowService.Show("NewProjectView", null, this);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -171,7 +171,7 @@ namespace EasyScada.ServerApplication
                 // Mở OpenProjectView với ParentViewModel là MainViewModel
                 WindowService.Show("OpenProjectView", null, this);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -272,7 +272,7 @@ namespace EasyScada.ServerApplication
                     await ProjectManagerService.SaveAsync(CurrentProject);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -319,7 +319,7 @@ namespace EasyScada.ServerApplication
                         // Xác nhận là thoát chương trình
                         ApplicationViewModel.IsMainWindowExit = true;
                         // Tắt chương trình 
-                        DispatcherService.BeginInvoke(() => Application.Current.MainWindow.Close());
+                        _ = DispatcherService.BeginInvoke(() => Application.Current.MainWindow.Close());
                         return;
                     }
                     // Nếu người dùng chọn 'No' thì đóng chương trình
@@ -329,7 +329,7 @@ namespace EasyScada.ServerApplication
                         // Xác nhận là thoát chương trình
                         ApplicationViewModel.IsMainWindowExit = true;
                         // Tắt chương trình 
-                        DispatcherService.BeginInvoke(() => Application.Current.MainWindow.Close());
+                        _ = DispatcherService.BeginInvoke(() => Application.Current.MainWindow.Close());
                         IsBusy = false;
                         return;
                     }
@@ -342,7 +342,7 @@ namespace EasyScada.ServerApplication
 
             if (needClose)
             {
-                var mbr = MessageBoxService.ShowMessage("Do you want to exit Easy Driver Server?", "Easy Driver Server", MessageButton.YesNo, MessageIcon.Question);
+                var mbr = MessageBoxService.ShowMessage("Do you want to exit Easy Driver Server?", "Message", MessageButton.YesNo, MessageIcon.Question);
                 if (mbr == MessageResult.Yes)
                 {
                     // Xác nhận là thoát chương trình
@@ -674,7 +674,7 @@ namespace EasyScada.ServerApplication
             }
             else
             {
-                MessageBoxService.ShowMessage($"Directory {ProjectManagerService.CurrentProject.ProjectPath} doesn't exist!", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                MessageBoxService.ShowMessage($"Directory {ProjectManagerService.CurrentProject.ProjectPath} doesn't exist!", "Message", MessageButton.OK, MessageIcon.Warning);
             }
         }
 
@@ -693,7 +693,7 @@ namespace EasyScada.ServerApplication
             {
                 WindowService.Show("CreateConnectionSchemaView", ProjectManagerService.CurrentProject, this);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

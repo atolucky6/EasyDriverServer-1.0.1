@@ -36,12 +36,26 @@ namespace EasyDriverPlugin
             }
         }
 
+        protected bool enabled = true;
         [Category(PropertyCategory.General), DisplayName("Enabled")]
         [JsonIgnore]
         public virtual bool Enabled
         {
-            get => GetProperty<bool>();
-            set => SetProperty(value);
+            get
+            {
+                if (!enabled || Parent == null)
+                    return false;
+                else
+                    return Parent.Enabled;
+            }
+            set
+            {
+                if (value != enabled)
+                {
+                    enabled = value;
+                    RaisePropertyChanged();
+                }
+            }
         }
 
         public virtual int Level
@@ -55,6 +69,13 @@ namespace EasyDriverPlugin
         [Category(PropertyCategory.General), DisplayName("Path"), ReadOnly(true)]
         [JsonIgnore]
         public virtual string Path { get => Parent == null || string.IsNullOrEmpty(Parent?.Path) ? Name : string.Format("{0}/{1}", Parent.Path, Name); }
+
+        [JsonIgnore]
+        public virtual string DisplayInformation
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
 
         /// <summary>
         /// Thời gian tạo đối tượng
@@ -186,6 +207,23 @@ namespace EasyDriverPlugin
         public virtual void RaiseRemovedEvent()
         {
             Removed?.Invoke(this, EventArgs.Empty);
+            foreach (var item in Childs)
+            {
+                if (item is ICoreItem coreItem)
+                    coreItem.RaiseRemovedEvent();
+            }
+
+            if (this is IHaveTag haveTag)
+            {
+                if (haveTag.HaveTags)
+                {
+                    foreach (var item in haveTag.Tags)
+                    {
+                        if (item is ICoreItem coreItem)
+                            coreItem.RaiseRemovedEvent();
+                    }
+                }
+            }
         }
 
         public virtual void RaiseTagValueChanged(ITagCore tagSender, TagValueChangedEventArgs args)
@@ -357,6 +395,11 @@ namespace EasyDriverPlugin
         /// </summary>
         /// <returns></returns>
         public override string ToString() => Name;
+
+        public virtual bool GetActualEnabledProperty()
+        {
+            return enabled;
+        }
 
         #endregion
 

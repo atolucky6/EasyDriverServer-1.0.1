@@ -107,7 +107,7 @@ namespace EasyScada.ServerApplication
                 catch
                 {
                     IsBusy = false;
-                    MessageBoxService.ShowMessage($"Can't connect to server 127.0.0.1:{ApplicationViewModel.ServerConfiguration.Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                    MessageBoxService.ShowMessage($"Can't connect to server 127.0.0.1:{ApplicationViewModel.ServerConfiguration.Port}", "Message", MessageButton.OK, MessageIcon.Warning);
                     return;
                 }
 
@@ -127,7 +127,7 @@ namespace EasyScada.ServerApplication
                 }
                 else
                 {
-                    MessageBoxService.ShowMessage($"Can't connect to server 127.0.0.1:{ApplicationViewModel.ServerConfiguration.Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                    MessageBoxService.ShowMessage($"Can't connect to server 127.0.0.1:{ApplicationViewModel.ServerConfiguration.Port}", "Message", MessageButton.OK, MessageIcon.Warning);
                 }
             }
             catch (Exception ex)

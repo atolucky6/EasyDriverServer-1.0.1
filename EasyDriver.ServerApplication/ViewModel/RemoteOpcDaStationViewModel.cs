@@ -94,7 +94,7 @@ namespace EasyScada.ServerApplication
                 {
                     if (Parent.Childs.FirstOrDefault(x => x != RemoteStation && (x as ICoreItem).Name == Name?.Trim()) != null)
                     {
-                        MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                        MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Message", MessageButton.OK, MessageIcon.Warning);
                     }
                     else
                     {
@@ -118,13 +118,13 @@ namespace EasyScada.ServerApplication
                 {
                     if (string.IsNullOrWhiteSpace(OpcServer))
                     {
-                        MessageBoxService.ShowMessage($"The OPC DA server can't be empty!", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                        MessageBoxService.ShowMessage($"The OPC DA server can't be empty!", "Message", MessageButton.OK, MessageIcon.Warning);
                     }
                     else
                     {
                         if (Parent.Childs.FirstOrDefault(x => x != RemoteStation && (x as ICoreItem).Name == Name?.Trim()) != null)
                         {
-                            MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                            MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Message", MessageButton.OK, MessageIcon.Warning);
                         }
                         else
                         {
@@ -147,7 +147,7 @@ namespace EasyScada.ServerApplication
                             }
                             else
                             {
-                                MessageBoxService.ShowMessage($"Can't connect to OPC server '{url.ToString()}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                                MessageBoxService.ShowMessage($"Can't connect to OPC server '{url.ToString()}'", "Message", MessageButton.OK, MessageIcon.Warning);
                             }
                         }
                     }
@@ -157,7 +157,7 @@ namespace EasyScada.ServerApplication
             catch (Exception)
             {
                 IsBusy = false;
-                MessageBoxService.ShowMessage($"Can't connect to OPC server '{UrlBuilder.Build(OpcServer).ToString()}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                MessageBoxService.ShowMessage($"Can't connect to OPC server '{UrlBuilder.Build(OpcServer).ToString()}'", "Message", MessageButton.OK, MessageIcon.Warning);
             }
         }
 

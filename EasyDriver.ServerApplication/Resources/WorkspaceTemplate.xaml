@@ -10,7 +10,7 @@
 
     <Style x:Key="LayoutPanelStyleBase" TargetType="{x:Type dxdo:LayoutPanel}">
         <Setter Property="Caption" Value="{Binding Caption}" />
-        <Setter Property="CaptionImage" Value="{Binding Glyph}" />
+        <!--<Setter Property="CaptionImage" Value="{Binding Glyph}" />-->
         <Setter Property="Closed" Value="{Binding IsClosed, Mode=TwoWay}" />
         <Setter Property="IsActive" Value="{Binding IsActive, Mode=TwoWay}" />
         <Setter Property="ShowTabCaptionImage" Value="True" />
@@ -25,9 +25,8 @@
                         Margin="0"
                         Padding="1"
                         VerticalAlignment="Top"
-                        FontSize="12"
-                        FontWeight="Bold"
-                        Foreground="{StaticResource OrganeBrush}"
+                        FontSize="14"
+                        FontWeight="SemiBold"
                         Text="{Binding}"
                         TextAlignment="Justify" />
                 </DataTemplate>
@@ -37,7 +36,7 @@
 
     <Style TargetType="{x:Type dxdo:DocumentPanel}">
         <Setter Property="Caption" Value="{Binding Token.Name}" />
-        <!--<Setter Property="CaptionImage" Value="{Binding Glyph}"/>-->
+        <!--<Setter Property="CaptionImage" Value="{Binding Glyph}" />-->
         <Setter Property="Closed" Value="{Binding IsClosed, Mode=TwoWay}" />
         <Setter Property="IsActive" Value="{Binding IsActive, Mode=TwoWay}" />
         <Setter Property="ShowTabCaptionImage" Value="True" />
@@ -46,8 +45,8 @@
             <Setter.Value>
                 <DataTemplate>
                     <TextBlock
-                        FontWeight="Bold"
-                        Foreground="{StaticResource OrganeBrush}"
+                        Padding="2"
+                        FontWeight="SemiBold"
                         Text="{Binding}" />
                 </DataTemplate>
             </Setter.Value>

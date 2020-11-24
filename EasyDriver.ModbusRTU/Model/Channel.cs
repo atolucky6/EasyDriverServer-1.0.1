@@ -1,16 +1,30 @@
 ﻿using EasyDriverPlugin;
-using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyDriver.ModbusRTU
 {
     public class Channel : ChannelCore
     {
         #region Public properties
+
+        public override string DisplayInformation { get => GetDisplayInformation(); set => base.DisplayInformation = value; }
+
+        public int MaxWritesCount
+        {
+            get
+            {
+                if (ParameterContainer.TryGetValue(nameof(MaxWritesCount), out int value))
+                    return value;
+                else
+                    ParameterContainer.SetValue(nameof(MaxWritesCount), "10");
+                return 10;
+            }
+            set
+            {
+                ParameterContainer.SetValue(nameof(MaxWritesCount), value.ToString());
+                RaisePropertyChanged();
+            }
+        }
 
         public string Port
         {
@@ -131,13 +145,26 @@ namespace EasyDriver.ModbusRTU
         public Channel(IGroupItem parent, bool isReadOnly = false) : base(parent, isReadOnly)
         {
             DriverPath = "ModbusRTU";
+            ParameterContainer.ParameterChanged += ParameterContainer_ParameterChanged;
         }
         #endregion
 
         #region Methods
+        private void ParameterContainer_ParameterChanged(object sender, ParameterChangedEventArgs e)
+        {
+            RaisePropertyChanged(nameof(DisplayInformation));
+        }
+
         public override string GetErrorOfProperty(string propertyName)
         {
             return base.GetErrorOfProperty(propertyName);
+        }
+
+        private string GetDisplayInformation()
+        {
+            char parity = Parity.ToString()[0];
+            int stopbit = (int)StopBits;
+            return $"ModbusRTU {Baudrate}.{DataBits}.{parity}.{stopbit}";
         }
         #endregion
     }

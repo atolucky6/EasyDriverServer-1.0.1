@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EasyDriver.ServicePlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.ServicePlugin.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriverPlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Drivers\EasyDriverPlugin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\netcoreapp3.1\Services\&#xD;&#xA;xcopy /y $(TargetPath) $(SolutionDir)\bin\Release\netcoreapp3.1\Services\" />
+  </Target>
+
+</Project>

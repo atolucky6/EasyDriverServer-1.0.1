@@ -1,47 +1,82 @@
-﻿<UserControl x:Class="EasyScada.ServerApplication.NewProjectView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:EasyScada.ServerApplication"
-             mc:Ignorable="d" 
-             d:DesignHeight="130" d:DesignWidth="600"
-
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
-             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
-             xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
-             DataContext="{local:ViewModelContainer local:NewProjectViewModel}">
+﻿<UserControl
+    x:Class="EasyScada.ServerApplication.NewProjectView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    xmlns:local="clr-namespace:EasyScada.ServerApplication"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="240"
+    d:DesignWidth="600"
+    DataContext="{local:ViewModelContainer local:NewProjectViewModel}"
+    mc:Ignorable="d">
     <dxmvvm:Interaction.Behaviors>
-        <dxmvvm:CurrentWindowService/>
-        <dxmvvm:EventToCommand EventName="Loaded" Command="{Binding OnLoadedCommand}"/>
+        <dxmvvm:CurrentWindowService />
+        <dxmvvm:EventToCommand Command="{Binding OnLoadedCommand}" EventName="Loaded" />
+        <local:KeyDownBehavior Key="Enter" Command="{Binding AcceptCommand}" />
+        <local:KeyDownBehavior Key="Esc" Command="{Binding CloseCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <dx:BackgroundPanel>
         <Grid>
             <dxdo:DockLayoutManager>
-                <dxdo:LayoutGroup Orientation="Vertical">
+                <dxdo:LayoutGroup FontSize="14" Orientation="Vertical">
                     <dxdo:LayoutControlItem>
                         <dxlc:LayoutControl Orientation="Vertical">
-                            <dxlc:LayoutItem Label="Name" AddColonToLabel="True" Foreground="{StaticResource YellowBrush}">
-                                <dxe:TextEdit Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+                            <dxlc:LayoutItem
+                                AddColonToLabel="True"
+                                ElementSpace="6"
+                                Label="Name"
+                                LabelPosition="Top">
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:FocusBehavior />
+                                    </dxmvvm:Interaction.Behaviors>
+                                </TextBox>
                             </dxlc:LayoutItem>
-                            <dxlc:LayoutItem Label="Path" AddColonToLabel="True" Foreground="{StaticResource YellowBrush}">
-                                <dxe:ButtonEdit Text="{Binding Path, Mode=OneWay}" IsTextEditable="False" AllowDefaultButton="False"
-                                                Foreground="{StaticResource CyanBrush}">
-                                    <dxe:ButtonInfo ButtonKind="Simple" GlyphKind="Regular" Command="{Binding BrowseCommand}"/>
-                                </dxe:ButtonEdit>
+                            <dxlc:LayoutItem
+                                AddColonToLabel="True"
+                                ElementSpace="6"
+                                Label="Path"
+                                LabelPosition="Top">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBox
+                                        Cursor="Hand"
+                                        IsReadOnly="True"
+                                        Text="{Binding Path, Mode=OneWay}">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding BrowseCommand}" EventName="PreviewMouseLeftButtonDown" />
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </TextBox>
+                                    <TextBlock
+                                        Margin="0,2,0,0"
+                                        FontSize="12"
+                                        Foreground="{DynamicResource HelperTextBrush}"
+                                        Text="Click here to locate the project where it is located" />
+                                </StackPanel>
                             </dxlc:LayoutItem>
-                            <dxlc:LayoutGroup Orientation="Horizontal" >
-                                <dxlc:LayoutItem HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="{StaticResource CyanBrush}">
-                                    <dxe:CheckEdit IsChecked="{Binding AllowSaveProjectPath, Mode=TwoWay}" Content="Remember path"/>
+                            <dxlc:LayoutGroup Margin="0,-12,0,0" Orientation="Horizontal">
+                                <dxlc:LayoutItem
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    FontWeight="SemiBold">
+                                    <CheckBox
+                                        Content="Remember path"
+                                        FontSize="14"
+                                        IsChecked="{Binding AllowSaveProjectPath, Mode=TwoWay}" />
                                 </dxlc:LayoutItem>
-                                <dxlc:LayoutGroup Orientation="Horizontal" HorizontalAlignment="Right" >
-                                    <dxlc:LayoutItem Width="70">
-                                        <dx:SimpleButton Content="Ok" Command="{Binding AcceptCommand}" Foreground="{StaticResource GreenBrush}"/>
+                                <dxlc:LayoutGroup
+                                    HorizontalAlignment="Right"
+                                    ItemSpace="12"
+                                    Orientation="Horizontal">
+                                    <dxlc:LayoutItem>
+                                        <Button Command="{Binding AcceptCommand}" Content="Ok" />
                                     </dxlc:LayoutItem>
-                                    <dxlc:LayoutItem Width="70">
-                                        <dx:SimpleButton Content="Cancel" Command="{Binding CloseCommand}" Foreground="{StaticResource RedBrush}"/>
+                                    <dxlc:LayoutItem>
+                                        <Button Command="{Binding CloseCommand}" Content="Cancel" />
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
                             </dxlc:LayoutGroup>
@@ -51,7 +86,10 @@
                 </dxdo:LayoutGroup>
             </dxdo:DockLayoutManager>
 
-            <dx:WaitIndicator Content="Please wait..." DeferedVisibility="{Binding IsBusy, UpdateSourceTrigger=PropertyChanged}" Panel.ZIndex="99"/>
+            <dx:WaitIndicator
+                Panel.ZIndex="99"
+                Content="Please wait..."
+                DeferedVisibility="{Binding IsBusy, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
     </dx:BackgroundPanel>
 </UserControl>

@@ -92,13 +92,16 @@ namespace EasyScada.Winforms.Controls
                         string resJson = await hubProxy.Invoke<string>("getAllElementsAsync");
 
                         List<ICoreItem> coreItems = new List<ICoreItem>();
-                        if (JsonConvert.DeserializeObject(resJson) is JArray jArray)
+                        if (JsonConvert.DeserializeObject(resJson) is JObject obj)
                         {
-                            foreach (var item in jArray)
+                            if (obj["Childs"] is JArray jArray)
                             {
-                                ICoreItem coreItem = JsonConvert.DeserializeObject<ICoreItem>(item.ToString(), new ConnectionSchemaJsonConverter());
-                                if (coreItem != null)
-                                    coreItems.Add(coreItem);
+                                foreach (var item in jArray)
+                                {
+                                    ICoreItem coreItem = JsonConvert.DeserializeObject<ICoreItem>(item.ToString(), new ConnectionSchemaJsonConverter());
+                                    if (coreItem != null)
+                                        coreItems.Add(coreItem);
+                                }
                             }
                         }
                         if (coreItems != null)

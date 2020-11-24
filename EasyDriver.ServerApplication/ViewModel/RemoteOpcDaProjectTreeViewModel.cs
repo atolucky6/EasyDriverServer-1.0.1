@@ -21,7 +21,7 @@ namespace EasyScada.ServerApplication
             IRemoteConnectionManagerService remoteConnectionManagerService,
             IProjectManagerService projectManagerService)
         {
-            Title = "Easy Driver Server";
+            Title = "Message";
             SizeToContent = SizeToContent.Manual;
             Height = 600;
             Width = 800;
@@ -96,7 +96,7 @@ namespace EasyScada.ServerApplication
                         }   
                         catch
                         {
-                            MessageBoxService.ShowMessage($"Can't connect to server OPC server '{OpcDaServer.Uri.ToString()}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                            MessageBoxService.ShowMessage($"Can't connect to server OPC server '{OpcDaServer.Uri.ToString()}'", "Message", MessageButton.OK, MessageIcon.Warning);
                         }
                         finally
                         {
@@ -109,7 +109,7 @@ namespace EasyScada.ServerApplication
             catch
             {
                 IsBusy = false;
-                MessageBoxService.ShowMessage($"Can't connect to server OPC server '{OpcDaServer.Uri.ToString()}'", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                MessageBoxService.ShowMessage($"Can't connect to server OPC server '{OpcDaServer.Uri.ToString()}'", "Message", MessageButton.OK, MessageIcon.Warning);
             }
         }
 
@@ -139,7 +139,7 @@ namespace EasyScada.ServerApplication
 
                 groupItem.Name = element.Name;
                 if (groupItem is ISupportParameters supportParameters)
-                    supportParameters.ParameterContainer.Parameters["ItemId"] = element.ItemId;
+                    supportParameters.ParameterContainer.SetValue("ItemId", element.ItemId);
 
                 if (groupItem != null)
                 {

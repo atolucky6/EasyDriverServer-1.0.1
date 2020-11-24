@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>TestScadaFormControls</RootNamespace>
     <AssemblyName>TestScadaFormControls</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -90,24 +90,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\add_48px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Motor 14.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
       <Project>{275e5d96-e78d-4fad-a87a-415dbf1d7b74}</Project>
       <Name>EasyScada.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EasyScada.Winforms.Connector\EasyScada.Winforms.Connector.csproj">
-      <Project>{4b95b838-26b8-4103-afb2-c13c1efa9fcf}</Project>
-      <Name>EasyScada.Winforms.Connector</Name>
     </ProjectReference>
     <ProjectReference Include="..\EasyScada.Winforms.Controls\EasyScada.Winforms.Controls.csproj">
       <Project>{ba53e923-5bad-443c-a8f0-b191eab9ca25}</Project>
       <Name>EasyScada.Winforms.Controls</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\add_48px.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Motor 14.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

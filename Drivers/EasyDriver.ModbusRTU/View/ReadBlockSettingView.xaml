@@ -1,0 +1,137 @@
+﻿<UserControl
+    x:Class="EasyDriver.ModbusRTU.ReadBlockSettingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:local="clr-namespace:EasyDriver.ModbusRTU"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Height="200"
+    d:DesignHeight="200"
+    d:DesignWidth="500"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style TargetType="dxg:GridColumnHeader">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <dxg:GridControl
+            x:Name="grcBlock"
+            DockPanel.Dock="Left"
+            FontSize="14"
+            ItemsSource="{Binding ReadBlockSettingSource}"
+            SelectedItem="{Binding SelectedSetting, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            SelectionMode="Cell"
+            ShowBorder="True">
+            <dxg:GridControl.View>
+                <dxg:TableView
+                    AllowColumnMoving="False"
+                    AllowDragDrop="True"
+                    AllowEditing="True"
+                    AllowFilterEditor="False"
+                    AllowFixedColumnMenu="False"
+                    AllowScrollToFocusedRow="True"
+                    AllowSorting="False"
+                    EditorShowMode="MouseDown"
+                    EnableImmediatePosting="True"
+                    HorizontalScrollbarVisibility="Auto"
+                    IndicatorWidth="30"
+                    RowMinHeight="30"
+                    SearchDelay="100"
+                    SearchPanelFindFilter="Default"
+                    SearchPanelHighlightResults="True"
+                    ShowAutoFilterRow="False"
+                    ShowGroupPanel="False"
+                    ShowIndicator="True"
+                    ShowSelectionRectangle="False"
+                    ValidatesOnNotifyDataErrors="True"
+                    VerticalScrollbarVisibility="Auto" />
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn Width="100" FieldName="Enabled">
+                    <dxg:GridColumn.HeaderStyle>
+                        <Style TargetType="dxg:BaseGridHeader">
+                            <Setter Property="FontWeight" Value="Normal" />
+                            <Setter Property="Height" Value="30" />
+                        </Style>
+                    </dxg:GridColumn.HeaderStyle>
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:CheckEditSettings />
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn
+                    Width="*"
+                    FieldName="StartAddress"
+                    Header="Start Address">
+                    <dxg:GridColumn.HeaderStyle>
+                        <Style TargetType="dxg:BaseGridHeader">
+                            <Setter Property="FontWeight" Value="Normal" />
+                            <Setter Property="Height" Value="30" />
+                        </Style>
+                    </dxg:GridColumn.HeaderStyle>
+                </dxg:GridColumn>
+                <dxg:GridColumn
+                    Width="*"
+                    FieldName="EndAddress"
+                    Header="End Address">
+                    <dxg:GridColumn.HeaderStyle>
+                        <Style TargetType="dxg:BaseGridHeader">
+                            <Setter Property="FontWeight" Value="Normal" />
+                            <Setter Property="Height" Value="30" />
+                        </Style>
+                    </dxg:GridColumn.HeaderStyle>
+                </dxg:GridColumn>
+            </dxg:GridControl.Columns>
+        </dxg:GridControl>
+
+        <Grid
+            Grid.Column="1"
+            Margin="12,0,0,0"
+            HorizontalAlignment="Right">
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                <dx:SimpleButton
+                    x:Name="btnAdd"
+                    Width="30"
+                    Height="30"
+                    Margin="0,8,0,0"
+                    Command="{Binding AddSettingCommand}"
+                    Glyph="/ModbusRTU;component/Images/plus_32px.png" />
+                <dx:SimpleButton
+                    x:Name="btnRemove"
+                    Width="30"
+                    Height="30"
+                    Margin="0,8,0,0"
+                    Command="{Binding RemoveSettingCommand}"
+                    Glyph="pack://application:,,,/ModbusRTU;component/Images/minus_32px.png" />
+                <dx:SimpleButton
+                    x:Name="btnMoveUp"
+                    Width="30"
+                    Height="30"
+                    Margin="0,8,0,0"
+                    Command="{Binding MoveUpSettingCommand}"
+                    Glyph="pack://application:,,,/ModbusRTU;component/Images/up_32px.png" />
+                <dx:SimpleButton
+                    x:Name="btnMoveDown"
+                    Width="30"
+                    Height="30"
+                    Margin="0,8,0,0"
+                    Command="{Binding MoveDownSettingCommand}"
+                    Glyph="pack://application:,,,/ModbusRTU;component/Images/down_32px.png" />
+                <dx:SimpleButton
+                    x:Name="btnClear"
+                    Width="30"
+                    Height="30"
+                    Margin="0,8,0,0"
+                    Command="{Binding ClearSettingCommand}"
+                    Glyph="pack://application:,,,/ModbusRTU;component/Images/clear_32px.png" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

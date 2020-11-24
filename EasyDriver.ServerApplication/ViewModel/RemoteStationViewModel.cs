@@ -92,7 +92,7 @@ namespace EasyScada.ServerApplication
                 {
                     if (Parent.Childs.FirstOrDefault(x => x != RemoteStation && (x as ICoreItem).Name == Name?.Trim()) != null)
                     {
-                        MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                        MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Message", MessageButton.OK, MessageIcon.Warning);
                     }
                     else
                     {
@@ -115,7 +115,7 @@ namespace EasyScada.ServerApplication
                 {
                     if (Parent.Childs.FirstOrDefault(x => x != RemoteStation && (x as ICoreItem).Name == Name?.Trim()) != null)
                     {
-                        MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                        MessageBoxService.ShowMessage($"The station name '{Name?.Trim()}' is already in use.", "Message", MessageButton.OK, MessageIcon.Warning);
                     }
                     else
                     {
@@ -142,7 +142,7 @@ namespace EasyScada.ServerApplication
                         catch
                         {
                             IsBusy = false;
-                            MessageBoxService.ShowMessage($"Can't connect to server {RemoteAddress}:{Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                            MessageBoxService.ShowMessage($"Can't connect to server {RemoteAddress}:{Port}", "Message", MessageButton.OK, MessageIcon.Warning);
                             return;
                         }
 
@@ -161,7 +161,7 @@ namespace EasyScada.ServerApplication
                         }
                         else
                         {
-                            MessageBoxService.ShowMessage($"Can't connect to server {RemoteAddress}:{Port}", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                            MessageBoxService.ShowMessage($"Can't connect to server {RemoteAddress}:{Port}", "Message", MessageButton.OK, MessageIcon.Warning);
                         }
 
                     }

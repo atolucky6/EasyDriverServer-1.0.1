@@ -113,18 +113,16 @@ namespace EasyScada.ServerApplication
             var splashVM = new DXSplashScreenViewModel() { Status = "Starting..." };
             manager = SplashScreenManager.CreateWaitIndicator(splashVM);
             manager.ShowOnStartup(true);
-
-            //// Load custom theme
-            //var theme = new Theme("EasyDriverServerDarkTheme");
-            //theme.AssemblyName = "DevExpress.Xpf.Themes.EasyDriverServerDarkTheme.v20.1";
-            //Theme.RegisterTheme(theme);
-            //ApplicationThemeHelper.ApplicationThemeName = "EasyDriverServerDarkTheme";
         }
 
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
-
+            // Load custom theme
+            var theme = new Theme("BlueTheme");
+            theme.AssemblyName = "DevExpress.Xpf.Themes.BlueTheme.v20.1";
+            Theme.RegisterTheme(theme);
+            ApplicationThemeHelper.ApplicationThemeName = "BlueTheme";
 
             IoC.Instance.Setup();
             // Show the main window
@@ -154,20 +152,20 @@ namespace EasyScada.ServerApplication
             WebApp.Start(url);
             Current.MainWindow.Show();
 
-            //string startUpFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\startup.ini";
-            //if (File.Exists(startUpFilePath))
-            //{
-            //    string startUpProjectPath = File.ReadAllText(startUpFilePath);
-            //    if (File.Exists(startUpProjectPath))
-            //    {
-            //        var projectManager = IoC.Instance.Get<IProjectManagerService>();
-            //        var loadedProject = projectManager.OpenProject(startUpProjectPath);
-            //        if (loadedProject != null)
-            //        {
-            //            projectManager.CurrentProject = loadedProject;
-            //        }
-            //    }
-            //}
+            string startUpFilePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\startup.ini";
+            if (File.Exists(startUpFilePath))
+            {
+                string startUpProjectPath = File.ReadAllText(startUpFilePath);
+                if (File.Exists(startUpProjectPath))
+                {
+                    var projectManager = IoC.Instance.Get<IProjectManagerService>();
+                    var loadedProject = projectManager.OpenProject(startUpProjectPath);
+                    if (loadedProject != null)
+                    {
+                        projectManager.CurrentProject = loadedProject;
+                    }
+                }
+            }
             manager.Close();
         }
 

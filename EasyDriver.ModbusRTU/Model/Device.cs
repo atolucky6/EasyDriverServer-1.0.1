@@ -13,6 +13,9 @@ namespace EasyDriver.ModbusRTU
     public class Device : DeviceCore
     {
         #region Public properties
+
+        public override string DisplayInformation { get => $"{DeviceId}"; set => base.DisplayInformation = value; }
+
         public int Timeout
         {
             get
@@ -61,6 +64,7 @@ namespace EasyDriver.ModbusRTU
             {
                 ParameterContainer.SetValue(nameof(DeviceId), value.ToString());
                 RaisePropertyChanged();
+                RaisePropertyChanged(nameof(DisplayInformation));
             }
         }
 
@@ -183,6 +187,42 @@ namespace EasyDriver.ModbusRTU
             OutputCoilsReadBlockSettings.CollectionChanged += OnReadBlockSettingCollectionChanged;
             InputRegisterReadBlockSettings.CollectionChanged += OnReadBlockSettingCollectionChanged;
             HoldingRegisterReadBlockSettings.CollectionChanged += OnReadBlockSettingCollectionChanged;
+
+            ParameterContainer.ParameterChanged += OnParameterChanged;
+        }
+
+        private void OnParameterChanged(object sender, ParameterChangedEventArgs e)
+        {
+            string key = e.KeyValue.Key;
+            switch (key)
+            {
+                case nameof(InputContactReadBlockSettings):
+                    {
+                        ObservableCollection<ReadBlockSetting> inputContactSettings = JsonConvert.DeserializeObject<ObservableCollection<ReadBlockSetting>>(e.KeyValue.Value);
+                        if (inputContactSettings != null)
+                            UpdateReadBlockSettings(InputContactReadBlockSettings, inputContactSettings);
+                        break;
+                    }
+                case nameof(OutputCoilsReadBlockSettings):
+                    {
+                        ObservableCollection<ReadBlockSetting> outputCoilsSettings = JsonConvert.DeserializeObject<ObservableCollection<ReadBlockSetting>>(e.KeyValue.Value);
+                        if (outputCoilsSettings != null)
+                            UpdateReadBlockSettings(OutputCoilsReadBlockSettings, outputCoilsSettings);
+                        break;
+                    }
+                case nameof(InputRegisterReadBlockSettings):
+                    ObservableCollection<ReadBlockSetting> inputRegisterSettings = JsonConvert.DeserializeObject<ObservableCollection<ReadBlockSetting>>(e.KeyValue.Value);
+                    if (inputRegisterSettings != null)
+                        UpdateReadBlockSettings(InputRegisterReadBlockSettings, inputRegisterSettings);
+                    break;
+                case nameof(HoldingRegisterReadBlockSettings):
+                    ObservableCollection<ReadBlockSetting> holdingRegisterSettings = JsonConvert.DeserializeObject<ObservableCollection<ReadBlockSetting>>(e.KeyValue.Value);
+                    if (holdingRegisterSettings != null)
+                        UpdateReadBlockSettings(HoldingRegisterReadBlockSettings, holdingRegisterSettings);
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void OnReadBlockSettingCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -264,6 +304,59 @@ namespace EasyDriver.ModbusRTU
         #endregion
 
         #region Methods
+        public void UpdateReadBlockSettings(ObservableCollection<ReadBlockSetting> target, ObservableCollection<ReadBlockSetting> source)
+        {
+            int index = -1;
+            int maxCount = source.Count > target.Count ? source.Count : target.Count;
+            for (int i = 0; i < maxCount; i++)
+            {
+                index = i;
+
+                if (i < target.Count && i < source.Count)
+                {
+                    ReadBlockSetting settingTarget = target[i];
+                    ReadBlockSetting settingSource = source[i];
+
+                    if (settingTarget.Enabled != settingSource.Enabled ||
+                        settingTarget.StartAddress != settingSource.StartAddress ||
+                        settingTarget.EndAddress != settingSource.EndAddress)
+                    {
+                        settingTarget.BeginEdit();
+                        settingTarget.Enabled = settingSource.Enabled;
+                        settingTarget.StartAddress = settingSource.StartAddress;
+                        settingTarget.EndAddress = settingSource.EndAddress;
+                        settingTarget.EndEdit();
+                    }
+                }
+                else
+                    break;
+            }
+
+            if (index < 0)
+                target.Clear();
+            else
+            {
+                if (source.Count < target.Count)
+                {
+                    if (index < target.Count)
+                    {
+                        for (int i = target.Count - 1; i >= index; i--)
+                        {
+                            target.RemoveAt(i);
+                        }
+                    }
+                }
+                else if (source.Count > target.Count)
+                {
+                    for (int i = index; i < source.Count; i++)
+                    {
+                        target.Add(source[i]);
+                    }
+                }
+            }
+        }
+
+
         public override string GetErrorOfProperty(string propertyName)
         {
             return base.GetErrorOfProperty(propertyName);
@@ -285,6 +378,16 @@ namespace EasyDriver.ModbusRTU
                     break;
             }
             return null;
+        }
+
+        public List<ReadBlockSetting> GetAllReadBlockSettings()
+        {
+            List<ReadBlockSetting> settings = new List<ReadBlockSetting>();
+            settings.AddRange(InputContactReadBlockSettings);
+            settings.AddRange(OutputCoilsReadBlockSettings);
+            settings.AddRange(InputRegisterReadBlockSettings);
+            settings.AddRange(HoldingRegisterReadBlockSettings);
+            return settings;
         }
 
         public void SaveBlockSetting()

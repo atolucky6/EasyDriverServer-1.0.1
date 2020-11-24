@@ -21,9 +21,24 @@ namespace EasyDriverPlugin
         [JsonIgnore]
         public object SyncObject { get; private set; }
 
+        public override string DisplayInformation { get => DriverPath; set => base.DisplayInformation = value; }
+
+        string driverPath;
         [Browsable(false)]
         [JsonIgnore]
-        public string DriverPath { get; set; }
+        public string DriverPath
+        {
+            get => driverPath;
+            set
+            {
+                if (driverPath != value)
+                {
+                    driverPath = value;
+                    RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(DisplayInformation));
+                }
+            }
+        }
 
         [Browsable(false)]
         [JsonIgnore]

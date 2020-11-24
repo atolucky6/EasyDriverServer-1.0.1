@@ -16,6 +16,8 @@ namespace EasyDriver.Core
             Childs.Add(LocalStation);
         }
 
+        public override bool Enabled { get => true; set => base.Enabled = value; }
+
         public override ItemType ItemType { get; set; } = ItemType.ConnectionSchema;
 
         [JsonIgnore]

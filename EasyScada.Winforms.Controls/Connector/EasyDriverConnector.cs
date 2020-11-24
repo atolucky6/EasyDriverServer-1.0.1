@@ -117,14 +117,14 @@ namespace EasyScada.Winforms.Controls
             return EasyDriverConnectorCore.GetTag(pathToTag);
         }
 
-        public WriteResponse WriteTag(string pathToTag, string value)
+        public WriteResponse WriteTag(string pathToTag, string value, WritePiority writePiority)
         {
-            return EasyDriverConnectorCore.WriteTag(pathToTag, value);
+            return EasyDriverConnectorCore.WriteTag(pathToTag, value, writePiority);
         }
 
-        public async Task<WriteResponse> WriteTagAsync(string pathToTag, string value)
+        public async Task<WriteResponse> WriteTagAsync(string pathToTag, string value, WritePiority writePiority)
         {
-            return await EasyDriverConnectorCore.WriteTagAsync(pathToTag, value);
+            return await EasyDriverConnectorCore.WriteTagAsync(pathToTag, value, writePiority);
         }
 
         public List<WriteResponse> WriteMultiTag(List<WriteCommand> writeCommands)
