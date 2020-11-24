@@ -36,6 +36,9 @@ namespace EasyScada.ServerApplication
                         var child = JsonConvert.DeserializeObject(item.ToString(), typeof(ICoreItem), converter);
                         if (child != null)
                             project.Childs.Add(child);
+
+                        converter.currentDriver = null;
+                        converter.parent = null;
                     }
                 }
 

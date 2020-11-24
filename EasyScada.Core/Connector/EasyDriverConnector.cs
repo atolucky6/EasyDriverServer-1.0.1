@@ -63,7 +63,7 @@ namespace EasyScada.Core
             return null;
         }
 
-        public WriteResponse WriteTag(string pathToTag, string value)
+        public WriteResponse WriteTag(string pathToTag, string value, WritePiority writePiority)
         {
             semaphore.Wait();
             try
@@ -73,13 +73,17 @@ namespace EasyScada.Core
                     hubConnection != null && 
                     hubConnection.State == ConnectionState.Connected)
                 {
+                    string[] splitAddress = pathToTag.Split('/');
+                    string[] prefixArray = new string[splitAddress.Length - 1];
+                    Array.Copy(splitAddress, 0, prefixArray, 0, prefixArray.Length);
                     var writeTask = hubProxy.Invoke<WriteResponse>("writeTagValueAsync", new WriteCommand()
                     {
-                        PathToTag = pathToTag,
+                        Prefix = string.Join("/", prefixArray),
+                        TagName = splitAddress[splitAddress.Length - 1],
                         Value = value,
                         SendTime = DateTime.Now,
                         WriteMode = WriteMode.WriteAllValue,
-                        WritePiority = WritePiority.Highest
+                        WritePiority = writePiority
                     });
 
                     Task.WaitAll(writeTask);
@@ -96,11 +100,11 @@ namespace EasyScada.Core
             return new WriteResponse() { IsSuccess = false, };
         }
 
-        public async Task<WriteResponse> WriteTagAsync(string pathToTag, string value)
+        public async Task<WriteResponse> WriteTagAsync(string pathToTag, string value, WritePiority writePiority)
         {
             return await Task.Run(() =>
             {
-                return WriteTag(pathToTag, value);
+                return WriteTag(pathToTag, value, writePiority);
             });
         }
 

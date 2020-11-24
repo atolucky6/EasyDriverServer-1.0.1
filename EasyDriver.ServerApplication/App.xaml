@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="Resources/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Commons.xaml" />
                 <ResourceDictionary Source="Resources/WorkspaceTemplate.xaml" />
+                <ResourceDictionary Source="Resources/BlueTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

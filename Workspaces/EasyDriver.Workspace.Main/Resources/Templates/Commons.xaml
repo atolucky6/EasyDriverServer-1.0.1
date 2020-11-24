@@ -1,0 +1,72 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxbt="http://schemas.devexpress.com/winfx/2008/xaml/bars/themekeys"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:local="clr-namespace:EasyDriver.Workspace.Main">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/EasyDriver.Workspace.Main;component/Resources/Templates/BlueTheme.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/EasyDriver.Workspace.Main;component/Resources/Templates/Bar/BarItemTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/EasyDriver.Workspace.Main;component/Resources/Templates/TreeView/TreeViewTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/EasyDriver.Workspace.Main;component/Resources/Templates/Workspace/WorkspaceTemplate.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="dxg:GridColumnHeader">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Height" Value="30" />
+    </Style>
+
+    <Style x:Key="ProjectTreeControlStyle" TargetType="dxg:TreeListControl">
+        <Setter Property="ClipboardCopyMode" Value="Default" />
+        <Setter Property="SelectionMode" Value="Row" />
+        <Setter Property="ShowBorder" Value="False" />
+        <Setter Property="AutoGenerateColumns" Value="None" />
+    </Style>
+
+    <Style x:Key="ProjectTreeViewStyle" TargetType="dxg:TreeListView">
+        <Setter Property="AllowEditing" Value="False" />
+        <Setter Property="AutoExpandAllNodes" Value="True" />
+        <Setter Property="HighlightItemOnHover" Value="True" />
+        <Setter Property="HorizontalScrollbarVisibility" Value="Auto" />
+        <Setter Property="VerticalScrollbarVisibility" Value="Auto" />
+        <Setter Property="NavigationStyle" Value="Row" />
+        <Setter Property="ShowColumnHeaders" Value="False" />
+        <Setter Property="ShowHorizontalLines" Value="False" />
+        <Setter Property="ShowVerticalLines" Value="False" />
+        <Setter Property="ShowIndicator" Value="False" />
+        <Setter Property="TreeColumnFieldName" Value="Name" />
+        <Setter Property="TreeDerivationMode" Value="ChildNodesSelector" />
+        <Setter Property="ChildNodesSelector" Value="{DynamicResource ProjectTreeChildNodeSelector}" />
+    </Style>
+
+    <Style x:Key="TagTreeViewStyle" TargetType="dxg:TreeListView">
+        <Setter Property="AllowEditing" Value="False" />
+        <Setter Property="HighlightItemOnHover" Value="True" />
+        <Setter Property="HorizontalScrollbarVisibility" Value="Auto" />
+        <Setter Property="VerticalScrollbarVisibility" Value="Auto" />
+        <Setter Property="NavigationStyle" Value="Row" />
+        <Setter Property="RowMinHeight" Value="28" />
+        <Setter Property="AllowFilterEditor" Value="False" />
+        <Setter Property="AllowSorting" Value="False" />
+        <Setter Property="AllowScrollToFocusedRow" Value="True" />
+        <Setter Property="AllowColumnMoving" Value="False" />
+        <Setter Property="SearchPanelFindFilter" Value="Default" />
+        <Setter Property="ShowSelectionRectangle" Value="True" />
+        <Setter Property="AllowFixedColumnMenu" Value="True" />
+        <Setter Property="RowIndent" Value="16" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="EditorShowMode" Value="MouseUpFocused" />
+        <Setter Property="SearchPanelHighlightResults" Value="True" />
+        <Setter Property="SearchDelay" Value="100" />
+        <Setter Property="IndicatorWidth" Value="30" />
+        <Setter Property="ShowIndicator" Value="True" />
+        <Setter Property="TreeColumnFieldName" Value="Name" />
+        <Setter Property="TreeDerivationMode" Value="ChildNodesSelector" />
+        <Setter Property="ChildNodesSelector" Value="{DynamicResource ProjectTreeChildNodeSelector}" />
+    </Style>
+</ResourceDictionary>

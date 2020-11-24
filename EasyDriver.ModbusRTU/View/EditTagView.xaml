@@ -13,133 +13,123 @@
     xmlns:plugin="clr-namespace:EasyDriverPlugin;assembly=EasyDriverPlugin"
     xmlns:serial="clr-nameSerialPortace:System.IO.Ports;assembly=System"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    MinWidth="400"
-    d:DesignHeight="500"
-    d:DesignWidth="300"
-    Tag="{Binding Tags}"
+    MinWidth="500"
+    MaxWidth="500"
+    d:DesignHeight="800"
+    d:DesignWidth="500"
     mc:Ignorable="d">
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService />
         <dxmvvm:CurrentWindowService />
     </dxmvvm:Interaction.Behaviors>
     <UserControl.Resources>
-        <Style TargetType="{x:Type dxlc:LayoutItem}">
-            <Setter Property="LabelPosition" Value="Top" />
-            <Setter Property="ElementSpace" Value="4" />
-            <Setter Property="AddColonToLabel" Value="True" />
-        </Style>
-        <Style TargetType="{x:Type dxlc:LayoutGroup}">
-            <Setter Property="ItemSpace" Value="8" />
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ModbusRTU;component/BlueTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
     <dx:BackgroundPanel>
         <dxdo:DockLayoutManager
             x:Name="validationContainer"
             dxe:ValidationService.IsValidationContainer="True"
-            AllowCustomization="False">
+            AllowCustomization="False"
+            FontSize="14">
             <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Vertical">
                 <dxdo:LayoutGroup ItemHeight="Auto">
-                    <dxdo:LayoutGroup
-                        Caption="Tag Parameters"
-                        GroupBorderStyle="Group"
-                        ItemHeight="Auto"
-                        Orientation="Vertical"
-                        ShowCaption="True">
+                    <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Vertical">
+                        <dxdo:LayoutControlItem>
+                            <TextBlock Style="{DynamicResource HeaderGroupTextStyle}" Text="Tag parameters" />
+                        </dxdo:LayoutControlItem>
                         <dxdo:LayoutControlItem>
                             <dxlc:LayoutControl>
-                                <dxlc:LayoutGroup ItemLabelsAlignment="Local" Orientation="Vertical">
-                                    <dxlc:LayoutItem AddColonToLabel="True" Label="Name">
-                                        <dxe:TextEdit x:Name="txbName" Text="{Binding Name, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
+                                <dxlc:LayoutGroup
+                                    ItemLabelsAlignment="Local"
+                                    ItemSpace="24"
+                                    Orientation="Vertical">
+                                    <dxlc:LayoutItem
+                                        AddColonToLabel="True"
+                                        ElementSpace="6"
+                                        Label="Name"
+                                        LabelPosition="Top">
+                                        <TextBox x:Name="txbName" Text="{Binding Name, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:FocusBehavior />
                                             </dxmvvm:Interaction.Behaviors>
-                                        </dxe:TextEdit>
+                                        </TextBox>
                                     </dxlc:LayoutItem>
-                                    <dxlc:LayoutGroup>
-                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Address">
-                                            <dxe:TextEdit x:Name="txbAddress" Text="{Binding Address, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
+                                    <dxlc:LayoutGroup ItemSpace="12">
+                                        <dxlc:LayoutItem
+                                            AddColonToLabel="True"
+                                            ElementSpace="6"
+                                            Label="Address"
+                                            LabelPosition="Top">
+                                            <TextBox x:Name="txbAddress" Text="{Binding Address, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Data Type">
-                                            <dxe:ComboBoxEdit
+                                        <dxlc:LayoutItem
+                                            AddColonToLabel="True"
+                                            ElementSpace="6"
+                                            Label="Data Type"
+                                            LabelPosition="Top">
+                                            <ComboBox
                                                 x:Name="cobDataType"
-                                                AllowNullInput="False"
-                                                IsTextEditable="False"
+                                                IsEditable="False"
                                                 ItemsSource="{Binding DataTypeSource}"
                                                 SelectedIndex="0"
                                                 SelectedItem="{Binding DataType, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
-                                    <dxlc:LayoutGroup>
-                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Refresh Rate (ms)">
-                                            <dxe:SpinEdit
-                                                x:Name="spnRefreshRate"
-                                                AllowDefaultButton="True"
-                                                AllowSpinOnMouseWheel="True"
-                                                Increment="100"
-                                                Mask="d"
-                                                MaskCulture="en-US"
-                                                MaskUseAsDisplayFormat="True"
-                                                MaxValue="2147483647"
-                                                MinValue="0"
-                                                Value="{Binding RefreshRate, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
+                                    <dxlc:LayoutGroup ItemSpace="12">
+                                        <dxlc:LayoutItem
+                                            AddColonToLabel="True"
+                                            ElementSpace="6"
+                                            Label="Refresh Rate (ms)"
+                                            LabelPosition="Top">
+                                            <TextBox x:Name="spnRefreshRate" Text="{Binding RefreshRate, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
                                         </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Access Permission">
-                                            <dxe:ComboBoxEdit
+                                        <dxlc:LayoutItem
+                                            AddColonToLabel="True"
+                                            ElementSpace="6"
+                                            Label="Access Permission"
+                                            LabelPosition="Top">
+                                            <ComboBox
                                                 x:Name="cobPermission"
-                                                AllowNullInput="False"
-                                                IsTextEditable="False"
+                                                IsEditable="False"
                                                 ItemsSource="{Binding Driver.AccessPermissionSource}"
                                                 SelectedIndex="0"
                                                 SelectedItem="{Binding AccessPermission, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
-                                    <dxlc:LayoutGroup>
-                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Description">
-                                            <dxe:TextEdit
-                                                x:Name="txbDescription"
-                                                Height="44"
-                                                HorizontalContentAlignment="Left"
-                                                VerticalContentAlignment="Top"
-                                                Text="{Binding Description, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
+                                    <dxlc:LayoutGroup ItemSpace="12" Orientation="Horizontal">
+                                        <dxlc:LayoutItem
+                                            AddColonToLabel="True"
+                                            ElementSpace="6"
+                                            Label="Gain"
+                                            LabelPosition="Top">
+                                            <TextBox x:Name="spnGain" Text="{Binding Gain, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem
+                                            AddColonToLabel="True"
+                                            ElementSpace="6"
+                                            Label="Offset"
+                                            LabelPosition="Top">
+                                            <TextBox x:Name="spnOffset" Text="{Binding Offset, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
-                                </dxlc:LayoutGroup>
-                            </dxlc:LayoutControl>
-                        </dxdo:LayoutControlItem>
-                    </dxdo:LayoutGroup>
-                </dxdo:LayoutGroup>
-                <dxdo:LayoutGroup ItemHeight="Auto">
-                    <dxdo:LayoutGroup
-                        Caption="Scale"
-                        GroupBorderStyle="Group"
-                        ItemHeight="Auto"
-                        Orientation="Vertical"
-                        ShowCaption="True">
-                        <dxdo:LayoutControlItem>
-                            <dxlc:LayoutControl>
-                                <dxlc:LayoutGroup ItemLabelsAlignment="Local" Orientation="Vertical">
-                                    <dxlc:LayoutGroup Orientation="Horizontal">
-                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Gain">
-                                            <dxe:SpinEdit
-                                                x:Name="spnGain"
-                                                AllowDefaultButton="True"
-                                                AllowSpinOnMouseWheel="True"
-                                                Increment="0.1"
-                                                IsFloatValue="True"
-                                                MaskCulture="en-US"
-                                                MaskUseAsDisplayFormat="True"
-                                                Value="{Binding Gain, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
-                                        </dxlc:LayoutItem>
-                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Offset">
-                                            <dxe:SpinEdit
-                                                x:Name="spnOffset"
-                                                AllowDefaultButton="True"
-                                                AllowSpinOnMouseWheel="True"
-                                                Increment="1"
-                                                IsFloatValue="True"
-                                                MaskCulture="en-US"
-                                                MaskUseAsDisplayFormat="True"
-                                                Value="{Binding Offset, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem
+                                            AddColonToLabel="True"
+                                            ElementSpace="6"
+                                            Label="Description"
+                                            LabelPosition="Top">
+                                            <TextBox
+                                                x:Name="txbDescription"
+                                                Height="60"
+                                                HorizontalContentAlignment="Left"
+                                                VerticalContentAlignment="Top"
+                                                Text="{Binding Description, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                                TextWrapping="Wrap" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
@@ -148,24 +138,24 @@
                     </dxdo:LayoutGroup>
                 </dxdo:LayoutGroup>
                 <dxdo:LayoutGroup
-                    Margin="0,4,0,0"
+                    Margin="12,0,12,0"
                     HorizontalAlignment="Stretch"
                     ItemHeight="Auto"
                     ItemWidth="*"
                     Orientation="Horizontal">
-                    <dxdo:LayoutControlItem HorizontalAlignment="Left" />
-                    <dxdo:LayoutControlItem ItemWidth="70">
-                        <dx:SimpleButton
+                    <dxdo:LayoutControlItem HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" />
+                    </dxdo:LayoutControlItem>
+                    <dxdo:LayoutControlItem ItemWidth="80">
+                        <Button
                             x:Name="btnOk"
-                            Height="22"
                             Command="{Binding SaveCommand}"
                             Content="Ok"
                             IsEnabled="{Binding Path=(dxe:ValidationService.HasValidationError), ElementName=validationContainer, Converter={dx:NegationConverter}}" />
                     </dxdo:LayoutControlItem>
-                    <dxdo:LayoutControlItem ItemWidth="70">
-                        <dx:SimpleButton
+                    <dxdo:LayoutControlItem ItemWidth="80">
+                        <Button
                             x:Name="btnCancel"
-                            Height="22"
                             Command="{Binding CancelCommand}"
                             Content="Cancel" />
                     </dxdo:LayoutControlItem>

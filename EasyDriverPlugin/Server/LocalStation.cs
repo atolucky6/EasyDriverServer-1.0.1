@@ -18,8 +18,10 @@ namespace EasyDriverPlugin
             Name = "Local Station";
             SyncObject = new object();
             StationType = "Local";
-            ParameterContainer = new ParameterContainer();
+            ParameterContainer = new ParameterContainer();            
         }
+
+        public override bool Enabled { get => enabled; set => base.Enabled = value; }
 
         public override ItemType ItemType { get; set; } = ItemType.LocalStation;
 

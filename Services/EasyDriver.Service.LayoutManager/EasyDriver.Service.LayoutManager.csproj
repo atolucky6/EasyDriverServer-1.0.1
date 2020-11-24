@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="devexpress.windowsdesktop.wpf.docking" Version="20.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EasyDriver.Service.WorkspaceManager">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.WorkspaceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDriver.ServicePlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Services\EasyDriver.ServicePlugin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\netcoreapp3.1\Services\&#xD;&#xA;xcopy /y $(TargetPath) $(SolutionDir)\bin\Release\netcoreapp3.1\Services\" />
+  </Target>
+
+</Project>

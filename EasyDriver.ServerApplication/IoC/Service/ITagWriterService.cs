@@ -71,20 +71,16 @@ namespace EasyScada.ServerApplication
             else
             {
                 // Kiểm tra đường dẫn đến tag không trống
-                if (!string.IsNullOrEmpty(writeCommand.PathToTag))
+                if (!string.IsNullOrWhiteSpace(writeCommand.Prefix) && !string.IsNullOrWhiteSpace(writeCommand.TagName))
                 {
                     // Kiểm tra xem tag ở local hay ở remote
-                    if (writeCommand.PathToTag.StartsWith("LocalStation"))
+                    if (writeCommand.Prefix.StartsWith("Local Station"))
                     {
-                        string[] pathSplit = writeCommand.PathToTag.Split('/');
-                        if (pathSplit != null && pathSplit.Length > 2)
+                        string[] pathSplit = writeCommand.Prefix.Split('/');
+                        if (pathSplit != null && pathSplit.Length >= 2)
                         {
-                            // Lấy đường dẫn của đối tượng cha của tag
-                            string[] parentPath = new string[pathSplit.Length - 1];
-                            Array.Copy(pathSplit, 0, parentPath, 0, parentPath.Length);
-
                             // Tìm đối tượng cha của tag là IHaveTag
-                            if (ProjectManagerService.CurrentProject.Browse(parentPath, 0) is IHaveTag parentOfTag)
+                            if (ProjectManagerService.CurrentProject.Browse(pathSplit, 0) is IHaveTag parentOfTag)
                             {
                                 // Lấy driver của tag
                                 IEasyDriverPlugin driver = DriverManagerService.GetDriver(parentOfTag as IGroupItem);
@@ -93,7 +89,7 @@ namespace EasyScada.ServerApplication
                                 if (driver != null)
                                 {
                                     // Nếu có driver thì tìm tag trong đối tượng cha của tag
-                                    if (parentOfTag.Tags.Find(pathSplit[pathSplit.Length - 1]) is ITagCore tag)
+                                    if (parentOfTag.Tags.Find(writeCommand.TagName) is ITagCore tag)
                                     {
                                         // Kiểm tra xem tag có phải là internal tag hay không
                                         if (tag.IsInternalTag)
@@ -110,6 +106,17 @@ namespace EasyScada.ServerApplication
                                         }
                                         else
                                         {
+                                            writeCommand.EquivalentTag = tag;
+                                            writeCommand.EquivalentDevice = tag.FindParent<IDeviceCore>(x => x is IDeviceCore);
+
+                                            if (writeCommand.NextCommands != null)
+                                            {
+                                                foreach (var nextCmd in writeCommand.NextCommands)
+                                                {
+                                                    FindEquivalentTagOfCommand(nextCmd);
+                                                }
+                                            }
+
                                             // Tạo async delegate ghi tag
                                             WriteTagDelegate writeTagDelegate = new WriteTagDelegate(WriteTag);
 
@@ -118,15 +125,26 @@ namespace EasyScada.ServerApplication
 
                                             // Đợi cho đến khi delegate ghi tag hoàn tất hoặc quá thời gian timeout
                                             result.AsyncWaitHandle.WaitOne(writeCommand.Timeout);
+                                            WriteResponse finalResult = null;
+                                            if (result.IsCompleted)
+                                            {
+                                                // Lấy kết quả trả về từ delegate
+                                                finalResult = writeTagDelegate.EndInvoke(result);
 
-                                            // Lấy kết quả trả về từ delegate
-                                            WriteResponse finalResult = writeTagDelegate.EndInvoke(result);
+                                                // Gán lại kết quả trả về 
+                                                respone.IsSuccess = finalResult.IsSuccess;
+                                                respone.ExecuteTime = finalResult.ExecuteTime;
+                                                respone.Error = finalResult.Error;
+                                            }
+                                            else
+                                            {
+                                                writeCommand.OnExpired();
+                                                respone.IsSuccess = false;
+                                                respone.Error = "Operation was timeout.";
+                                            }
 
                                             // Tắt WaitHandle
                                             result.AsyncWaitHandle.Close();
-
-                                            // Gán lại kết quả trả về 
-                                            respone = finalResult;
                                         }
                                     }
                                     else
@@ -148,7 +166,7 @@ namespace EasyScada.ServerApplication
                     else
                     {
                         // Tách đường dẫn để lấy thông tin của remote station
-                        string[] pathSplit = writeCommand.PathToTag.Split('/');
+                        string[] pathSplit = writeCommand.Prefix.Split('/');
                         if (pathSplit != null && pathSplit.Length > 0)
                         {
                             // Tìm remote station thông qua tên
@@ -156,11 +174,11 @@ namespace EasyScada.ServerApplication
                             {
                                 if (RemoteConnectionManagerService.ConnectionDictonary.ContainsKey(stationCore))
                                 {
-                                    string oldPath = writeCommand.PathToTag;
+                                    string oldPath = writeCommand.Prefix;
                                     IRemoteConnection remoteConnection = RemoteConnectionManagerService.ConnectionDictonary[stationCore];
-                                    writeCommand.PathToTag = writeCommand.PathToTag.Remove(0, pathSplit[0].Length + 1);
+                                    writeCommand.Prefix = writeCommand.Prefix.Remove(0, pathSplit[0].Length + 1);
                                     respone = await remoteConnection.WriteTagValue(writeCommand, respone);
-                                    respone.WriteCommand.PathToTag = oldPath;
+                                    respone.WriteCommand.Prefix = oldPath;
                                 }
                             }
                         }
@@ -173,6 +191,54 @@ namespace EasyScada.ServerApplication
 
             // Trả về kết quảs
             return respone;
+        }
+
+        public void GetEquivalentDeviceAndTag(string prefix, string tagName, out IDeviceCore device, out ITagCore tag)
+        {
+            device = null;
+            tag = null;
+            if (!string.IsNullOrWhiteSpace(prefix) && !string.IsNullOrWhiteSpace(tagName))
+            {
+                // Kiểm tra xem tag ở local hay ở remote
+                if (prefix.StartsWith("Local Station"))
+                {
+                    string[] pathSplit = prefix.Split('/');
+                    if (pathSplit != null && pathSplit.Length >= 2)
+                    {
+                        // Tìm đối tượng cha của tag là IHaveTag
+                        if (ProjectManagerService.CurrentProject.Browse(pathSplit, 0) is IHaveTag parentOfTag)
+                        {
+                            // Lấy driver của tag
+                            IEasyDriverPlugin driver = DriverManagerService.GetDriver(parentOfTag as IGroupItem);
+
+                            // Kiểm tra driver của tag có tồn tại hay không
+                            if (driver != null)
+                            {
+                                tag = parentOfTag.Tags.Find(tagName) as ITagCore;
+                                if (tag != null)
+                                {
+                                    device = tag.FindParent<IDeviceCore>(x => x is IDeviceCore);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void FindEquivalentTagOfCommand(WriteCommand cmd)
+        {
+            GetEquivalentDeviceAndTag(cmd.Prefix, cmd.TagName, out IDeviceCore device, out ITagCore tag);
+            cmd.EquivalentDevice = device;
+            cmd.EquivalentTag = tag;
+
+            if (cmd.NextCommands != null)
+            {
+                foreach (var nextCmd in cmd.NextCommands)
+                {
+                    FindEquivalentTagOfCommand(nextCmd);
+                }
+            }
         }
 
         public WriteResponse WriteTag(IEasyDriverPlugin driver, WriteCommand cmd)
@@ -214,7 +280,7 @@ namespace EasyScada.ServerApplication
                         IsSuccess = false,
                         WriteCommand = cmd,
                         ReceiveTime = DateTime.Now,
-                        Error = $"The command with tag path '{cmd.PathToTag}' is already exists."
+                        Error = $"The command with tag path '{cmd.Prefix}/{cmd.TagName}' is already exists."
                     };
                 }
             }

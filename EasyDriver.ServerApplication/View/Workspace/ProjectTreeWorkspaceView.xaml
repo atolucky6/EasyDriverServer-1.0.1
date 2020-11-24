@@ -13,102 +13,9 @@
     d:DesignHeight="450"
     d:DesignWidth="400"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <local:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter" />
-        <local:ConnectionStatusToImageSourceConverter
-            x:Key="ConnectionStatusToImageSourceConverter"
-            ConnectedImageSource="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
-            DisconnectedImageSource="/EasyDriverServer;component/Resources/Images/cloud_cross_48px.png" />
-        <local:ClientObjectToDisplayInfoConverter x:Key="ClientObjectToDisplayInfoConverter" />
-        <DataTemplate x:Key="ChannelTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/channel_24px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource CyanBrush}"
-                    Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ClientObjectToDisplayInfoConverter}}"
-                    Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="DeviceTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/device_24px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource CyanBrush}"
-                    Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ClientObjectToDisplayInfoConverter}}"
-                    Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="GroupTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/folder_48px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource CyanBrush}"
-                    Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ClientObjectToDisplayInfoConverter}}"
-                    Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="RemoteStationTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="{Binding Row.ConnectionStatus, Converter={StaticResource ConnectionStatusToImageSourceConverter}}" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource CyanBrush}"
-                    Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ClientObjectToDisplayInfoConverter}}"
-                    Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="LocalStationTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/local_station_16px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-            </StackPanel>
-        </DataTemplate>
-        <local:ProjectTreeCellTemplateSelector
-            x:Key="ProjectTreeCellTemplateSelector"
-            ChannelTemplate="{StaticResource ChannelTemplate}"
-            DeviceTemplate="{StaticResource DeviceTemplate}"
-            GroupTemplate="{StaticResource GroupTemplate}"
-            LocalStationTemplate="{StaticResource LocalStationTemplate}"
-            RemoteStationTemplate="{StaticResource RemoteStationTemplate}" />
-    </UserControl.Resources>
+    <UserControl.Resources />
     <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:EventToCommand Command="{Binding OnLoadedCommand}" EventName="Loaded" />
         <dxmvvm:SaveFileDialogService />
         <dxmvvm:DispatcherService />
     </dxmvvm:Interaction.Behaviors>
@@ -210,8 +117,14 @@
                 Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"
                 GlyphSize="Default"
                 KeyGesture="Delete" />
+            <dxb:BarCheckItem
+                x:Name="bEnabledItem"
+                Command="{Binding ChangeEnabledStateCommand}"
+                Content="Enabled"
+                IsChecked="{Binding SelectedItem.Enabled, UpdateSourceTrigger=PropertyChanged}"
+                IsVisible="{Binding ElementName=bEnabledItem, Path=IsEnabled}" />
         </dxb:BarManager.Items>
-        <Border BorderBrush="#44475a" BorderThickness="0,1,0,0">
+        <Border BorderBrush="{DynamicResource GrayBorderSolidBrush}" BorderThickness="0,1,0,0">
             <dxg:TreeListControl
                 ClipboardCopyMode="Default"
                 ItemsSource="{Binding CurrentProject.Childs}"
@@ -236,7 +149,6 @@
                     <dxg:TreeListView
                         AllowEditing="False"
                         AutoExpandAllNodes="True"
-                        Background="#FF262626"
                         HighlightItemOnHover="True"
                         HorizontalScrollbarVisibility="Auto"
                         NavigationStyle="Row"
@@ -260,6 +172,8 @@
                             <dxb:BarButtonItemLink BarItemName="bAddDevice" />
                             <dxb:BarButtonItemLink BarItemName="bAddGroup" />
                             <dxb:BarButtonItemLink BarItemName="bEdit" />
+                            <dxb:BarItemSeparator />
+                            <dxb:BarCheckItemLink BarItemName="bEnabledItem" />
                             <dxb:BarItemSeparator />
                             <dxb:BarButtonItemLink BarItemName="bCopy" />
                             <dxb:BarButtonItemLink BarItemName="bCut" />

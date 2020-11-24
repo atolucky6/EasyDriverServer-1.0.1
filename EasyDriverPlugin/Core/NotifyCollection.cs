@@ -68,7 +68,6 @@ namespace EasyDriverPlugin
             foreach (var item in collection)
             {
                 Items.Remove(item);
-                (item as ICoreItem)?.RaiseRemovedEvent();
             }
             NotifyResetCollection();
         }
@@ -100,12 +99,7 @@ namespace EasyDriverPlugin
 
         protected override void ClearItems()
         {
-            var items = Items.ToArray();
             base.ClearItems();
-            foreach (var item in items)
-            {
-                (item as ICoreItem)?.RaiseRemovedEvent();
-            }
         }
 
         /// <summary>
@@ -143,6 +137,7 @@ namespace EasyDriverPlugin
                                 return coreItem;
                             });
                             addedItem.NameChanged += OnTagNameChanged;
+                            coreItem.RaiseAddedEvent();
                         }
                     }
                 }
@@ -153,11 +148,12 @@ namespace EasyDriverPlugin
                 {
                     foreach (var item in e.OldItems)
                     {
-                        if (item is ICoreItem tagCore)
+                        if (item is ICoreItem coreItem)
                         {
-                            cache.TryRemove(tagCore.Name, out ICoreItem removeCoreItem);
+                            cache.TryRemove(coreItem.Name, out ICoreItem removeCoreItem);
                             if (removeCoreItem != null)
                                 removeCoreItem.NameChanged -= OnTagNameChanged;
+                            coreItem.RaiseRemovedEvent();
                         }
                     }
                 }
@@ -174,6 +170,7 @@ namespace EasyDriverPlugin
                                 return coreItem;
                             });
                             addedItem.NameChanged += OnTagNameChanged;
+                            coreItem.RaiseAddedEvent();
                         }
                     }
                 }
@@ -189,6 +186,31 @@ namespace EasyDriverPlugin
                             cache.TryRemove(coreItem.Name, out ICoreItem removeCoreItem);
                             if (removeCoreItem != null)
                                 removeCoreItem.NameChanged -= OnTagNameChanged;
+                            coreItem.RaiseRemovedEvent();
+                        }
+                    }
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (var item in e.NewItems)
+                    {
+                        if (item is ICoreItem coreItem)
+                        {
+                            coreItem.RaiseAddedEvent();
+                        }
+                    }
+                }
+
+                if (e.OldItems != null)
+                {
+                    foreach (var item in e.OldItems)
+                    {
+                        if (item is ICoreItem coreItem)
+                        {
+                            coreItem.RaiseRemovedEvent();
                         }
                     }
                 }

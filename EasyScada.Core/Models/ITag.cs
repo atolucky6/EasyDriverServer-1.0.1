@@ -16,8 +16,8 @@ namespace EasyScada.Core
         int RefreshInterval { get; }
         AccessPermission AccessPermission { get; }
         DateTime TimeStamp { get; }
-        WriteResponse Write(string value);
-        Task<WriteResponse> WriteAsync(string value);
+        WriteResponse Write(string value, WritePiority writePiority = WritePiority.High);
+        Task<WriteResponse> WriteAsync(string value, WritePiority writePiority = WritePiority.High);
 
         bool GetValue<T>(out T value) where T : IConvertible;
     }
@@ -121,14 +121,14 @@ namespace EasyScada.Core
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public WriteResponse Write(string value)
+        public WriteResponse Write(string value, WritePiority writePiority = WritePiority.High)
         {
-            return EasyDriverConnectorProvider.GetEasyDriverConnector().WriteTag(Path, value);
+            return EasyDriverConnectorProvider.GetEasyDriverConnector().WriteTag(Path, value, writePiority);
         }
 
-        public Task<WriteResponse> WriteAsync(string value)
+        public Task<WriteResponse> WriteAsync(string value, WritePiority writePiority = WritePiority.High)
         {
-            return EasyDriverConnectorProvider.GetEasyDriverConnector().WriteTagAsync(Path, value);
+            return EasyDriverConnectorProvider.GetEasyDriverConnector().WriteTagAsync(Path, value, writePiority);
         }
 
         public bool GetValue<T>(out T value) where T : IConvertible

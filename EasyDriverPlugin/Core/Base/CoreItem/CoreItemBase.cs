@@ -41,12 +41,25 @@ namespace EasyDriverPlugin
             get => Parent == null ? 0 : Parent.Level + 1;
         }
 
+        protected bool enabled = true;
         [Category(PropertyCategory.General), DisplayName("Enabled")]
         [JsonIgnore]
         public virtual bool Enabled
         {
-            get => GetProperty<bool>();
-            set => SetProperty(value);
+            get
+            {
+                if (!enabled || Parent == null)
+                    return enabled;
+                return Parent.Enabled;
+            }
+            set
+            {
+                if (value != enabled)
+                {
+                    enabled = value;
+                    RaisePropertyChanged();
+                }
+            }
         }
 
         /// <summary>
@@ -55,6 +68,13 @@ namespace EasyDriverPlugin
         [Category(PropertyCategory.General), DisplayName("Path"), ReadOnly(true)]
         [JsonIgnore]
         public virtual string Path { get => string.Format("{0}/{1}", Parent.Path, Name); }
+
+        [JsonIgnore]
+        public virtual string DisplayInformation
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
 
         /// <summary>
         /// Thời gian tạo đối tượng
@@ -185,6 +205,11 @@ namespace EasyDriverPlugin
         /// </summary>
         /// <returns></returns>
         public override string ToString() => Name;
+
+        public virtual bool GetActualEnabledProperty()
+        {
+            return enabled;
+        }
 
         #endregion
 

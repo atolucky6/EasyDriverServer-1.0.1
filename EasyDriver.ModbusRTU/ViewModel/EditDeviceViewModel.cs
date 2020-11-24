@@ -3,6 +3,7 @@ using DevExpress.Mvvm.POCO;
 using EasyDriverPlugin;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -18,9 +19,9 @@ namespace EasyDriver.ModbusRTU
         public virtual IGroupItem Parent { get => Device.Parent; }
 
         public virtual string Name { get; set; }
-        public virtual int Timeout { get; set; } = 1000;
-        public virtual int TryReadWriteTimes { get; set; } = 3;
-        public virtual int DeviceId { get; set; } = 1;
+        public virtual string Timeout { get; set; } = "1000";
+        public virtual string TryReadWriteTimes { get; set; } = "3";
+        public virtual string DeviceId { get; set; } = "1";
         public virtual ByteOrder ByteOrder { get; set; } = ByteOrder.ABCD;
         public virtual ReadMode ReadMode { get; set; } = ReadMode.Block;
         public virtual ObservableCollection<ReadBlockSetting> InputContactReadBlockSettings { get; set; }
@@ -61,9 +62,9 @@ namespace EasyDriver.ModbusRTU
             if (Device != null)
             {
                 Name = Device.Name;
-                DeviceId = Device.DeviceId;
-                Timeout = Device.Timeout;
-                TryReadWriteTimes = Device.TryReadWriteTimes;
+                DeviceId = Device.DeviceId.ToString();
+                Timeout = Device.Timeout.ToString();
+                TryReadWriteTimes = Device.TryReadWriteTimes.ToString();
                 ByteOrder = Device.ByteOrder;
                 ReadMode = Device.ReadMode;
                 Description = Device.Description;
@@ -75,24 +76,29 @@ namespace EasyDriver.ModbusRTU
         public void Save()
         {
             Device.Name = Name;
-            Device.DeviceId = DeviceId;
-            Device.Timeout = Timeout;
-            Device.TryReadWriteTimes = TryReadWriteTimes;
+            Device.DeviceId = int.Parse(DeviceId);
+            Device.Timeout = int.Parse(Timeout);
+            Device.TryReadWriteTimes = int.Parse(TryReadWriteTimes);
             Device.ByteOrder = ByteOrder;
             Device.Description = Description;
             Device.ReadMode = ReadMode;
 
-            UpdateReadBlockSettings(Device.InputContactReadBlockSettings, InputContactReadBlockSettings);
-            UpdateReadBlockSettings(Device.OutputCoilsReadBlockSettings, OutputCoilsReadBlockSettings);
-            UpdateReadBlockSettings(Device.InputRegisterReadBlockSettings, InputRegisterReadBlockSettings);
-            UpdateReadBlockSettings(Device.HoldingRegisterReadBlockSettings, HoldingRegisterReadBlockSettings);
+            Device.UpdateReadBlockSettings(Device.InputContactReadBlockSettings, InputContactReadBlockSettings);
+            Device.UpdateReadBlockSettings(Device.OutputCoilsReadBlockSettings, OutputCoilsReadBlockSettings);
+            Device.UpdateReadBlockSettings(Device.InputRegisterReadBlockSettings, InputRegisterReadBlockSettings);
+            Device.UpdateReadBlockSettings(Device.HoldingRegisterReadBlockSettings, HoldingRegisterReadBlockSettings);
+
+            foreach (var item in Device.UndefinedTags.ToArray())
+            {
+                item.FindAndRegisterReadBlock();
+            }
 
             Device.SaveBlockSetting();
             CurrentWindowService.Close();
         }
         public bool CanSave()
         {
-            return true;
+            return string.IsNullOrWhiteSpace(Error);
         }
 
         public void Cancel()
@@ -180,59 +186,137 @@ namespace EasyDriver.ModbusRTU
                 MessageBoxService.ShowMessage($"Error when export read block settings. '{ex.Message}'", "Error", MessageButton.OK, MessageIcon.Error);
             }
         }
-        #endregion
 
-        #region Methods 
-        private void UpdateReadBlockSettings(ObservableCollection<ReadBlockSetting> target, ObservableCollection<ReadBlockSetting> source)
+        public void AutoDetectSetting()
         {
-            int index = -1;
-            int maxCount = source.Count > target.Count ? source.Count : target.Count;
-            for (int i = 0; i < maxCount; i++)
+            try
             {
-                index = i;
-
-                if (i < target.Count && i < source.Count)
+                List<Tag> inputContactTags = new List<Tag>();
+                List<Tag> outputCoilTags = new List<Tag>();
+                List<Tag> inputRegisterTags = new List<Tag>();
+                List<Tag> holdingRegisterTags = new List<Tag>();
+                foreach (var item in Device.GetAllTags())
                 {
-                    ReadBlockSetting settingTarget = target[i];
-                    ReadBlockSetting settingSource = source[i];
-
-                    if (settingTarget.Enabled != settingSource.Enabled ||
-                        settingTarget.StartAddress != settingSource.StartAddress ||
-                        settingTarget.EndAddress != settingSource.EndAddress)
+                    if (item is Tag tag)
                     {
-                        settingTarget.BeginEdit();
-                        settingTarget.Enabled = settingSource.Enabled;
-                        settingTarget.StartAddress = settingSource.StartAddress;
-                        settingTarget.EndAddress = settingSource.EndAddress;
-                        settingTarget.EndEdit();
-                    }
-                }
-                else
-                    break;
-            }
-
-            if (index < 0)
-                target.Clear();
-            else
-            {
-                if (source.Count < target.Count)
-                {
-                    if (index < target.Count)
-                    {
-                        for (int i = target.Count - 1; i >= index; i--)
+                        switch (tag.AddressType)
                         {
-                            target.RemoveAt(i);
+                            case AddressType.OutputCoil:
+                                outputCoilTags.Add(tag);
+                                break;
+                            case AddressType.InputContact:
+                                inputContactTags.Add(tag);
+                                break;
+                            case AddressType.InputRegister:
+                                inputRegisterTags.Add(tag);
+                                break;
+                            case AddressType.HoldingRegister:
+                                holdingRegisterTags.Add(tag);
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
-                else if (source.Count > target.Count)
+
+                ObservableCollection<ReadBlockSetting> inputContactSettings = 
+                    new ObservableCollection<ReadBlockSetting>(
+                        CreateReadBlockSettings(inputContactTags.OrderBy(x => x.AddressOffset).ToList()));
+
+                ObservableCollection<ReadBlockSetting> outputCoilSettings = 
+                    new ObservableCollection<ReadBlockSetting>(
+                        CreateReadBlockSettings(outputCoilTags.OrderBy(x => x.AddressOffset).ToList()));
+
+                ObservableCollection<ReadBlockSetting> inputRegisterSettings = 
+                    new ObservableCollection<ReadBlockSetting>(
+                        CreateReadBlockSettings(inputRegisterTags.OrderBy(x => x.AddressOffset).ToList()));
+
+                ObservableCollection<ReadBlockSetting> holdingRegisterSettings = 
+                    new ObservableCollection<ReadBlockSetting>(
+                        CreateReadBlockSettings(holdingRegisterTags.OrderBy(x => x.AddressOffset).ToList()));
+
+                Device.UpdateReadBlockSettings(InputContactReadBlockSettings, inputContactSettings);
+                Device.UpdateReadBlockSettings(OutputCoilsReadBlockSettings, outputCoilSettings);
+                Device.UpdateReadBlockSettings(InputRegisterReadBlockSettings, inputRegisterSettings);
+                Device.UpdateReadBlockSettings(HoldingRegisterReadBlockSettings, holdingRegisterSettings);
+            }
+            catch { }
+        }
+
+        public bool CanAutoDetectSetting()
+        {
+            return Device != null;
+        }
+        #endregion
+
+        #region Methods 
+        private List<ReadBlockSetting> CreateReadBlockSettings(List<Tag> tags)
+        {
+            List<ReadBlockSetting> settings = new List<ReadBlockSetting>();
+            if (tags.Count > 1)
+            {
+                AddressType addressType = tags[0].AddressType;
+                int maxOffset = 0;
+                switch (addressType)
                 {
-                    for (int i = index; i < source.Count; i++)
+                    case AddressType.OutputCoil:
+                    case AddressType.InputContact:
+                        maxOffset = 2000;
+                        break;
+                    case AddressType.InputRegister:
+                    case AddressType.HoldingRegister:
+                        maxOffset = 125;
+                        break;
+                    default:
+                        break;
+                }
+                int startAddress = tags[0].AddressOffset;
+                int endAddressAndByteLength = tags[0].AddressOffset + (tags[0].RequireByteLength / 2) - 1;
+                int endAddress = tags[0].AddressOffset;
+                int lastEndAddress = tags[0].AddressOffset + (tags[0].RequireByteLength / 2) - 1;
+                ReadBlockSetting currentSetting = null;
+                for (int i = 1; i < tags.Count; i++)
+                {
+                    endAddress = tags[i].AddressOffset;
+                    endAddressAndByteLength = tags[i].AddressOffset + (tags[i].RequireByteLength / 2) - 1;
+                    int offset = endAddressAndByteLength - startAddress;
+                    
+                    if (offset < maxOffset)
                     {
-                        target.Add(source[i]);
+                        if (currentSetting == null)
+                        {
+                            currentSetting = new ReadBlockSetting() { AddressType = addressType };
+                            currentSetting.BeginEdit();
+                        }
+
+                        if (i == tags.Count - 1)
+                        {
+                            currentSetting.StartAddress = (100000 * (int)addressType + startAddress + 1).ToString();
+                            currentSetting.EndAddress = (100000 * (int)addressType + endAddressAndByteLength + 1).ToString();
+                            currentSetting.Enabled = true;
+                            currentSetting.EndEdit();
+                            settings.Add(currentSetting);
+                            currentSetting = null;
+                        }
+
+                        lastEndAddress = endAddressAndByteLength;
+                    }
+                    else
+                    {    
+                        if (currentSetting != null)
+                        {
+                            currentSetting.StartAddress = (100000 * (int)addressType + startAddress + 1).ToString();
+                            currentSetting.EndAddress = (100000 * (int)addressType + lastEndAddress + 1).ToString();
+                            currentSetting.Enabled = true;
+                            currentSetting.EndEdit();
+                            settings.Add(currentSetting);
+                            currentSetting = null;
+                        }
+                        startAddress = endAddress;
                     }
                 }
             }
+            return settings;
         }
 
         private ObservableCollection<ReadBlockSetting> CloneReadBlockSettings(ObservableCollection<ReadBlockSetting> source)
@@ -272,18 +356,51 @@ namespace EasyDriver.ModbusRTU
                         }
                         break;
                     case nameof(DeviceId):
-                        if (DeviceId < 0 || DeviceId > 254)
-                            Error = "The device id is out of range. The valid range is 0 - 254";
+                        if (int.TryParse(DeviceId, out int deviceId))
+                        {
+                            if (deviceId < 0 || deviceId > 254)
+                                Error = $"Value is out of range.";
+                            else
+                            {
+                                var channel = Parent.FindParent<Channel>(x => x is Channel);
+                                foreach (var item in channel.GetAllDevices())
+                                {
+                                    if (item is Device device)
+                                    {
+                                        if (device != Device && device.DeviceId == deviceId)
+                                        {
+                                            Error = $"The device id '{DeviceId}' is already used by device '{device.Name}'";
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         else
                         {
-                            if (Parent.Childs.FirstOrDefault(x => {
-                                if (x is Device device)
-                                    return device.DeviceId == DeviceId && device != Device;
-                                return false;
-                            }) is Device anotherDevice)
-                            {
-                                Error = $"The device id '{DeviceId}' is already used in device '{anotherDevice.Name}'";
-                            }
+                            Error = $"Value must be a number.";
+                        }
+                        break;
+                    case nameof(Timeout):
+                        if (int.TryParse(Timeout, out int timeout))
+                        {
+                            if (!timeout.IsInRange(1000, int.MaxValue))
+                                Error = $"Value is out of range.";
+                        }
+                        else
+                        {
+                            Error = $"Value must be a number.";
+                        }
+                        break;
+                    case nameof(TryReadWriteTimes):
+                        if (int.TryParse(TryReadWriteTimes, out int tryRead))
+                        {
+                            if (!tryRead.IsInRange(1, 99))
+                                Error = $"Value is out of range.";
+                        }
+                        else
+                        {
+                            Error = $"Value must be a number.";
                         }
                         break;
                     default:

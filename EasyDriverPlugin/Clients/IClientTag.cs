@@ -16,7 +16,6 @@ namespace EasyDriverPlugin
         string Value { get; }
         Quality Quality { get; }
         DateTime TimeStamp { get; }
-        [JsonConverter(typeof(ListClientTagJsonConverter))]
         List<IClientTag> Childs { get; }
     }
 }

@@ -1,0 +1,26 @@
+﻿<UserControl
+    x:Class="EasyDriver.Service.Notifier.NotifyControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    xmlns:local="clr-namespace:EasyDriver.Service.Notifier"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:NotificationService
+            x:Name="NotifyMessage"
+            ApplicationName="{x:Static local:NotifyControlViewModel.ApplicationName}"
+            PredefinedNotificationDuration="Default"
+            Sound="Notification_Default"
+            UseWin8NotificationsIfAvailable="true">
+            <dxmvvm:NotificationService.ApplicationId>
+                <Binding Source="{x:Static local:NotifyControlViewModel.ApplicationId}" />
+            </dxmvvm:NotificationService.ApplicationId>
+        </dxmvvm:NotificationService>
+    </dxmvvm:Interaction.Behaviors>
+</UserControl>

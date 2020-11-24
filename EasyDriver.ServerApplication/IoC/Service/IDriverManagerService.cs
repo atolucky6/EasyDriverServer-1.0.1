@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using EasyDriver.Core;
 using System;
+using AssemblyHelper = EasyDriver.Core.AssemblyHelper;
 
 namespace EasyScada.ServerApplication
 {

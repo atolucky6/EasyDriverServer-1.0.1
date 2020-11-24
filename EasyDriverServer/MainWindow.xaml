@@ -2,20 +2,22 @@
     x:Class="EasyDriverServer.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
-    xmlns:dxcore="http://schemas.devexpress.com/winfx/2008/xaml/core"
-    xmlns:dxt="http://schemas.devexpress.com/winfx/2008/xaml/core/themekeys"
-    xmlns:view="clr-namespace:EasyDriverServer.View;assembly=EasyDriverServer.View"
+    xmlns:local="clr-namespace:EasyDriverServer"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Easy Driver Server"
-    Width="1100"
-    Height="700"
+    Width="1200"
+    Height="800"
     Padding="0"
+    Background="White"
     ShowIcon="True"
     ShowInTaskbar="True"
-    ShowTitle="False">
+    ShowTitle="False"
+    TitleAlignment="Center">
     <dx:ThemedWindow.ToolbarItems>
         <dxb:MainMenuControl VerticalAlignment="Center" dxb:MergingProperties.AllowMerging="True" />
     </dx:ThemedWindow.ToolbarItems>
-    <view:MainView x:Name="mainView" />
+    <local:MainView />
 </dx:ThemedWindow>

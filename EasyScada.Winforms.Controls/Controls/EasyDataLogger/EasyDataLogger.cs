@@ -142,7 +142,7 @@ namespace EasyScada.Winforms.Controls
 
         public void Log()
         {
-            if (isStarted && EasyDriverConnectorProvider.GetEasyDriverConnector().IsStarted)
+            if (EasyDriverConnectorProvider.GetEasyDriverConnector().IsStarted)
             {
                 Action logAct = new Action(() =>
                 {

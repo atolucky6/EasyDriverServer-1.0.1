@@ -7,8 +7,8 @@ namespace EasyScada.ServerApplication
 {
     public class CoreItemJsonConverter : JsonConverter
     {
-        IEasyDriverPlugin currentDriver = null;
-        IGroupItem parent = null;
+        public IEasyDriverPlugin currentDriver = null;
+        public IGroupItem parent = null;
 
         public override bool CanConvert(Type objectType)
         {
@@ -43,8 +43,22 @@ namespace EasyScada.ServerApplication
                         result = new GroupCore(null, false);
                         break;
                     case ItemType.Tag:
-                        if (currentDriver != null)
-                            result = currentDriver.CreateTag(parent);
+                        if (!jObject["IsInternalTag"].Value<bool>())
+                        {
+                            if (currentDriver != null)
+                                result = currentDriver.CreateTag(parent);
+                            else
+                            {
+                                if (jObject["IsReadOnly"].Value<bool>())
+                                {
+                                    result = new TagCore(parent);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            result = new TagCore(parent);
+                        }
                         break;
                     case ItemType.ConnectionSchema:
                     default:
@@ -64,7 +78,15 @@ namespace EasyScada.ServerApplication
                     {
                         IParameterContainer parameterContainer = JsonConvert.DeserializeObject<ParameterContainer>(jObject["ParameterContainer"].ToString());
                         if (parameterContainer != null)
-                            supportParameters.ParameterContainer = parameterContainer;
+                        {
+                            if (supportParameters.ParameterContainer.Parameters == null)
+                                supportParameters.ParameterContainer = new ParameterContainer();
+
+                            supportParameters.ParameterContainer.DisplayName = parameterContainer.DisplayName;
+                            supportParameters.ParameterContainer.DisplayParameters = parameterContainer.DisplayParameters;
+                            foreach (var kvp in parameterContainer.Parameters)
+                                supportParameters.ParameterContainer.SetValue(kvp.Key, kvp.Value);
+                        }
                     }
 
                     if (result is IHaveTag haveTag)
@@ -166,7 +188,7 @@ namespace EasyScada.ServerApplication
                 writer.WriteValue(groupItem.IsReadOnly);
 
                 writer.WritePropertyName("Enabled");
-                writer.WriteValue(groupItem.Enabled);
+                writer.WriteValue(groupItem.GetActualEnabledProperty());
 
                 writer.WritePropertyName("CreatedDate");
                 writer.WriteValue(groupItem.CreatedDate);

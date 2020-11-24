@@ -9,13 +9,8 @@ namespace EasyScada.ServerApplication
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null)
+            if (string.IsNullOrEmpty(value?.ToString()))
                 return Visibility.Collapsed;
-            else
-            {
-                if (string.IsNullOrEmpty(value.ToString()))
-                    return Visibility.Collapsed;
-            }
             return Visibility.Visible;
         }
 

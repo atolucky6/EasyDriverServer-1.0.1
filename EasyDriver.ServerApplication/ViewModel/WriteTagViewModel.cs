@@ -61,7 +61,10 @@ namespace EasyScada.ServerApplication
             {
                 IsBusy = true;
                 WriteCommand cmd = new WriteCommand();
-                cmd.PathToTag = TagCore.Path;
+                cmd.WriteMode = WriteMode.WriteAllValue;
+                cmd.WritePiority = WritePiority.High;
+                cmd.Prefix = (TagCore.Parent).Path;
+                cmd.TagName = TagCore.Name;
                 cmd.Value = WriteValue;
                 await TagWriterService.WriteTag(cmd);
             }

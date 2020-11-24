@@ -24,10 +24,10 @@ namespace EasyScada.Core
         void Stop();
 
         ITag GetTag(string pathToTag);
-        WriteResponse WriteTag(string pathToTag, string value);
+        WriteResponse WriteTag(string pathToTag, string value, WritePiority writePiority);
         List<WriteResponse> WriteMultiTag(List<WriteCommand> writeCommands);
 
-        Task<WriteResponse> WriteTagAsync(string pathToTag, string value);
+        Task<WriteResponse> WriteTagAsync(string pathToTag, string value, WritePiority writePiority);
         Task<List<WriteResponse>> WriteMultiTagAsync(List<WriteCommand> writeCommands);
     }
 }

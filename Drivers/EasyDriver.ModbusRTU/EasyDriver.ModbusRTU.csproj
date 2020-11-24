@@ -1,0 +1,100 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>ModbusRTU</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\clear_32px.png" />
+    <None Remove="Images\down_32px.png" />
+    <None Remove="Images\excel_import_32px.png" />
+    <None Remove="Images\execel_export_32px.png" />
+    <None Remove="Images\lighting_32px.png" />
+    <None Remove="Images\minus_32px.png" />
+    <None Remove="Images\plus_32px.png" />
+    <None Remove="Images\up_32px.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="devexpress.windowsdesktop.wpf.docking" Version="20.2.3" />
+    <PackageReference Include="devexpress.windowsdesktop.wpf.grid.core" Version="20.2.3" />
+    <PackageReference Include="devexpress.windowsdesktop.wpf.layoutcontrol" Version="20.2.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.IO.Ports" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EasyDriverPlugin">
+      <HintPath>..\..\bin\Debug\netcoreapp3.1\Drivers\EasyDriverPlugin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\clear_32px.png" />
+    <Resource Include="Images\down_32px.png" />
+    <Resource Include="Images\excel_import_32px.png" />
+    <Resource Include="Images\execel_export_32px.png" />
+    <Resource Include="Images\lighting_32px.png" />
+    <Resource Include="Images\minus_32px.png" />
+    <Resource Include="Images\plus_32px.png" />
+    <Resource Include="Images\up_32px.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="View\CreateChannelView.xaml.cs">
+      <DependentUpon>CreateChannelView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="View\CreateDeviceView.xaml.cs">
+      <DependentUpon>CreateDeviceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="View\CreateTagView.xaml.cs">
+      <DependentUpon>CreateTagView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="View\EditChannelView.xaml.cs">
+      <DependentUpon>EditChannelView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="View\EditDeviceView.xaml.cs">
+      <DependentUpon>EditDeviceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="View\EditTagView.xaml.cs">
+      <DependentUpon>EditTagView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="View\ReadBlockSettingView.xaml.cs">
+      <DependentUpon>ReadBlockSettingView.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="BlueTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\CreateChannelView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\CreateDeviceView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\CreateTagView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\EditChannelView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\EditDeviceView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\EditTagView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\ReadBlockSettingView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y $(TargetPath) $(SolutionDir)\bin\Debug\netcoreapp3.1\Drivers\&#xD;&#xA;xcopy /y $(TargetPath) $(SolutionDir)\bin\Release\netcoreapp3.1\Drivers\" />
+  </Target>
+
+</Project>

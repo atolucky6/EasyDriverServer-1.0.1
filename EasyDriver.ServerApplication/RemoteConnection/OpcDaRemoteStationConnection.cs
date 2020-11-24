@@ -398,7 +398,7 @@ namespace EasyScada.ServerApplication
 
                     if (OpcDaServer.Groups.Count > 0)
                     {
-                        string tagId = writeCommand.PathToTag.Replace('/', '.');
+                        string tagId = $"{writeCommand.Prefix?.Replace('/', '.')}.{writeCommand.TagName}";
                         OpcDaGroup group = OpcDaServer.Groups[0];
                         if (opcDaItemCache[tagId] is OpcDaItem opcDaItem)
                         {
@@ -419,7 +419,7 @@ namespace EasyScada.ServerApplication
                     }
                     else
                     {
-                        response.Error = $"The tag '{writeCommand.PathToTag}' was not contains in group.";
+                        response.Error = $"The tag '{writeCommand.Prefix}/{writeCommand.TagName}' was not contains in group.";
                     }
 
                     return response;

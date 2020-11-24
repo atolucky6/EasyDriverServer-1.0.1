@@ -64,16 +64,13 @@ namespace EasyScada.Core
                     item.Description = jObject["Description"].Value<string>();
                     item.DisplayInfo = jObject["DisplayInfo"].Value<string>();
                     item.Error = jObject["Error"].Value<string>();
-                    //if (result is Tag tag)
-                    //{
-                    //    //tag.Address = jObject["Address"].Value<string>();
-                    //    //tag.DataType = jObject["DataType"].Value<string>();
-                    //    //tag.RefreshRate = jObject["RefreshRate"].Value<int>();
-                    //    //tag.AccessPermission = (AccessPermission)jObject["RefreshRate"].Value<int>();
-                    //}
-                    Dictionary<string, string> properties = JsonConvert.DeserializeObject<Dictionary<string, string>>(jObject["Properties"].ToString());
-                    if (properties != null)
-                        item.Properties = properties;
+
+                    Dictionary<string, string> properties = null;
+                    if (jObject.TryGetValue("Properties", out JToken value))
+                        properties  = JsonConvert.DeserializeObject<Dictionary<string, string>>(value?.ToString());
+                    if (properties == null)
+                        properties = new Dictionary<string, string>();
+                    item.Properties = properties;
 
                     var childItems = jObject["Childs"];
                     if (childItems != null)

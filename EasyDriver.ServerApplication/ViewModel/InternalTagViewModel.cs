@@ -56,19 +56,7 @@ namespace EasyScada.ServerApplication
                     IsEdit = true;
                     Name = tagCore.Name;
                     Description = tagCore.Description;
-                    if (tagCore.Address == "Retain")
-                    {
-                        IsRetain = true;
-                        tagCore.ParameterContainer.Parameters["Retain"] = bool.TrueString;
-                    }
-                    else
-                    {
-                        if (tagCore.ParameterContainer.Parameters.ContainsKey("Retain"))
-                        {
-                            if (bool.TryParse(tagCore.ParameterContainer.Parameters["Retain"], out bool retain))
-                                IsRetain = retain;
-                        }
-                    }
+                    IsRetain = tagCore.Retain;
                     Title = $"Edit Internal Tag - {Name}";
                 }
                 else if (parameter is IHaveTag haveTagObj)
@@ -96,11 +84,12 @@ namespace EasyScada.ServerApplication
                             {
                                 tagCore.Name = Name?.Trim();
                                 tagCore.Description = Description?.Trim();
-
-                                if (!tagCore.ParameterContainer.Parameters.ContainsKey("GUID"))
-                                    tagCore.ParameterContainer.Parameters["GUID"] = Guid.NewGuid().ToString();
-                                tagCore.ParameterContainer.Parameters["Retain"] = IsRetain.ToString();
-                                InternalStorageService.AddOrUpdateInternalTag(tagCore);
+                                if (string.IsNullOrEmpty(tagCore.GUID))
+                                    tagCore.GUID = Guid.NewGuid().ToString();
+                                tagCore.Retain = IsRetain;
+                                tagCore.Address = IsRetain ? "Retain" : "Non-Retain";
+                                if (tagCore.Retain)
+                                    InternalStorageService.AddOrUpdateInternalTag(tagCore);
                                 Close();
                             }
                             else
@@ -133,10 +122,12 @@ namespace EasyScada.ServerApplication
                             tagCore.Description = Description?.Trim();
                             tagCore.AccessPermission = AccessPermission.ReadAndWrite;
                             tagCore.RefreshInterval = 100;
-                            tagCore.ParameterContainer.Parameters["GUID"] = Guid.NewGuid().ToString();
-                            tagCore.ParameterContainer.Parameters["Retain"] = IsRetain.ToString();
+                            tagCore.Retain = IsRetain;
+                            if (string.IsNullOrWhiteSpace(tagCore.GUID))
+                                tagCore.GUID = Guid.NewGuid().ToString();
+                            if (tagCore.Retain)
+                                InternalStorageService.AddOrUpdateInternalTag(tagCore);
                             haveTagObj.Tags.Add(tagCore);
-                            InternalStorageService.AddOrUpdateInternalTag(tagCore);
                             Close();
                         }
                         else

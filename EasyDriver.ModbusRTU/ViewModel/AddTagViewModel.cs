@@ -23,10 +23,10 @@ namespace EasyDriver.ModbusRTU
         public virtual string Name { get; set; }
         public virtual string Address { get; set; } = "400001";
         public virtual string DataType { get; set; } 
-        public virtual int RefreshRate { get; set; } = 100;
+        public virtual string RefreshRate { get; set; } = "100";
         public virtual AccessPermission AccessPermission { get; set; } = AccessPermission.ReadAndWrite;
-        public virtual double Gain { get; set; } = 1.0;
-        public virtual double Offset { get; set; } = 0;
+        public virtual string Gain { get; set; } = "1.0";
+        public virtual string Offset { get; set; } = "0";
         public virtual int AutoCreateTagCount { get; set; } = 1;
         public virtual string Description { get; set; }
         #endregion
@@ -49,11 +49,11 @@ namespace EasyDriver.ModbusRTU
                 Name = (parent as IHaveTag).GetUniqueNameInGroupTags(itemTemplate.Name);
                 DataType = tag.DataType == null ? tag.DataTypeName : tag.DataType.Name;
                 Address = tag.Address;
-                RefreshRate = tag.RefreshRate;
+                RefreshRate = tag.RefreshRate.ToString();
                 AccessPermission = tag.AccessPermission;
                 Description = tag.Description;
-                Gain = tag.Gain;
-                Offset = tag.Offset;
+                Gain = tag.Gain.ToString();
+                Offset = tag.Offset.ToString();
             }
             else
             {
@@ -121,9 +121,9 @@ namespace EasyDriver.ModbusRTU
                     Name = haveTagObject.GetUniqueNameInGroupTags(string.Format(nameFormat, number)),
                     Address = adrString,
                     DataType = tagDataType,
-                    RefreshRate = RefreshRate,
-                    Gain = Gain,
-                    Offset = Offset,
+                    RefreshRate = int.Parse(RefreshRate),
+                    Gain = double.Parse(Gain),
+                    Offset = double.Parse(Offset),
                     ByteOrder = byteOrder,
                     Description = Description
                 };
@@ -160,7 +160,7 @@ namespace EasyDriver.ModbusRTU
         }
         public bool CanSave()
         {
-            return true;
+            return string.IsNullOrWhiteSpace(Error);
         }
 
         public void Cancel()
@@ -203,8 +203,8 @@ namespace EasyDriver.ModbusRTU
                         else
                         {
                             string oldAddressError = AddressError;
-                            Tag.GetAddressTypeAndOffset(Address, dataType, out validateAddressType, out int offset);
-                            if (offset == -1)
+                            Tag.GetAddressTypeAndOffset(Address, dataType, out validateAddressType, out int addressOffset);
+                            if (addressOffset == -1)
                             {
                                 AddressError = "The address is not valid.";
                             }
@@ -212,7 +212,7 @@ namespace EasyDriver.ModbusRTU
                             {
                                 if (validateAddressType == AddressType.Undefined)
                                 {
-                                    if (offset >= 0xFFFF)
+                                    if (addressOffset >= 0xFFFF)
                                         AddressError = $"The address is out of range of valid modbus address range.";
                                     else
                                         AddressError = $"The address doesn't match with data type '{DataType}'";
@@ -243,7 +243,39 @@ namespace EasyDriver.ModbusRTU
                             this.RaisePropertyChanged(x => x.Address);
                         }
                         break;
-                   
+                    case nameof(Gain):
+                        if (float.TryParse(Gain, out float gain))
+                        {
+                            if (!gain.IsInRange(float.MinValue, float.MaxValue))
+                                Error = "Value is out of range.";
+                        }
+                        else
+                        {
+                            Error = $"Value must be a number.";
+                        }  
+                        break;
+                    case nameof(Offset):
+                        if (float.TryParse(Offset, out float offset))
+                        {
+                            if (!offset.IsInRange(float.MinValue, float.MaxValue))
+                                Error = "Value is out of range.";
+                        }
+                        else
+                        {
+                            Error = $"Value must be a number.";
+                        }
+                        break;
+                    case nameof(RefreshRate):
+                        if (int.TryParse(Offset, out int refreshRate))
+                        {
+                            if (!refreshRate.IsInRange(0, 100000))
+                                Error = "Value is out of range.";
+                        }
+                        else
+                        {
+                            Error = $"Value must be a number.";
+                        }
+                        break;
                     default:
                         break;
                 }

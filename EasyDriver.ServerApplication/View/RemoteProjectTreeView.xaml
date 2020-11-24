@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking"
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
@@ -15,120 +16,14 @@
     d:DesignWidth="800"
     DataContext="{local:ViewModelContainer local:RemoteProjectTreeViewModel}"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <local:TextToWidthConverter x:Key="TextToWidthConverter" />
-        <DataTemplate x:Key="HubTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/remote_station_24px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-            </StackPanel>
-        </DataTemplate>
-        <local:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter" />
-        <local:ConnectionStatusToImageSourceConverter
-            x:Key="ConnectionStatusToImageSourceConverter"
-            ConnectedImageSource="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
-            DisconnectedImageSource="/EasyDriverServer;component/Resources/Images/cloud_cross_48px.png" />
-        <local:ClientObjectToDisplayInfoConverter x:Key="ClientObjectToDisplayInfoConverter" />
-        <DataTemplate x:Key="ChannelTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/channel_24px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource CyanBrush}"
-                    Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ClientObjectToDisplayInfoConverter}}"
-                    Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="DeviceTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/device_24px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource CyanBrush}"
-                    Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ClientObjectToDisplayInfoConverter}}"
-                    Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="GroupTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/folder_48px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource CyanBrush}"
-                    Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ClientObjectToDisplayInfoConverter}}"
-                    Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="RemoteStationTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="{Binding Row.ConnectionStatus, Converter={StaticResource ConnectionStatusToImageSourceConverter}}" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource CyanBrush}"
-                    Text="{Binding Mode=OneWay, Path=Row, Converter={StaticResource ClientObjectToDisplayInfoConverter}}"
-                    Visibility="{Binding Mode=OneWay, Path=Row, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="LocalStationTemplate">
-            <StackPanel Margin="0,1,0,1" Orientation="Horizontal">
-                <dx:DXImage
-                    Width="24"
-                    Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/local_station_16px.png" />
-                <dxe:TextEdit
-                    x:Name="PART_Editor"
-                    VerticalContentAlignment="Center"
-                    ShowError="False" />
-            </StackPanel>
-        </DataTemplate>
-        <local:ProjectTreeCellTemplateSelector
-            x:Key="ProjectTreeCellTemplateSelector"
-            ChannelTemplate="{StaticResource ChannelTemplate}"
-            DeviceTemplate="{StaticResource DeviceTemplate}"
-            GroupTemplate="{StaticResource GroupTemplate}"
-            HubTemplate="{StaticResource HubTemplate}"
-            LocalStationTemplate="{StaticResource LocalStationTemplate}"
-            RemoteStationTemplate="{StaticResource RemoteStationTemplate}" />
-    </UserControl.Resources>
+    <UserControl.Resources />
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:DispatcherService />
         <dxmvvm:CurrentWindowService />
         <dxmvvm:SaveFileDialogService />
         <dxmvvm:EventToCommand Command="{Binding OnLoadedCommand}" EventName="Loaded" />
+        <local:KeyDownBehavior Key="Enter" Command="{Binding ComfirmCommand}" />
+        <local:KeyDownBehavior Key="Esc" Command="{Binding CancelCommand}" />
     </dxmvvm:Interaction.Behaviors>
     <dxb:BarManager>
         <dxb:BarManager.Items>
@@ -189,178 +84,185 @@
         <Grid>
             <DockPanel>
                 <Border
-                    BorderBrush="#FFABABAB"
-                    BorderThickness="0,0,0,0"
+                    BorderBrush="{DynamicResource GrayBorderSolidBrush}"
+                    BorderThickness="0"
                     DockPanel.Dock="Top">
                     <dxb:BarContainerControl x:Name="barContainer" BorderBrush="Transparent" />
                 </Border>
-                <dxlc:LayoutControl Padding="0">
-                    <dxlc:LayoutGroup Orientation="Horizontal">
-                        <dxlc:GroupBox
-                            Width="300"
-                            Padding="0"
-                            dxlc:LayoutControl.AllowHorizontalSizing="True"
-                            Header="Select which data will be fetch from server"
-                            TitleVisibility="Visible">
-                            <dxlc:GroupBox.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        Margin="0,4"
-                                        FontSize="12"
-                                        FontWeight="Bold"
-                                        Foreground="{StaticResource CyanBrush}"
-                                        Text="{Binding}" />
-                                </DataTemplate>
-                            </dxlc:GroupBox.HeaderTemplate>
-                            <dxg:TreeListControl
-                                ItemsSource="{Binding Source}"
-                                SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                SelectionMode="Row"
-                                ShowBorder="False">
-                                <dxmvvm:Interaction.Behaviors>
-                                    <dxmvvm:EventToCommand Command="{Binding OpenOnDoubleClickCommand}" EventName="PreviewMouseDoubleClick">
-                                        <dxmvvm:EventToCommand.EventArgsConverter>
-                                            <dx:EventArgsToDataRowConverter />
-                                        </dxmvvm:EventToCommand.EventArgsConverter>
-                                    </dxmvvm:EventToCommand>
-                                </dxmvvm:Interaction.Behaviors>
-                                <dxg:TreeListControl.View>
-                                    <dxg:TreeListView
-                                        AllowEditing="False"
-                                        AllowIndeterminateCheckState="False"
-                                        AllowRecursiveNodeChecking="True"
-                                        AutoExpandAllNodes="True"
-                                        CheckBoxFieldName="IsChecked"
-                                        HorizontalScrollbarVisibility="Auto"
-                                        NavigationStyle="Row"
-                                        ShowCheckboxes="True"
-                                        ShowColumnHeaders="False"
-                                        ShowHorizontalLines="False"
-                                        ShowIndicator="False"
-                                        ShowVerticalLines="False"
-                                        TreeColumnFieldName="Name"
-                                        TreeDerivationMode="ChildNodesSelector"
-                                        TreeLineStyle="Solid"
-                                        VerticalScrollbarVisibility="Auto">
-                                        <dxmvvm:Interaction.Behaviors>
-                                            <local:TreeListViewUtilities />
-                                        </dxmvvm:Interaction.Behaviors>
-                                        <dxg:TreeListView.ChildNodesSelector>
-                                            <local:ProjectTreeChildNodeSelector IncludeTags="False" />
-                                        </dxg:TreeListView.ChildNodesSelector>
-                                        <dxg:TreeListView.RowCellMenuCustomizations>
+                <dxdo:DockLayoutManager
+                    AllowCustomization="False"
+                    DockingStyle="Default"
+                    ViewStyle="Default">
+                    <dxdo:LayoutGroup Orientation="Horizontal">
+                        <dxdo:LayoutPanel
+                            AllowClose="False"
+                            AllowDock="False"
+                            AllowDrag="False"
+                            AllowFloat="False"
+                            AllowHide="False"
+                            AllowMove="False"
+                            Caption="Select which data will be fetch from server"
+                            FontSize="16"
+                            ShowBorder="True"
+                            ShowControlBox="False">
+                            <Border BorderBrush="{DynamicResource GrayBorderSolidBrush}" BorderThickness="0,1,0,0">
+                                <dxg:TreeListControl
+                                    BorderThickness="1,1,0,0"
+                                    FontSize="14"
+                                    ItemsSource="{Binding Source}"
+                                    SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    SelectionMode="Row"
+                                    ShowBorder="False">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding OpenOnDoubleClickCommand}" EventName="PreviewMouseDoubleClick">
+                                            <dxmvvm:EventToCommand.EventArgsConverter>
+                                                <dx:EventArgsToDataRowConverter />
+                                            </dxmvvm:EventToCommand.EventArgsConverter>
+                                        </dxmvvm:EventToCommand>
+                                    </dxmvvm:Interaction.Behaviors>
+                                    <dxg:TreeListControl.View>
+                                        <dxg:TreeListView
+                                            AllowEditing="False"
+                                            AllowIndeterminateCheckState="False"
+                                            AllowRecursiveNodeChecking="True"
+                                            AutoExpandAllNodes="True"
+                                            CheckBoxFieldName="IsChecked"
+                                            HorizontalScrollbarVisibility="Auto"
+                                            NavigationStyle="Row"
+                                            RowMinHeight="30"
+                                            ShowCheckboxes="True"
+                                            ShowColumnHeaders="False"
+                                            ShowHorizontalLines="False"
+                                            ShowIndicator="False"
+                                            ShowVerticalLines="False"
+                                            TreeColumnFieldName="Name"
+                                            TreeDerivationMode="ChildNodesSelector"
+                                            TreeLineStyle="Solid"
+                                            VerticalScrollbarVisibility="Auto">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <local:TreeListViewUtilities />
+                                            </dxmvvm:Interaction.Behaviors>
+                                            <dxg:TreeListView.ChildNodesSelector>
+                                                <local:ProjectTreeChildNodeSelector IncludeTags="True" />
+                                            </dxg:TreeListView.ChildNodesSelector>
+                                            <dxg:TreeListView.RowCellMenuCustomizations>
+                                                <dxb:BarButtonItemLink BarItemName="bRefresh" />
+                                                <dxb:BarItemSeparator />
+                                                <dxb:BarButtonItemLink BarItemName="bExpandAll" />
+                                                <dxb:BarButtonItemLink BarItemName="bCollapseAll" />
+                                            </dxg:TreeListView.RowCellMenuCustomizations>
+                                        </dxg:TreeListView>
+                                    </dxg:TreeListControl.View>
+                                    <dxg:TreeListControl.Columns>
+                                        <dxg:TreeListColumn
+                                            Width="1*"
+                                            CellTemplateSelector="{StaticResource ProjectTreeCellTemplateSelector}"
+                                            FieldName="Name" />
+                                    </dxg:TreeListControl.Columns>
+                                    <dxb:BarManager.DXContextMenu>
+                                        <dxb:PopupMenu>
                                             <dxb:BarButtonItemLink BarItemName="bRefresh" />
                                             <dxb:BarItemSeparator />
                                             <dxb:BarButtonItemLink BarItemName="bExpandAll" />
                                             <dxb:BarButtonItemLink BarItemName="bCollapseAll" />
-                                        </dxg:TreeListView.RowCellMenuCustomizations>
-                                    </dxg:TreeListView>
-                                </dxg:TreeListControl.View>
-                                <dxg:TreeListControl.Columns>
-                                    <dxg:TreeListColumn
-                                        Width="1*"
-                                        CellTemplateSelector="{StaticResource ProjectTreeCellTemplateSelector}"
-                                        FieldName="Name" />
-                                </dxg:TreeListControl.Columns>
-                                <dxb:BarManager.DXContextMenu>
-                                    <dxb:PopupMenu>
-                                        <dxb:BarButtonItemLink BarItemName="bRefresh" />
-                                        <dxb:BarItemSeparator />
-                                        <dxb:BarButtonItemLink BarItemName="bExpandAll" />
-                                        <dxb:BarButtonItemLink BarItemName="bCollapseAll" />
-                                    </dxb:PopupMenu>
-                                </dxb:BarManager.DXContextMenu>
-                            </dxg:TreeListControl>
-                        </dxlc:GroupBox>
-                        <dxlc:GroupBox
-                            Padding="0"
-                            Header="{Binding SelectedItem.Name}"
-                            TitleVisibility="Visible">
-                            <dxlc:GroupBox.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        Margin="0,4"
-                                        FontSize="12"
-                                        FontWeight="Bold"
-                                        Foreground="{StaticResource CyanBrush}"
-                                        Text="{Binding}" />
-                                </DataTemplate>
-                            </dxlc:GroupBox.HeaderTemplate>
-                            <dxg:GridControl
-                                ItemsSource="{Binding TagsSource, FallbackValue={x:Null}}"
-                                SelectionMode="Row"
-                                ShowBorder="False">
-                                <!--#region TreeListView-->
-                                <dxg:GridControl.View>
-                                    <dxg:TableView
-                                        AllowColumnMoving="False"
-                                        AllowEditing="False"
-                                        AllowFilterEditor="False"
-                                        AllowFixedColumnMenu="False"
-                                        AllowScrollToFocusedRow="True"
-                                        AllowSorting="False"
-                                        EditorShowMode="MouseUpFocused"
-                                        HorizontalScrollbarVisibility="Auto"
-                                        IndicatorWidth="24"
-                                        SearchDelay="100"
-                                        SearchPanelFindFilter="Default"
-                                        SearchPanelHighlightResults="True"
-                                        ShowGroupPanel="False"
-                                        ShowIndicator="True"
-                                        ShowSelectionRectangle="True"
-                                        VerticalScrollbarVisibility="Auto">
-                                        <dxmvvm:Interaction.Behaviors>
-                                            <local:TableViewUtilities />
-                                        </dxmvvm:Interaction.Behaviors>
-                                        <dxg:TableView.RowIndicatorContentTemplate>
-                                            <DataTemplate>
-                                                <Image
-                                                    Width="16"
-                                                    Height="16"
-                                                    Source="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
-                                            </DataTemplate>
-                                        </dxg:TableView.RowIndicatorContentTemplate>
-                                        <dxg:TableView.RowCellMenuCustomizations />
-                                    </dxg:TableView>
-                                </dxg:GridControl.View>
-                                <!--#endregion-->
-                                <!--#region Columns-->
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn
-                                        Width="{Binding TagsSource.Count, Converter={StaticResource TextToWidthConverter}}"
-                                        AllowColumnFiltering="False"
-                                        AllowEditing="False"
-                                        AllowMoving="False"
-                                        AllowResizing="False"
-                                        AllowSearchPanel="False"
-                                        ReadOnly="True">
-                                        <dxg:GridColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock
-                                                    x:Name="PART_Editor"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Bottom"
-                                                    Text="{DXBinding 'RowData.RowHandle.Value + 1'}"
-                                                    TextAlignment="Center" />
-                                            </DataTemplate>
-                                        </dxg:GridColumn.CellTemplate>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn
-                                        Width="*"
-                                        AllowSearchPanel="True"
-                                        FieldName="Name"
-                                        Header="Name">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                </dxg:GridControl.Columns>
-                                <!--#endregion-->
-                            </dxg:GridControl>
-                        </dxlc:GroupBox>
-
-                    </dxlc:LayoutGroup>
-                </dxlc:LayoutControl>
+                                        </dxb:PopupMenu>
+                                    </dxb:BarManager.DXContextMenu>
+                                </dxg:TreeListControl>
+                            </Border>
+                        </dxdo:LayoutPanel>
+                        <dxdo:LayoutPanel
+                            AllowClose="False"
+                            AllowDock="False"
+                            AllowDrag="False"
+                            AllowFloat="False"
+                            AllowHide="False"
+                            AllowMove="False"
+                            Caption="{Binding SelectedItem.Name, FallbackValue=''}"
+                            FontSize="16"
+                            ShowBorder="True"
+                            ShowControlBox="False">
+                            <Border BorderBrush="{DynamicResource GrayBorderSolidBrush}" BorderThickness="0,1,0,0">
+                                <dxg:GridControl
+                                    BorderThickness="0,1,1,0"
+                                    FontSize="14"
+                                    ItemsSource="{Binding TagsSource, FallbackValue={x:Null}}"
+                                    SelectionMode="Row"
+                                    ShowBorder="False">
+                                    <dxg:GridControl.View>
+                                        <dxg:TableView
+                                            AllowColumnMoving="False"
+                                            AllowEditing="False"
+                                            AllowFilterEditor="False"
+                                            AllowFixedColumnMenu="False"
+                                            AllowScrollToFocusedRow="True"
+                                            AllowSorting="False"
+                                            EditorShowMode="MouseUpFocused"
+                                            HorizontalScrollbarVisibility="Auto"
+                                            IndicatorWidth="30"
+                                            RowMinHeight="30"
+                                            SearchDelay="100"
+                                            SearchPanelFindFilter="Default"
+                                            SearchPanelHighlightResults="True"
+                                            ShowGroupPanel="False"
+                                            ShowIndicator="True"
+                                            ShowSelectionRectangle="True"
+                                            VerticalScrollbarVisibility="Auto">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <local:TableViewUtilities />
+                                            </dxmvvm:Interaction.Behaviors>
+                                            <dxg:TableView.RowIndicatorContentTemplate>
+                                                <DataTemplate>
+                                                    <Image
+                                                        Width="16"
+                                                        Height="16"
+                                                        Source="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
+                                                </DataTemplate>
+                                            </dxg:TableView.RowIndicatorContentTemplate>
+                                            <dxg:TableView.RowCellMenuCustomizations />
+                                        </dxg:TableView>
+                                    </dxg:GridControl.View>
+                                    <dxg:GridControl.Columns>
+                                        <dxg:GridColumn
+                                            Width="{Binding TagsSource.Count, Converter={StaticResource TextToWidthConverter}}"
+                                            MinWidth="30"
+                                            AllowColumnFiltering="False"
+                                            AllowEditing="False"
+                                            AllowMoving="False"
+                                            AllowResizing="False"
+                                            AllowSearchPanel="False"
+                                            ReadOnly="True">
+                                            <dxg:GridColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock
+                                                        x:Name="PART_Editor"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Text="{DXBinding 'RowData.RowHandle.Value + 1'}"
+                                                        TextAlignment="Center" />
+                                                </DataTemplate>
+                                            </dxg:GridColumn.CellTemplate>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn
+                                            Width="*"
+                                            AllowSearchPanel="True"
+                                            FieldName="Name"
+                                            Header="Name">
+                                            <dxg:GridColumn.HeaderStyle>
+                                                <Style TargetType="dxg:BaseGridHeader">
+                                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                                    <Setter Property="Height" Value="30" />
+                                                </Style>
+                                            </dxg:GridColumn.HeaderStyle>
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:TextEditSettings />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControl.Columns>
+                                </dxg:GridControl>
+                            </Border>
+                        </dxdo:LayoutPanel>
+                    </dxdo:LayoutGroup>
+                </dxdo:DockLayoutManager>
             </DockPanel>
             <dx:WaitIndicator
                 Panel.ZIndex="999"

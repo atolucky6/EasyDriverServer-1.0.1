@@ -27,6 +27,7 @@ namespace EasyScada.ServerApplication
 
         protected ICurrentWindowService CurrentWindowService { get => this.GetService<ICurrentWindowService>(); }
         protected IMessageBoxService MessageBoxService { get => this.GetService<IMessageBoxService>(); }
+        protected ITreeListViewUtilities TreeListViewUtilities { get; set; }
 
         #endregion
 
@@ -50,7 +51,7 @@ namespace EasyScada.ServerApplication
             {
                 if (GroupItem.Parent.Childs.FirstOrDefault(x => x != GroupItem && (x as ICoreItem).Name == Name?.Trim()) != null)
                 {
-                    MessageBoxService.ShowMessage($"The group name '{Name?.Trim()}' is already in use.", "Easy Driver Server", MessageButton.OK, MessageIcon.Warning);
+                    MessageBoxService.ShowMessage($"The group name '{Name?.Trim()}' is already in use.", "Message", MessageButton.OK, MessageIcon.Warning);
                 }
                 else
                 {

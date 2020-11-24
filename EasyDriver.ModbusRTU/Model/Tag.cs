@@ -44,7 +44,6 @@ namespace EasyDriver.ModbusRTU
         {
             Added += OnItemWasAddToParent;
             Removed += OnItemWasRemoveFromParent;
-
         }
         #endregion
 
@@ -65,7 +64,8 @@ namespace EasyDriver.ModbusRTU
                 deviceParent.UndefinedTags.Remove(this);
             ReadBlockSetting = readBlockSetting;
             IndexOfDataInBlockSetting = indexOfData;
-            readBlockSetting.RegisterTags.Add(this);
+            if (!readBlockSetting.RegisterTags.Contains(this))
+                readBlockSetting.RegisterTags.Add(this);
         }
 
         public void FindAndRegisterReadBlock()
@@ -94,7 +94,7 @@ namespace EasyDriver.ModbusRTU
             }
         }
 
-        public void AddToUndifinedTags()
+        public void AddToUndefinedTags()
         {
             if (this.FindParent<Device>(x => x is Device) is Device device)
                 if (!device.UndefinedTags.Contains(this))
@@ -138,7 +138,7 @@ namespace EasyDriver.ModbusRTU
                     FindAndRegisterReadBlock();
                     break;
                 case nameof(DataType):
-                    GetAddressTypeAndOffset(newValue?.ToString(), DataType, out addressType, out addressOffset);
+                    GetAddressTypeAndOffset(Address, DataType, out addressType, out addressOffset);
                     if (newValue is IDataType dataType)
                     {
                         if (dataType.GetType() == typeof(String))

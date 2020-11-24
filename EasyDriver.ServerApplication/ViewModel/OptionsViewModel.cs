@@ -78,11 +78,11 @@ namespace EasyScada.ServerApplication
                     ServerBroadcastService.BroadcastMode = ServerConfiguration.BroadcastMode;
                     ServerBroadcastService.BroadcastRate = ServerConfiguration.BroadcastRate;
                     IsBusy = false;
-                    MessageBoxService.ShowMessage("The configuration was saved successfully. Please restart the application to apply all these changes.", "Easy Driver Server", MessageButton.OK, MessageIcon.Information);
+                    MessageBoxService.ShowMessage("The configuration was saved successfully. Please restart the application to apply all these changes.", "Message", MessageButton.OK, MessageIcon.Information);
                 }
                 else
                 {
-                    MessageBoxService.ShowMessage("Some error occurs when save the configuration!", "Easy Driver Server", MessageButton.OK, MessageIcon.Error);
+                    MessageBoxService.ShowMessage("Some error occurs when save the configuration!", "Message", MessageButton.OK, MessageIcon.Error);
                     IsBusy = false;
                 }
             }

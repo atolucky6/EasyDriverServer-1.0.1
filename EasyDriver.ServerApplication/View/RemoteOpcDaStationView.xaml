@@ -11,20 +11,11 @@
     xmlns:local="clr-namespace:EasyScada.ServerApplication"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     MinWidth="600"
-    d:DesignHeight="260"
+    MaxWidth="600"
+    d:DesignHeight="500"
     d:DesignWidth="600"
     DataContext="{local:ViewModelContainer local:RemoteOpcDaStationViewModel}"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <Style TargetType="dxlc:LayoutItem">
-            <Setter Property="LabelPosition" Value="Top" />
-            <Setter Property="ElementSpace" Value="4" />
-            <Setter Property="Foreground" Value="{StaticResource YellowBrush}" />
-        </Style>
-        <Style TargetType="dxlc:LayoutGroup">
-            <Setter Property="ItemSpace" Value="8" />
-        </Style>
-    </UserControl.Resources>
     <dxmvvm:Interaction.Behaviors>
         <local:KeyDownBehavior Key="Enter" Command="{Binding SaveCommand}" />
         <local:KeyDownBehavior Key="Esc" Command="{Binding CloseCommand}" />
@@ -46,59 +37,82 @@
     </dxmvvm:Interaction.Behaviors>
     <dx:BackgroundPanel>
         <Grid>
-            <dxdo:DockLayoutManager AllowCustomization="False">
+            <dxdo:DockLayoutManager AllowCustomization="False" FontSize="14">
                 <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Vertical">
                     <dxdo:LayoutGroup ItemHeight="Auto">
-                        <dxdo:LayoutGroup
-                            Caption="Remote OPC DA Station Parameters"
-                            GroupBorderStyle="Group"
-                            ItemHeight="Auto"
-                            Orientation="Vertical"
-                            ShowCaption="True">
-                            <dxdo:LayoutGroup.CaptionTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        FontWeight="Bold"
-                                        Foreground="{StaticResource PinkBrush}"
-                                        Text="{Binding}" />
-                                </DataTemplate>
-                            </dxdo:LayoutGroup.CaptionTemplate>
+                        <dxdo:LayoutGroup ItemHeight="Auto" Orientation="Vertical">
+                            <dxdo:LayoutControlItem>
+                                <TextBlock Style="{DynamicResource HeaderGroupTextStyle}" Text="Remote OPC DA Station Parameters" />
+                            </dxdo:LayoutControlItem>
                             <dxdo:LayoutControlItem>
                                 <dxlc:LayoutControl>
-                                    <dxlc:LayoutGroup ItemLabelsAlignment="Local" Orientation="Vertical">
-                                        <dxlc:LayoutItem AddColonToLabel="True" Label="Name">
-                                            <dxe:TextEdit Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <dxlc:LayoutGroup
+                                        ItemLabelsAlignment="Local"
+                                        ItemSpace="24"
+                                        Orientation="Vertical">
+                                        <dxlc:LayoutItem
+                                            AddColonToLabel="True"
+                                            ElementSpace="6"
+                                            Label="Name"
+                                            LabelPosition="Top">
+                                            <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutGroup Orientation="Horizontal">
-                                            <dxlc:LayoutItem AddColonToLabel="True" Label="Remote Address">
-                                                <dxe:TextEdit Text="{Binding RemoteAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+                                            <dxlc:LayoutItem
+                                                Margin="0,0,6,0"
+                                                AddColonToLabel="True"
+                                                ElementSpace="6"
+                                                Label="Remote Address"
+                                                LabelPosition="Top">
+                                                <TextBox Text="{Binding RemoteAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                                                    <dxmvvm:Interaction.Behaviors>
+                                                        <dxmvvm:FocusBehavior />
+                                                    </dxmvvm:Interaction.Behaviors>
+                                                </TextBox>
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem AddColonToLabel="True" Label="Port">
-                                                <dxe:SpinEdit
-                                                    EditValue="8800"
-                                                    Mask="d"
-                                                    MaskUseAsDisplayFormat="True"
-                                                    MaxValue="65535"
-                                                    MinValue="0"
-                                                    Value="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+                                            <dxlc:LayoutItem
+                                                Margin="6,0,0,0"
+                                                AddColonToLabel="True"
+                                                ElementSpace="6"
+                                                Label="Port"
+                                                LabelPosition="Top">
+                                                <TextBox Text="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                         <dxlc:LayoutGroup Orientation="Horizontal">
-                                            <dxlc:LayoutItem AddColonToLabel="True" Label="OPC Server">
-                                                <dxe:ComboBoxEdit
-                                                    AllowNullInput="False"
-                                                    IsTextEditable="True"
+                                            <dxlc:LayoutItem
+                                                Margin="0,0,6,0"
+                                                AddColonToLabel="True"
+                                                ElementSpace="6"
+                                                Label="OPC Server"
+                                                LabelPosition="Top">
+                                                <ComboBox
+                                                    IsEditable="False"
                                                     ItemsSource="{Binding OpcServerSource}"
                                                     SelectedIndex="0"
                                                     SelectedItem="{Binding OpcServer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem AddColonToLabel="True" Label="Refresh Rate (ms)">
-                                                <dxe:SpinEdit
-                                                    EditValue="1000"
-                                                    Mask="d"
-                                                    MaskUseAsDisplayFormat="True"
-                                                    MinValue="100"
-                                                    Value="{Binding RefreshRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+                                            <dxlc:LayoutItem
+                                                Margin="6,0,0,0"
+                                                AddColonToLabel="True"
+                                                ElementSpace="6"
+                                                Label="Refresh Rate (ms)"
+                                                LabelPosition="Top">
+                                                <TextBox Text="{Binding RefreshRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+                                            </dxlc:LayoutItem>
+                                        </dxlc:LayoutGroup>
+                                        <dxlc:LayoutGroup>
+                                            <dxlc:LayoutItem
+                                                AddColonToLabel="True"
+                                                ElementSpace="6"
+                                                Label="Description"
+                                                LabelPosition="Top">
+                                                <TextBox
+                                                    Height="60"
+                                                    HorizontalContentAlignment="Left"
+                                                    VerticalContentAlignment="Top"
+                                                    Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                                                    TextWrapping="Wrap" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                     </dxlc:LayoutGroup>
@@ -107,21 +121,15 @@
                         </dxdo:LayoutGroup>
                     </dxdo:LayoutGroup>
                     <dxdo:LayoutGroup
-                        Margin="0,4,0,0"
+                        Margin="0,6,12,0"
                         HorizontalAlignment="Right"
                         ItemHeight="Auto"
                         Orientation="Horizontal">
-                        <dxdo:LayoutControlItem ItemWidth="70">
-                            <dx:SimpleButton
-                                Command="{Binding SaveCommand}"
-                                Content="Ok"
-                                Foreground="{StaticResource GreenBrush}" />
+                        <dxdo:LayoutControlItem>
+                            <Button Command="{Binding SaveCommand}" Content="Ok" />
                         </dxdo:LayoutControlItem>
-                        <dxdo:LayoutControlItem ItemWidth="70">
-                            <dx:SimpleButton
-                                Command="{Binding CloseCommand}"
-                                Content="Cancel"
-                                Foreground="{StaticResource RedBrush}" />
+                        <dxdo:LayoutControlItem>
+                            <Button Command="{Binding CloseCommand}" Content="Cancel" />
                         </dxdo:LayoutControlItem>
                     </dxdo:LayoutGroup>
                 </dxdo:LayoutGroup>
