@@ -14,14 +14,14 @@ namespace EasyScadaLicenseService.Controllers
             LicenseModel result = new LicenseModel();
             try
             {
-                string conStr = "Server = localhost; Port = 3306; Uid = easyscadalicense; Pwd = C0ngD@t!)@@)@); Database = easy_scada_license";
+                string conStr = "Server = localhost; Port = 3306; Uid = root; Pwd =100100; Database = scada_license";
                 using (MySqlConnection conn = new MySqlConnection(conStr))
                 {
                     conn.Open();
                     using (MySqlCommand cmd = new MySqlCommand())
                     {
                         cmd.Connection = conn;
-                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandType = CommandType.Text;
                         cmd.CommandText = $"call proc_license_authenticate('{serialKey}', '{product}', '{computerId}')";
                         using (MySqlDataAdapter adp = new MySqlDataAdapter(cmd))
                         {
@@ -36,13 +36,14 @@ namespace EasyScadaLicenseService.Controllers
                                 result.LicenseType = dt.Rows[0]["LicenseType"].ToString();
                                 result.ActiveTime = dt.Rows[0]["ActiveTime"].ToString();
                                 result.Activated = dt.Rows[0]["Activated"].ToString();
+                                result.LimitTagCount = dt.Rows[0]["LimitTagCount"].ToString();
                             }
                         }
                     }
                 }
             }
             catch { }
-            return JsonConvert.SerializeObject(result);
+            return result.LimitTagCount;
         }
     }
 
@@ -54,5 +55,6 @@ namespace EasyScadaLicenseService.Controllers
         public string LicenseType { get; set; }
         public string ActiveTime { get; set; }
         public string Activated { get; set; }
+        public string LimitTagCount { get; set; }
     }
 }

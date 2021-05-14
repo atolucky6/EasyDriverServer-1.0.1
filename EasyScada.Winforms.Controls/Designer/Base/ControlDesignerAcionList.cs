@@ -64,6 +64,11 @@ namespace EasyScada.Winforms.Controls
                 actionItems.Add(new DesignerActionMethodItem(this, "SelectTag", "Select tag...", DesignerCategory.EASYSCADA, "Click here to select tag", true));
             }
 
+            if (BaseControl is IAuthorizeControl)
+            {
+                actionItems.Add(new DesignerActionPropertyItem("Role", "Role", DesignerCategory.EASYSCADA, ""));
+            }
+
             AddExtendActionItems();
             return actionItems;
         }
@@ -215,6 +220,21 @@ namespace EasyScada.Winforms.Controls
             }
         }
 
+        [Browsable(true), TypeConverter(typeof(RoleConverter)), Category(DesignerCategory.EASYSCADA)]
+        public virtual string Role
+        {
+            get
+            {
+                if (BaseControl is IAuthorizeControl)
+                    return (BaseControl as IAuthorizeControl).Role;
+                return null;
+            }
+            set
+            {
+                if (BaseControl is IAuthorizeControl)
+                    (BaseControl as IAuthorizeControl).SetValue(value);
+            }
+        }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public virtual WriteTagCommandCollection WriteTagCommands
@@ -244,6 +264,7 @@ namespace EasyScada.Winforms.Controls
                 if (BaseControl is ISupportTag supportTag)
                     BaseControl.SetValue(form.SelectedTagPath, nameof(TagPath));
                 designerActionUIservice.Refresh(Component);
+                BaseControl.SetValue(BaseControl.Enabled, "Enabled");
             }
         }
 

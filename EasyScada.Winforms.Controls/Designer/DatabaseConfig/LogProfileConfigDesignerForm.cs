@@ -14,7 +14,7 @@ namespace EasyScada.Winforms.Controls
     public partial class LogProfileConfigDesignerForm : EasyForm
     {
         #region Constructors
-        public LogProfileConfigDesignerForm()
+        public LogProfileConfigDesignerForm(bool canAdd = true, bool canRemove = true)
         {
             InitializeComponent();
             btnAdd.Click += BtnAdd_Click;
@@ -40,6 +40,9 @@ namespace EasyScada.Winforms.Controls
 
             foreach (var item in Enum.GetValues(typeof(Core.DbType)))
                 cobDatabaseType.Items.Add(item.ToString());
+
+            btnAdd.Visible = canAdd;
+            btnRemove.Visible = canRemove;
         }
         #endregion
 

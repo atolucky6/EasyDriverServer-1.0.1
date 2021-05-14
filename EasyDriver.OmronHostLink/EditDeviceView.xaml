@@ -22,7 +22,6 @@
             <Setter Property="LabelPosition" Value="Top" />
             <Setter Property="ElementSpace" Value="4" />
             <Setter Property="AddColonToLabel" Value="True" />
-            <Setter Property="Foreground" Value="#F1FA88" />
         </Style>
         <Style TargetType="dxlc:LayoutGroup">
             <Setter Property="ItemSpace" Value="8" />
@@ -54,7 +53,7 @@
                                 <DataTemplate>
                                     <TextBlock
                                         FontWeight="Bold"
-                                        Foreground="#FF79C6"
+                         
                                         Text="{Binding}" />
                                 </DataTemplate>
                             </dxdo:LayoutGroup.CaptionTemplate>
@@ -62,13 +61,13 @@
                                 <dxlc:LayoutControl>
                                     <dxlc:LayoutGroup ItemLabelsAlignment="Local" Orientation="Vertical">
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Name">
-                                            <dxe:TextEdit x:Name="txbName" />
+                                            <dxe:TextEdit x:Name="txbName" Height="30"/>
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutGroup>
                                             <dxlc:LayoutItem AddColonToLabel="True" Label="Unit No">
                                                 <dxe:SpinEdit
                                                     x:Name="spnUnitNo"
-                                                    AllowDefaultButton="False"
+                                                    AllowDefaultButton="False" Height="30"
                                                     Mask="d"
                                                     MaskUseAsDisplayFormat="True"
                                                     MaxValue="255"
@@ -78,7 +77,7 @@
                                             <dxlc:LayoutItem AddColonToLabel="True" Label="Timeout (ms)">
                                                 <dxe:SpinEdit
                                                     x:Name="spnTimeout"
-                                                    AllowDefaultButton="False"
+                                                    AllowDefaultButton="False" Height="30"
                                                     Mask="d"
                                                     MaskUseAsDisplayFormat="True"
                                                     MaxValue="1000000"
@@ -91,7 +90,7 @@
                                             <dxlc:LayoutItem AddColonToLabel="True" Label="Try Read/Write Before Fail">
                                                 <dxe:SpinEdit
                                                     x:Name="spnTryReadWrite"
-                                                    AllowDefaultButton="False"
+                                                    AllowDefaultButton="False" Height="30"
                                                     Mask="d"
                                                     MaskUseAsDisplayFormat="True"
                                                     MaxValue="10"
@@ -100,7 +99,7 @@
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem AddColonToLabel="True" Label="Byte Order">
                                                 <dxe:ComboBoxEdit
-                                                    x:Name="cobByteOrder"
+                                                    x:Name="cobByteOrder" Height="30"
                                                     AllowNullInput="False"
                                                     DisplayTextConverter="{StaticResource ByteOrderDisplayConverter}"
                                                     IsTextEditable="False"
@@ -123,7 +122,7 @@
                             <DataTemplate>
                                 <TextBlock
                                     FontWeight="Bold"
-                                    Foreground="#FF79C6"
+                      
                                     Text="{Binding}" />
                             </DataTemplate>
                         </dxdo:LayoutGroup.CaptionTemplate>
@@ -140,13 +139,13 @@
                             <dx:SimpleButton
                                 x:Name="btnOk"
                                 Content="Ok"
-                                Foreground="#50FA7B" />
+                                Height="30" />
                         </dxdo:LayoutControlItem>
                         <dxdo:LayoutControlItem ItemWidth="70">
                             <dx:SimpleButton
                                 x:Name="btnCancel"
                                 Content="Cancel"
-                                Foreground="#FF5555" />
+                                Height="30" />
                         </dxdo:LayoutControlItem>
                     </dxdo:LayoutGroup>
                 </dxdo:LayoutGroup>

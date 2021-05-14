@@ -1,16 +1,19 @@
 ﻿<Window
-    x:Class="TestWpfApp.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:TestWpfApp"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Controls="clr-namespace:EasyScada.Wpf.Controls;assembly=EasyScada.Wpf.Controls"
+    xmlns:Connector="clr-namespace:EasyScada.Wpf.Connector;assembly=EasyScada.Wpf.Connector"
+    x:Class="TestWpfApp.MainWindow"
     Title="MainWindow"
     Width="800"
     Height="450"
     mc:Ignorable="d">
     <Grid>
-        <local:TestLabel />
-
+        <Controls:EasyLabel x:Name="easyLabel" Content="EasyLabel" HorizontalAlignment="Left" Margin="435,177,0,0" VerticalAlignment="Top"/>
+        <Connector:UserControl1 HorizontalAlignment="Left" Height="100" Margin="482,291,0,0" VerticalAlignment="Top" Width="100"/>
+        <Connector:EasyDriverConnector HorizontalAlignment="Left" Height="276" Margin="135,119,0,0" VerticalAlignment="Top" Width="249"/>
     </Grid>
 </Window>

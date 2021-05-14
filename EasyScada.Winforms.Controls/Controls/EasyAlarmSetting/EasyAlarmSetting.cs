@@ -11,15 +11,18 @@ using EasyScada.Core;
 using System.IO.Ports;
 using Newtonsoft.Json;
 using System.IO;
+using System.Data.Common;
 
 namespace EasyScada.Winforms.Controls
 {
     [Designer(typeof(EasyAlarmSettingDesigner))]
-    public partial class EasyAlarmSetting : UserControl
+    public partial class EasyAlarmSetting : UserControl, IAuthorizeControl, ISupportInitialize
     {
         #region Constructors
         public EasyAlarmSetting()
         {
+            _database = new LogProfile();
+            _database.Enabled = false;
             InitializeComponent();
             if (!DesignMode)
             {
@@ -32,17 +35,18 @@ namespace EasyScada.Winforms.Controls
                 }
                 if (!DesignMode)
                 {
-                    InitializeAlarmSetting(null);
+                    InitializeAlarmSetting(null, _database);
                 }
             }
         }
 
-        public EasyAlarmSetting(IServiceProvider serviceProvider = null)
+        public EasyAlarmSetting(IServiceProvider serviceProvider, LogProfile profile)
         {
+            _database = profile;
             this.serviceProvider = serviceProvider;
             InitializeComponent();
             InitializeEvents();
-            InitializeAlarmSetting(serviceProvider);
+            InitializeAlarmSetting(serviceProvider, profile);
             cobComport.Items.Clear();
             for (int i = 1; i <= 100; i++)
             {
@@ -54,6 +58,7 @@ namespace EasyScada.Winforms.Controls
 
         #region Fields
         private IServiceProvider serviceProvider;
+        private LogProfile _database;
         private AlarmSetting alarmSetting;
         private BindingList<EmailSetting> emailSettings;
         private BindingList<SMSSetting> smsSettings;
@@ -65,6 +70,15 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Public properties
+
+        [Browsable(true)]
+        [Category("Easy Scada"), TypeConverter(typeof(ExpandableObjectConverter))]
+        public LogProfile Database
+        {
+            get => _database;
+            set => _database = value;
+        }
+
         public AlarmClass SelectedAlarmClass
         {
             get
@@ -157,6 +171,31 @@ namespace EasyScada.Winforms.Controls
         }
 
         public bool IsChanged { get; private set; }
+        #endregion
+
+        #region IAuthorizeControl
+        [Browsable(true), TypeConverter(typeof(RoleConverter)), Category(DesignerCategory.EASYSCADA)]
+        public string Role { get; set; }
+
+        [Browsable(false)]
+        public bool IsAuthenticated { get; protected set; }
+        #endregion
+
+        #region ISupportInitialize
+        public void BeginInit()
+        {
+        }
+
+        public void EndInit()
+        {
+            if (!DesignMode)
+            {
+                AuthenticateHelper.Logouted += (s, e) =>
+                {
+                    IsAuthenticated = false;
+                };
+            }
+        }
         #endregion
 
         #region Methods
@@ -295,22 +334,18 @@ namespace EasyScada.Winforms.Controls
             }
         }
 
-        public void InitializeAlarmSetting(IServiceProvider serviceProvider)
+        public void InitializeAlarmSetting(IServiceProvider serviceProvider, LogProfile profile)
         {
+            this._database = profile;
             this.serviceProvider = serviceProvider;
             AlarmSetting alarmSetting = new AlarmSetting();
             this.alarmSetting = alarmSetting;
             InitializeMembers();
 
-            try
+            if (profile != null && profile.Enabled)
             {
-                string applicationPath = DesignerHelper.GetApplicationOutputPath(serviceProvider);
-                string alarmSettingPath = applicationPath + "\\AlarmSetting.json";
-                if (File.Exists(alarmSettingPath))
-                {
-                    LoadAlarmSetting(alarmSettingPath);
-                }
-                else
+                AlarmSetting alarmSetting2 = DesignerHelper.GetServerAlarmSetting(profile);
+                if (alarmSetting2 == null)
                 {
                     emailSettings.Add(new EmailSetting() { ReadOnly = true, Enabled = true, Name = "Default" });
                     smsSettings.Add(new SMSSetting() { ReadOnly = true, Enabled = true, Name = "Default" });
@@ -319,8 +354,35 @@ namespace EasyScada.Winforms.Controls
                     alarmClasses.Add(new AlarmClass() { ReadOnly = true, Enabled = true, Name = "Systems" });
                     alarmGroups.Add(new AlarmGroup() { ReadOnly = true, Enabled = true, Name = "Default" });
                 }
+                else
+                {
+                    LoadAlarmSetting(alarmSetting2);
+                }
             }
-            catch { }
+            else
+            {
+                try
+                {
+                    string applicationPath = DesignerHelper.GetApplicationOutputPath(serviceProvider);
+                    string alarmSettingPath = applicationPath + "\\AlarmSetting.json";
+                    if (File.Exists(alarmSettingPath))
+                    {
+                        string jsonRes = File.ReadAllText(alarmSettingPath);
+                        AlarmSetting alarmSetting2 = JsonConvert.DeserializeObject<AlarmSetting>(jsonRes);
+                        LoadAlarmSetting(alarmSetting2);
+                    }
+                    else
+                    {
+                        emailSettings.Add(new EmailSetting() { ReadOnly = true, Enabled = true, Name = "Default" });
+                        smsSettings.Add(new SMSSetting() { ReadOnly = true, Enabled = true, Name = "Default" });
+                        alarmClasses.Add(new AlarmClass() { ReadOnly = true, Enabled = true, Name = "Errors" });
+                        alarmClasses.Add(new AlarmClass() { ReadOnly = true, Enabled = true, Name = "Warnings", BackColorIncoming = "#FF7C4D" });
+                        alarmClasses.Add(new AlarmClass() { ReadOnly = true, Enabled = true, Name = "Systems" });
+                        alarmGroups.Add(new AlarmGroup() { ReadOnly = true, Enabled = true, Name = "Default" });
+                    }
+                }
+                catch { }
+            }
 
             DisplayItem(SelectedAlarmClass);
             DisplayItem(SelectedAlarmGroup);
@@ -1070,7 +1132,9 @@ namespace EasyScada.Winforms.Controls
                 openFileDialog1.Title = "Import";
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    LoadAlarmSetting(openFileDialog1.FileName);
+                    string jsonRes = File.ReadAllText(openFileDialog1.FileName);
+                    AlarmSetting alarmSetting = JsonConvert.DeserializeObject<AlarmSetting>(jsonRes);
+                    LoadAlarmSetting(alarmSetting);
                     IsChanged = true;
                 }
             }
@@ -1943,10 +2007,8 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Methods
-        private void LoadAlarmSetting(string alarmSettingPath)
+        private void LoadAlarmSetting(AlarmSetting alarmSetting)
         {
-            string jsonRes = File.ReadAllText(alarmSettingPath);
-            AlarmSetting alarmSetting = JsonConvert.DeserializeObject<AlarmSetting>(jsonRes);
             if (alarmSetting != null)
             {
                 alarmSetting.Enabled = alarmSetting.Enabled;
@@ -2023,7 +2085,7 @@ namespace EasyScada.Winforms.Controls
             }
             else
             {
-                MessageBox.Show($"Can't load alarm setting at '{alarmSettingPath}'", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Can't load alarm setting", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -2031,12 +2093,63 @@ namespace EasyScada.Winforms.Controls
         {
             try
             {
-                string applicationPath = DesignerHelper.GetApplicationOutputPath(serviceProvider);
-                string alarmSettingPath = applicationPath + "\\AlarmSetting.json";
-                string alarmSettingJson = JsonConvert.SerializeObject(alarmSetting, Formatting.Indented);
-                File.WriteAllText(alarmSettingPath, alarmSettingJson);
-                MessageBox.Show("Save successfully!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                IsChanged = false;
+                if (!DesignMode)
+                {
+                    if (!IsAuthenticated)
+                    {
+                        if (!AuthenticateHelper.Authenticate(Role))
+                        {
+                            AuthenticateForm form = new AuthenticateForm();
+                            if (form.ShowDialog() != DialogResult.OK)
+                                return;
+                        }
+                        IsAuthenticated = true;
+                    }
+                }
+                else
+                {
+                    IsAuthenticated = true;
+                }
+
+                if (IsAuthenticated)
+                {
+                    string applicationPath = DesignerHelper.GetApplicationOutputPath(serviceProvider);
+                    string alarmSettingPath = applicationPath + "\\AlarmSetting.json";
+                    string alarmSettingJson = JsonConvert.SerializeObject(alarmSetting, Formatting.Indented);
+                    File.WriteAllText(alarmSettingPath, alarmSettingJson);
+
+                    if (_database != null && _database.Enabled)
+                    {
+                        _database.GetCommand(out DbConnection conn, out DbCommand cmd, true);
+                        conn.Open();
+
+                        string createTableQuery = $"CREATE TABLE IF NOT EXISTS `{_database.TableName}` (`Id` int(11) NOT NULL, `Value` longtext, PRIMARY KEY(`Id`));";
+                        cmd.CommandText = createTableQuery;
+                        cmd.CommandType = CommandType.Text;
+                        int createResult = cmd.ExecuteNonQuery();
+
+                        string updateQuery = $"UPDATE `{_database.TableName}` SET `Value`='{alarmSettingJson}' WHERE `Id`='1';";
+                        cmd.CommandText = updateQuery;
+                        int updateRes = cmd.ExecuteNonQuery();
+                        if (updateRes <= 0)
+                        {
+                            string insertQuery = $"INSERT INTO `{_database.TableName}` (`Id`, `Value`) VALUES ('1', '{alarmSettingJson}');";
+                            cmd.CommandText = insertQuery;
+                            cmd.ExecuteNonQuery();
+                            MessageBox.Show("Save successfully!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+
+                        conn.Close();
+                        cmd.Dispose();
+                        conn.Dispose();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Save successfully!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    IsChanged = false;
+                }
             }
             catch (Exception ex)
             {

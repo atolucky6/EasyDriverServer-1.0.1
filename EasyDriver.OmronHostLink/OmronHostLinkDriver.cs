@@ -6,13 +6,14 @@ using EasyDriverPlugin;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Concurrent;
 
 namespace EasyDriver.OmronHostLink
 {
     /// <summary>
     /// Driver thực hiện việc đọc ghi giá trị
     /// </summary>
-    public class OmronHostLinkDriver : IEasyDriverPlugin
+    public class OmronHostLinkDriver : EasyDriverPluginBase
     {
         #region Static
 
@@ -33,6 +34,8 @@ namespace EasyDriver.OmronHostLink
                 new DInt() { Name = "Long" },
                 new Real() { Name = "Float" },
                 new LReal { Name = "Double" },
+                new BCD(),
+                new LBCD(),
                 new EasyDriverPlugin.Char(),
             };
         }
@@ -46,18 +49,27 @@ namespace EasyDriver.OmronHostLink
             hostLink = new OmronHostLinkSerial();
             DeviceToReadBlockSettings = new Dictionary<IDeviceCore, List<ReadBlockSetting>>();
             DeviceToReadBlockString = new Dictionary<IDeviceCore, List<string>>();
-            semaphore = new SemaphoreSlim(1, 1);
             stopwatch = new Stopwatch();
+            DefaultPiorityWriteCommands = new ConcurrentDictionary<WriteCommand, WriteCommand>();
+            WriteQueue.Enqueued += OnWriteQueueAdded;
+       
         }
 
         #endregion
 
         #region Members
 
+        public ConcurrentDictionary<WriteCommand, WriteCommand> DefaultPiorityWriteCommands { get; set; }
         public Dictionary<IDeviceCore, List<ReadBlockSetting>> DeviceToReadBlockSettings { get; set; }
         public Dictionary<IDeviceCore, List<string>> DeviceToReadBlockString { get; set; }
         public IChannelCore Channel { get; set; }
         public bool IsDisposed { get; private set; }
+
+        public override List<IDataType> SupportDataTypes
+        {
+            get => supportDataTypes;
+            protected set => base.SupportDataTypes = value;
+        }
 
         public int ScanRate
         {
@@ -99,7 +111,7 @@ namespace EasyDriver.OmronHostLink
 
         readonly OmronHostLinkSerial hostLink;
         private Task refreshTask;
-        readonly SemaphoreSlim semaphore;
+        readonly object locker = new object();
         readonly Stopwatch stopwatch;
 
         public event EventHandler Disposed;
@@ -109,22 +121,24 @@ namespace EasyDriver.OmronHostLink
 
         #region Methods
 
-        public bool Connect()
+        public override bool Start(IChannelCore channel)
         {
+            Channel = channel;
             if (Channel.ParameterContainer.Parameters.Count < 5)
                 return false;
-            semaphore.Wait();
-            try
+            lock (locker)
             {
-                InitializeSerialPort();
-                return hostLink.Open();
-            }
-            catch { return false; }
-            finally
-            {
-                semaphore.Release();
-                if (refreshTask == null)
-                    refreshTask = Task.Factory.StartNew(Refresh, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                try
+                {
+                    InitializeSerialPort();
+                    return hostLink.Open();
+                }
+                catch { return false; }
+                finally
+                {
+                    if (refreshTask == null)
+                        refreshTask = Task.Factory.StartNew(Refresh, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                }
             }
         }
 
@@ -205,14 +219,16 @@ namespace EasyDriver.OmronHostLink
                             {
                                 block.ReadResult = false;
                                 int readCount = 0;
-                                semaphore.Wait();
                                 try
                                 {
                                     while (!block.ReadResult)
                                     {
                                         try
                                         {
-                                            block.ReadResult = hostLink.Read(unitNo, Extensions.GetReadCommand(block.AddressType), block.StartAddress, block.Count, ref block.ByteBuffer);
+                                            lock (locker)
+                                            {
+                                                block.ReadResult = hostLink.Read(unitNo, Extensions.GetReadCommand(block.AddressType), block.StartAddress, block.Count, ref block.ByteBuffer);
+                                            }
                                         }
                                         finally { Thread.Sleep(DelayBetweenPool); }
                                         readCount++;
@@ -220,7 +236,7 @@ namespace EasyDriver.OmronHostLink
                                             break;
                                     }
                                 }
-                                finally { semaphore.Release(); }
+                                catch { }
                             }
 
                             #endregion
@@ -231,22 +247,22 @@ namespace EasyDriver.OmronHostLink
                                     continue;
 
                                 if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
-                                    tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+                                    tag.ParameterContainer.SetValue("LastAddress", tag.Address);
 
                                 if (!tag.ParameterContainer.Parameters.ContainsKey("AddressType") ||
                                     tag.Address != tag.ParameterContainer.Parameters["LastAddress"].ToString())
                                 {
                                     if (tag.Address.DecomposeAddress(out AddressType addressType, out ushort wordOffset, out ushort bitOffset))
                                     {
-                                        tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
-                                        tag.ParameterContainer.Parameters["WordOffset"] = wordOffset.ToString();
-                                        tag.ParameterContainer.Parameters["BitOffset"] = bitOffset.ToString();
-                                        tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
-                                        tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+                                        tag.ParameterContainer.SetValue("AddressType", addressType.ToString());
+                                        tag.ParameterContainer.SetValue("WordOffset", wordOffset.ToString());
+                                        tag.ParameterContainer.SetValue("BitOffset", bitOffset.ToString());
+                                        tag.ParameterContainer.SetValue("IsValid", bool.TrueString);
+                                        tag.ParameterContainer.SetValue("LastAddress", tag.Address);
                                     }
                                     else
                                     {
-                                        tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
+                                        tag.ParameterContainer.SetValue("IsValid", bool.FalseString);
                                     }
                                 }
 
@@ -266,13 +282,13 @@ namespace EasyDriver.OmronHostLink
                                                         ushort.TryParse(tag.ParameterContainer.Parameters["BitOffset"], out ushort bitOffset))
                                                     {
                                                         if (block.CheckTagIsInReadBlockRange(
-                                                        tag,
-                                                        block.AddressType,
-                                                        wordOffset,
-                                                        bitOffset,
-                                                        tag.DataType.RequireByteLength,
-                                                        out int byteIndex,
-                                                        out int bitIndex))
+                                                            tag,
+                                                            block.AddressType,
+                                                            wordOffset,
+                                                            bitOffset,
+                                                            tag.DataType.RequireByteLength,
+                                                            out int byteIndex,
+                                                            out int bitIndex))
                                                         {
                                                             containInBlock = true;
                                                             readSuccess = block.ReadResult;
@@ -319,23 +335,25 @@ namespace EasyDriver.OmronHostLink
                                             if (wordLen == 0)
                                                 wordLen++;
                                             byte[] buffer = new byte[wordLen * 2];
-                                            semaphore.Wait();
                                             try
                                             {
                                                 if (Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
                                                 {
                                                     if (ushort.TryParse(tag.ParameterContainer.Parameters["WordOffset"], out ushort wordOffset))
                                                     {
-                                                        readSuccess = hostLink.Read(
+                                                        lock (locker)
+                                                        {
+                                                            readSuccess = hostLink.Read(
                                                             unitNo,
                                                             Extensions.GetReadCommand(addressType),
                                                             wordOffset,
                                                             wordLen,
                                                             ref buffer);
+                                                        }
                                                     }
                                                 }
                                             }
-                                            finally { Thread.Sleep(DelayBetweenPool); semaphore.Release(); }
+                                            finally { Thread.Sleep(DelayBetweenPool);  }
                                             if (readSuccess)
                                             {
                                                 int byteIndex = 0;
@@ -416,24 +434,55 @@ namespace EasyDriver.OmronHostLink
             }
 
             Disposed?.Invoke(this, EventArgs.Empty);
-            Disconnect();
+            Stop();
             hostLink.Dispose();
         }
 
-        public bool Disconnect()
+        public override bool Stop()
         {
             try
             {
-                semaphore.Wait();
-                return hostLink.Close();
+                lock (locker)
+                {
+                    return hostLink.Close();
+                }
             }
             catch { return false; }
-            finally { semaphore.Release(); }
         }
 
-        public IEnumerable<IDataType> GetSupportDataTypes()
+        public byte[] Read(ITagCore tag, byte unitNo)
         {
-            return supportDataTypes;
+            bool readSuccess = false;
+            ushort wordLen = (ushort)(tag.DataType.RequireByteLength / 2);
+            if (wordLen == 0)
+                wordLen++;
+            byte[] buffer = new byte[wordLen * 2];
+            try
+            {
+                if (Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
+                {
+                    if (ushort.TryParse(tag.ParameterContainer.Parameters["WordOffset"], out ushort wordOffset))
+                    {
+                        lock (locker)
+                        {
+                            readSuccess = hostLink.Read(
+                              unitNo,
+                              Extensions.GetReadCommand(addressType),
+                              wordOffset,
+                              wordLen,
+                              ref buffer);
+                        }
+                    }
+                }
+            }
+            catch { }
+            if (readSuccess)
+            {
+                return buffer;
+            }
+            else
+                return null;
+
         }
 
         public Quality Write(ITagCore tag, string value)
@@ -448,20 +497,23 @@ namespace EasyDriver.OmronHostLink
                     {
                         // Lấy thông tin của địa chỉ Tag như kiểu địa chỉ và vị trí bắt đầu của thanh ghi
                         if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
-                            tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+                            tag.ParameterContainer.SetValue("LastAddress", tag.Address);
 
                         if (!tag.ParameterContainer.Parameters.ContainsKey("AddressType") ||
                             tag.Address != tag.ParameterContainer.Parameters["LastAddress"].ToString())
                         {
                             if (tag.Address.DecomposeAddress(out AddressType addressType, out ushort wordOffset, out ushort bitOffset))
                             {
-                                tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
-                                tag.ParameterContainer.Parameters["WordOffset"] = wordOffset.ToString();
-                                tag.ParameterContainer.Parameters["BitOffset"] = bitOffset.ToString();
-                                tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
-                                tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+                                tag.ParameterContainer.SetValue("AddressType", addressType.ToString());
+                                tag.ParameterContainer.SetValue("WordOffset", wordOffset.ToString());
+                                tag.ParameterContainer.SetValue("BitOffset", bitOffset.ToString());
+                                tag.ParameterContainer.SetValue("IsValid", bool.TrueString);
+                                tag.ParameterContainer.SetValue("LastAddress", tag.Address);
                             }
-                            tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
+                            else
+                            {
+                                tag.ParameterContainer.SetValue("IsValid", bool.FalseString);
+                            }
                         }
 
                         if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString)
@@ -486,37 +538,122 @@ namespace EasyDriver.OmronHostLink
                                 {
                                     // Khởi tạo biến thể hiện kết quả của việc ghi
                                     bool writeResult = false;
+                                    // Write word
                                     if ((tag.DataType.BitLength != 1))
                                     {
-                                        semaphore.Wait();
-                                        try
+                                        lock (locker)
                                         {
-                                            // Lặp việc ghi cho đến khi thành công hoặc đã vượt quá số lần cho phép ghi
-                                            for (int i = 0; i < maxTryTimes; i++)
+                                            try
                                             {
-                                                byte[] buffer = new byte[tag.DataType.RequireByteLength];
-                                                tag.DataType.TryParseToByteArray(value, tag.Gain, tag.Offset, out buffer, byteOrder);
-                                                if (!Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
-                                                    break;
+                                                // Lặp việc ghi cho đến khi thành công hoặc đã vượt quá số lần cho phép ghi
+                                                for (int i = 0; i < maxTryTimes; i++)
+                                                {
+                                                    byte[] buffer = new byte[tag.DataType.RequireByteLength];
+                                                    tag.DataType.TryParseToByteArray(value, tag.Gain, tag.Offset, out buffer, byteOrder);
+                                                    if (!Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
+                                                        break;
 
-                                                WriteCommand writeCommand = Extensions.GetWriteCommand(addressType);
+                                                    WriteCommandCode writeCommand = Extensions.GetWriteCommand(addressType);
+                                                    try
+                                                    {
+                                                        if (ushort.TryParse(tag.ParameterContainer.Parameters["WordOffset"], out ushort writeValue))
+                                                        {
+                                                            writeResult = hostLink.Write(
+                                                            unitNo,
+                                                            writeCommand,
+                                                            writeValue,
+                                                            buffer);
+                                                        }
+                                                    }
+                                                    finally { Thread.Sleep(DelayBetweenPool); }
+                                                    if (writeResult) // Nếu ghi thành công thì thoát khỏi vòng lặp
+                                                        break;
+                                                }
+                                            }
+                                            catch { }
+                                        }
+                                    }
+                                    // Write bit
+                                    else
+                                    {
+                                        byte[] readBuffer = Read(tag, unitNo);
+
+                                        if (readBuffer != null)
+                                        {
+                                            if (!Enum.TryParse(tag.ParameterContainer.Parameters["AddressType"], out AddressType addressType))
+                                                return Quality.Bad;
+
+                                            lock (locker)
+                                            {
                                                 try
                                                 {
-                                                    if (ushort.TryParse(tag.ParameterContainer.Parameters["WordOffset"], out ushort writeValue))
+                                                    if (tag.Quality == Quality.Good)
                                                     {
-                                                        writeResult = hostLink.Write(
-                                                        unitNo,
-                                                        writeCommand,
-                                                        writeValue,
-                                                        buffer);
+                                                        bool bitValue = false;
+                                                        if (value == "1")
+                                                            bitValue = true;
+                                                        else if (value == "0")
+                                                            bitValue = false;
+                                                        else
+                                                            return Quality.Bad;
+
+                                                        // Lặp việc ghi cho đến khi thành công hoặc đã vượt quá số lần cho phép ghi
+                                                        for (int i = 0; i < maxTryTimes; i++)
+                                                        {
+                                                            if (int.TryParse(tag.ParameterContainer.Parameters["BitOffset"], out int bitOffset))
+                                                            {
+                                                                int byteIndex = 0;
+                                                                int.TryParse(tag.ParameterContainer.Parameters["BitOffset"], out int bitIndex);
+                                                                if (bitIndex / 8 == 1)
+                                                                {
+                                                                    byteIndex++;
+                                                                    bitIndex = bitIndex - 8;
+                                                                }
+
+                                                                if (tag.DataType.BitLength == 1)
+                                                                {
+                                                                    switch (byteOrder)
+                                                                    {
+                                                                        case ByteOrder.ABCD:
+                                                                        case ByteOrder.CDAB:
+                                                                            if (byteIndex == 1)
+                                                                                byteIndex = 0;
+                                                                            else
+                                                                                byteIndex = 1;
+                                                                            break;
+                                                                        case ByteOrder.BADC:
+                                                                        case ByteOrder.DCBA:
+                                                                            break;
+                                                                        default:
+                                                                            break;
+                                                                    }
+                                                                }
+
+                                                                ByteHelper.SetBitAt(ref readBuffer, byteIndex, bitIndex, bitValue);
+
+                                                                try
+                                                                {
+                                                                    if (ushort.TryParse(tag.ParameterContainer.Parameters["WordOffset"], out ushort writeValue))
+                                                                    {
+                                                                        WriteCommandCode writeCommand = Extensions.GetWriteCommand(addressType);
+                                                                        writeResult = hostLink.Write(
+                                                                            unitNo,
+                                                                            writeCommand,
+                                                                            writeValue,
+                                                                            readBuffer);
+                                                                    }
+                                                                }
+                                                                finally { Thread.Sleep(DelayBetweenPool); }
+                                                                if (writeResult) // Nếu ghi thành công thì thoát khỏi vòng lặp
+                                                                    break;
+                                                            }
+                                                        }
                                                     }
                                                 }
-                                                finally { Thread.Sleep(DelayBetweenPool); }
-                                                if (writeResult) // Nếu ghi thành công thì thoát khỏi vòng lặp
-                                                    break;
+                                                catch { }
                                             }
+
                                         }
-                                        finally { semaphore.Release(); }   
                                     }
 
                                     // Trả về kết quả 'Good' nếu ghi thành công, 'Bad' nếu không thành công
@@ -532,54 +669,158 @@ namespace EasyDriver.OmronHostLink
             return Quality.Bad;
         }
 
-        public void Dispose()
+        private async void OnWriteQueueAdded(object sender, EventArgs e)
+        {
+            WriteCommand cmd = WriteQueue.GetCommand();
+            if (cmd != null)
+            {
+                switch (cmd.WritePiority)
+                {
+                    case WritePiority.Default:
+                        cmd.Expired += OnWriteCommandExpired;
+                        DefaultPiorityWriteCommands.TryAdd(cmd, cmd);
+                        break;
+                    case WritePiority.High:
+                        await Task.Run(() =>
+                        {
+                            WriteResponse response = ExecuteWriteCommand(cmd);
+                            CommandExecutedEventArgs args = new CommandExecutedEventArgs(cmd, response);
+                            cmd.OnExecuted(args);
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void OnWriteCommandExpired(object sender, EventArgs e)
+        {
+            if (sender is WriteCommand cmd)
+            {
+                cmd.Expired -= OnWriteCommandExpired;
+
+                if (DefaultPiorityWriteCommands.ContainsKey(cmd))
+                {
+                    DefaultPiorityWriteCommands.TryRemove(cmd, out WriteCommand removeCmd);
+                }
+            }
+        }
+
+        public WriteResponse ExecuteWriteCommand(WriteCommand cmd)
+        {
+            if (cmd == null)
+            {
+                return new WriteResponse()
+                {
+                    WriteCommand = cmd,
+                    ExecuteTime = DateTime.Now,
+                    Error = "The write command is null."
+                };
+            }
+            else
+            {
+                if (cmd.IsCustomWrite)
+                    return WriteCustom(cmd);
+                else
+                    return WriteTag(cmd);
+            }
+        }
+
+        public WriteResponse WriteCustom(WriteCommand cmd)
+        {
+            WriteResponse response = new WriteResponse()
+            {
+                WriteCommand = cmd,
+                ExecuteTime = DateTime.Now,
+                Error = "Doesn't support write custom yet",
+                IsSuccess = false
+            };
+
+            return response;
+        }
+
+        public WriteResponse WriteTag(WriteCommand cmd)
+        {
+            WriteResponse response = new WriteResponse()
+            {
+                WriteCommand = cmd,
+                ExecuteTime = DateTime.Now
+            };
+
+            Quality quality = Write(cmd.EquivalentTag, cmd.Value);
+            response.IsSuccess = quality == Quality.Good;
+            if (quality == Quality.Bad)
+            {
+                response.Error = "Write not success";
+            }
+
+            if (cmd.NextCommands != null)
+            {
+                if (cmd.NextCommands.Count > 0)
+                {
+                    if (!cmd.AllowExecuteNextCommandsWhenFail ||
+                        cmd.AllowExecuteNextCommandsWhenFail && response.IsSuccess)
+                    {
+                        foreach (var nextCmd in cmd.NextCommands)
+                        {
+                            ExecuteWriteCommand(nextCmd);
+                        }
+                    }
+                }
+            }
+
+            return response;
+        }
+
+        public override void Dispose()
         {
             IsDisposed = true;
         }
 
-        public object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null)
+        public override object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null)
         {
             return new CreateChannelView(this, parent, templateItem);
         }
 
-        public object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
+        public override object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
         {
             return new CreateDeviceView(this, parent, templateItem);
         }
 
-        public object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
+        public override object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
         {
             return new CreateTagView(this, parent, templateItem);
         }
 
-        public object GetEditChannelControl(IChannelCore channel)
+        public override object GetEditChannelControl(IChannelCore channel)
         {
             return new EditChannelView(this, channel);
         }
 
-        public object GetEditDeviceControl(IDeviceCore device)
+        public override object GetEditDeviceControl(IDeviceCore device)
         {
             return new EditDeviceView(this, device);
         }
 
-        public object GetEditTagControl(ITagCore tag)
+        public override object GetEditTagControl(ITagCore tag)
         {
             return new EditTagView(this, tag);
         }
 
-        public IChannelCore ConvertToChannel(IChannelCore baseChannel)
+        public override IChannelCore CreateChannel(IGroupItem parent)
         {
-            return baseChannel;
+            return new ChannelCore(parent);
         }
 
-        public IDeviceCore ConverrtToDevice(IDeviceCore baseDevice)
+        public override IDeviceCore CreateDevice(IGroupItem parent)
         {
-            return baseDevice;
+            return new DeviceCore(parent);
         }
 
-        public ITagCore ConvertToTag(ITagCore tagCore)
+        public override ITagCore CreateTag(IGroupItem parent)
         {
-            return tagCore;
+            return new TagCore(parent);
         }
 
         #endregion

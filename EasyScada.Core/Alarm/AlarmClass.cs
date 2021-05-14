@@ -18,6 +18,10 @@ namespace EasyScada.Core
         [Browsable(false)]
         public bool ReadOnly { get; set; }
 
+        protected Color? _backColorIncomming = null;
+        protected Color? _backColorOutgoing = null;
+        protected Color? _backColorAcknowledged = null;
+
         public AlarmClass()
         {
             IncomingText = "In";
@@ -35,6 +39,57 @@ namespace EasyScada.Core
                 return ColorTranslator.FromHtml(colorString);
             }
             catch { return Color.Transparent; }
+        }
+
+        public Color GetBackColorIncomming()
+        {
+            if (_backColorIncomming.HasValue)
+            {
+                return _backColorIncomming.Value;
+            }
+            else
+            {
+                try
+                {
+                    _backColorIncomming = ColorTranslator.FromHtml(BackColorIncoming); ;
+                }
+                catch { _backColorIncomming = null; }
+            }
+            return Color.Transparent;
+        }
+
+        public Color GetBackColorOutgoing()
+        {
+            if (_backColorOutgoing.HasValue)
+            {
+                return _backColorOutgoing.Value;
+            }
+            else
+            {
+                try
+                {
+                    _backColorOutgoing = ColorTranslator.FromHtml(BackColorOutgoing); ;
+                }
+                catch { _backColorOutgoing = null; }
+            }
+            return Color.Transparent;
+        }
+
+        public Color GetBackColorAcknowledged()
+        {
+            if (_backColorAcknowledged.HasValue)
+            {
+                return _backColorAcknowledged.Value;
+            }
+            else
+            {
+                try
+                {
+                    _backColorAcknowledged = ColorTranslator.FromHtml(BackColorAcknowledged); ;
+                }
+                catch { _backColorAcknowledged = null; }
+            }
+            return Color.Transparent;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace EasyScada.Core
         public DbType DatabaseType { get; set; } = DbType.MySql;
         public string TableName { get; set; } = "table1";
         public string DatabaseName { get; set; } = "easyScada";
-        public string IpAddress { get; set; } = "192.168.1.10";
+        public string IpAddress { get; set; } = "127.0.0.1";
         public ushort Port { get; set; } = 3306;
         public string Username { get; set; } = "root";
         public string Password { get; set; } = "100100";
@@ -74,6 +74,55 @@ namespace EasyScada.Core
                         foreach (LogColumn column in columns)
                         {
                             sb.Append($", `{column.ColumnName?.Replace(" ", "")}` varchar(200)");
+                        }
+                        sb.Append(");");
+                        break;
+                    }
+                case DbType.ODBC:
+                    break;
+                default:
+                    break;
+            }
+            return sb.ToString();
+        }
+
+        public virtual string GetCreateTableQuery(LogColumn[] columns)
+        {
+            if (columns == null)
+                return null;
+            if (columns.Length == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            switch (DatabaseType)
+            {
+                case DbType.MSSQL:
+                    {
+                        sb.AppendLine($"if not exists (select * from sys.objects where object_id = OBJECT_ID(N'[dbo].[{TableName}]') and type in (N'U'))");
+                        sb.AppendLine("BEGIN");
+                        sb.Append($"create table [dbo].[{TableName}] (");
+                        foreach (LogColumn column in columns)
+                        {
+                            sb.Append($", {column.ColumnName?.Replace(" ", "")} NVARCHAR(200)");
+                        }
+                        sb.AppendLine(");");
+                        sb.Append("END");
+                        break;
+                    }
+                case DbType.MySql:
+                    {
+                        sb.Append($"create table if not exists {TableName} (");
+                        int i = 0;
+                        foreach (LogColumn column in columns)
+                        {
+                            if (i > 0)
+                            {
+                                sb.Append($", `{column.ColumnName?.Replace(" ", "")}` varchar(200)");
+                            }
+                            else
+                            {
+                                sb.Append($"`{column.ColumnName?.Replace(" ", "")}` varchar(200)");
+                            }
+                            i++;
                         }
                         sb.Append(");");
                         break;
@@ -199,6 +248,11 @@ namespace EasyScada.Core
                     break;
             }
             return sb.ToString();
+        }
+
+        public virtual string GetSelectColumnNamesQuery()
+        {
+            return string.Empty;
         }
 
         public virtual string GetCreateSchemaQuery()

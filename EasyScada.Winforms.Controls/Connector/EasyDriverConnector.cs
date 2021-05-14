@@ -45,11 +45,53 @@ namespace EasyScada.Winforms.Controls
 
         #region Public members
 
+        [Browsable(true), Category("Easy Scada")]
+        public bool UseMongoDb
+        {
+            get => EasyDriverConnectorCore.UseMongoDb;
+            set => EasyDriverConnectorCore.UseMongoDb = value;
+        }
+
+        [Browsable(true), Category("Easy Scada")]
+        public string MongoDb_ConnectionString
+        {
+            get => EasyDriverConnectorCore.MongoDb_ConnectionString;
+            set => EasyDriverConnectorCore.MongoDb_ConnectionString = value;
+        }
+
+        [Browsable(true), Category("Easy Scada")]
+        public string DatabaseName
+        {
+            get => EasyDriverConnectorCore.DatabaseName;
+            set => EasyDriverConnectorCore.DatabaseName = value;
+        }
+
+        [Browsable(true), Category("Easy Scada")]
+        public string CollectionName
+        {
+            get => EasyDriverConnectorCore.CollectionName;
+            set => EasyDriverConnectorCore.CollectionName = value;
+        }
+
+        [Browsable(true), Category("Easy Scada")]
+        public string StationName
+        {
+            get => EasyDriverConnectorCore.StationName;
+            set => EasyDriverConnectorCore.StationName = value;
+        }
+
+        [Browsable(true), Category("Easy Scada")]
+        public int Timeout
+        {
+            get => EasyDriverConnectorCore.Timeout;
+            set => EasyDriverConnectorCore.Timeout = value;
+        }
+
         [Browsable(false)]
         public bool IsDisposed { get; private set; }
 
         [Description("Set server address for connector")]
-        [Browsable(true), Category("Easy Scada")]
+        [Browsable(false), Category("Easy Scada")]
         public string ServerAddress
         {
             get { return EasyDriverConnectorCore.ServerAddress; }
@@ -57,7 +99,7 @@ namespace EasyScada.Winforms.Controls
         }
 
         [Description("Set port number for connector")]
-        [Browsable(true), Category("Easy Scada")]
+        [Browsable(false), Category("Easy Scada")]
         public ushort Port
         {
             get { return EasyDriverConnectorCore.Port; }
@@ -65,7 +107,7 @@ namespace EasyScada.Winforms.Controls
         }
 
         [Description("Set communication mode for connector")]
-        [Browsable(true), Category("Easy Scada")]
+        [Browsable(false), Category("Easy Scada")]
         public CommunicationMode CommunicationMode
         {
             get { return EasyDriverConnectorCore.CommunicationMode; }
@@ -73,7 +115,7 @@ namespace EasyScada.Winforms.Controls
         }
 
         [Description("Set refresh rate for connector")]
-        [Browsable(true), Category("Easy Scada")]
+        [Browsable(false), Category("Easy Scada")]
         public int RefreshRate
         {
             get { return EasyDriverConnectorCore.RefreshRate; }
@@ -117,6 +159,11 @@ namespace EasyScada.Winforms.Controls
             return EasyDriverConnectorCore.GetTag(pathToTag);
         }
 
+        public WriteResponse WriteTag(WriteCommand cmd)
+        {
+            return EasyDriverConnectorCore.WriteTag(cmd);
+        }
+
         public WriteResponse WriteTag(string pathToTag, string value, WritePiority writePiority)
         {
             return EasyDriverConnectorCore.WriteTag(pathToTag, value, writePiority);
@@ -125,6 +172,10 @@ namespace EasyScada.Winforms.Controls
         public async Task<WriteResponse> WriteTagAsync(string pathToTag, string value, WritePiority writePiority)
         {
             return await EasyDriverConnectorCore.WriteTagAsync(pathToTag, value, writePiority);
+        }
+        public async Task<WriteResponse> WriteTagAsync(WriteCommand cmd)
+        {
+            return await EasyDriverConnectorCore.WriteTagAsync(cmd);
         }
 
         public List<WriteResponse> WriteMultiTag(List<WriteCommand> writeCommands)
@@ -170,6 +221,41 @@ namespace EasyScada.Winforms.Controls
         {
             EasyDriverConnectorCore.Dispose();
             IsDisposed = true;
+        }
+
+        public Task<ConnectionSchema> GetConnectionSchemaAsync(string ipAddress, ushort port)
+        {
+            return EasyDriverConnectorCore.GetConnectionSchemaAsync(ipAddress, port);
+        }
+
+        public Task<ConnectionSchema> GetConnectionSchemaAsync(string url)
+        {
+            return EasyDriverConnectorCore.GetConnectionSchemaAsync(url);
+        }
+
+        public IEnumerable<ITag> GetAllTags()
+        {
+            return EasyDriverConnectorCore.GetAllTags();
+        }
+
+        public IEnumerable<ICoreItem> GetAllChannels()
+        {
+            return EasyDriverConnectorCore.GetAllChannels();
+        }
+
+        public ICoreItem GetChannel(string path)
+        {
+            return EasyDriverConnectorCore.GetChannel(path);
+        }
+
+        public IEnumerable<ICoreItem> GetAllDevices()
+        {
+            return EasyDriverConnectorCore.GetAllDevices();
+        }
+
+        public ICoreItem GetDevice(string path)
+        {
+            return EasyDriverConnectorCore.GetDevice(path);
         }
 
         #endregion

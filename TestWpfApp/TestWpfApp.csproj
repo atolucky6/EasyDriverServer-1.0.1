@@ -117,6 +117,14 @@
       <Project>{BA53E923-5BAD-443C-A8F0-B191EAB9CA25}</Project>
       <Name>EasyScada.Winforms.Controls</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EasyScada.Wpf.Connector\EasyScada.Wpf.Connector.csproj">
+      <Project>{7F693AED-4DFD-4DEA-B342-7B2F676452AE}</Project>
+      <Name>EasyScada.Wpf.Connector</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EasyScada.Wpf.Controls\EasyScada.Wpf.Controls.csproj">
+      <Project>{DF2526DB-E7FB-48BB-B681-7C1191FD30FA}</Project>
+      <Name>EasyScada.Wpf.Controls</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

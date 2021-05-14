@@ -37,6 +37,7 @@ namespace EasyScada.Winforms.Controls
         private LogColumnCollection columns = new LogColumnCollection();
         private ConcurrentQueue<SentEmailMessage> sendEmailQueue = new ConcurrentQueue<SentEmailMessage>();
         private ConcurrentQueue<SentSMSMessage> sendSMSQueue = new ConcurrentQueue<SentSMSMessage>();
+        private LogProfile _alarmSettingDb = new LogProfile();
         private AlarmSetting alarmSetting;
         private Task refreshTask;
         private System.Timers.Timer sentEmailTimer;
@@ -45,6 +46,12 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Properties
+
+
+        [Browsable(true)]
+        [Category("Easy Scada"), TypeConverter(typeof(ExpandableObjectConverter))]
+        public LogProfile AlarmSettingDatabase { get => _alarmSettingDb; set => _alarmSettingDb = value; }
+
         [Browsable(false)]
         [Category("Easy Scada"), TypeConverter(typeof(CollectionEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public LogProfileCollection Databases { get => profiles; }
@@ -65,7 +72,7 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Public methods
-        public DataTable GetTopAlarmData(int limit = 100, string filterState = "")
+        public static DataTable GetTopAlarmData(LogProfileCollection profiles, int limit = 100, string filterState = "")
         {
             DataTable dt = new DataTable();
             try
@@ -104,7 +111,7 @@ namespace EasyScada.Winforms.Controls
             return dt;
         }
 
-        public DataTable GetAlarmData(string query)
+        public static DataTable GetAlarmData(LogProfileCollection profiles, string query)
         {
             DataTable dt = new DataTable();
             try
@@ -126,27 +133,27 @@ namespace EasyScada.Winforms.Controls
             return dt;
         }
 
-        public List<AlarmItem> GetTopAlarmItems(int limit, string filterState = "")
+        public static List<AlarmItem> GetTopAlarmItems(LogProfileCollection profiles, int limit, string filterState = "")
         {
             try
             {
-                return GetTopAlarmData(limit, filterState).ToList<AlarmItem>();
+                return EasyAlarmLogger.GetTopAlarmData(profiles, limit, filterState).ToList<AlarmItem>();
             }
             catch { }
             return new List<AlarmItem>();
         }
 
-        public List<AlarmItem> GetAlarmItems(string query)
+        public static List<AlarmItem> GetAlarmItems(LogProfileCollection profiles, string query)
         {
             try
             {
-                return GetAlarmData(query).ToList<AlarmItem>();
+                return GetAlarmData(profiles, query).ToList<AlarmItem>();
             }
             catch { }
             return new List<AlarmItem>();
         }
 
-        public int AckAlarmItem(string alarmName, string alarmType, DateTime incommingTime)
+        public static int AckAlarmItem(LogProfileCollection profiles, string alarmName, string alarmType, DateTime incommingTime, string comment = null)
         {
             int result = 0;
             try
@@ -160,7 +167,7 @@ namespace EasyScada.Winforms.Controls
                         {
                             profile.GetCommand(out DbConnection conn, out DbCommand cmd);
                             conn.Open();
-                            cmd.CommandText = $"update {profile.TableName} set State = 'Ack', AckTime = '{ackTime}' where Name = '{alarmName}' " +
+                            cmd.CommandText = $"update {profile.TableName} set State = 'Ack', AckTime = '{ackTime}', AckComment = '{comment}' where Name = '{alarmName}' " +
                                 $"and AlarmType = '{alarmType}' and State = 'Out' " +
                                 $"and IncommingTime = '{incommingTime.ToString("yyyy-MM-dd HH:mm:ss")}'";
                             int res = cmd.ExecuteNonQuery();
@@ -175,21 +182,50 @@ namespace EasyScada.Winforms.Controls
             return result;
         }
 
-        public int AckAlarmItem(AlarmItem alarmItem)
+        public static int AckAlarmItem(LogProfileCollection profiles, AlarmItem alarmItem)
         {
             int result = 0;
             try
             {
                 if (alarmItem != null)
                 {
-                    result = AckAlarmItem(alarmItem.Name, alarmItem.AlarmType, alarmItem.IncommingTime);
+                    result = AckAlarmItem(profiles, alarmItem.Name, alarmItem.AlarmType, alarmItem.IncommingTime);
                 }
             }
             catch { }
             return result;
         }
 
-        public int AckAll()
+        public static int ChangeAckComment(LogProfileCollection profiles, string alarmName, string alarmType, DateTime incommingTime, string comment)
+        {
+            int result = 0;
+            try
+            {
+                string ackTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                foreach (LogProfile profile in profiles)
+                {
+                    try
+                    {
+                        if (profile.Enabled)
+                        {
+                            profile.GetCommand(out DbConnection conn, out DbCommand cmd);
+                            conn.Open();
+                            cmd.CommandText = $"update {profile.TableName} set AckComment = '{comment}' where Name = '{alarmName}' " +
+                                $"and AlarmType = '{alarmType}' and State = 'Ack' " +
+                                $"and IncommingTime = '{incommingTime.ToString("yyyy-MM-dd HH:mm:ss")}'";
+                            int res = cmd.ExecuteNonQuery();
+                            if (result < res)
+                                result = res;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return result;
+        }
+
+        public static int AckAll(LogProfileCollection profiles)
         {
             int result = 0;
             try
@@ -204,6 +240,33 @@ namespace EasyScada.Winforms.Controls
                             profile.GetCommand(out DbConnection conn, out DbCommand cmd);
                             conn.Open();
                             cmd.CommandText = $"update {profile.TableName} set State = 'Ack', AckTime = '{ackTime}' where State = 'Out'";
+                            int res = cmd.ExecuteNonQuery();
+                            if (result < res)
+                                result = res;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return result;
+        }
+
+        public static int AckAll(LogProfileCollection profiles, string filterTime, DateTime from, DateTime to, string comment)
+        {
+            int result = 0;
+            try
+            {
+                string ackTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                foreach (LogProfile profile in profiles)
+                {
+                    try
+                    {
+                        if (profile.Enabled)
+                        {   
+                            profile.GetCommand(out DbConnection conn, out DbCommand cmd);
+                            conn.Open();
+                            cmd.CommandText = $"update {profile.TableName} set State = 'Ack', AckComment = '{comment}', AckTime = '{ackTime}' where State = 'Out' and {filterTime} >= '{from.ToString("yyyy-MM-dd HH:mm:ss")}' and {filterTime} <= '{to.ToString("yyyy-MM-dd HH:mm:ss")}'";
                             int res = cmd.ExecuteNonQuery();
                             if (result < res)
                                 result = res;
@@ -241,9 +304,19 @@ namespace EasyScada.Winforms.Controls
                     columns.Add(new LogColumn() { ColumnName = "OutgoingTime" });
                     columns.Add(new LogColumn() { ColumnName = "AckTime" });
                     columns.Add(new LogColumn() { ColumnName = "AlarmType" });
+                    columns.Add(new LogColumn() { ColumnName = "AckComment" });
 
                     Disposed += OnDisposed;
-                    alarmSetting = DesignerHelper.GetAlarmSetting(null);
+
+                    if (_alarmSettingDb.Enabled)
+                    {
+                        alarmSetting = DesignerHelper.GetServerAlarmSetting(_alarmSettingDb);
+                    }
+                    else
+                    {
+                        alarmSetting = DesignerHelper.GetAlarmSetting(null);
+                    }
+
                     if (alarmSetting != null)
                     {
                         alarmSetting.Enabled = enabled;
@@ -444,18 +517,29 @@ namespace EasyScada.Winforms.Controls
                                 {
                                     // Create table if not exists
                                     profile.GetCommand(out DbConnection conn, out DbCommand cmd, out DbDataAdapter adp, true);
-                                    conn.Open();
-                                    cmd.CommandText = profile.GetCreateTableQuery(columns, "IncommingTime");
-                                    int createTableRes = cmd.ExecuteNonQuery();
-                                    createTableResult[profile] = createTableRes;
-                                    // Create table result = 0. It means table already exists
-                                    if (createTableRes == 0)
+                                    try
                                     {
-                                        // We need to check the columns name
-                                        cmd.CommandText = profile.GetSelectQuery(1);
-                                        adp.SelectCommand = cmd;
-                                        DataTable dt = new DataTable();
-                                        adp.Fill(dt);
+                                        conn.Open();
+                                        cmd.CommandText = profile.GetCreateTableQuery(columns, "IncommingTime");
+                                        int createTableRes = cmd.ExecuteNonQuery();
+                                        createTableResult[profile] = createTableRes;
+                                        // Create table result = 0. It means table already exists
+                                        if (createTableRes == 0)
+                                        {
+                                            // We need to check the columns name
+                                            cmd.CommandText = profile.GetSelectQuery(1);
+                                            adp.SelectCommand = cmd;
+                                            DataTable dt = new DataTable();
+                                            adp.Fill(dt);
+                                        }
+                                    }
+                                    catch { }
+                                    finally
+                                    {
+                                        conn.Close();
+                                        cmd.Dispose();
+                                        adp.Dispose();
+                                        conn.Dispose();
                                     }
                                 }
                             }

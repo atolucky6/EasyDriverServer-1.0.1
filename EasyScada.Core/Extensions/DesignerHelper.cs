@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Windows.Forms;
 
@@ -101,6 +103,64 @@ namespace EasyScada.Core
                 return null;
             }
             catch { return null; }
+        }
+
+        public static AlarmSetting GetServerAlarmSetting(LogProfile profile)
+        {
+            if (profile != null && profile.Enabled)
+            {
+                try
+                {
+                    profile.GetCommand(out DbConnection conn, out DbCommand cmd, out DbDataAdapter adp, true);
+                    conn.Open();
+
+                    string selectQuery = $"SELECT * FROM {profile.TableName};";
+                    cmd.CommandType = System.Data.CommandType.Text;
+                    cmd.CommandText = selectQuery;
+
+                    adp.SelectCommand = cmd;
+                    DataTable dt = new DataTable();
+                    adp.Fill(dt);
+
+                    if (dt.Rows.Count > 0 && dt.Columns.Count >= 2)
+                    {
+                        string json = dt.Rows[0][1].ToString();
+                        AlarmSetting alarmSetting = JsonConvert.DeserializeObject<AlarmSetting>(json);
+                        return alarmSetting;
+                    }
+
+                    conn.Close();
+                    conn.Dispose();
+                    cmd.Dispose();
+                    adp.Dispose();
+                }
+                catch { }
+            }
+            return null;
+        }
+
+        public static List<Role> GetRoleSettings(IServiceProvider context)
+        {
+            string applicationPath = GetApplicationOutputPath(context);
+            string roleSettingsPath = applicationPath + "\\Roles.json";
+            try
+            {
+                if (File.Exists(roleSettingsPath))
+                {
+                    List<Role> result = JsonConvert.DeserializeObject<List<Role>>(File.ReadAllText(roleSettingsPath));
+                    return result;
+                }
+                return null;
+            }
+            catch { return null; }
+        }
+
+        public static void SaveRoleSettings(IServiceProvider context, List<Role> roles)
+        {
+            string applicationPath = GetApplicationOutputPath(context);
+            string roleSettingsPath = applicationPath + "\\Roles.json";
+
+            File.WriteAllText(roleSettingsPath, JsonConvert.SerializeObject(roles, Formatting.Indented));
         }
     }
 }

@@ -99,8 +99,11 @@ namespace EasyScada.Winforms.Controls
         {
             //AnimatesDesignerForm form = new AnimatesDesignerForm(BaseControl.Triggers, Component.Site);
             //form.ShowDialog();
+
             AnimateDesignerForm form = new AnimateDesignerForm(BaseControl.Triggers, Component.Site, BaseControl.TagPath);
             form.ShowDialog();
+            designerActionUIservice.Refresh(Component);
+            BaseControl.SetValue(BaseControl.Enabled, "Enabled");
         }
 
         #endregion

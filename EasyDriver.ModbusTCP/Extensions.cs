@@ -67,7 +67,7 @@ namespace EasyDriver.ModbusTCP
 
                                     if (byte.TryParse(splitStr[1], out byte length))
                                     {
-                                        if (length <= 246)
+                                        if (length <= 250)
                                         {
                                             return string.Empty;
                                         }
@@ -102,7 +102,6 @@ namespace EasyDriver.ModbusTCP
             return "The tag address was not in correct format.";
         }
 
-
         public static string IsValidAddress(this string address, AddressType addressType)
         {
             if (!string.IsNullOrWhiteSpace(address))
@@ -121,70 +120,23 @@ namespace EasyDriver.ModbusTCP
             return "The tag address was not in correct format.";
         }
 
-        public static bool DecomposeAddress(this string address, IDataType dataType, out AddressType addressType, out ushort offset, out byte byteLength)
+        public static bool DecomposeAddress(this string address, out AddressType addressType, out ushort offset)
         {
-            addressType = AddressType.InputContact;
-            byteLength = 0;
+            addressType = AddressType.Undefined;
             offset = 0;
             try
             {
                 if (!string.IsNullOrWhiteSpace(address))
                 {
-                    if (dataType == null)
+                    if (uint.TryParse(address, out uint adrNumber))
                     {
-                        if (uint.TryParse(address, out uint adrNumber))
+                        int type = (int)(adrNumber / 100000);
+                        int odd = (int)(adrNumber % 100000) - 1;
+
+                        if (Enum.TryParse(type.ToString(), out addressType) && odd >= 0 && (ushort)odd <= (ushort)0xFFFFU)
                         {
-                            int type = (int)(adrNumber / 100000);
-                            int odd = (int)(adrNumber % 100000) - 1;
-
-                            if (Enum.TryParse(type.ToString(), out addressType) && odd >= 0 && (ushort)odd <= (ushort)0xFFFFU)
-                            {
-                                offset = (ushort)odd;
-                                return true;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (dataType.GetType() == typeof(ModbusTCP.String))
-                        {
-                            string[] splitAddress = address.Split('.');
-                            if (splitAddress.Length == 2)
-                            {
-                                address = splitAddress[0];
-                                if (uint.TryParse(address, out uint adrNumber))
-                                {
-                                    int type = (int)(adrNumber / 100000);
-                                    int odd = (int)(adrNumber % 100000) - 1;
-
-                                    if (Enum.TryParse(type.ToString(), out addressType) && odd >= 0 && (ushort)odd <= (ushort)0xFFFFU)
-                                    {
-                                        offset = (ushort)odd;
-
-                                        if (byte.TryParse(splitAddress[1], out byteLength))
-                                        {
-                                            if (byteLength <= 246)
-                                            {
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (uint.TryParse(address, out uint adrNumber))
-                            {
-                                int type = (int)(adrNumber / 100000);
-                                int odd = (int)(adrNumber % 100000) - 1;
-
-                                if (Enum.TryParse(type.ToString(), out addressType) && odd >= 0 && (ushort)odd <= (ushort)0xFFFFU)
-                                {
-                                    offset = (ushort)odd;
-                                    return true;
-                                }
-                            }
+                            offset = (ushort)odd;
+                            return true;
                         }
                     }
                 }
@@ -192,6 +144,5 @@ namespace EasyDriver.ModbusTCP
             }
             catch { return false; }
         }
-
     }
 }

@@ -61,11 +61,11 @@ namespace EasyScada.Core
                 {
                     if (TargetControl is Control winformControl)
                     {
-                        winformControl.Invoke(new Action(() =>
+                        SetInvoke(winformControl, x =>
                         {
-                            if (!Equals(AnimatePropertyInfo.GetValue(TargetControl), Value))
-                                AnimatePropertyInfo.SetMethod.Invoke(TargetControl, new object[] { Value });
-                        }));
+                            if (!Equals(AnimatePropertyInfo.GetValue(x), Value))
+                                AnimatePropertyInfo.SetMethod.Invoke(x, new object[] { Value });
+                        });
                     }
                     else
                     {
@@ -76,5 +76,21 @@ namespace EasyScada.Core
             catch { }
         }
 
+        public void SetInvoke<T>(T control, Action<T> setAction)
+                 where T : Control
+        {
+            if (control.InvokeRequired)
+            {
+                MethodInvoker methodInvoker = delegate
+                {
+                    setAction(control);
+                };
+                control.Invoke(methodInvoker);
+            }
+            else
+            {
+                setAction(control);
+            }
+        }
     }
 }

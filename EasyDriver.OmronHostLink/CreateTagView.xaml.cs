@@ -38,7 +38,7 @@ namespace EasyDriver.OmronHostLink
             cobPermission.ItemsSource = AccessPermissionSource;
             cobPermission.SelectedItem = AccessPermission.ReadAndWrite;
 
-            DataTypeSource = driver.GetSupportDataTypes().ToList();
+            DataTypeSource = driver.SupportDataTypes;
             cobDataType.ItemsSource = DataTypeSource;
             cobDataType.DisplayMember = "Name";
             cobDataType.SelectedIndex = 0;
@@ -100,13 +100,13 @@ namespace EasyDriver.OmronHostLink
             string validateResult = txbName.Text?.Trim().ValidateFileName("Tag");
             if (!string.IsNullOrWhiteSpace(validateResult))
             {
-                DXMessageBox.Show(validateResult, "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show(validateResult, "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (HaveTagObj.Tags.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
-                DXMessageBox.Show($"The tag name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show($"The tag name '{txbName.Text?.Trim()}' is already in use.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -115,7 +115,7 @@ namespace EasyDriver.OmronHostLink
             string error = address.IsValidAddress(out bool isBitAddress);
             if (!string.IsNullOrEmpty(error))
             {
-                DXMessageBox.Show(error, "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show(error, "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -123,7 +123,7 @@ namespace EasyDriver.OmronHostLink
             {
                 if (cobDataType.SelectedItem != DataTypeSource.FirstOrDefault(x => x.Name == "Bool"))
                 {
-                    DXMessageBox.Show($"The current address only support read and write Bool data type.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    DXMessageBox.Show($"The current address only support read and write Bool data type.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
@@ -131,7 +131,7 @@ namespace EasyDriver.OmronHostLink
             {
                 if (cobDataType.SelectedItem == DataTypeSource.FirstOrDefault(x => x.Name == "Bool"))
                 {
-                    DXMessageBox.Show($"The current address doesn't support read and write Bool data type.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    DXMessageBox.Show($"The current address doesn't support read and write Bool data type.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
@@ -198,7 +198,7 @@ namespace EasyDriver.OmronHostLink
                 number++;
             }
 
-            ((Parent as FrameworkElement).Parent as Window).Tag = createTags;
+            this.Tag = createTags;
             ((Parent as FrameworkElement).Parent as Window).Close();
         }
 

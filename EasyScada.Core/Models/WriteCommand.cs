@@ -28,7 +28,7 @@ namespace EasyScada.Core
             }
         }
 
-        public int Timeout { get; set; } = 30000;
+        public int Timeout { get; set; } = 10000;
 
         [JsonIgnore]
         int delay = 0;

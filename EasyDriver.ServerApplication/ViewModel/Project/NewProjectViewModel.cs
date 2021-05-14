@@ -125,7 +125,7 @@ namespace EasyScada.ServerApplication
                 {
                     //Display the error to user
                     MessageBoxService.ShowMessage(
-                        $"The project with this name '{Name}' is already existed. Please try another name !", "Easy Scada", MessageButton.OK, MessageIcon.Warning);
+                        $"The project with this name '{Name}' is already existed. Please try another name !", "AHD Scada", MessageButton.OK, MessageIcon.Warning);
                     return;
                 }
 
@@ -134,7 +134,7 @@ namespace EasyScada.ServerApplication
                 {
                     //Ask the user want to save the current working project or not
                     var mbr = MessageBoxService.ShowMessage("The current working project has changes. " +
-                        "Do you want to save now ?", "Easy Scada", MessageButton.YesNoCancel, MessageIcon.Question);
+                        "Do you want to save now ?", "AHD Scada", MessageButton.YesNoCancel, MessageIcon.Question);
                     //If choose cancel just return
                     if (mbr == MessageResult.Cancel)
                         return;
@@ -157,8 +157,8 @@ namespace EasyScada.ServerApplication
                 //Save the path if require
                 if (AllowSaveProjectPath)
                 {
-                    Properties.Settings.Default["DefaultSaveProjectPath"] = CurrentSelectedPath;
-                    Properties.Settings.Default.Save();
+                    EasyDriver.ServerApplication.Properties.Settings.Default["DefaultSaveProjectPath"] = CurrentSelectedPath;
+                    EasyDriver.ServerApplication.Properties.Settings.Default.Save();
                 }
                 //Clear all document of previous project
                 WorkspaceManagerService.RemoveAllDocumentPanel();
@@ -218,8 +218,8 @@ namespace EasyScada.ServerApplication
         /// </summary>
         public virtual void OnAllowSaveProjectPathChanged()
         {
-            Properties.Settings.Default["AllowSaveProjectPath"] = AllowSaveProjectPath;
-            Properties.Settings.Default.Save();
+            EasyDriver.ServerApplication.Properties.Settings.Default["AllowSaveProjectPath"] = AllowSaveProjectPath;
+            EasyDriver.ServerApplication.Properties.Settings.Default.Save();
         }
 
         /// <summary>
@@ -235,9 +235,9 @@ namespace EasyScada.ServerApplication
             //Clear the name
             Name = string.Empty;
             //Get the allow save project property value from settings
-            AllowSaveProjectPath = Convert.ToBoolean(Properties.Settings.Default["AllowSaveProjectPath"]);
+            AllowSaveProjectPath = Convert.ToBoolean(EasyDriver.ServerApplication.Properties.Settings.Default["AllowSaveProjectPath"]);
             //Retrive the previous path from settingss
-            CurrentSelectedPath = Properties.Settings.Default["DefaultSaveProjectPath"].ToString();
+            CurrentSelectedPath = EasyDriver.ServerApplication.Properties.Settings.Default["DefaultSaveProjectPath"].ToString();
             this.RaisePropertyChanged(x => Path);
         }
 

@@ -22,12 +22,15 @@ namespace EasyScada.ServerApplication
 
         public HubConnection CreateHubConnection(IStationCore station)
         {
-            return new HubConnection($"http://{station.RemoteAddress}:{station.Port}/easyScada");
+            return CreateHubConnection(station.RemoteAddress, station.Port);
         }
 
         public HubConnection CreateHubConnection(string remoteAddress, ushort port)
         {
-            return new HubConnection($"http://{remoteAddress}:{port}/easyScada");
+            if (remoteAddress.IsIpAddress())
+                return new HubConnection($"http://{remoteAddress}:{port}/easyScada");
+            else
+                return new HubConnection($"http://{remoteAddress}/easyScada");
         }
 
         public IHubProxy CreateHubProxy(HubConnection hub)

@@ -62,7 +62,7 @@
                                                 Margin="0,0,6,0"
                                                 AddColonToLabel="True"
                                                 ElementSpace="6"
-                                                Label="Remote Address"
+                                                Label="Remote Address Or Url"
                                                 LabelPosition="Top">
                                                 <TextBox Text="{Binding RemoteAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
                                                     <dxmvvm:Interaction.Behaviors>

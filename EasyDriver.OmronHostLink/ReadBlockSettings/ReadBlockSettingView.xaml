@@ -15,7 +15,6 @@
     <UserControl.Resources>
         <Style TargetType="dxg:GridColumnHeader">
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#F1FA8C" />
         </Style>
     </UserControl.Resources>
     <Grid>

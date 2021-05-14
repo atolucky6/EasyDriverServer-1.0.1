@@ -32,6 +32,8 @@ namespace EasyScada.Core.Animate
             if (string.IsNullOrWhiteSpace(TriggerTagPath))
                 return false;
 
+            // "Tag['TTASDASDASD'] >= 2"
+            
             string expression = $"Tag[{'"'}{TriggerTagPath}{'"'}] >= {MinValue}";
             if (MinValue != MaxValue)
                 expression += $" and Tag[{'"'}{TriggerTagPath}{'"'}] <= {MaxValue}";

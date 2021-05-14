@@ -79,7 +79,7 @@ namespace EasyDriver.OmronHostLink
                         {
                             if (ushort.TryParse(wordAdr, out ushort wordAdrNum))
                             {
-                                if (wordAdrNum / 1000 > 0)
+                                if (wordAdrNum > 9999)
                                 {
                                     return "The word address is out of range. The range of word address is 0 - 9999";
                                 }
@@ -167,7 +167,7 @@ namespace EasyDriver.OmronHostLink
                         {
                             if (ushort.TryParse(wordAdr, out ushort wordAdrNum))
                             {
-                                if (wordAdrNum / 1000 > 0)
+                                if (wordAdrNum > 9999)
                                 {
                                     return "The word address is out of range. The range of word address is 0 - 9999";
                                 }
@@ -257,7 +257,7 @@ namespace EasyDriver.OmronHostLink
                         {
                             if (ushort.TryParse(wordAdr, out wordOffset))
                             {
-                                if (wordOffset / 1000 > 0)
+                                if (wordOffset > 9999)
                                 {
                                     return false;
                                 }
@@ -280,49 +280,49 @@ namespace EasyDriver.OmronHostLink
             return false;
         }
 
-        public static ReadCommand GetReadCommand(AddressType addressType)
+        public static ReadCommandCode GetReadCommand(AddressType addressType)
         {
             switch (addressType)
             {
                 case AddressType.CIO:
-                    return ReadCommand.RR;
+                    return ReadCommandCode.RR;
                 case AddressType.H:
                 case AddressType.HR:
-                    return ReadCommand.RH;
+                    return ReadCommandCode.RH;
                 case AddressType.A:
                 case AddressType.AR:
-                    return ReadCommand.RJ;
+                    return ReadCommandCode.RJ;
                 case AddressType.D:
                 case AddressType.DM:
-                    return ReadCommand.RD;
+                    return ReadCommandCode.RD;
                 case AddressType.LR:
-                    return ReadCommand.RL;
+                    return ReadCommandCode.RL;
                 case AddressType.EM:
-                    return ReadCommand.RE;
+                    return ReadCommandCode.RE;
                 default:
                     throw new NotSupportedException();
             }
         }
 
-        public static WriteCommand GetWriteCommand(AddressType addressType)
+        public static WriteCommandCode GetWriteCommand(AddressType addressType)
         {
             switch (addressType)
             {
                 case AddressType.CIO:
-                    return WriteCommand.WR;
+                    return WriteCommandCode.WR;
                 case AddressType.H:
                 case AddressType.HR:
-                    return WriteCommand.WH;
+                    return WriteCommandCode.WH;
                 case AddressType.A:
                 case AddressType.AR:
-                    return WriteCommand.WJ;
+                    return WriteCommandCode.WJ;
                 case AddressType.D:
                 case AddressType.DM:
-                    return WriteCommand.WD;
+                    return WriteCommandCode.WD;
                 case AddressType.LR:
-                    return WriteCommand.WL;
+                    return WriteCommandCode.WL;
                 case AddressType.EM:
-                    return WriteCommand.WE;
+                    return WriteCommandCode.WE;
                 default:
                     throw new NotSupportedException();
             }

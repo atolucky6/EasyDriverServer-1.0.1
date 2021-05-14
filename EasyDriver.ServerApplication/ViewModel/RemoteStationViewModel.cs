@@ -274,10 +274,11 @@ namespace EasyScada.ServerApplication
                         Error = Name.ValidateFileName();
                         break;
                     case nameof(RemoteAddress):
-                        if (!RemoteAddress.IsIpAddress())
-                            Error = "The Remote Address was not in IPv4 format.";
-                        else
-                            Error = string.Empty;
+                        //if (!RemoteAddress.IsIpAddress())
+                        //    Error = "The Remote Address was not in IPv4 format.";
+                        //else
+                        //    Error = string.Empty;
+                        Error = string.Empty;
                         break;
                     default:
                         Error = string.Empty;

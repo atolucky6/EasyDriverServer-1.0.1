@@ -26,52 +26,52 @@
                 x:Name="bExpandAll"
                 Command="{Binding ExpandAllCommand}"
                 Content="Expand all"
-                Glyph="/EasyDriverServer;component/Resources/Images/expand-arrow-48.png" />
+                Glyph="/AHDScadaServer;component/Resources/Images/expand-arrow-48.png" />
             <dxb:BarButtonItem
                 x:Name="bCollapseAll"
                 Command="{Binding CollapseAllCommand}"
                 Content="Collapse all"
-                Glyph="/EasyDriverServer;component/Resources/Images/collapse-arrow-48.png" />
+                Glyph="/AHDScadaServer;component/Resources/Images/collapse-arrow-48.png" />
             <dxb:BarButtonItem
                 x:Name="bAddStation"
                 Command="{Binding AddStationCommand}"
                 Content="Add Remote Station"
-                Glyph="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/remote_station_24px.png"
                 GlyphSize="Default"
                 IsVisible="{Binding ElementName=bAddStation, Path=IsEnabled}" />
             <dxb:BarButtonItem
                 x:Name="bAddOpcDaStation"
                 Command="{Binding AddOpcDaStationCommand}"
                 Content="Add Remote OPC DA Station"
-                Glyph="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/opc_cloud_48px.png"
                 GlyphSize="Default"
                 IsVisible="{Binding ElementName=bAddOpcDaStation, Path=IsEnabled}" />
             <dxb:BarButtonItem
                 x:Name="bAddChannel"
                 Command="{Binding AddChannelCommand}"
                 Content="Add Channel"
-                Glyph="/EasyDriverServer;component/Resources/Images/channel_24px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/channel_24px.png"
                 GlyphSize="Default"
                 IsVisible="{Binding ElementName=bAddChannel, Path=IsEnabled}" />
             <dxb:BarButtonItem
                 x:Name="bAddDevice"
                 Command="{Binding AddDeviceCommand}"
                 Content="Add Device"
-                Glyph="/EasyDriverServer;component/Resources/Images/device_24px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/device_24px.png"
                 GlyphSize="Default"
                 IsVisible="{Binding ElementName=bAddDevice, Path=IsEnabled}" />
             <dxb:BarButtonItem
                 x:Name="bAddGroup"
                 Command="{Binding AddGroupCommand}"
                 Content="Add Group"
-                Glyph="/EasyDriverServer;component/Resources/Images/folder_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/folder_48px.png"
                 GlyphSize="Default"
                 IsVisible="{Binding ElementName=bAddGroup, Path=IsEnabled}" />
             <dxb:BarButtonItem
                 x:Name="bEdit"
                 Command="{Binding EditCommand}"
                 Content="Edit"
-                Glyph="/EasyDriverServer;component/Resources/Images/edit-48.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/edit-48.png"
                 GlyphSize="Default"
                 IsVisible="{Binding ElementName=bEdit, Path=IsEnabled}" />
             <dxb:BarButtonItem
@@ -93,14 +93,14 @@
                 x:Name="bCopy"
                 Command="{Binding CopyCommand}"
                 Content="Copy"
-                Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/copy_48px.png"
                 GlyphSize="Default"
                 KeyGesture="Ctrl+C" />
             <dxb:BarButtonItem
                 x:Name="bCut"
                 Command="{Binding CutCommand}"
                 Content="Cut"
-                Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/cut_48px.png"
                 GlyphSize="Default"
                 KeyGesture="Ctrl+X" />
             <dxb:BarButtonItem
@@ -114,7 +114,7 @@
                 x:Name="bDelete"
                 Command="{Binding DeleteCommand}"
                 Content="Delete"
-                Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/delete_48px.png"
                 GlyphSize="Default"
                 KeyGesture="Delete" />
             <dxb:BarCheckItem

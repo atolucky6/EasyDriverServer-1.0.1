@@ -85,11 +85,12 @@ namespace EasyScada.ServerApplication
                             catch { }
                         }
 
-                        this.hubConnection = new HubConnection($"http://{RemoteAddress}:{Port}/easyScada");
+                        IHubFactory factory = IoC.Instance.Get<IHubFactory>();
+                        this.hubConnection = factory.CreateHubConnection(Station);
                         this.hubConnection.StateChanged += OnStateChanged;
                         this.hubConnection.Closed += OnDisconnected;
                         this.hubConnection.ConnectionSlow += OnConnectionSlow;
-                        hubProxy = this.hubConnection.CreateHubProxy("EasyDriverServerHub");
+                        hubProxy = factory.CreateHubProxy(hubConnection);
                         hubProxy.On<string>("broadcastSubscribeData", OnReceivedBroadcastMessage);
                         await this.hubConnection.Start(new LongPollingTransport());
                     }

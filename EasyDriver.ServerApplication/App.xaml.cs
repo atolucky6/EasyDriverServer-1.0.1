@@ -120,7 +120,7 @@ namespace EasyScada.ServerApplication
         {
             // Load custom theme
             var theme = new Theme("BlueTheme");
-            theme.AssemblyName = "DevExpress.Xpf.Themes.BlueTheme.v20.1";
+            theme.AssemblyName = "DevExpress.Xpf.Themes.BlueTheme.v20.2";
             Theme.RegisterTheme(theme);
             ApplicationThemeHelper.ApplicationThemeName = "BlueTheme";
 
@@ -140,7 +140,7 @@ namespace EasyScada.ServerApplication
             //Initialize notify icon
             MainNotifyIcon = new NotifyIcon()
             {
-                Icon = EasyScada.ServerApplication.Properties.Resources.EasyScadaLogo,
+                Icon = EasyDriver.ServerApplication.Properties.Resources.ahd,
                 Visible = true
             };
             MainNotifyIcon.DoubleClick += (s, args) => ShowMainWindow();

@@ -10,7 +10,7 @@ namespace EasyDriver.OmronHostLink
 {
     #region Enums
 
-    public enum ReadCommand
+    public enum ReadCommandCode
     {
         RR,     // CIO AREA READ
         RL,     // LR AREA READ
@@ -22,7 +22,7 @@ namespace EasyDriver.OmronHostLink
         RE,     // EM AREA READ
     }
 
-    public enum WriteCommand
+    public enum WriteCommandCode
     {
         #region WRITE
         WR,     // CIO AREA WRITE
@@ -278,7 +278,7 @@ namespace EasyDriver.OmronHostLink
         /// <param name="wordLen">Số lượng word cần đọc</param>
         /// <param name="values">Giá trị đọc được từ PLC</param>
         /// <returns></returns>
-        public bool Read(byte unitNo, ReadCommand cmd, ushort startWordAddress, ushort wordLen, ref byte[] values)
+        public bool Read(byte unitNo, ReadCommandCode cmd, ushort startWordAddress, ushort wordLen, ref byte[] values)
         {
             // Make sure serial port was opened
             if (SerialPort.IsOpen)
@@ -384,7 +384,7 @@ namespace EasyDriver.OmronHostLink
         /// <param name="startWordAddress">Địa chỉ bắt đầu ghi</param>
         /// <param name="data">Dữ liệu cần ghi xuống PLC</param>
         /// <returns></returns>
-        public bool Write(byte unitNo, WriteCommand cmd, ushort startWordAddress, byte[] data)
+        public bool Write(byte unitNo, WriteCommandCode cmd, ushort startWordAddress, byte[] data)
         {
             // Make sure serial port was opened
             if (SerialPort.IsOpen)

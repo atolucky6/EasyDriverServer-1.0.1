@@ -1,12 +1,14 @@
 ﻿using EasyScada.Core;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Drawing.Design;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +35,7 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Fields
-        private bool enabled = false;
+        private bool enabled = true;
         private int interval = 60000;
         private LogProfileCollection profiles = new LogProfileCollection();
         private LogColumnCollection columns = new LogColumnCollection();
@@ -44,7 +46,6 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Properties
-
         [Browsable(true), Category("Easy Scada")]
         public bool Enabled
         {
@@ -107,7 +108,8 @@ namespace EasyScada.Winforms.Controls
 
         public void EndInit()
         {
-            InitializeLogTask();
+            if (!DesignMode)
+                InitializeLogTask();
         }
 
         private void InitializeLogTask()
@@ -117,6 +119,17 @@ namespace EasyScada.Winforms.Controls
 
         private void DoLog()
         {
+            sw.Restart();
+            DateTime startOfDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
+            TimeSpan timeDiff = DateTime.Now - startOfDate;
+            long totalMilisecond = (long)timeDiff.TotalMilliseconds;
+            long nextInterval = Interval - (totalMilisecond % Interval);
+            sw.Stop();
+            nextInterval = nextInterval - sw.ElapsedMilliseconds;
+            if (nextInterval < 0)
+                nextInterval = 0;
+            Thread.Sleep((int)nextInterval);
+
             while (true)
             {
                 sw.Start();
@@ -132,10 +145,23 @@ namespace EasyScada.Winforms.Controls
                 finally
                 {
                     sw.Stop();
-                    int nextInterval = Interval - (int)sw.ElapsedMilliseconds;
-                    if (nextInterval < 1)
-                        nextInterval = 1;
-                    Thread.Sleep(nextInterval);
+                    long doTime = sw.ElapsedMilliseconds;
+                    sw.Restart();
+                    startOfDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
+                    timeDiff = DateTime.Now - startOfDate;
+                    totalMilisecond = (long)timeDiff.TotalMilliseconds;
+                    nextInterval = Interval - (totalMilisecond % Interval);
+                    sw.Stop();
+                    nextInterval = nextInterval - sw.ElapsedMilliseconds - doTime;
+                    if (nextInterval < 0)
+                        nextInterval = 0;
+                    nextInterval += 50;
+                    Thread.Sleep((int)nextInterval);
+                    //sw.Stop();
+                    //nextInterval = Interval - (int)sw.ElapsedMilliseconds;
+                    //if (nextInterval < 1)
+                    //    nextInterval = 1;
+                    //Thread.Sleep(nextInterval);
                 }
             }
         }
@@ -183,7 +209,7 @@ namespace EasyScada.Winforms.Controls
                                     // Create table if not exists
                                     profile.GetCommand(out conn, out cmd, out DbDataAdapter adp, true);
                                     conn.Open();
-                                    cmd.CommandText = profile.GetCreateTableQuery(columns);
+                                    cmd.CommandText = profile.GetCreateTableQuery(columns, "DateTime");
                                     int createTableRes = cmd.ExecuteNonQuery();
 
                                     // Create table result = 0. It means table already exists
@@ -229,8 +255,56 @@ namespace EasyScada.Winforms.Controls
                     // Create table if not exists
                     profile.GetCommand(out conn, out cmd, out DbDataAdapter adp, true);
                     conn.Open();
-                    cmd.CommandText = profile.GetCreateTableQuery(columns);
+                    cmd.CommandText = profile.GetCreateTableQuery(columns, "DateTime");
                     int createTableRes = cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void ImportColumns(string path)
+        {
+            List<LogColumn> result = new List<LogColumn>();
+            string[] lines = File.ReadAllLines(path);
+            if (lines.Length > 1)
+            {
+                string[] columnNames = lines[0].Split(',');
+                if (columnNames.Length == 6)
+                {
+                    for (int i = 1; i < lines.Length; i++)
+                    {
+                        try
+                        {
+                            string[] values = lines[i].Split(',');
+                            if (values.Length == 6)
+                            {
+                                LogColumn column = new LogColumn();
+                                column.Enabled = bool.Parse(values[0]);
+                                column.ColumnName = values[1];
+                                column.TagPath = values[2]; ;
+                                column.DefaultValue = values[3];
+                                column.Mode = (LogColumnMode)Enum.Parse(typeof(LogColumnMode), values[4]);
+                                column.Description = values[5];
+                                result.Add(column);
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
+            ImportColumns(result);
+        }
+
+        public void ImportColumns(IEnumerable<LogColumn> columns)
+        {
+            Columns?.Clear();
+            if (columns.Count() > 0)
+            {
+                if (Columns != null)
+                {
+                    foreach (var col in columns)
+                    {
+                        Columns.Add(col);
+                    }
                 }
             }
         }

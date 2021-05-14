@@ -19,7 +19,7 @@ namespace EasyDriver.OmronHostLink
     {
         #region Public members
 
-        public IEasyDriverPlugin Driver { get; set; }
+        public OmronHostLinkDriver Driver { get; set; }
 
         public List<string> ComPortSource { get; set; }
         public List<int> BaudRateSource { get; set; }
@@ -32,7 +32,7 @@ namespace EasyDriver.OmronHostLink
 
         #region Constructors
 
-        public EditChannelView(IEasyDriverPlugin driver, IChannelCore channel)
+        public EditChannelView(OmronHostLinkDriver driver, IChannelCore channel)
         {
             Driver = driver;
             Channel = channel;
@@ -109,13 +109,13 @@ namespace EasyDriver.OmronHostLink
             string validateResult = txbName.Text?.Trim().ValidateFileName("Channel");
             if (!string.IsNullOrWhiteSpace(validateResult))
             {
-                DXMessageBox.Show(validateResult, "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show(validateResult, "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (Channel.Parent.Childs.FirstOrDefault(x => x != Channel && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
-                DXMessageBox.Show($"The channel name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show($"The channel name '{txbName.Text?.Trim()}' is already in use.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -123,22 +123,23 @@ namespace EasyDriver.OmronHostLink
             if (cobPort.SelectedItem?.ToString() == currentPort || CheckPortNotIsInUse(cobPort.SelectedItem?.ToString()))
             {
                 Channel.Name = txbName.Text?.Trim();
+
                 Driver.Channel.ParameterContainer.DisplayName = "ModbusRTU Comunication Parameters";
                 Driver.Channel.ParameterContainer.DisplayParameters = "ModbusRTU Comunication Parameters";
-                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
-                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
+                Driver.Channel.ParameterContainer.SetValue("Port", cobPort.SelectedItem.ToString());
+                Driver.Channel.ParameterContainer.SetValue("Baudrate", cobBaudrate.SelectedItem.ToString());
+                Driver.Channel.ParameterContainer.SetValue("Parity", cobParity.SelectedItem.ToString());
+                Driver.Channel.ParameterContainer.SetValue("DataBits", cobDataBits.SelectedItem.ToString());
+                Driver.Channel.ParameterContainer.SetValue("StopBits", cobStopBits.SelectedItem.ToString());
+                Driver.Channel.ParameterContainer.SetValue("ScanRate", spnScanRate.Value.ToString());
+                Driver.Channel.ParameterContainer.SetValue("DelayBetweenPool", spnDelayPool.Value.ToString());
 
-                ((Parent as FrameworkElement).Parent as Window).Tag = Channel;
+                this.Tag = Channel;
                 ((Parent as FrameworkElement).Parent as Window).Close();
             }
             else
             {
-                DXMessageBox.Show($"{cobPort.SelectedItem?.ToString()} is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show($"{cobPort.SelectedItem?.ToString()} is already in use.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

@@ -103,20 +103,20 @@ namespace EasyDriver.OmronHostLink
             string validateResult = txbName.Text?.Trim().ValidateFileName("Device");
             if (!string.IsNullOrWhiteSpace(validateResult))
             {
-                DXMessageBox.Show(validateResult, "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show(validateResult, "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (ParentItem.Childs.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
-                DXMessageBox.Show($"The device name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show($"The device name '{txbName.Text?.Trim()}' is already in use.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var childDevices = Channel.GetAllDevices();
             if (childDevices.FirstOrDefault(x => (x as IDeviceCore).ParameterContainer.Parameters["UnitNo"] == spnUnitNo.Value.ToString()) != null)
             {
-                DXMessageBox.Show($"The unit no '{spnUnitNo.Value}' is already used in this device.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show($"The unit no '{spnUnitNo.Value}' is already used in this device.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -125,16 +125,16 @@ namespace EasyDriver.OmronHostLink
             device.ParameterContainer.DisplayName = "Omron Host Link Device Parameter";
             device.ParameterContainer.DisplayParameters = "Omron Host Link Device Parameter";
 
-            device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value.ToString();
-            device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();
-            device.ParameterContainer.Parameters["UnitNo"] = spnUnitNo.Value.ToString();
+            device.ParameterContainer.SetValue("Timeout", spnTimeout.Value.ToString());
+            device.ParameterContainer.SetValue("TryReadWriteTimes", spnTryReadWrite.Value.ToString());
+            device.ParameterContainer.SetValue("UnitNo", spnUnitNo.Value.ToString());
 
             device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
             DisableErrorBlockSettings(blockSettingView.ReadBlockSettings);
 
-            device.ParameterContainer.Parameters["ReadBlockSettings"] = ConvertBlockSettingsIntoString(blockSettingView.ReadBlockSettings);
+            device.ParameterContainer.SetValue("ReadBlockSettings", ConvertBlockSettingsIntoString(blockSettingView.ReadBlockSettings));
 
-            ((Parent as FrameworkElement).Parent as Window).Tag = device;
+            this.Tag = device;
             ((Parent as FrameworkElement).Parent as Window).Close();
         }
 

@@ -156,6 +156,132 @@ namespace EasyDriverPlugin
             }
         }
 
+        #region Get/Set 16 bit BCD value (BCD) 0 - 9999
+        public static ushort GetBCDAt(byte[] Buffer, int Pos, ByteOrder byteOrder = ByteOrder.ABCD)
+        {
+            switch (byteOrder)
+            {
+                case ByteOrder.ABCD:
+                case ByteOrder.CDAB:
+                    {
+                        int highByteValue = BCDtoByte(Buffer[Pos]) * 1000;
+                        int lowByteValue = BCDtoByte(Buffer[Pos + 1]);
+                        return (ushort)(highByteValue + lowByteValue);
+                    }
+                case ByteOrder.DCBA:
+                case ByteOrder.BADC:
+                    {
+                        int highByteValue = BCDtoByte(Buffer[Pos + 1]) * 1000;
+                        int lowByteValue = BCDtoByte(Buffer[Pos]);
+                        return (ushort)(highByteValue + lowByteValue);
+                    }
+                default:
+                    return default;
+            }
+        }
+
+        public static void SetBCDAt(byte[] Buffer, int Pos, ushort Value, ByteOrder byteOrder = ByteOrder.ABCD)
+        {
+            switch (byteOrder)
+            {
+                case ByteOrder.ABCD:
+                case ByteOrder.CDAB:
+                    Buffer[Pos] = ByteToBCD((Value % 1000) / 100);
+                    Buffer[Pos + 1] = ByteToBCD(Value % 100);
+                    break;
+                case ByteOrder.DCBA:
+                case ByteOrder.BADC:
+                    Buffer[Pos + 1] = ByteToBCD((Value % 1000) / 100);
+                    Buffer[Pos] = ByteToBCD(Value % 100);
+                    break;
+                default:
+                    break;
+            }
+        }
+        #endregion
+
+        #region Get/Set 32 bit BCD value (BCD) 0 - 99999999
+        public static int GetLBCDAt(byte[] Buffer, int Pos, ByteOrder byteOrder = ByteOrder.ABCD)
+        {
+            switch (byteOrder)
+            {
+                case ByteOrder.ABCD:
+                    {
+                        int Result;
+                        Result = BCDtoByte(Buffer[Pos]) * 1000000;
+                        Result += BCDtoByte(Buffer[Pos + 1]) * 10000;
+                        Result += BCDtoByte(Buffer[Pos + 2]) * 100;
+                        Result += BCDtoByte(Buffer[Pos + 3]);
+                        return Result;
+                    }
+                case ByteOrder.BADC:
+                    {
+                        int Result;
+                        Result = BCDtoByte(Buffer[Pos + 1]) * 1000000;
+                        Result += BCDtoByte(Buffer[Pos]) * 10000;
+                        Result += BCDtoByte(Buffer[Pos + 3]) * 100;
+                        Result += BCDtoByte(Buffer[Pos + 2]);
+                        return Result;
+                    }
+                case ByteOrder.CDAB:
+                    {
+                        int Result;
+                        Result = BCDtoByte(Buffer[Pos + 2]) * 1000000;
+                        Result += BCDtoByte(Buffer[Pos + 3]) * 10000;
+                        Result += BCDtoByte(Buffer[Pos + 1]) * 100;
+                        Result += BCDtoByte(Buffer[Pos + 0]);
+                        return Result;
+                    }
+                case ByteOrder.DCBA:
+                    {
+                        int Result;
+                        Result = BCDtoByte(Buffer[Pos + 3]) * 1000000;
+                        Result += BCDtoByte(Buffer[Pos + 2]) * 10000;
+                        Result += BCDtoByte(Buffer[Pos + 1]) * 100;
+                        Result += BCDtoByte(Buffer[Pos + 0]);
+                        Result += Buffer[Pos];
+                        return Result;
+                    }
+                default:
+                    return default;
+            }
+
+        }
+
+        public static void SetLBCDAt(byte[] Buffer, int Pos, int Value, ByteOrder byteOrder = ByteOrder.ABCD)
+        {
+            switch (byteOrder)
+            {
+                case ByteOrder.ABCD:
+                    Buffer[Pos + 3] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 2] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 1] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos] = ByteToBCD(Value);
+                    break;
+                case ByteOrder.BADC:
+                    Buffer[Pos + 2] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 3] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 1] = ByteToBCD(Value);
+                    break;
+                case ByteOrder.CDAB:
+                    Buffer[Pos + 1] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 0] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 3] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 2] = ByteToBCD(Value);
+                    break;
+                case ByteOrder.DCBA:
+                    Buffer[Pos + 0] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 1] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 2] = ByteToBCD(Value % 100); Value = Value / 100;
+                    Buffer[Pos + 3] = ByteToBCD(Value);
+                    break;
+                default:
+                    break;
+            }
+        }
+        #endregion
+
         #region Get/Set the bit at Pos.Bit
         public static bool GetBitAt(byte[] Buffer, int Pos, int Bit)
         {

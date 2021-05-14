@@ -143,7 +143,6 @@ namespace EasyScada.Winforms.Controls
                 CheckAllNode(projectTree.Nodes[0]);
                 projectTree.Nodes[0].Text = $"Easy Driver Server - {ServerAddress}:{Port}";
             }
-
             groupProjectTree.ValuesSecondary.Heading = $"Total tags: {tagCount}";
             ExpandAllNode();
         }

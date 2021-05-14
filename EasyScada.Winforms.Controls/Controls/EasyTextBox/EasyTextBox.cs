@@ -15,7 +15,7 @@ namespace EasyScada.Winforms.Controls
     [DefaultBindingProperty("Text")]
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     [Designer(typeof(EasyTextBoxDesigner))]
-    public class EasyTextBox : TextBox, ISupportConnector, ISupportTag, ISupportWriteSingleTag, ISupportInitialize
+    public class EasyTextBox : TextBox, ISupportConnector, ISupportTag, ISupportWriteSingleTag, ISupportInitialize, IAuthorizeControl
     {
         #region ISupportConnector
         [Description("Select driver connector for control")]
@@ -70,6 +70,14 @@ namespace EasyScada.Winforms.Controls
         public event EventHandler<TagWritedEventArgs> TagWrited;
         #endregion
 
+        #region IAuthorizeControl
+        [Browsable(true), TypeConverter(typeof(RoleConverter)), Category(DesignerCategory.EASYSCADA)]
+        public string Role { get; set; }
+
+        [Browsable(false)]
+        public bool IsAuthenticated { get; protected set; }
+        #endregion
+
         #region ISupportInitialize
         public void BeginInit()
         {
@@ -79,6 +87,11 @@ namespace EasyScada.Winforms.Controls
         {
             if (!DesignMode)
             {
+                AuthenticateHelper.Logouted += (s, e) =>
+                {
+                    IsAuthenticated = false;
+                };
+
                 if (Connector.IsStarted)
                     OnConnectorStarted(null, EventArgs.Empty);
                 else
@@ -228,14 +241,23 @@ namespace EasyScada.Winforms.Controls
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
-        {
+        {         
             base.OnKeyDown(e);
             if (e.KeyCode == Keys.Enter)
             {
+
                 if (WriteTrigger == WriteTrigger.OnEnter)
                 {
-                    writeDelayTimer.Stop();
-                    writeDelayTimer.Start();
+                    if (CheckAuthenticate())
+                    {
+                        writeDelayTimer.Stop();
+                        writeDelayTimer.Start();
+                    }
+                    else
+                    {
+                        if (LinkedTag != null && LinkedTag.Value != Text)
+                            Text = LinkedTag.Value;
+                    }
                 }
             }
             else if (e.KeyCode == Keys.Escape)
@@ -247,15 +269,25 @@ namespace EasyScada.Winforms.Controls
 
         protected override void OnKeyUp(KeyEventArgs e)
         {
+
             base.OnKeyUp(e);
             if (oldValue != Text)
             {
                 if (WriteTrigger == WriteTrigger.ValueChanged)
                 {
-                    writeDelayTimer.Stop();
-                    writeDelayTimer.Start();
+                    if (CheckAuthenticate())
+                    {
+                        writeDelayTimer.Stop();
+                        writeDelayTimer.Start();
+                    }
+                    else
+                    {
+                        if (LinkedTag != null && LinkedTag.Value != Text)
+                            Text = LinkedTag.Value;
+                    }
                 }
             }
+
         }
 
         protected override void OnKeyPress(KeyPressEventArgs e)
@@ -269,8 +301,11 @@ namespace EasyScada.Winforms.Controls
             base.OnLostFocus(e);
             if (WriteTrigger == WriteTrigger.LostFocus)
             {
-                writeDelayTimer.Stop();
-                writeDelayTimer.Start();
+                if (CheckAuthenticate())
+                {
+                    writeDelayTimer.Stop();
+                    writeDelayTimer.Start();
+                }
             }
 
             if (LinkedTag != null && LinkedTag.Value != Text)
@@ -312,6 +347,22 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region Methods
+        private bool CheckAuthenticate()
+        {
+            if (!IsAuthenticated)
+            {
+                if (!AuthenticateHelper.Authenticate(Role))
+                {
+                    AuthenticateForm form = new AuthenticateForm();
+                    if (form.ShowDialog() != DialogResult.OK)
+                        return false;
+                }
+
+                IsAuthenticated = true;
+            }
+            return IsAuthenticated;
+        }
+
         private void WriteDelayTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             writeDelayTimer.Stop();

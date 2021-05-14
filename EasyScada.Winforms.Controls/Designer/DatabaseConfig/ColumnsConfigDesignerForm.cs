@@ -55,7 +55,6 @@ namespace EasyScada.Winforms.Controls
 
             UpdateButtons();
         }
-
         #endregion
 
         #region Public properties

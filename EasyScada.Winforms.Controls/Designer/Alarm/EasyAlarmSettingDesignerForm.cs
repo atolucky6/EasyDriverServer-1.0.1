@@ -13,10 +13,10 @@ namespace EasyScada.Winforms.Controls
 { 
     public partial class EasyAlarmSettingDesignerForm : EasyForm
     {
-        public EasyAlarmSettingDesignerForm(IServiceProvider serviceProvider)
+        public EasyAlarmSettingDesignerForm(IServiceProvider serviceProvider, LogProfile logProfile)
         {
             InitializeComponent();
-            easyAlarmSetting1.InitializeAlarmSetting(serviceProvider);
+            easyAlarmSetting1.InitializeAlarmSetting(serviceProvider, logProfile);
             FormClosing += EasyAlarmSettingDesignerForm_FormClosing;
         }
 

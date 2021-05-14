@@ -1,5 +1,8 @@
 ﻿using DevExpress.Xpf.Core;
 using EasyDriverServer.ModuleInjection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +16,25 @@ namespace EasyDriverServer
     /// </summary>
     public partial class App : Application
     {
+        /* Các bước để host SignalR Core vào WPF
+         * 1. Cài đặt nuget Microsoft.AspNetCore.App vào wpf project
+         * 2. Tạo một web app .net core để host SignalR
+         * 3. Reference tới web app
+         * 4. Override OnStartup (nằm ở App.xaml.cs) và thêm đoạn code sau đây để chạy web app:
+         * 
+         *      host = Host.CreateDefaultBuilder(e.Args)
+         *          .ConfigureWebHostDefaults(webHostBuilder => webHostBuilder.UseStartup<{WebAppProject}.Startup>())
+         *          .ConfigureServices(services =>
+         *          {
+         *              services.AddTransient<MainWindow>();
+         *          }).Build();
+         *      host.Start();
+         *      host.Services.GetRequiredService<MainWindow>().Show();
+         *      
+         * 5. Cấu hình Hub ở web app
+         */
+        private IHost host;
+
         public static string ApplicationPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private static Dictionary<string, string> AssemblyPathDictionary = new Dictionary<string, string>();
 
@@ -25,6 +47,7 @@ namespace EasyDriverServer
             Theme.RegisterTheme(theme);
             ApplicationThemeHelper.ApplicationThemeName = "BlueTheme";
 
+            // Get all assemblies in current directory
             AppDomain currentDomain = AppDomain.CurrentDomain;
             if (Directory.Exists(ApplicationPath))
             {
@@ -33,16 +56,30 @@ namespace EasyDriverServer
                     AssemblyPathDictionary[Path.GetFileName(assemblyPath)] = assemblyPath;
                 }
             }
+            // Register assembly resolve
             currentDomain.AssemblyResolve += OnAssemblyResolve;
 
+            // Set up dependency
             IoC.Instance.Setup();
 
-            Current.MainWindow = new MainWindow();
-            Current.MainWindow.Show();
+            host = Host.CreateDefaultBuilder(e.Args)
+                .ConfigureWebHostDefaults(webHostBuilder => webHostBuilder.UseStartup<WebHosting.Startup>())
+                .ConfigureServices(services =>
+                {
+                    services.AddTransient<MainWindow>();
+                }).Build();
 
+            host.Start();
+            host.Services.GetRequiredService<MainWindow>().Show();
         }
 
-        private static Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
+        protected override void OnExit(ExitEventArgs e)
+        {
+            host?.Dispose();
+            base.OnExit(e);
+        }
+
+        private static Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) 
         {
             string assemblyName = new AssemblyName(args.Name).Name + ".dll";
 

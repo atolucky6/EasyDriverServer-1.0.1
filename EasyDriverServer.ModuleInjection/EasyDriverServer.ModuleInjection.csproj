@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Reference Include="DevExpress.Mvvm.v20.2">
-      <HintPath>C:\Program Files (x86)\DevExpress 20.2\.NET Core Desktop Libraries\Offline Packages\devexpress.windowsdesktop.mvvm\20.2.3\lib\netcoreapp3.0\DevExpress.Mvvm.v20.2.dll</HintPath>
+      
     </Reference>
     <Reference Include="EasyDriver.Service.ApplicationProperties">
       <HintPath>..\bin\Debug\netcoreapp3.1\Services\EasyDriver.Service.ApplicationProperties.dll</HintPath>

@@ -14,8 +14,8 @@
     <local:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter" />
     <local:ConnectionStatusToImageSourceConverter
         x:Key="ConnectionStatusToImageSourceConverter"
-        ConnectedImageSource="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
-        DisconnectedImageSource="/EasyDriverServer;component/Resources/Images/cloud_cross_48px.png" />
+        ConnectedImageSource="/AHDScadaServer;component/Resources/Images/remote_station_24px.png"
+        DisconnectedImageSource="/AHDScadaServer;component/Resources/Images/cloud_cross_48px.png" />
     <local:ClientObjectToDisplayInfoConverter x:Key="ClientObjectToDisplayInfoConverter" />
     <DataTemplate x:Key="ChannelTemplate">
         <Grid Height="30" Opacity="{Binding Path=Row.Enabled, Converter={StaticResource EnabledItemToOpacityConverter}, UpdateSourceTrigger=PropertyChanged}">
@@ -23,7 +23,7 @@
                 <dx:DXImage
                     Width="24"
                     Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/channel_24px.png" />
+                    Source="/AHDScadaServer;component/Resources/Images/channel_24px.png" />
                 <dxe:TextEdit
                     x:Name="PART_Editor"
                     VerticalContentAlignment="Center"
@@ -46,7 +46,7 @@
                 <dx:DXImage
                     Width="24"
                     Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/device_24px.png" />
+                    Source="/AHDScadaServer;component/Resources/Images/device_24px.png" />
                 <dxe:TextEdit
                     x:Name="PART_Editor"
                     VerticalContentAlignment="Center"
@@ -69,7 +69,7 @@
                 <dx:DXImage
                     Width="24"
                     Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/folder_48px.png" />
+                    Source="/AHDScadaServer;component/Resources/Images/folder_48px.png" />
                 <dxe:TextEdit
                     x:Name="PART_Editor"
                     VerticalContentAlignment="Center"
@@ -115,7 +115,7 @@
                 <dx:DXImage
                     Width="24"
                     Height="20"
-                    Source="/EasyDriverServer;component/Resources/Images/local_station_16px.png" />
+                    Source="/AHDScadaServer;component/Resources/Images/local_station_16px.png" />
                 <dxe:TextEdit
                     x:Name="PART_Editor"
                     VerticalContentAlignment="Center"

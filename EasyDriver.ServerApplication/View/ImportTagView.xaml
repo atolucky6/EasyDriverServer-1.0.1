@@ -112,7 +112,7 @@
                                         <Image
                                             Width="16"
                                             Height="16"
-                                            Source="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
+                                            Source="/AHDScadaServer;component/Resources/Images/tag_48px.png" />
                                     </DataTemplate>
                                 </dxg:TableView.RowIndicatorContentTemplate>
                             </dxg:TableView>

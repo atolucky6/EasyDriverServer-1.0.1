@@ -46,7 +46,7 @@
                     <Setter Property="WindowStyle" Value="ToolWindow" />
                     <Setter Property="Width" Value="600" />
                     <Setter Property="Height" Value="200" />
-                    <Setter Property="Title" Value="Easy Driver Server License" />
+                    <Setter Property="Title" Value="AHD Driver Server License" />
                 </Style>
             </dxmvvm:WindowService.WindowStyle>
         </dxmvvm:WindowService>
@@ -70,33 +70,33 @@
                             x:Name="btnNew"
                             Command="{Binding NewCommand}"
                             Content="New"
-                            Glyph="/EasyDriverServer;component/Resources/Images/file_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/file_48px.png"
                             KeyGesture="Ctrl + N" />
                         <dxb:BarButtonItem
                             x:Name="btnOpen"
                             Command="{Binding OpenCommand}"
                             Content="Open"
-                            Glyph="/EasyDriverServer;component/Resources/Images/opened_folder_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/opened_folder_48px.png"
                             KeyGesture="Ctrl + O" />
                         <dxb:BarItemSeparator />
                         <dxb:BarButtonItem
                             x:Name="btnSave"
                             Command="{Binding SaveCommand}"
                             Content="Save"
-                            Glyph="/EasyDriverServer;component/Resources/Images/save_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/save_48px.png"
                             KeyGesture="Ctrl + S" />
                         <dxb:BarButtonItem
                             x:Name="btnSaveAs"
                             Command="{Binding SaveAsCommand}"
                             Content="Save as..."
-                            Glyph="/EasyDriverServer;component/Resources/Images/save_as_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/save_as_48px.png"
                             KeyGesture="" />
                         <dxb:BarItemSeparator />
                         <dxb:BarButtonItem
                             x:Name="btnClose"
                             Command="{Binding CloseCommand}"
                             Content="Close"
-                            Glyph="/EasyDriverServer;component/Resources/Images/close-window-48.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/close-window-48.png"
                             KeyGesture="Alt + F4" />
                     </dxb:BarSubItem>
                     <dxb:BarSubItem x:Name="biEdit" Content="Edit">
@@ -104,36 +104,36 @@
                             x:Name="btnAddOpcDaStation"
                             Command="{Binding AddOpcDaStationCommand}"
                             Content="Add Remote OPC DA Station"
-                            Glyph="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png" />
+                            Glyph="/AHDScadaServer;component/Resources/Images/opc_cloud_48px.png" />
                         <dxb:BarButtonItem
                             x:Name="btnAddStation"
                             Command="{Binding AddStationCommand}"
                             Content="Add Remote Station"
-                            Glyph="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/remote_station_24px.png"
                             KeyGesture="Ctrl + 1" />
                         <dxb:BarButtonItem
                             x:Name="btnAddChannel"
                             Command="{Binding AddChannelCommand}"
                             Content="Add Channel"
-                            Glyph="/EasyDriverServer;component/Resources/Images/channel_24px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/channel_24px.png"
                             KeyGesture="Ctrl + 2" />
                         <dxb:BarButtonItem
                             x:Name="btnAddDevice"
                             Command="{Binding AddDeviceCommand}"
                             Content="Add Device"
-                            Glyph="/EasyDriverServer;component/Resources/Images/device_24px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/device_24px.png"
                             KeyGesture="Ctrl + 3" />
                         <dxb:BarButtonItem
                             x:Name="btnAddTag"
                             Command="{Binding AddTagCommand}"
                             Content="Add Tag"
-                            Glyph="/EasyDriverServer;component/Resources/Images/tag_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/tag_48px.png"
                             KeyGesture="Ctrl + 4" />
                         <dxb:BarButtonItem
                             x:Name="btnAddGroup"
                             Command="{Binding AddGroupCommand}"
                             Content="Add Group"
-                            Glyph="/EasyDriverServer;component/Resources/Images/folder_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/folder_48px.png"
                             KeyGesture="Ctrl + 5" />
                         <dxb:BarButtonItem
                             x:Name="btnAddInternal"
@@ -147,26 +147,26 @@
                             x:Name="btnUndo"
                             Command="{Binding SaveCommand}"
                             Content="Undo"
-                            Glyph="/EasyDriverServer;component/Resources/Images/undo-48.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/undo-48.png"
                             KeyGesture="Ctrl + Z" />
                         <dxb:BarButtonItem
                             x:Name="btnRedo"
                             Command="{Binding SaveAsCommand}"
                             Content="Redo"
-                            Glyph="/EasyDriverServer;component/Resources/Images/redo-48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/redo-48px.png"
                             KeyGesture="Ctrl + Y" />
                         <dxb:BarItemSeparator />
                         <dxb:BarButtonItem
                             x:Name="btnCut"
                             Command="{Binding CutCommand}"
                             Content="Cut"
-                            Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/cut_48px.png"
                             KeyGesture="Ctrl + X" />
                         <dxb:BarButtonItem
                             x:Name="btnCopy"
                             Command="{Binding CopyCommand}"
                             Content="Copy"
-                            Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/copy_48px.png"
                             KeyGesture="Ctrl + C" />
                         <dxb:BarButtonItem
                             x:Name="btnPaste"
@@ -178,7 +178,7 @@
                             x:Name="btnDelete"
                             Command="{Binding DeleteCommand}"
                             Content="Delete"
-                            Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"
+                            Glyph="/AHDScadaServer;component/Resources/Images/delete_48px.png"
                             KeyGesture="Del" />
                     </dxb:BarSubItem>
                     <dxb:BarSubItem x:Name="biTools" Content="Tools">
@@ -186,13 +186,17 @@
                             x:Name="btnCreateConnectionSchemaFile"
                             Command="{Binding CreateConnectionSchemaFileCommand}"
                             Content="Create Connection Schema File"
-                            Glyph="/EasyDriverServer;component/Resources/Images/cloud-file-48.png" />
+                            Glyph="/AHDScadaServer;component/Resources/Images/cloud-file-48.png" />
                         <dxb:BarItemSeparator />
                         <dxb:BarButtonItem
                             x:Name="btnOptions"
                             Command="{Binding ShowOptionsViewCommand}"
                             Content="Options..."
-                            Glyph="/EasyDriverServer;component/Resources/Images/settings_48px.png" />
+                            Glyph="/AHDScadaServer;component/Resources/Images/settings_48px.png" />
+                    </dxb:BarSubItem>
+                    <dxb:BarSubItem x:Name="biHelp" Content="Help">
+                        <dxb:BarButtonItem Command="{Binding ShowLicenseInforCommand}" Content="License informaion" />
+                        <dxb:BarItemSeparator />
                     </dxb:BarSubItem>
                 </dxb:Bar>
 
@@ -209,46 +213,46 @@
                         x:Name="tNew"
                         Command="{Binding NewCommand}"
                         Content="New"
-                        Glyph="/EasyDriverServer;component/Resources/Images/file_48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/file_48px.png"
                         KeyGesture="Ctrl + N" />
                     <dxb:BarButtonItem
                         x:Name="tOpen"
                         Command="{Binding OpenCommand}"
                         Content="Open"
-                        Glyph="/EasyDriverServer;component/Resources/Images/opened_folder_48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/opened_folder_48px.png"
                         KeyGesture="Ctrl + O" />
                     <dxb:BarItemSeparator />
                     <dxb:BarButtonItem
                         x:Name="tSave"
                         Command="{Binding SaveCommand}"
                         Content="Save"
-                        Glyph="/EasyDriverServer;component/Resources/Images/save_48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/save_48px.png"
                         KeyGesture="Ctrl + S" />
                     <dxb:BarItemSeparator />
                     <dxb:BarButtonItem
                         x:Name="tUndo"
                         Command="{Binding UndoCommand}"
                         Content="Undo"
-                        Glyph="/EasyDriverServer;component/Resources/Images/undo-48.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/undo-48.png"
                         KeyGesture="Ctrl + Z" />
                     <dxb:BarButtonItem
                         x:Name="tRedo"
                         Command="{Binding RedoCommand}"
                         Content="Redo"
-                        Glyph="/EasyDriverServer;component/Resources/Images/redo-48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/redo-48px.png"
                         KeyGesture="Ctrl + Y" />
                     <dxb:BarItemSeparator />
                     <dxb:BarButtonItem
                         x:Name="tCut"
                         Command="{Binding CutCommand}"
                         Content="Cut"
-                        Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/cut_48px.png"
                         KeyGesture="Ctrl + X" />
                     <dxb:BarButtonItem
                         x:Name="tCopy"
                         Command="{Binding CopyCommand}"
                         Content="Copy"
-                        Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/copy_48px.png"
                         KeyGesture="Ctrl + C" />
                     <dxb:BarButtonItem
                         x:Name="tPaste"
@@ -260,43 +264,43 @@
                         x:Name="tDelete"
                         Command="{Binding DeleteCommand}"
                         Content="Delete"
-                        Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/delete_48px.png"
                         KeyGesture="Del" />
                     <dxb:BarItemSeparator />
                     <dxb:BarButtonItem
                         x:Name="tddStationOpcDa"
                         Command="{Binding AddOpcDaStationCommand}"
                         Content="Add Remote OPC DA Station"
-                        Glyph="/EasyDriverServer;component/Resources/Images/opc_cloud_48px.png" />
+                        Glyph="/AHDScadaServer;component/Resources/Images/opc_cloud_48px.png" />
                     <dxb:BarButtonItem
                         x:Name="tddStation"
                         Command="{Binding AddStationCommand}"
                         Content="Add Remote Station"
-                        Glyph="/EasyDriverServer;component/Resources/Images/remote_station_24px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/remote_station_24px.png"
                         KeyGesture="Ctrl + 1" />
                     <dxb:BarButtonItem
                         x:Name="tAddChannel"
                         Command="{Binding AddChannelCommand}"
                         Content="Add Channel"
-                        Glyph="/EasyDriverServer;component/Resources/Images/channel_24px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/channel_24px.png"
                         KeyGesture="Ctrl + 2" />
                     <dxb:BarButtonItem
                         x:Name="tAddDevice"
                         Command="{Binding AddDeviceCommand}"
                         Content="Add Device"
-                        Glyph="/EasyDriverServer;component/Resources/Images/device_24px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/device_24px.png"
                         KeyGesture="Ctrl + 3" />
                     <dxb:BarButtonItem
                         x:Name="tAddTag"
                         Command="{Binding AddTagCommand}"
                         Content="Add Tag"
-                        Glyph="/EasyDriverServer;component/Resources/Images/tag_48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/tag_48px.png"
                         KeyGesture="Ctrl + 4" />
                     <dxb:BarButtonItem
                         x:Name="tAddGroup"
                         Command="{Binding AddGroupCommand}"
                         Content="Add Group"
-                        Glyph="/EasyDriverServer;component/Resources/Images/folder_48px.png"
+                        Glyph="/AHDScadaServer;component/Resources/Images/folder_48px.png"
                         KeyGesture="Ctrl + 5" />
                     <dxb:BarButtonItem
                         x:Name="bAddInternal"

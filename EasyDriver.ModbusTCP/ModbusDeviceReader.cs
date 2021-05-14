@@ -1,5 +1,6 @@
 ﻿using EasyDriverPlugin;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,751 +9,1059 @@ using System.Threading.Tasks;
 
 namespace EasyDriver.ModbusTCP
 {
-    class ModbusDeviceReader : IDisposable
-    {
-        public ModbusDeviceReader(IDeviceCore device)
-        {
-            Device = device;
-            semaphore = new SemaphoreSlim(1, 1);
-            stopwatch = new Stopwatch();
-            ReadBlockSettings = new List<ReadBlockSetting>();
-            ReadBlockString = new List<string>() { "", "", "", "" };
-            refreshTask = Task.Factory.StartNew(Refresh, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-        }
+    //class ModbusDeviceReader : IDisposable
+    //{
+    //    public ModbusDeviceReader(ModbusTCPDriver driver, Device device)
+    //    {
+    //        this.driver = driver;
+    //        Device = device;
+    //        locker = new SemaphoreSlim(1, 1);
+    //        stopwatch = new Stopwatch();
+    //        DefaultPiorityWriteCommands = new ConcurrentDictionary<WriteCommand, WriteCommand>();
+    //        driver.WriteQueue.Enqueued += OnWriteQueueAdded;
+    //        refreshTask = Task.Factory.StartNew(Refresh, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+    //        device.ParameterContainer.ParameterChanged += OnDeviceParameterChanged;
 
-        public IDeviceCore Device { get; private set; }
-        private ModbusTCPClient mbClient;
-        readonly Task refreshTask;
-        readonly SemaphoreSlim semaphore;
-        readonly Stopwatch stopwatch;
+    //    }
 
-        /// <summary>
-        /// Bit xác định đối tượng này đã bị dispose hay chưa
-        /// </summary>
-        public bool IsDisposed { get; private set; }
+    //    public Channel Channel => driver.Channel;
+    //    public Device Device { get; private set; }
+    //    private ModbusTCPClient mbClient;
+    //    readonly Task refreshTask;
+    //    readonly SemaphoreSlim locker;
+    //    readonly Stopwatch stopwatch;
+    //    readonly ModbusTCPDriver driver;
+    //    public ConcurrentDictionary<WriteCommand, WriteCommand> DefaultPiorityWriteCommands { get; set; }
+    //    WriteQueue WriteQueue => driver.WriteQueue;
 
-        /// <summary>
-        /// Chu kì quét đọc giá trị của Device
-        /// </summary>
-        public int ScanRate
-        {
-            get
-            {
-                if (Device != null && Device.ParameterContainer != null && Device.ParameterContainer.Parameters.ContainsKey("ScanRate"))
-                    return int.Parse(Device.ParameterContainer.Parameters["ScanRate"].ToString());
-                return 1000;
-            }
-        }
+    //    private void OnDeviceParameterChanged(object sender, ParameterChangedEventArgs e)
+    //    {
+    //        if (e.KeyValue.Key == "Port" || e.KeyValue.Key == "IpAddress")
+    //        {
+    //            locker.Wait();
+    //            try
+    //            {
+    //                if (mbClient != null)
+    //                    mbClient.Dispose();
+    //                mbClient = new ModbusTCPClient();
+    //                mbClient.Connect(Device.IpAddress, Device.Port, false);
+    //            }
+    //            catch { }
+    //            finally { locker.Release(); }
+    //        }
+    //    }
 
-        public byte UnitId
-        {
-            get
-            {
-                if (Device != null && Device.ParameterContainer != null && Device.ParameterContainer.Parameters.ContainsKey("UnitId"))
-                    return byte.Parse(Device.ParameterContainer.Parameters["UnitId"]);
-                return 0;
-            }
-        }
+    //    /// <summary>
+    //    /// Bit xác định đối tượng này đã bị dispose hay chưa
+    //    /// </summary>
+    //    public bool IsDisposed { get; private set; }
 
-        public string IpAddress { get; set; }
-        
-        public ushort Port { get; set; }
+    //    /// <summary>
+    //    /// Hàm thực hiện việc đọc các thiết bị liên tục
+    //    /// </summary>
+    //    private void Refresh()
+    //    {
+    //        // Đảm bảo driver này chưa bị dispose
+    //        while (!IsDisposed)
+    //        {
+    //            try
+    //            {
+    //                // Khởi động lại đồng hồ
+    //                stopwatch.Restart();
 
-        public int TryCount { get; private set; }
+    //                if (mbClient == null)
+    //                {
+    //                    InitMBClient();
+    //                }
 
-        /// <summary>
-        /// Thời gian trễ giữa 2 lần request tới thiết bị thực
-        /// </summary>
-        public int DelayBetweenPool
-        {
-            get
-            {
-                if (Device != null)
-                {
-                    if (Device.ParameterContainer != null && Device.ParameterContainer.Parameters != null)
-                    {
-                        if (Device.ParameterContainer.Parameters.ContainsKey("DelayBetweenPool"))
-                        {
-                            if (int.TryParse(Device.ParameterContainer.Parameters["DelayBetweenPool"].ToString(), out int delay))
-                                return delay;
-                        }
-                    }
-                }
-                return 10;
-            }
-        }
+    //                if (!mbClient.Connected)
+    //                {
+    //                    try
+    //                    {
+    //                        locker.Wait();
+    //                        mbClient.Connect(Device.IpAddress, Device.Port, false);
+    //                    }
+    //                    catch { }
+    //                    finally { locker.Release(); }
+    //                }
 
-        /// <summary>
-        /// ReadBlockSetting của Device
-        /// </summary>
-        public List<ReadBlockSetting> ReadBlockSettings { get; set; }
+    //                if (mbClient.IsSocketNull)
+    //                {
+    //                    try
+    //                    {
+    //                        InitMBClient();
+    //                    }
+    //                    catch { }
+    //                }
 
-        /// <summary>
-        /// Chuổi cấu hình ReadBlockSetting của Device
-        /// </summary>
-        public List<string> ReadBlockString { get; set; }
+    //                if (mbClient != null)
+    //                {
+    //                    if (Device.Enabled)
+    //                    {
+    //                        if (mbClient.Connected)
+    //                        {
+    //                            byte unitId = (byte)Device.UnitId;
+    //                            ByteOrder byteOrder = Device.ByteOrder;
+    //                            // Lấy số lần thử đọc tối đa nếu đọc không thành công
+    //                            int maxTryTimes = Device.TryReadWriteTimes;
+    //                            // Thời gian timeout của việc đọc ghi
+    //                            int timeout = Device.Timeout;
 
-        /// <summary>
-        /// Hàm thực hiện việc đọc các thiết bị liên tục
-        /// </summary>
-        private void Refresh()
-        {
-            // Đảm bảo driver này chưa bị dispose
-            while (!IsDisposed)
-            {
-                try
-                {
-                    // Khởi động lại đồng hồ
-                    stopwatch.Restart();
+    //                            // Set lại thời gian timeout
+    //                            mbClient.SetTimeout(timeout);
 
-                    if (Device != null && Device.ParameterContainer != null)
-                    {
-                        if (Device.ParameterContainer.Parameters.ContainsKey("IpAddress"))
-                        {
-                            if (Device.FindParent<IChannelCore>(x => x is IChannelCore) is IChannelCore channel)
-                            {
-                                if (channel != null && channel.ParameterContainer != null)
-                                {
-                                    if (channel.ParameterContainer.Parameters.ContainsKey("Port"))
-                                    {
-                                        string ipAddress = Device.ParameterContainer.Parameters["IpAddress"];
-                                        ushort port = Convert.ToUInt16(channel.ParameterContainer.Parameters["Port"].ToString());
-                                        if (Port != port || IpAddress != ipAddress)
-                                        {
-                                            semaphore.Wait();
-                                            try
-                                            {
-                                                IpAddress = ipAddress;
-                                                Port = port;
-                                                if (mbClient != null)
-                                                    mbClient.Dispose();
-                                                mbClient = new ModbusTCPClient();
-                                                mbClient.Connect(ipAddress, port, false);
-                                            }
-                                            catch { }
-                                            finally { semaphore.Release(); }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+    //                            #region READ BLOCK FIRST
 
-                    if (mbClient != null)
-                    {
-                        try
-                        {
-                            semaphore.Wait();
-                            if (!mbClient.Connected)
-                                mbClient.Connect(IpAddress, Port, false);
-                        }
-                        catch { }
-                        finally { semaphore.Release(); }
+    //                            foreach (ReadBlockSetting block in Device.GetAllReadBlockSettings())
+    //                            {
+    //                                block.ReadResult = false;
+    //                                if (block.IsValid && block.Enabled && block.AddressType != AddressType.Undefined)
+    //                                {
+    //                                    if (block.RegisterTags.Count > 0)
+    //                                    {
+    //                                        int readCount = 0;
+    //                                        while (!block.ReadResult)
+    //                                        {
+    //                                            switch (block.AddressType)
+    //                                            {
+    //                                                case AddressType.InputContact:
+    //                                                case AddressType.OutputCoil:
+    //                                                    block.ReadResult = ReadBits(unitId, block.AddressType, block.StartOffset, block.BufferCount, ref block.BoolBuffer);
+    //                                                    break;
+    //                                                case AddressType.InputRegister:
+    //                                                case AddressType.HoldingRegister:
+    //                                                    block.ReadResult = ReadRegisters(unitId, block.AddressType, block.StartOffset, block.BufferCount, ref block.ByteBuffer);
+    //                                                    break;
+    //                                                default:
+    //                                                    break;
+    //                                            }
+    //                                            readCount++;
+    //                                            if (readCount >= Device.TryReadWriteTimes)
+    //                                                break;
+    //                                        }
 
-                        try
-                        {
-                            if (mbClient.IsSocketNull)
-                                InitMBClient();
-                        }
-                        catch { }
+    //                                        if (block.ReadResult)
+    //                                        {
+    //                                            switch (block.AddressType)
+    //                                            {
+    //                                                case AddressType.OutputCoil:
+    //                                                case AddressType.InputContact:
+    //                                                    {
+    //                                                        foreach (var tag in block.RegisterTags.ToArray())
+    //                                                        {
+    //                                                            if (tag.Enabled)
+    //                                                            {
+    //                                                                tag.Quality = Quality.Good;
+    //                                                                tag.TimeStamp = DateTime.Now;
+    //                                                                tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+    //                                                                tag.Value = block.BoolBuffer[tag.IndexOfDataInBlockSetting] ? (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+    //                                                            }
+    //                                                        }
+    //                                                        break;
+    //                                                    }
+    //                                                case AddressType.InputRegister:
+    //                                                case AddressType.HoldingRegister:
+    //                                                    {
+    //                                                        foreach (var tag in block.RegisterTags.ToArray())
+    //                                                        {
+    //                                                            if (tag.Enabled)
+    //                                                            {
+    //                                                                tag.Quality = Quality.Good;
+    //                                                                tag.TimeStamp = DateTime.Now;
+    //                                                                tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+    //                                                                tag.Value = tag.DataType.ConvertToValue(block.ByteBuffer, tag.Gain, tag.Offset, tag.IndexOfDataInBlockSetting, 0, Device.ByteOrder);
+    //                                                            }
+    //                                                        }
+    //                                                        break;
+    //                                                    }
+    //                                                default:
+    //                                                    break;
+    //                                            }
+    //                                        }
+    //                                        else
+    //                                        {
+    //                                            foreach (var tag in block.RegisterTags.ToArray())
+    //                                            {
+    //                                                if (tag.Enabled)
+    //                                                {
+    //                                                    tag.Quality = Quality.Bad;
+    //                                                    tag.TimeStamp = DateTime.Now;
+    //                                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+    //                                                }
+    //                                            }
+    //                                        }
+    //                                    }
+    //                                }
+    //                            }
 
-                        if (mbClient.Connected)
-                        {
-                            byte deviceId = byte.Parse(Device.ParameterContainer.Parameters["UnitId"].ToString());
-                            ByteOrder byteOrder = Device.ByteOrder;
-                            // Lấy số lần thử đọc tối đa nếu đọc không thành công
-                            int maxTryTimes = int.Parse(Device.ParameterContainer.Parameters["TryReadWriteTimes"].ToString());
-                            // Thời gian timeout của việc đọc ghi
-                            int timeout = int.Parse(Device.ParameterContainer.Parameters["Timeout"].ToString());
+    //                            #endregion
 
-                            // Set lại thời gian timeout
-                            mbClient.SetTimeout(timeout);
+    //                            foreach (var childDevice in Device.UndefinedTags.ToArray())
+    //                            {
+    //                                // Đảm bảo tag phải là modbus tcp tag
+    //                                if (!(childDevice is Tag tag))
+    //                                    continue;
 
-                            #region READ BLOCK FIRST
+    //                                // Bỏ qua nếu tag là một internal tag hoặc không enabled
+    //                                if (tag.IsInternalTag)
+    //                                {
+    //                                    tag.Quality = Quality.Good;
+    //                                    tag.TimeStamp = DateTime.Now;
+    //                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+    //                                    continue;
+    //                                }
 
-                            InitReadBlockSetting(Device, "ReadInputContactsBlockSetting", AddressType.InputContact);
-                            InitReadBlockSetting(Device, "ReadOutputCoilsBlockSetting", AddressType.OutputCoil);
-                            InitReadBlockSetting(Device, "ReadInputRegistersBlockSetting", AddressType.InputRegister);
-                            InitReadBlockSetting(Device, "ReadHoldingRegistersBlockSetting", AddressType.HoldingRegister);
+    //                                if (!tag.Enabled)
+    //                                    continue;
 
-                            foreach (ReadBlockSetting block in ReadBlockSettings)
-                            {
-                                block.ReadResult = false;
-                                int readCount = 0;
-                                while (!block.ReadResult)
-                                {
-                                    switch (block.AddressType)
-                                    {
-                                        case AddressType.InputContact:
-                                        case AddressType.OutputCoil:
-                                            block.ReadResult = ReadBits(deviceId, block.AddressType, block.StartOffset, block.Count, ref block.BoolBuffer);
-                                            break;
-                                        case AddressType.InputRegister:
-                                        case AddressType.HoldingRegister:
-                                            block.ReadResult = ReadRegisters(deviceId, block.AddressType, block.StartOffset, block.Count, ref block.ByteBuffer);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    readCount++;
-                                    if (readCount >= maxTryTimes)
-                                        break;
-                                }
-                            }
+    //                                // Nếu tag có kiểu địa chỉ xác định thì đọc nếu không thì set Quality thành Bad
+    //                                if (tag.AddressType != AddressType.Undefined)
+    //                                {
+    //                                    if ((DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
+    //                                    {
+    //                                        bool readSuccess = false;
+    //                                        switch (tag.AddressType)
+    //                                        {
+    //                                            case AddressType.InputContact:
+    //                                                {
+    //                                                    bool[] inputs = new bool[1];
+    //                                                    readSuccess = ReadBits(
+    //                                                        unitId,
+    //                                                        AddressType.InputContact,
+    //                                                        (ushort)tag.AddressOffset,
+    //                                                        1, ref inputs);
+    //                                                    if (readSuccess)
+    //                                                        tag.Value = inputs[0] ?
+    //                                                            (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+    //                                                    break;
+    //                                                }
+    //                                            case AddressType.OutputCoil:
+    //                                                {
+    //                                                    bool[] outputs = new bool[1];
+    //                                                    readSuccess = ReadBits(
+    //                                                        unitId,
+    //                                                        AddressType.OutputCoil,
+    //                                                        (ushort)tag.AddressOffset,
+    //                                                        1, ref outputs);
+    //                                                    if (readSuccess)
+    //                                                        tag.Value = outputs[0] ?
+    //                                                            (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+    //                                                    break;
+    //                                                }
+    //                                            case AddressType.InputRegister:
+    //                                                {
+    //                                                    byte[] inputRegs = new byte[tag.RequireByteLength];
+    //                                                    readSuccess = ReadRegisters(
+    //                                                        unitId,
+    //                                                        AddressType.InputRegister,
+    //                                                        (ushort)tag.AddressOffset,
+    //                                                        (ushort)(tag.RequireByteLength / 2),
+    //                                                        ref inputRegs);
+    //                                                    if (readSuccess)
+    //                                                        tag.Value = tag.DataType.ConvertToValue(inputRegs, tag.Gain, tag.Offset, 0, 0, Device.ByteOrder);
+    //                                                    break;
+    //                                                }
+    //                                            case AddressType.HoldingRegister:
+    //                                                {
+    //                                                    byte[] holdingRegs = new byte[tag.RequireByteLength];
+    //                                                    readSuccess = ReadRegisters(
+    //                                                        unitId,
+    //                                                        AddressType.HoldingRegister,
+    //                                                        (ushort)tag.AddressOffset,
+    //                                                        (ushort)(tag.RequireByteLength / 2),
+    //                                                        ref holdingRegs);
+    //                                                    if (readSuccess)
+    //                                                        tag.Value = tag.DataType.ConvertToValue(holdingRegs, tag.Gain, tag.Offset, 0, 0, Device.ByteOrder);
+    //                                                    break;
+    //                                                }
+    //                                            default:
+    //                                                break;
+    //                                        }
 
-                            #endregion
+    //                                        tag.Quality = readSuccess ? Quality.Good : Quality.Bad;
+    //                                        tag.TimeStamp = DateTime.Now;
+    //                                        tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+    //                                    }
+    //                                }
+    //                                else
+    //                                {
+    //                                    tag.TimeStamp = DateTime.Now;
+    //                                    tag.Quality = Quality.Bad;
+    //                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+    //                                }
+    //                            }
 
-                            foreach (var childDevice in Device.GetAllTags().ToArray())
-                            {
-                                if (!(childDevice is ITagCore tag))
-                                    continue;
+    //                            if (mbClient.IsSocketNull)
+    //                            {
+    //                                SetAllTagBad();
+    //                            }
 
-                                if (tag.IsInternalTag)
-                                {
-                                    tag.Quality = Quality.Good;
-                                    tag.TimeStamp = DateTime.Now;
-                                    continue;
-                                }
+    //                            // Thực hiện lệnh ghi tag
+    //                            for (int i = 0; i < Device.MaxWritesCount; i++)
+    //                            {
+    //                                if (DefaultPiorityWriteCommands.Count > 0)
+    //                                {
+    //                                    var cmd = DefaultPiorityWriteCommands.Keys.FirstOrDefault();
+    //                                    DefaultPiorityWriteCommands.TryRemove(cmd, out WriteCommand removeCmd);
 
-                                if (mbClient.IsSocketNull)
-                                    break;
+    //                                    if (cmd != null)
+    //                                    {
+    //                                        WriteResponse response = ExecuteWriteCommand(cmd);
+    //                                        CommandExecutedEventArgs args = new CommandExecutedEventArgs(cmd, response);
+    //                                        cmd.OnExecuted(args);
+    //                                    }
+    //                                }
+    //                                else { break; }
+    //                            }
 
-                                if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
-                                    tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+    //                            //#region READ BLOCK FIRST
 
-                                AddressType addressType = AddressType.HoldingRegister;
-                                bool decomposeSuccess = tag.Address.DecomposeAddress(tag.DataType, out addressType, out ushort offset, out byte stringLength);
+    //                            //InitReadBlockSetting(Device, "ReadInputContactsBlockSetting", AddressType.InputContact);
+    //                            //InitReadBlockSetting(Device, "ReadOutputCoilsBlockSetting", AddressType.OutputCoil);
+    //                            //InitReadBlockSetting(Device, "ReadInputRegistersBlockSetting", AddressType.InputRegister);
+    //                            //InitReadBlockSetting(Device, "ReadHoldingRegistersBlockSetting", AddressType.HoldingRegister);
 
-                                if (!tag.ParameterContainer.Parameters.ContainsKey("AddressType") ||
-                                    tag.Address != tag.ParameterContainer.Parameters["LastAddress"].ToString())
-                                {
-                                    if (decomposeSuccess)
-                                    {
-                                        tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
-                                        tag.ParameterContainer.Parameters["Offset"] = offset.ToString();
-                                        tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
-                                        tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
-                                        tag.ParameterContainer.Parameters["StringLength"] = stringLength.ToString();
-                                    }
-                                    else
-                                    {
-                                        tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
-                                    }
-                                }
+    //                            //foreach (ReadBlockSetting block in ReadBlockSettings)
+    //                            //{
+    //                            //    block.ReadResult = false;
+    //                            //    int readCount = 0;
+    //                            //    while (!block.ReadResult)
+    //                            //    {
+    //                            //        switch (block.AddressType)
+    //                            //        {
+    //                            //            case AddressType.InputContact:
+    //                            //            case AddressType.OutputCoil:
+    //                            //                block.ReadResult = ReadBits(unitId, block.AddressType, block.StartOffset, block.Count, ref block.BoolBuffer);
+    //                            //                break;
+    //                            //            case AddressType.InputRegister:
+    //                            //            case AddressType.HoldingRegister:
+    //                            //                block.ReadResult = ReadRegisters(unitId, block.AddressType, block.StartOffset, block.Count, ref block.ByteBuffer);
+    //                            //                break;
+    //                            //            default:
+    //                            //                break;
+    //                            //        }
+    //                            //        readCount++;
+    //                            //        if (readCount >= maxTryTimes)
+    //                            //            break;
+    //                            //    }
+    //                            //}
 
-                                if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString &&
-                                    (DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
-                                {
-                                    bool readSuccess = false;
-                                    bool containInBlock = false;
+    //                            //#endregion
 
-                                    int dtByteLength = 0;
+    //                            //foreach (var childDevice in Device.GetAllTags().ToArray())
+    //                            //{
+    //                            //    if (!(childDevice is ITagCore tag))
+    //                            //        continue;
 
-                                    if (tag.DataType.GetType() == typeof(ModbusTCP.String))
-                                    {
-                                        if (tag.ParameterContainer.Parameters.ContainsKey("StringLength"))
-                                        {
-                                            int.TryParse(tag.ParameterContainer.Parameters["StringLength"], out dtByteLength);
-                                            if (dtByteLength % 2 == 1)
-                                                dtByteLength++;
-                                            tag.DataType.RequireByteLength = dtByteLength;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        dtByteLength = tag.DataType.RequireByteLength;
-                                    }
+    //                            //    if (tag.IsInternalTag)
+    //                            //    {
+    //                            //        tag.Quality = Quality.Good;
+    //                            //        tag.TimeStamp = DateTime.Now;
+    //                            //        continue;
+    //                            //    }
 
-                                    foreach (var block in ReadBlockSettings)
-                                    {
-                                        if (block.AddressType == addressType)
-                                        {                                          
-                                            if (dtByteLength > 0 && dtByteLength <= 246)
-                                            {
-                                                if (block.CheckTagIsInReadBlockRange(
-                                                    tag,
-                                                    block.AddressType,
-                                                    offset,
-                                                    dtByteLength,
-                                                    out int index))
-                                                {
-                                                    containInBlock = true;
-                                                    readSuccess = block.ReadResult;
-                                                    if (readSuccess)
-                                                    {
-                                                        switch (block.AddressType)
-                                                        {
-                                                            case AddressType.InputContact:
-                                                            case AddressType.OutputCoil:
-                                                                tag.Value = block.BoolBuffer[index] ?
-                                                                    (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
-                                                                break;
-                                                            case AddressType.InputRegister:
-                                                            case AddressType.HoldingRegister:
-                                                                tag.Value = tag.DataType.ConvertToValue(
-                                                                    block.ByteBuffer, tag.Gain, tag.Offset, index, 0, byteOrder);
-                                                                break;
-                                                            default:
-                                                                break;
-                                                        }
-                                                    }
-                                                    break;
-                                                }
-                                            }
-                                        }
+    //                            //    if (mbClient.IsSocketNull)
+    //                            //        break;
 
-                                    }
+    //                            //    if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
+    //                            //        tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
 
-                                    if (!containInBlock)
-                                    {
-                                        switch (addressType)
-                                        {
-                                            case AddressType.InputContact:
-                                                {
-                                                    bool[] inputs = new bool[1];
-                                                    readSuccess = ReadBits(
-                                                        deviceId,
-                                                        AddressType.InputContact,
-                                                        offset,
-                                                        1, ref inputs);
-                                                    if (readSuccess)
-                                                        tag.Value = inputs[0] ?
-                                                            (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
-                                                    break;
-                                                }
-                                            case AddressType.OutputCoil:
-                                                {
-                                                    bool[] outputs = new bool[1];
-                                                    readSuccess = ReadBits(
-                                                        deviceId,
-                                                        AddressType.OutputCoil,
-                                                        offset,
-                                                        1, ref outputs);
-                                                    if (readSuccess)
-                                                        tag.Value = outputs[0] ?
-                                                            (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
-                                                    break;
-                                                }
-                                            case AddressType.InputRegister:
-                                                {
-                                                    byte[] inputRegs = new byte[tag.DataType.RequireByteLength];
-                                                    readSuccess = ReadRegisters(
-                                                        deviceId,
-                                                        AddressType.InputRegister,
-                                                        offset,
-                                                        (ushort)(tag.DataType.RequireByteLength / 2),
-                                                        ref inputRegs);
-                                                    if (readSuccess)
-                                                        tag.Value = tag.DataType.ConvertToValue(inputRegs, tag.Gain, tag.Offset, 0, 0, Device.ByteOrder);
-                                                    break;
-                                                }
-                                            case AddressType.HoldingRegister:
-                                                {
-                                                    byte[] holdingRegs = new byte[tag.DataType.RequireByteLength];
-                                                    readSuccess = ReadRegisters(
-                                                        deviceId,
-                                                        AddressType.HoldingRegister, 
-                                                        offset,
-                                                        (ushort)(tag.DataType.RequireByteLength / 2),
-                                                        ref holdingRegs);
-                                                    if (readSuccess)
-                                                        tag.Value = tag.DataType.ConvertToValue(holdingRegs, tag.Gain, tag.Offset, 0, 0, Device.ByteOrder);
-                                                    break;
-                                                }
-                                            default:
-                                                break;
-                                        }
-                                    }
+    //                            //    AddressType addressType = AddressType.HoldingRegister;
+    //                            //    bool decomposeSuccess = tag.Address.DecomposeAddress(tag.DataType, out addressType, out ushort offset, out byte stringLength);
 
-                                    tag.Quality = readSuccess ? Quality.Good : Quality.Bad;
-                                    tag.TimeStamp = DateTime.Now;
-                                }
-                                else
-                                {
-                                    tag.TimeStamp = DateTime.Now;
-                                    tag.Quality = Quality.Bad;
-                                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
-                                }
-                            }
+    //                            //    if (!tag.ParameterContainer.Parameters.ContainsKey("AddressType") ||
+    //                            //        tag.Address != tag.ParameterContainer.Parameters["LastAddress"].ToString())
+    //                            //    {
+    //                            //        if (decomposeSuccess)
+    //                            //        {
+    //                            //            tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
+    //                            //            tag.ParameterContainer.Parameters["Offset"] = offset.ToString();
+    //                            //            tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
+    //                            //            tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+    //                            //            tag.ParameterContainer.Parameters["StringLength"] = stringLength.ToString();
+    //                            //        }
+    //                            //        else
+    //                            //        {
+    //                            //            tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
+    //                            //        }
+    //                            //    }
 
-                            if (mbClient.IsSocketNull)
-                            {
-                                SetAllTagBad();
-                            }
-                        }
-                        else
-                        {
-                            SetAllTagBad();
-                        }
+    //                            //    if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString &&
+    //                            //        (DateTime.Now - tag.TimeStamp).TotalMilliseconds >= tag.RefreshRate)
+    //                            //    {
+    //                            //        bool readSuccess = false;
+    //                            //        bool containInBlock = false;
 
-                        if (mbClient.IsSocketNull)
-                        {
-                            SetAllTagBad();
-                        }
-                    }
-                }
-                catch { }
-                finally
-                {
-                    stopwatch.Stop();
-                    int delay = (int)(ScanRate - stopwatch.ElapsedMilliseconds);
-                    if (delay < 1)
-                        delay = 1;
-                    Thread.Sleep(delay);
-                }
-            }
-            // Dispose đối tượng phụ trách đọc ghi modbus
-            mbClient?.Dispose();
-        }
+    //                            //        int dtByteLength = 0;
 
-        /// <summary>
-        /// Hàm đọc input và output
-        /// </summary>
-        /// <param name="deviceId"></param>
-        /// <param name="addressType"></param>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        /// <param name="boolBuffer"></param>
-        /// <returns></returns>
-        private bool ReadBits(byte deviceId, AddressType addressType, ushort offset, ushort count, ref bool[] boolBuffer)
-        {
-            try
-            {
-                if (mbClient.IsSocketNull)
-                    InitMBClient();
+    //                            //        if (tag.DataType.GetType() == typeof(ModbusTCP.String))
+    //                            //        {
+    //                            //            if (tag.ParameterContainer.Parameters.ContainsKey("StringLength"))
+    //                            //            {
+    //                            //                int.TryParse(tag.ParameterContainer.Parameters["StringLength"], out dtByteLength);
+    //                            //                if (dtByteLength % 2 == 1)
+    //                            //                    dtByteLength++;
+    //                            //                tag.DataType.RequireByteLength = dtByteLength;
+    //                            //            }
+    //                            //        }
+    //                            //        else
+    //                            //        {
+    //                            //            dtByteLength = tag.DataType.RequireByteLength;
+    //                            //        }
 
-                if (mbClient == null || mbClient.IsSocketNull)
-                    return false;
+    //                            //        foreach (var block in ReadBlockSettings)
+    //                            //        {
+    //                            //            if (block.AddressType == addressType)
+    //                            //            {                                          
+    //                            //                if (dtByteLength > 0 && dtByteLength <= 246)
+    //                            //                {
+    //                            //                    if (block.CheckTagIsInReadBlockRange(
+    //                            //                        tag,
+    //                            //                        block.AddressType,
+    //                            //                        offset,
+    //                            //                        dtByteLength,
+    //                            //                        out int index))
+    //                            //                    {
+    //                            //                        containInBlock = true;
+    //                            //                        readSuccess = block.ReadResult;
+    //                            //                        if (readSuccess)
+    //                            //                        {
+    //                            //                            switch (block.AddressType)
+    //                            //                            {
+    //                            //                                case AddressType.InputContact:
+    //                            //                                case AddressType.OutputCoil:
+    //                            //                                    tag.Value = block.BoolBuffer[index] ?
+    //                            //                                        (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+    //                            //                                    break;
+    //                            //                                case AddressType.InputRegister:
+    //                            //                                case AddressType.HoldingRegister:
+    //                            //                                    tag.Value = tag.DataType.ConvertToValue(
+    //                            //                                        block.ByteBuffer, tag.Gain, tag.Offset, index, 0, byteOrder);
+    //                            //                                    break;
+    //                            //                                default:
+    //                            //                                    break;
+    //                            //                            }
+    //                            //                        }
+    //                            //                        break;
+    //                            //                    }
+    //                            //                }
+    //                            //            }
 
-                semaphore.Wait();
-                byte[] result = null;
-                switch (addressType)
-                {
-                    case AddressType.InputContact:
-                        mbClient.ReadDiscreteInputs(deviceId, deviceId, offset, count, ref result);
-                        break;
-                    case AddressType.OutputCoil:
-                        mbClient.ReadCoils(deviceId, deviceId, offset, count, ref result);
-                        break;
-                    default:
-                        break;
-                }
-                if (result != null)
-                {
-                    for (int i = 0; i < result.Length; i++)
-                    {
-                        for (int j = 0; j < 8; j++)
-                        {
-                            if ((8 * i + j) < count)
-                                boolBuffer[8 * i + j] = Convert.ToBoolean((result[i] >> j) & 0x01);
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            }
-            catch { return false; }
-            finally { Thread.Sleep(DelayBetweenPool); semaphore.Release(); }
-        }
+    //                            //        }
 
-        /// <summary>
-        /// Hàm đọc input register và holding register
-        /// </summary>
-        /// <param name="deviceId"></param>
-        /// <param name="addressType"></param>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        /// <param name="byteBuffer"></param>
-        /// <returns></returns>
-        private bool ReadRegisters(byte deviceId, AddressType addressType, ushort offset, ushort count, ref byte[] byteBuffer)
-        {
-            try
-            {
-                if (mbClient.IsSocketNull)
-                    InitMBClient();
+    //                            //        if (!containInBlock)
+    //                            //        {
+    //                            //            switch (addressType)
+    //                            //            {
+    //                            //                case AddressType.InputContact:
+    //                            //                    {
+    //                            //                        bool[] inputs = new bool[1];
+    //                            //                        readSuccess = ReadBits(
+    //                            //                            unitId,
+    //                            //                            AddressType.InputContact,
+    //                            //                            offset,
+    //                            //                            1, ref inputs);
+    //                            //                        if (readSuccess)
+    //                            //                            tag.Value = inputs[0] ?
+    //                            //                                (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+    //                            //                        break;
+    //                            //                    }
+    //                            //                case AddressType.OutputCoil:
+    //                            //                    {
+    //                            //                        bool[] outputs = new bool[1];
+    //                            //                        readSuccess = ReadBits(
+    //                            //                            unitId,
+    //                            //                            AddressType.OutputCoil,
+    //                            //                            offset,
+    //                            //                            1, ref outputs);
+    //                            //                        if (readSuccess)
+    //                            //                            tag.Value = outputs[0] ?
+    //                            //                                (tag.Gain + tag.Offset).ToString() : tag.Offset.ToString();
+    //                            //                        break;
+    //                            //                    }
+    //                            //                case AddressType.InputRegister:
+    //                            //                    {
+    //                            //                        byte[] inputRegs = new byte[tag.DataType.RequireByteLength];
+    //                            //                        readSuccess = ReadRegisters(
+    //                            //                            unitId,
+    //                            //                            AddressType.InputRegister,
+    //                            //                            offset,
+    //                            //                            (ushort)(tag.DataType.RequireByteLength / 2),
+    //                            //                            ref inputRegs);
+    //                            //                        if (readSuccess)
+    //                            //                            tag.Value = tag.DataType.ConvertToValue(inputRegs, tag.Gain, tag.Offset, 0, 0, Device.ByteOrder);
+    //                            //                        break;
+    //                            //                    }
+    //                            //                case AddressType.HoldingRegister:
+    //                            //                    {
+    //                            //                        byte[] holdingRegs = new byte[tag.DataType.RequireByteLength];
+    //                            //                        readSuccess = ReadRegisters(
+    //                            //                            unitId,
+    //                            //                            AddressType.HoldingRegister, 
+    //                            //                            offset,
+    //                            //                            (ushort)(tag.DataType.RequireByteLength / 2),
+    //                            //                            ref holdingRegs);
+    //                            //                        if (readSuccess)
+    //                            //                            tag.Value = tag.DataType.ConvertToValue(holdingRegs, tag.Gain, tag.Offset, 0, 0, Device.ByteOrder);
+    //                            //                        break;
+    //                            //                    }
+    //                            //                default:
+    //                            //                    break;
+    //                            //            }
+    //                            //        }
 
-                if (mbClient == null || mbClient.IsSocketNull)
-                {
-                    return false;
-                }
+    //                            //        tag.Quality = readSuccess ? Quality.Good : Quality.Bad;
+    //                            //        tag.TimeStamp = DateTime.Now;
+    //                            //    }
+    //                            //    else
+    //                            //    {
+    //                            //        tag.TimeStamp = DateTime.Now;
+    //                            //        tag.Quality = Quality.Bad;
+    //                            //        tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+    //                            //    }
+    //                            //}
+    //                        }
+    //                        else
+    //                        {
+    //                            SetAllTagBad();
+    //                        }
 
-                semaphore.Wait();
-                byte[] result = null;
-                switch (addressType)
-                {
-                    case AddressType.InputRegister:
-                        mbClient.ReadInputRegister(deviceId, deviceId, offset, count, ref result);
-                        break;
-                    case AddressType.HoldingRegister:
-                        mbClient.ReadHoldingRegister(deviceId, deviceId, offset, count, ref result);
-                        break;
-                    default:
-                        break;
-                }
-                if (result != null)
-                {
-                    Array.Copy(result, byteBuffer, byteBuffer.Length);
-                    return true;
-                }
-                return false;
-            }
-            catch { return false; }
-            finally { Thread.Sleep(DelayBetweenPool); semaphore.Release(); }
-        }
+    //                        if (mbClient.IsSocketNull)
+    //                        {
+    //                            SetAllTagBad();
+    //                        }
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    SetAllTagBad();
+    //                }
+    //            }
+    //            catch { }
+    //            finally
+    //            {
+    //                try
+    //                {
+    //                    mbClient?.Dispose();
+    //                }
+    //                catch { }
 
-        /// <summary>
-        /// Hàm thực hiện việc ghi giá trị
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public Quality Write(ITagCore tag, object value)
-        {
-            if (!IsDisposed)
-            {
-                try
-                {
-                    // Kiểm tra các điều kiện cần để thực hiện việc ghi
-                    if (tag != null && tag.DataType != null &&
-                        tag.FindParent<IDeviceCore>(x => x is IDeviceCore) is IDeviceCore device && tag.AccessPermission == AccessPermission.ReadAndWrite)
-                    {
-                        if (tag.IsInternalTag)
-                        {
-                            tag.Value = value?.ToString();
-                            return Quality.Good;
-                        }
+    //                stopwatch.Stop();
+    //                int delay = (int)(Device.ScanRate - stopwatch.ElapsedMilliseconds);
+    //                if (delay < 1)
+    //                    delay = 1;
+    //                Thread.Sleep(delay);
+    //            }
+    //        }
+    //        // Dispose đối tượng phụ trách đọc ghi modbus
+    //        mbClient?.Dispose();
+    //    }
 
-                        // Lấy thông tin của địa chỉ Tag như kiểu địa chỉ và vị trí bắt đầu của thanh ghi
-                        if (!tag.ParameterContainer.Parameters.ContainsKey("LastAddress"))
-                            tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
+    //    /// <summary>
+    //    /// Hàm đọc input và output
+    //    /// </summary>
+    //    /// <param name="unitId"></param>
+    //    /// <param name="addressType"></param>
+    //    /// <param name="offset"></param>
+    //    /// <param name="count"></param>
+    //    /// <param name="boolBuffer"></param>
+    //    /// <returns></returns>
+    //    private bool ReadBits(byte unitId, AddressType addressType, ushort offset, ushort count, ref bool[] boolBuffer)
+    //    {
+    //        locker.Wait();
 
-                        AddressType addressType = AddressType.HoldingRegister;
-                        bool isTagValid = tag.Address.DecomposeAddress(tag.DataType, out addressType, out ushort offset, out byte stringLength);
+    //        try
+    //        {
+    //            if (mbClient.IsSocketNull)
+    //                InitMBClient();
 
-                        if (!tag.ParameterContainer.Parameters.ContainsKey("AddressType") ||
-                            tag.Address != tag.ParameterContainer.Parameters["LastAddress"].ToString())
-                        {
-                            if (isTagValid)
-                            {
-                                tag.ParameterContainer.Parameters["AddressType"] = addressType.ToString();
-                                tag.ParameterContainer.Parameters["Offset"] = offset.ToString();
-                                tag.ParameterContainer.Parameters["IsValid"] = bool.TrueString;
-                                tag.ParameterContainer.Parameters["LastAddress"] = tag.Address;
-                                tag.ParameterContainer.Parameters["StringLength"] = stringLength.ToString();
-                            }
-                            else
-                            {
-                                tag.ParameterContainer.Parameters["IsValid"] = bool.FalseString;
-                            }
-                        }
-                        if (tag.ParameterContainer.Parameters["IsValid"] == bool.TrueString)
-                        {
-                            if (tag.DataType.GetType() == typeof(ModbusTCP.String))
-                            {
-                                if (tag.ParameterContainer.Parameters.ContainsKey("StringLength"))
-                                {
-                                    int.TryParse(tag.ParameterContainer.Parameters["StringLength"], out int dtByteLength);
-                                    if (dtByteLength % 2 == 1)
-                                        dtByteLength++;
-                                    tag.DataType.RequireByteLength = dtByteLength;
-                                }
-                            }
+    //            if (mbClient == null || mbClient.IsSocketNull)
+    //                return false;
 
-                            // Lấy thông tin byte order của device parent
-                            ByteOrder byteOrder = device.ByteOrder;
-                            // Chuyển đổi giá trị cần ghi thành chuỗi byte nếu thành công thì mới ghi
-                            if (tag.DataType.TryParseToByteArray(value, tag.Gain, tag.Offset, out byte[] writeBuffer, byteOrder))
-                            {
-                                // Lấy thông tin của device như UnitId, MaxReadWriteTimes, Timeout...
-                                byte unitId = byte.Parse(device.ParameterContainer.Parameters["UnitId"].ToString());
-                                int maxTryTimes = int.Parse(device.ParameterContainer.Parameters["TryReadWriteTimes"].ToString());
-                                int timeout = int.Parse(device.ParameterContainer.Parameters["Timeout"].ToString());
+    //            byte[] result = null;
+    //            switch (addressType)
+    //            {
+    //                case AddressType.InputContact:
+    //                    mbClient.ReadDiscreteInputs(unitId, unitId, offset, count, ref result);
+    //                    break;
+    //                case AddressType.OutputCoil:
+    //                    mbClient.ReadCoils(unitId, unitId, offset, count, ref result);
+    //                    break;
+    //                default:
+    //                    break;
+    //            }
+    //            if (result != null)
+    //            {
+    //                for (int i = 0; i < result.Length; i++)
+    //                {
+    //                    for (int j = 0; j < 8; j++)
+    //                    {
+    //                        if ((8 * i + j) < count)
+    //                            boolBuffer[8 * i + j] = Convert.ToBoolean((result[i] >> j) & 0x01);
+    //                    }
+    //                }
+    //                return true;
+    //            }
+    //            return false;
+    //        }
+    //        catch { return false; }
+    //        finally { Thread.Sleep(Device.DelayBetweenPool); locker.Release(); }
+    //    }
 
-                                // Cài timeout cho serial port
-                                mbClient.SetTimeout(timeout);
+    //    /// <summary>
+    //    /// Hàm đọc input register và holding register
+    //    /// </summary>
+    //    /// <param name="unitId"></param>
+    //    /// <param name="addressType"></param>
+    //    /// <param name="offset"></param>
+    //    /// <param name="count"></param>
+    //    /// <param name="byteBuffer"></param>
+    //    /// <returns></returns>
+    //    private bool ReadRegisters(byte unitId, AddressType addressType, ushort offset, ushort count, ref byte[] byteBuffer)
+    //    {
+    //        locker.Wait();
+    //        try
+    //        {
+    //            if (mbClient.IsSocketNull)
+    //                InitMBClient();
 
-                                if (mbClient.IsSocketNull)
-                                    InitMBClient();
+    //            if (mbClient == null || mbClient.IsSocketNull)
+    //            {
+    //                return false;
+    //            }
 
-                                // Kiểm tra xem serial port đã mở mới cho phép ghi
-                                if (mbClient.Connected)
-                                {
-                                    // Khởi tạo biến thể hiện kết quả của việc ghi
-                                    bool writeResult = false;
-                                    semaphore.Wait();
-                                    // Lặp việc ghi cho đến khi thành công hoặc đã vượt quá số lần cho phép ghi
-                                    try
-                                    {
-                                        for (int i = 0; i < maxTryTimes; i++)
-                                        {
-                                            if (mbClient.IsSocketNull || !mbClient.Connected)
-                                                break;
-                                            try
-                                            {
-                                                if (addressType == AddressType.OutputCoil)
-                                                {
-                                                    byte[] result = null;
-                                                    bool bitResult = ByteHelper.GetBitAt(writeBuffer, 0, 0);
-                                                    mbClient.WriteSingleCoils(
-                                                        unitId,
-                                                        unitId,
-                                                        offset,
-                                                        bitResult,
-                                                        ref result);
-                                                    writeResult = result != null;
-                                                }
-                                                else if (addressType == AddressType.HoldingRegister)
-                                                {
-                                                    byte[] result = null;
-                                                    bool bitResult = ByteHelper.GetBitAt(writeBuffer, 0, 0);
-                                                    mbClient.WriteMultipleRegister(
-                                                        unitId,
-                                                        unitId,
-                                                        offset,
-                                                        writeBuffer,
-                                                        ref result);
-                                                    writeResult = result != null;
-                                                }
-                                                else { break; }
-                                                if (writeResult) // Nếu ghi thành công thì thoát khỏi vòng lặp
-                                                    break;
-                                            }
-                                            finally { Thread.Sleep(DelayBetweenPool); }
-                                        }
-                                    }
-                                    finally { semaphore.Release(); }
-                                    // Trả về kết quả 'Good' nếu ghi thành công, 'Bad' nếu không thành công
-                                    return writeResult ? Quality.Good : Quality.Bad;
-                                }
-                            }
+    //            byte[] result = null;
+    //            switch (addressType)
+    //            {
+    //                case AddressType.InputRegister:
+    //                    mbClient.ReadInputRegister(unitId, unitId, offset, count, ref result);
+    //                    break;
+    //                case AddressType.HoldingRegister:
+    //                    mbClient.ReadHoldingRegister(unitId, unitId, offset, count, ref result);
+    //                    break;
+    //                default:
+    //                    break;
+    //            }
+    //            if (result != null)
+    //            {
+    //                Array.Copy(result, byteBuffer, byteBuffer.Length);
+    //                return true;
+    //            }
+    //            return false;
+    //        }
+    //        catch { return false; }
+    //        finally { Thread.Sleep(Device.DelayBetweenPool); locker.Release(); }
+    //    }
 
-                        }
-                    }
-                }
-                catch { return Quality.Bad; }
-            }
-            return Quality.Bad;
-        }
+    //    /// <summary>
+    //    /// Hàm set tất cả các tag trong device về trạng thái bad
+    //    /// </summary>
+    //    private void SetAllTagBad()
+    //    {
+    //        foreach (var childDevice in Device.GetAllTags().ToArray())
+    //        {
+    //            if (childDevice is ITagCore tag)
+    //            {
+    //                if (tag.IsInternalTag)
+    //                    continue;
+    //                tag.TimeStamp = DateTime.Now;
+    //                tag.Quality = Quality.Bad;
+    //                tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
+    //            }
+    //        }
+    //    }
 
-        /// <summary>
-        /// Hàm set tất cả các tag trong device về trạng thái bad
-        /// </summary>
-        private void SetAllTagBad()
-        {
-            foreach (var childDevice in Device.GetAllTags().ToArray())
-            {
-                if (childDevice is ITagCore tag)
-                {
-                    if (tag.IsInternalTag)
-                        continue;
-                    tag.TimeStamp = DateTime.Now;
-                    tag.Quality = Quality.Bad;
-                    tag.RefreshInterval = (int)(DateTime.Now - tag.TimeStamp).TotalMilliseconds;
-                }
-            }
-        }
+    //    /// <summary>
+    //    /// Hàm khởi tạo Modbus TCP Client 
+    //    /// </summary>
+    //    public void InitMBClient()
+    //    {
+    //        if (!IsDisposed)
+    //        {
+    //            locker.Wait();
+    //            try
+    //            {
+    //                if (Device != null && Device.ParameterContainer != null)
+    //                {
+    //                    if (Device.ParameterContainer.Contains("IpAddress"))
+    //                    {
+    //                        if (mbClient != null)
+    //                            mbClient.Dispose();
+    //                        string ipAddress = Device.IpAddress;
+    //                        ushort port = Device.Port;
+    //                        mbClient = new ModbusTCPClient();
+    //                        mbClient.Connect(ipAddress, port, false);
+    //                    }
+    //                }
+    //            }
+    //            catch { }
+    //            finally { locker.Release(); }
+    //        }
+    //    }
 
-        /// <summary>
-        /// Hàm khởi tạo các ReadBlockSetting cho Device
-        /// </summary>
-        /// <param name="device"></param>
-        /// <param name="readBlocksettingKey"></param>
-        /// <param name="addressType"></param>
-        private void InitReadBlockSetting(IDeviceCore device, string readBlocksettingKey, AddressType addressType)
-        {
-            if (device.ParameterContainer.Parameters.ContainsKey(readBlocksettingKey))
-            {
-                string readBlockStr = device.ParameterContainer.Parameters[readBlocksettingKey].ToString();
-                int index = 0;
-                switch (addressType)
-                {
-                    case AddressType.OutputCoil:
-                        index = 0;
-                        break;
-                    case AddressType.InputContact:
-                        index = 1;
-                        break;
-                    case AddressType.InputRegister:
-                        index = 2;
-                        break;
-                    case AddressType.HoldingRegister:
-                        index = 3;
-                        break;
-                    default:
-                        break;
-                }
+    //    /// <summary>
+    //    /// Hủy đối tượng này
+    //    /// </summary>
+    //    public void Dispose()
+    //    {
+    //        IsDisposed = true;
+    //    }
 
-                if (ReadBlockString[index] != readBlockStr)
-                {
-                    foreach (var readBlock in ReadBlockSettings.Where(x => x.AddressType == addressType))
-                    {
-                        ReadBlockSettings.Remove(readBlock);
-                    }
+    //    public WriteResponse WriteCustom(WriteCommand cmd)
+    //    {
+    //        WriteResponse response = new WriteResponse()
+    //        {
+    //            WriteCommand = cmd,
+    //            ExecuteTime = DateTime.Now
+    //        };
 
-                    ReadBlockString[index] = readBlockStr;
-                    string[] readBlockSplit = readBlockStr.Split('|');
-                    if (readBlockSplit.Length > 0)
-                    {
-                        foreach (var item in readBlockSplit)
-                        {
-                            if (item.StartsWith("True"))
-                            {
-                                ReadBlockSetting newBlock = ReadBlockSetting.Convert(item);
-                                newBlock.AddressType = addressType;
-                                if (newBlock.IsValid)
-                                    ReadBlockSettings.Add(newBlock);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    //        try
+    //        {
+    //            if (cmd == null)
+    //            {
+    //                response.Error = "The write command is null.";
+    //            }
+    //            else
+    //            {
+    //                string writeAddress = cmd.CustomWriteAddress?.Trim();
+    //                if (string.IsNullOrWhiteSpace(writeAddress))
+    //                {
+    //                    response.Error = $"The write address {cmd.CustomWriteAddress} is not valid.";
+    //                }
+    //                else
+    //                {
+    //                    if (cmd.EquivalentDevice == null)
+    //                    {
+    //                        response.Error = $"The write address {cmd.CustomWriteAddress} is not valid.";
+    //                    }
+    //                    else
+    //                    {
+    //                        if (cmd.EquivalentDevice.Parent?.FindParent<IChannelCore>(x => x is IChannelCore) != Channel ||
+    //                            !(cmd.EquivalentDevice is Device))
+    //                        {
+    //                            response.Error = $"The parent of tag doesn't match with driver.";
+    //                        }
+    //                        else
+    //                        {
+    //                            if (cmd.CustomWriteAddress.DecomposeAddress(out AddressType addressType, out ushort offset))
+    //                            {
+    //                                if (addressType == AddressType.Undefined)
+    //                                {
+    //                                    response.Error = $"The write address {cmd.CustomWriteAddress} is not valid.";
+    //                                }
+    //                                else
+    //                                {
+    //                                    if (cmd.CustomWriteValue == null)
+    //                                    {
+    //                                        response.Error = $"The write value is null or invaid";
+    //                                    }
+    //                                    else
+    //                                    {
+    //                                        byte unitId = (byte)(cmd.EquivalentDevice as Device).UnitId;
+    //                                        switch (addressType)
+    //                                        {
+    //                                            case AddressType.InputContact:
+    //                                            case AddressType.InputRegister:
+    //                                                {
+    //                                                    response.Error = $"The write address doesn't support write function";
+    //                                                    break;
+    //                                                }
+    //                                            case AddressType.OutputCoil:
+    //                                                {
+    //                                                    if (cmd.CustomWriteValue.Length == 0 ||
+    //                                                    cmd.CustomWriteValue.Length >= 125)
+    //                                                    {
+    //                                                        response.Error = $"The write value is not valid";
+    //                                                        return response;
+    //                                                    }
+    //                                                    Thread.Sleep(cmd.Delay);
+    //                                                    locker.Wait();
+    //                                                    try
+    //                                                    {
 
-        /// <summary>
-        /// Hàm khởi tạo Modbus TCP Client 
-        /// </summary>
-        public void InitMBClient()
-        {
-            if (!IsDisposed)
-            {
-                semaphore.Wait();
-                try
-                {
-                    if (Device != null && Device.ParameterContainer != null)
-                    {
-                        if (Device.ParameterContainer.Parameters.ContainsKey("IpAddress"))
-                        {
-                            if (Device.FindParent<IChannelCore>(x => x is IChannelCore) is IChannelCore channel)
-                            {
-                                if (channel != null && channel.ParameterContainer != null)
-                                {
-                                    if (channel.ParameterContainer.Parameters.ContainsKey("Port"))
-                                    {
-                                        if (mbClient != null)
-                                            mbClient.Dispose();
-                                        string ipAddress = (string)Device.ParameterContainer.Parameters["IpAddress"];
-                                        ushort port = Convert.ToUInt16(channel.ParameterContainer.Parameters["Port"].ToString());
-                                        IpAddress = ipAddress;
-                                        Port = port;
-                                        mbClient = new ModbusTCPClient();
-                                        mbClient.Connect(ipAddress, port, false);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch { }
-                finally { semaphore.Release(); }
-            }
-        }
+    //                                                        byte[] result = null;
+    //                                                        mbClient.WriteMultipleCoils(
+    //                                                            unitId,
+    //                                                            unitId,
+    //                                                            offset,
+    //                                                            (ushort)cmd.CustomWriteValue.Length, cmd.CustomWriteValue, ref result);
+    //                                                        response.IsSuccess = result != null;
 
-        /// <summary>
-        /// Hủy đối tượng này
-        /// </summary>
-        public void Dispose()
-        {
-            IsDisposed = true;
-        }
-    }
+    //                                                        if (!response.IsSuccess)
+    //                                                            response.Error = $"Write not success.";
+    //                                                    }
+    //                                                    catch { }
+    //                                                    finally { locker.Release(); }
+    //                                                    break;
+    //                                                }
+    //                                            case AddressType.HoldingRegister:
+    //                                                {
+    //                                                    if (cmd.CustomWriteValue.Length % 2 == 1 ||
+    //                                                    cmd.CustomWriteValue.Length == 0 ||
+    //                                                    cmd.CustomWriteValue.Length >= 125)
+    //                                                    {
+    //                                                        response.Error = $"The write value is not valid";
+    //                                                        return response;
+    //                                                    }
+    //                                                    Thread.Sleep(cmd.Delay);
+    //                                                    locker.Wait();
+    //                                                    try
+    //                                                    {
+    //                                                        byte[] result = null;
+    //                                                        mbClient.WriteMultipleRegister(
+    //                                                            unitId,
+    //                                                            unitId,
+    //                                                            offset,
+    //                                                            cmd.CustomWriteValue, ref result);
+    //                                                        response.IsSuccess = result != null;
+
+    //                                                        if (!response.IsSuccess)
+    //                                                            response.Error = $"Write not success.";
+    //                                                    }
+    //                                                    catch { }
+    //                                                    finally { locker.Release(); }
+    //                                                    break;
+    //                                                }
+    //                                            default:
+    //                                                break;
+    //                                        }
+    //                                    }
+    //                                }
+    //                            }
+    //                            else
+    //                            {
+    //                                response.Error = $"The write address {cmd.CustomWriteAddress} is not valid.";
+    //                            }
+    //                        }
+    //                    }
+    //                }
+
+    //                if (cmd.NextCommands != null)
+    //                {
+    //                    if (cmd.NextCommands.Count > 0)
+    //                    {
+    //                        if (!cmd.AllowExecuteNextCommandsWhenFail ||
+    //                            cmd.AllowExecuteNextCommandsWhenFail && response.IsSuccess)
+    //                        {
+    //                            foreach (var nextCmd in cmd.NextCommands)
+    //                            {
+    //                                ExecuteWriteCommand(nextCmd);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            response.Error = $"Exception throw: {ex.ToString()}";
+    //        }
+    //        return response;
+    //    }
+
+    //    public WriteResponse WriteTag(WriteCommand cmd)
+    //    {
+    //        WriteResponse response = new WriteResponse()
+    //        {
+    //            WriteCommand = cmd,
+    //            ExecuteTime = DateTime.Now
+    //        };
+    //        try
+    //        {
+    //            if (cmd == null)
+    //            {
+    //                response.Error = "The write command is null.";
+    //            }
+    //            else
+    //            {
+    //                if (cmd.EquivalentDevice == null)
+    //                {
+    //                    response.Error = $"Device not found";
+    //                }
+    //                else
+    //                {
+    //                    if (cmd.EquivalentDevice.Parent?.FindParent<IChannelCore>(x => x is IChannelCore) != Channel ||
+    //                        !(cmd.EquivalentDevice is Device))
+    //                    {
+    //                        response.Error = $"The parent of tag doesn't match with driver.";
+    //                    }
+    //                    else
+    //                    {
+    //                        if (cmd.EquivalentTag != null && cmd.EquivalentTag is Tag tag)
+    //                        {
+    //                            if (tag.AddressType == AddressType.Undefined)
+    //                            {
+    //                                response.Error = $"The tag address {tag.Address} is not valid.";
+    //                            }
+    //                            else
+    //                            {
+    //                                if (tag.DataType == null)
+    //                                {
+    //                                    response.Error = $"The data type of tag is null";
+    //                                }
+    //                                else
+    //                                {
+    //                                    if (tag.DataType.TryParseToByteArray(cmd.Value, tag.Gain, tag.Offset, out byte[] writeBuffer, (cmd.EquivalentDevice as Device).ByteOrder))
+    //                                    {
+    //                                        byte unitId = (byte)(cmd.EquivalentDevice as Device).UnitId;
+    //                                        switch (tag.AddressType)
+    //                                        {
+    //                                            case AddressType.InputContact:
+    //                                            case AddressType.InputRegister:
+    //                                                {
+    //                                                    response.Error = $"The write address doesn't support write function";
+    //                                                    break;
+    //                                                }
+    //                                            case AddressType.OutputCoil:
+    //                                                {
+    //                                                    Thread.Sleep(cmd.Delay);
+    //                                                    locker.Wait();
+    //                                                    try
+    //                                                    {
+    //                                                        bool? writeValue = null;
+    //                                                        if (cmd.Value == "1")
+    //                                                        {
+    //                                                            writeValue = true;
+    //                                                        }
+    //                                                        else if (cmd.Value == "0")
+    //                                                        {
+    //                                                            writeValue = false;
+    //                                                        }
+    //                                                        else
+    //                                                        {
+    //                                                            response.IsSuccess = false;
+    //                                                            response.Error = "Write value is not valid";
+    //                                                            return response;
+    //                                                        }
+
+    //                                                        byte[] result = null;
+    //                                                        mbClient.WriteSingleCoils(
+    //                                                            unitId, unitId, (ushort)tag.AddressOffset, writeValue.Value, ref result);
+
+    //                                                        response.IsSuccess = result != null;
+    //                                                        if (!response.IsSuccess)
+    //                                                            response.Error = $"Write not success.";
+
+    //                                                    }
+    //                                                    catch { }
+    //                                                    finally { locker.Release(); }
+    //                                                    break;
+    //                                                }
+    //                                            case AddressType.HoldingRegister:
+    //                                                {
+    //                                                    Thread.Sleep(cmd.Delay);
+    //                                                    locker.Wait();
+    //                                                    try
+    //                                                    {
+    //                                                        byte[] result = null;
+    //                                                        mbClient.WriteMultipleRegister(
+    //                                                            unitId, unitId, (ushort)tag.AddressOffset, writeBuffer, ref result);
+    //                                                        response.IsSuccess = result != null;
+    //                                                        if (!response.IsSuccess)
+    //                                                            response.Error = $"Write not success.";
+    //                                                    }
+    //                                                    catch { }
+    //                                                    finally { locker.Release(); }
+    //                                                    break;
+    //                                                }
+    //                                            default:
+    //                                                break;
+    //                                        }
+    //                                    }
+    //                                    else
+    //                                    {
+    //                                        response.Error = $"The write value is not valid";
+    //                                    }
+    //                                }
+    //                            }
+    //                        }
+    //                        else
+    //                        {
+    //                            response.Error = $"Tag not found";
+    //                        }
+    //                    }
+    //                }
+
+    //                if (cmd.NextCommands != null)
+    //                {
+    //                    if (cmd.NextCommands.Count > 0)
+    //                    {
+    //                        if (!cmd.AllowExecuteNextCommandsWhenFail ||
+    //                            cmd.AllowExecuteNextCommandsWhenFail && response.IsSuccess)
+    //                        {
+    //                            foreach (var nextCmd in cmd.NextCommands)
+    //                            {
+    //                                ExecuteWriteCommand(nextCmd);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            response.Error = $"Exception throw: {ex.ToString()}";
+    //        }
+    //        return response;
+    //    }
+
+    //    public WriteResponse ExecuteWriteCommand(WriteCommand cmd)
+    //    {
+    //        if (cmd == null)
+    //        {
+    //            return new WriteResponse()
+    //            {
+    //                WriteCommand = cmd,
+    //                ExecuteTime = DateTime.Now,
+    //                Error = "The write command is null."
+    //            };
+    //        }
+    //        else
+    //        {
+    //            if (cmd.IsCustomWrite)
+    //                return WriteCustom(cmd);
+    //            else
+    //                return WriteTag(cmd);
+    //        }
+    //    }
+
+    //    private async void OnWriteQueueAdded(object sender, EventArgs e)
+    //    {
+    //        WriteCommand cmd = WriteQueue.GetCommand();
+    //        if (cmd != null)
+    //        {
+    //            switch (cmd.WritePiority)
+    //            {
+    //                case WritePiority.Default:
+    //                    cmd.Expired += OnWriteCommandExpired;
+    //                    DefaultPiorityWriteCommands.TryAdd(cmd, cmd);
+    //                    break;
+    //                case WritePiority.High:
+    //                    await Task.Run(() =>
+    //                    {
+    //                        WriteResponse response = ExecuteWriteCommand(cmd);
+    //                        CommandExecutedEventArgs args = new CommandExecutedEventArgs(cmd, response);
+    //                        cmd.OnExecuted(args);
+    //                    });
+    //                    break;
+    //                default:
+    //                    break;
+    //            }
+    //        }
+    //    }
+
+    //    private void OnWriteCommandExpired(object sender, EventArgs e)
+    //    {
+    //        if (sender is WriteCommand cmd)
+    //        {
+    //            cmd.Expired -= OnWriteCommandExpired;
+
+    //            if (DefaultPiorityWriteCommands.ContainsKey(cmd))
+    //            {
+    //                DefaultPiorityWriteCommands.TryRemove(cmd, out WriteCommand removeCmd);
+    //            }
+    //        }
+    //    }
+    //}
 }

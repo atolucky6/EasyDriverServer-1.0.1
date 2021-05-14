@@ -12,7 +12,7 @@
     Height="700"
     Padding="0"
     Background="White"
-    Icon="EasyScadaLogo.ico"
+    Icon="ahd.ico"
     ShowIcon="True"
     ShowInTaskbar="True"
     ShowTitle="False"

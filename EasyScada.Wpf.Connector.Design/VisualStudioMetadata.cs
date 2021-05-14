@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 [assembly: ProvideMetadata(typeof(EasyScada.Wpf.Connector.VisualStudio.Design.VisualStudioMetadata))]
@@ -24,6 +25,7 @@ namespace EasyScada.Wpf.Connector.VisualStudio.Design
             builder.AddCallback(typeof(EasyDriverConnector), CreateMenu);
             // Add design adorner
             builder.AddCustomAttributes(typeof(EasyDriverConnector), new FeatureAttribute(typeof(ConnectorDesignAdorner)));
+            builder.AddCustomAttributes(typeof(Window), new FeatureAttribute(typeof(ConnectorDesignAdorner)));
             AttributeTable = builder.CreateTable();
         }
 

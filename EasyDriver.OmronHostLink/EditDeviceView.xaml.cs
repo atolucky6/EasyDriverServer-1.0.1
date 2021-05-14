@@ -111,14 +111,13 @@ namespace EasyDriver.OmronHostLink
                 Device.ParameterContainer.DisplayName = "Omron Host Link Device Parameter";
                 Device.ParameterContainer.DisplayParameters = "Omron Host Link Device Parameter";
 
-                Device.ParameterContainer.Parameters["Timeout"] = spnTimeout.Value.ToString();
-                Device.ParameterContainer.Parameters["TryReadWriteTimes"] = spnTryReadWrite.Value.ToString();
-                Device.ParameterContainer.Parameters["UnitNo"] = spnUnitNo.Value.ToString();
+                Device.ParameterContainer.SetValue("Timeout", spnTimeout.Value.ToString());
+                Device.ParameterContainer.SetValue("TryReadWriteTimes", spnTryReadWrite.Value.ToString());
+                Device.ParameterContainer.SetValue("UnitNo", spnUnitNo.Value.ToString());
                 Device.ByteOrder = (ByteOrder)(Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString()));
                 DisableErrorBlockSettings(blockSettingView.ReadBlockSettings);
 
-                Device.ParameterContainer.Parameters["ReadBlockSettings"] = ConvertBlockSettingsIntoString(blockSettingView.ReadBlockSettings);
-
+                Device.ParameterContainer.SetValue("ReadBlockSettings", ConvertBlockSettingsIntoString(blockSettingView.ReadBlockSettings));
                 ((Parent as FrameworkElement).Parent as Window).Tag = Device;
                 ((Parent as FrameworkElement).Parent as Window).Close();
             }
@@ -138,19 +137,19 @@ namespace EasyDriver.OmronHostLink
             string validateResult = txbName.Text?.Trim().ValidateFileName("Device");
             if (!string.IsNullOrWhiteSpace(validateResult))
             {
-                DXMessageBox.Show(validateResult, "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show(validateResult, "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
             if (Device.Parent.Childs.FirstOrDefault(x => x != Device && (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
-                DXMessageBox.Show($"The device name '{txbName.Text?.Trim()}' is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show($"The device name '{txbName.Text?.Trim()}' is already in use.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
             var deviceChilds = Channel.GetAllDevices();
             if (deviceChilds.FirstOrDefault(x => x != Device && (x as IDeviceCore).ParameterContainer.Parameters["DeviceId"] == spnUnitNo.Value.ToString()) != null)
             {
-                DXMessageBox.Show($"The unit no'{spnUnitNo.Value}' is already used in this device.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show($"The unit no'{spnUnitNo.Value}' is already used in this device.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 

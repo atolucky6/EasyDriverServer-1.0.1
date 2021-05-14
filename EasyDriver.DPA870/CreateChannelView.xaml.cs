@@ -19,7 +19,7 @@ namespace EasyDriver.DPA870
     {
         #region Public members
 
-        public IEasyDriverPlugin Driver { get; set; }
+        public DPA870Driver Driver { get; set; }
         public IGroupItem ParentItem { get; set; }
 
         public List<string> ComPortSource { get; set; }
@@ -32,7 +32,7 @@ namespace EasyDriver.DPA870
 
         #region Constructors
 
-        public CreateChannelView(IEasyDriverPlugin driver, IGroupItem parent, IChannelCore templateItem)
+        public CreateChannelView(DPA870Driver driver, IGroupItem parent, IChannelCore templateItem)
         {
             Driver = driver;
             ParentItem = parent;
@@ -111,18 +111,19 @@ namespace EasyDriver.DPA870
         {
             if (CheckPortNotIsInUse(cobPort.SelectedItem?.ToString()))
             {
-                Driver.Channel.ParameterContainer.DisplayName = "DPA870 Comunication Parameters";
-                Driver.Channel.ParameterContainer.DisplayParameters = "DPA870 Comunication Parameters";
-                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
-                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
+                ChannelCore Channel = new ChannelCore(ParentItem);
+                Channel.Name = "Channel";
+                Channel.ParameterContainer.DisplayName = "DPA870 Comunication Parameters";
+                Channel.ParameterContainer.DisplayParameters = "DPA870 Comunication Parameters";
+                Channel.ParameterContainer.SetValue("Port", cobPort.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("Baudrate", cobBaudrate.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("Parity", cobParity.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("DataBits", cobDataBits.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("StopBits", cobStopBits.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("ScanRate", spnScanRate.Value.ToString());
+                Channel.ParameterContainer.SetValue("DelayBetweenPool", spnDelayPool.Value.ToString());
 
-                Driver.Connect();
-                ((Parent as FrameworkElement).Parent as Window).Tag = Driver.Channel;
+                Tag = Channel;
                 ((Parent as FrameworkElement).Parent as Window).Close();
             }
             else

@@ -52,7 +52,9 @@ namespace EasyScada.Core
                         {
                             var obj = JsonConvert.DeserializeObject(child.ToString(), typeof(ICoreItem), this);
                             if (obj is ICoreItem childCoreItem)
+                            {
                                 schema.Childs.Add(childCoreItem);
+                            }
                         }
                     }
                 }

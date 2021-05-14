@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasyDriver.ServerApplication;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,14 @@ namespace EasyScada.ServerApplication
         public AuthenticateLicenseView()
         {
             InitializeComponent();
+            btnActive.Click += BtnActive_Click;
+        }
+
+        private void BtnActive_Click(object sender, RoutedEventArgs e)
+        {
+            ActiveLicenseWindow window = new ActiveLicenseWindow();
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            window.ShowDialog();
         }
     }
 }

@@ -97,7 +97,7 @@ namespace EasyScada.ServerApplication
                 Get<IDriverManagerService>(),
                 Get<IRemoteConnectionManagerService>(),
                 Get<IInternalStorageService>()));
-            Kernel.Bind<ILicenseManagerService>().ToConstant(new LicenseManagerService("EasyScada", Get<IProjectManagerService>()));
+            Kernel.Bind<ILicenseManagerService>().ToConstant(new LicenseManagerService("AHDScada", Get<IProjectManagerService>()));
         }
 
         public T Get<T>()

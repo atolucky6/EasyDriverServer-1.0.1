@@ -55,6 +55,8 @@ namespace EasyScada.Winforms.Controls
             {
                 BaseComponent.Databases.Clear();
                 BaseComponent.Databases.AddRange(form.ResultDatabases.ToArray());
+                designerActionUIservice.Refresh(Component);
+                BaseComponent.SetValue(BaseComponent.Enabled, "Enabled");
             }
         }
 
@@ -64,6 +66,8 @@ namespace EasyScada.Winforms.Controls
             {
                 ColumnsConfigDesignerForm form = new ColumnsConfigDesignerForm(BaseComponent.Columns, Component.Site);
                 form.ShowDialog();
+                designerActionUIservice.Refresh(Component);
+                BaseComponent.SetValue(BaseComponent.Enabled, "Enabled");
             }
             catch (Exception ex)
             {

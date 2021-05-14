@@ -51,7 +51,7 @@
             this.easyPanel1.Location = new System.Drawing.Point(0, 0);
             this.easyPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.easyPanel1.Name = "easyPanel1";
-            this.easyPanel1.Size = new System.Drawing.Size(384, 465);
+            this.easyPanel1.Size = new System.Drawing.Size(384, 255);
             this.easyPanel1.TabIndex = 0;
             // 
             // gridView
@@ -80,7 +80,7 @@
             this.gridView.RowHeadersWidth = 25;
             this.gridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.gridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridView.Size = new System.Drawing.Size(384, 439);
+            this.gridView.Size = new System.Drawing.Size(384, 229);
             this.gridView.TabIndex = 3;
             this.gridView.VirtualMode = true;
             // 
@@ -141,7 +141,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.easyPanel1);
             this.Name = "SearchTagControl";
-            this.Size = new System.Drawing.Size(384, 465);
+            this.Size = new System.Drawing.Size(384, 255);
             ((System.ComponentModel.ISupportInitialize)(this.easyPanel1)).EndInit();
             this.easyPanel1.ResumeLayout(false);
             this.easyPanel1.PerformLayout();

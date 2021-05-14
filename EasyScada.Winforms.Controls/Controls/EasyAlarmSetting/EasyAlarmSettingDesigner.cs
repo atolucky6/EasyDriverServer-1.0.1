@@ -40,8 +40,10 @@ namespace EasyScada.Winforms.Controls
         {
             try
             {
-                EasyAlarmSettingDesignerForm form = new EasyAlarmSettingDesignerForm(Component.Site);
+                EasyAlarmSettingDesignerForm form = new EasyAlarmSettingDesignerForm(Component.Site, BaseControl.Database);
                 form.ShowDialog();
+                designerActionUIservice.Refresh(Component);
+                BaseControl.SetValue(BaseControl.Enabled, "Enabled");
             }
             catch (Exception ex)
             {

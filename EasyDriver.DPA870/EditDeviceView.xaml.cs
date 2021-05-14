@@ -21,7 +21,7 @@ namespace EasyDriver.DPA870
         public IEasyDriverPlugin Driver { get; set; }
         public List<ByteOrder> ByteOrderSource { get; set; }
         public IDeviceCore Device { get; set; }
-        public IChannelCore Channel => Driver.Channel;
+        public IChannelCore Channel => Device.FindParent<IChannelCore>(x => x is IChannelCore);
 
         #endregion
 
@@ -81,7 +81,7 @@ namespace EasyDriver.DPA870
 
                 Device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
 
-                ((Parent as FrameworkElement).Parent as Window).Tag = Device;
+                Tag = Device;
                 ((Parent as FrameworkElement).Parent as Window).Close();
             }
         }

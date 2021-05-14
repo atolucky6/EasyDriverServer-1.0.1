@@ -12,7 +12,7 @@ namespace EasyScada.Core
             Parent = null;
             ItemType = ItemType.ConnectionSchema;
         }
-
+        public string Url { get; set; }
         public string ServerAddress { get; set; }
         public ushort Port { get; set; }
         public CommunicationMode CommunicationMode { get; set; }

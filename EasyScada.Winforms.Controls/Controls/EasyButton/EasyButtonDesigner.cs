@@ -1,14 +1,7 @@
-﻿using ComponentFactory.Easy.Toolkit;
-using EasyScada.Core;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
-using System.Linq;
 using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyScada.Winforms.Controls
 {

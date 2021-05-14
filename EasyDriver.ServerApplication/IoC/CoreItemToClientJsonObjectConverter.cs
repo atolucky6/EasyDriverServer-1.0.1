@@ -70,12 +70,6 @@ namespace EasyScada.ServerApplication
                 writer.WritePropertyName("Error");
                 writer.WriteValue(groupItem.Error);
 
-                if (value is ISupportParameters supportParameter)
-                {
-                    writer.WritePropertyName("Properties");
-                    writer.WriteRawValue(JsonConvert.SerializeObject(supportParameter?.ParameterContainer?.Parameters, Formatting.Indented));
-                }
-
                 if (value is IStationCore station)
                 {
                     writer.WritePropertyName("ConnectionStatus");
@@ -95,6 +89,24 @@ namespace EasyScada.ServerApplication
                 {
                     writer.WritePropertyName("ConnectionStatus");
                     writer.WriteValue(tag.ConnectionStatus.ToString());
+
+                    writer.WritePropertyName("Value");
+                    writer.WriteValue(tag.Value);
+
+                    writer.WritePropertyName("Quality");
+                    writer.WriteValue(tag.Quality.ToString()) ;
+
+                    writer.WritePropertyName("Timestamp");
+                    writer.WriteValue(tag.TimeStamp);
+
+                    tag.ParameterContainer.SetValue("DataType", tag.DataTypeName);
+                    tag.ParameterContainer.SetValue("Address", tag.Address);
+                }
+
+                if (value is ISupportParameters supportParameter)
+                {
+                    writer.WritePropertyName("Properties");
+                    writer.WriteRawValue(JsonConvert.SerializeObject(supportParameter?.ParameterContainer?.Parameters, Formatting.Indented));
                 }
 
                 writer.WritePropertyName("Childs");

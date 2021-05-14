@@ -62,7 +62,7 @@ namespace EasyScada.Winforms.Controls
 
         private void OnConnectorStarted(object sender, EventArgs e)
         {
-            triggers.Start();
+            this.SetInvoke(x => x.triggers.Start());
         }
 
         #endregion
@@ -118,11 +118,10 @@ namespace EasyScada.Winforms.Controls
             isEditing = false;
             if (IsChanged)
             {
-                Invoke(new Action(() =>
-                {
-                    RecreateHandle();
-                }));
-                AcceptChanges();
+                this.SetInvoke(x => {
+                    x.RecreateHandle();
+                    AcceptChanges();
+                });
             }
         }
 

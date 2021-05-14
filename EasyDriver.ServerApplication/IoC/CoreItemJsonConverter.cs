@@ -30,34 +30,55 @@ namespace EasyScada.ServerApplication
                         result = new RemoteStation(null);
                         break;
                     case ItemType.Channel:
-                        var driverManager = IoC.Instance.Get<IDriverManagerService>();
-                        currentDriver = driverManager.CreateDriver(jObject["DriverPath"].Value<string>());
-                        if (currentDriver != null)
-                            result = currentDriver.CreateChannel(parent);
+                        if (jObject["IsReadOnly"].Value<bool>())
+                        {
+                            result = new ChannelCore(parent, true);
+                        }
+                        else
+                        {
+                            var driverManager = IoC.Instance.Get<IDriverManagerService>();
+                            currentDriver = driverManager.CreateDriver(jObject["DriverPath"].Value<string>());
+                            if (currentDriver != null)
+                                result = currentDriver.CreateChannel(parent);
+                        }
                         break;
                     case ItemType.Device:
-                        if (currentDriver != null)
-                            result = currentDriver.CreateDevice(parent);
+                        if (jObject["IsReadOnly"].Value<bool>())
+                        {
+                            result = new DeviceCore(parent, true);
+                        }
+                        else
+                        {
+                            if (currentDriver != null)
+                                result = currentDriver.CreateDevice(parent);
+                        }
                         break;
                     case ItemType.Group:
                         result = new GroupCore(null, false);
                         break;
                     case ItemType.Tag:
-                        if (!jObject["IsInternalTag"].Value<bool>())
+                        if (jObject["IsReadOnly"].Value<bool>())
                         {
-                            if (currentDriver != null)
-                                result = currentDriver.CreateTag(parent);
-                            else
-                            {
-                                if (jObject["IsReadOnly"].Value<bool>())
-                                {
-                                    result = new TagCore(parent);
-                                }
-                            }
+                            result = new TagCore(parent, true);
                         }
                         else
                         {
-                            result = new TagCore(parent);
+                            if (!jObject["IsInternalTag"].Value<bool>())
+                            {
+                                if (currentDriver != null)
+                                    result = currentDriver.CreateTag(parent);
+                                else
+                                {
+                                    if (jObject["IsReadOnly"].Value<bool>())
+                                    {
+                                        result = new TagCore(parent);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                result = new TagCore(parent);
+                            }
                         }
                         break;
                     case ItemType.ConnectionSchema:

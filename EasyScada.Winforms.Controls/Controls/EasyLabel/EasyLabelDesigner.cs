@@ -32,6 +32,7 @@ namespace EasyScada.Winforms.Controls
             actionItems.Add(new DesignerActionPropertyItem("Name", "Name", DesignerCategory.DESIGN, ""));
 
             actionItems.Add(new DesignerActionHeaderItem(DesignerCategory.APPEARANCE));
+            actionItems.Add(new DesignerActionPropertyItem("DisplayMode", "DisplayMode", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("Text", "Text", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("Font", "Font", DesignerCategory.APPEARANCE, ""));
             actionItems.Add(new DesignerActionPropertyItem("TextAlign", "TextAlign", DesignerCategory.APPEARANCE, ""));
@@ -81,6 +82,12 @@ namespace EasyScada.Winforms.Controls
         public ContentAlignment TextAlign
         {
             get { return BaseControl.TextAlign; }
+            set { BaseControl.SetValue(value); }
+        }
+
+        public DisplayMode DisplayMode
+        {
+            get { return BaseControl.DisplayMode; }
             set { BaseControl.SetValue(value); }
         }
 

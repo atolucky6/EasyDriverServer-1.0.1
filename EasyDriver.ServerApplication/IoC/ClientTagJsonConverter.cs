@@ -84,7 +84,7 @@ namespace EasyScada.ServerApplication
             return null;
         }
 
-        public override bool CanConvert(Type objectType)
+        public override bool CanConvert(Type objectType)    
         {
             return true;
         }

@@ -38,7 +38,7 @@ namespace EasyDriver.DPA870
             cobPermission.ItemsSource = AccessPermissionSource;
             cobPermission.SelectedItem = AccessPermission.ReadAndWrite;
 
-            DataTypeSource = driver.GetSupportDataTypes().ToList();
+            DataTypeSource = driver.SupportDataTypes.ToList();
             cobDataType.ItemsSource = DataTypeSource;
             cobDataType.DisplayMember = "Name";
             cobDataType.SelectedIndex = 0;
@@ -142,7 +142,7 @@ namespace EasyDriver.DPA870
                 createTags.Add(tag);
             }
 
-            ((Parent as FrameworkElement).Parent as Window).Tag = createTags;
+            Tag = createTags;
             ((Parent as FrameworkElement).Parent as Window).Close();
         }
 

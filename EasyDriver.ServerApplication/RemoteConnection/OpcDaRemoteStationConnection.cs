@@ -273,7 +273,10 @@ namespace EasyScada.ServerApplication
                                                             }
                                                             else
                                                             {
-                                                                tagCore.Value = itemValue.Value?.ToString();
+                                                                if (double.TryParse(itemValue.Value.ToString(), out double rawValue))
+                                                                {
+                                                                    tagCore.Value = ((rawValue * tagCore.Gain) + tagCore.Offset).ToString();
+                                                                }
                                                             }
                                                         }
                                                     }

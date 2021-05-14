@@ -83,7 +83,7 @@ namespace EasyScada.ServerApplication
             //Create new recent project collection
             RecentOpenProjects = new ObservableCollection<RecentOpenProjectModel>();
             //Restore the recent project collection from settings
-            JsonConvert.DeserializeObject<List<RecentOpenProjectModel>>(Properties.Settings.Default["RecentOpenProjects"].ToString())?.ForEach(x => RecentOpenProjects.Add(x));
+            JsonConvert.DeserializeObject<List<RecentOpenProjectModel>>(EasyDriver.ServerApplication.Properties.Settings.Default["RecentOpenProjects"].ToString())?.ForEach(x => RecentOpenProjects.Add(x));
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace EasyScada.ServerApplication
         public virtual void OnUnloaded()
         {
             //Save the recent project collection to settings when the view is closing
-            Properties.Settings.Default["RecentOpenProjects"] = JsonConvert.SerializeObject(RecentOpenProjects.ToList());
-            Properties.Settings.Default.Save();
+            EasyDriver.ServerApplication.Properties.Settings.Default["RecentOpenProjects"] = JsonConvert.SerializeObject(RecentOpenProjects.ToList());
+            EasyDriver.ServerApplication.Properties.Settings.Default.Save();
         }
 
         public async virtual Task OpenOnDoubleClick(RecentOpenProjectModel projectInfo)
@@ -106,7 +106,7 @@ namespace EasyScada.ServerApplication
                     {
                         MessageBoxService.ShowMessage($"The selected project '{SelectedItem.Name} can't be found under the specified path. " +
                             $"After this message the project will remove from the recent open projects."
-                            , "Easy Scada", MessageButton.OK, MessageIcon.Information);
+                            , "AHD Scada", MessageButton.OK, MessageIcon.Information);
                         RecentOpenProjects.Remove(SelectedItem);
                     }
                     else
@@ -116,7 +116,7 @@ namespace EasyScada.ServerApplication
                         {
                             //Ask the user want to save the current working project or not
                             var mbr = MessageBoxService.ShowMessage("The current working project has changes. " +
-                                "Do you want to save now ?", "Easy Scada", MessageButton.YesNoCancel, MessageIcon.Question);
+                                "Do you want to save now ?", "AHD Scada", MessageButton.YesNoCancel, MessageIcon.Question);
                             //If choose cancel just return
                             if (mbr == MessageResult.Cancel)
                                 return;
@@ -172,7 +172,7 @@ namespace EasyScada.ServerApplication
                 {
                     MessageBoxService.ShowMessage($"The selected project '{SelectedItem.Name} can't be found under the specified path. " +
                         $"After this message the project will remove from the recent open projects."
-                        , "Easy Scada", MessageButton.OK, MessageIcon.Information);
+                        , "AHD Scada", MessageButton.OK, MessageIcon.Information);
                     RecentOpenProjects.Remove(SelectedItem);
                 }
                 else
@@ -182,7 +182,7 @@ namespace EasyScada.ServerApplication
                     {
                         //Ask the user want to save the current working project or not
                         var mbr = MessageBoxService.ShowMessage("The current working project has changes. " +
-                            "Do you want to save now ?", "Easy Scada", MessageButton.YesNoCancel, MessageIcon.Question);
+                            "Do you want to save now ?", "AHD Scada", MessageButton.YesNoCancel, MessageIcon.Question);
                         //If choose cancel just return
                         if (mbr == MessageResult.Cancel)
                             return;
@@ -238,7 +238,7 @@ namespace EasyScada.ServerApplication
             {
                 //Set title and filter for browse dialog
                 OpenFileDialogService.Title = "Open project";
-                OpenFileDialogService.Filter = "Easy Scada Project (*.json)|*.json";
+                OpenFileDialogService.Filter = "AHD Scada Project (*.json)|*.json";
 
                 //Show browse dialog 
                 if (OpenFileDialogService.ShowDialog())
@@ -260,7 +260,7 @@ namespace EasyScada.ServerApplication
                     {
                         //Ask the user want to save the current working project or not
                         var mbr = MessageBoxService.ShowMessage("The current working project has changes. " +
-                            "Do you want to save now ?", "Easy Scada", MessageButton.YesNoCancel, MessageIcon.Question);
+                            "Do you want to save now ?", "AHD Scada", MessageButton.YesNoCancel, MessageIcon.Question);
                         //If choose cancel just return
                         if (mbr == MessageResult.Cancel)
                             return;

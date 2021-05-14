@@ -105,7 +105,7 @@ namespace EasyScada.ServerApplication
                             RemoteStation.Port = Port;
                             RemoteStation.CommunicationMode = CommunicationMode;
                             RemoteStation.RefreshRate = RefreshRate;
-                            RemoteStation.ConnectionString = UrlBuilder.Build(OpcServer).ToString();
+                            RemoteStation.ConnectionString = UrlBuilder.Build(OpcServer, RemoteAddress).ToString();
                             RemoteStation.Parent.Childs.NotifyItemInCollectionChanged(RemoteStation);
                             RemoteStation.RaisePropertyChanged("OpcDaServerName");
                             RemoteConnectionManagerService.ReloadConnection(RemoteStation);
@@ -128,7 +128,7 @@ namespace EasyScada.ServerApplication
                         }
                         else
                         {
-                            Uri url = UrlBuilder.Build(OpcServer);
+                            Uri url = UrlBuilder.Build(OpcServer, RemoteAddress);
                             if (OpcDaServer == null)
                             {
                                 OpcDaServer = new OpcDaServer(url);
@@ -264,10 +264,11 @@ namespace EasyScada.ServerApplication
                         Error = Name.ValidateFileName();
                         break;
                     case nameof(RemoteAddress):
-                        if (!RemoteAddress.IsIpAddress())
-                            Error = "The Remote Address was not in IPv4 format.";
-                        else
-                            Error = string.Empty;
+                        //if (!RemoteAddress.IsIpAddress())
+                        //    Error = "The Remote Address was not in IPv4 format.";
+                        //else
+                        //    Error = string.Empty;
+                        Error = string.Empty;
                         break;
                     default:
                         Error = string.Empty;

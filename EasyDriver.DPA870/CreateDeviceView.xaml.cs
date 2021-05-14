@@ -80,7 +80,7 @@ namespace EasyDriver.DPA870
                 return;
             }
 
-            var childDevices = Driver.Channel.GetAllDevices();
+            var childDevices = ParentItem.GetAllDevices();
 
             if (ParentItem.Childs.FirstOrDefault(x => (x as ICoreItem).Name == txbName.Text?.Trim()) != null)
             {
@@ -95,7 +95,7 @@ namespace EasyDriver.DPA870
 
             device.ByteOrder = (ByteOrder)Enum.Parse(typeof(ByteOrder), cobByteOrder.SelectedItem.ToString());
 
-            ((Parent as FrameworkElement).Parent as Window).Tag = device;
+            Tag = device;
             ((Parent as FrameworkElement).Parent as Window).Close();
         }
 

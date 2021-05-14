@@ -1,6 +1,7 @@
 ﻿using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using EasyDriver.Core;
+using EasyDriver.ServerApplication;
 using EasyScada.ServerApplication.Workspace;
 using System;
 using System.Collections.ObjectModel;
@@ -236,7 +237,7 @@ namespace EasyScada.ServerApplication
                 {
                     // Nếu có thì hỏi người dùng có muốn lưu lại không
                     var mbr = MessageBoxService.ShowMessage(
-                        "The current working project has changes. Do you want to save now ?", "Easy Scada", MessageButton.YesNoCancel, MessageIcon.Question);
+                        "The current working project has changes. Do you want to save now ?", "AHD Scada", MessageButton.YesNoCancel, MessageIcon.Question);
                     // Nếu người dùng chọn 'Cancel' thì thoát khỏi hàm
                     if (mbr == MessageResult.Cancel)
                         return;
@@ -254,7 +255,7 @@ namespace EasyScada.ServerApplication
 
                 // Khởi tạo thông tin của SaveFileDialog
                 SaveFileDialogService.Title = "Save as...";
-                SaveFileDialogService.Filter = "Easy Scada Project (*.json)|*.json";
+                SaveFileDialogService.Filter = "AHD Scada Project (*.json)|*.json";
                 // Mở SaveDialog để lấy thông tin đường dẫn và tên của project mới
                 if (SaveFileDialogService.ShowDialog())
                 {
@@ -305,7 +306,7 @@ namespace EasyScada.ServerApplication
                 {
                     // Nếu có thì hỏi người dùng có muốn lưu lại những thay đổi đó không
                     var mbr = MessageBoxService.ShowMessage(
-                        "The current working project has changes. Do you want to save now ?", "Easy Scada", MessageButton.YesNoCancel, MessageIcon.Question);
+                        "The current working project has changes. Do you want to save now ?", "AHD Scada", MessageButton.YesNoCancel, MessageIcon.Question);
 
                     // Nếu người dùng chọn 'Yes' thì sẽ lưu lại
                     if (mbr == MessageResult.Yes)
@@ -342,7 +343,7 @@ namespace EasyScada.ServerApplication
 
             if (needClose)
             {
-                var mbr = MessageBoxService.ShowMessage("Do you want to exit Easy Driver Server?", "Message", MessageButton.YesNo, MessageIcon.Question);
+                var mbr = MessageBoxService.ShowMessage("Do you want to exit AHD Driver Server?", "Message", MessageButton.YesNo, MessageIcon.Question);
                 if (mbr == MessageResult.Yes)
                 {
                     // Xác nhận là thoát chương trình
@@ -715,6 +716,13 @@ namespace EasyScada.ServerApplication
         }
 
         #endregion
+
+        public void ShowLicenseInfor()
+        {
+            LicenseInforWindow window = new LicenseInforWindow();
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            window.ShowDialog();
+        }
 
         #endregion
     }

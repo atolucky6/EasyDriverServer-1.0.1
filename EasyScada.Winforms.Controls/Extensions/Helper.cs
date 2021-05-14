@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace EasyScada.Winforms.Controls
 {
-    internal static class EasyScadaHelper
+    public static class EasyScadaHelper
     {
         public static string REGEX_ValidFileName = @"^[\w\-. ]+$";
         public const string IpAddressPattern = @"^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$";
@@ -102,7 +102,6 @@ namespace EasyScada.Winforms.Controls
 
             for (int k = 0; k + 4 < pixelBuffer.Length; k += 4)
             {
-
                 int gray = (int)(pixelBuffer[k + 2] * 0.33) + (int)(pixelBuffer[k + 1] * 0.33) + (int)(pixelBuffer[k] * 0.34);
 
                 double rScale = shadeColor.R * 2 / 255;

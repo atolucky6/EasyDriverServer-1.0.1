@@ -395,7 +395,7 @@
             this.easyPage4,
             this.emailPage,
             this.easyPage6});
-            this.easyNavigator1.SelectedIndex = 2;
+            this.easyNavigator1.SelectedIndex = 3;
             this.easyNavigator1.Size = new System.Drawing.Size(790, 520);
             this.easyNavigator1.TabIndex = 0;
             this.easyNavigator1.Text = "easyNavigator1";

@@ -164,7 +164,7 @@ namespace EasyDriver.ModbusRTU
         {
             char parity = Parity.ToString()[0];
             int stopbit = (int)StopBits;
-            return $"ModbusRTU {Baudrate}.{DataBits}.{parity}.{stopbit}";
+            return $"ModbusRTU {Port}.{Baudrate}.{DataBits}.{parity}.{stopbit}";
         }
         #endregion
     }

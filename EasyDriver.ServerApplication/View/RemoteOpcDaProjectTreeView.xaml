@@ -32,23 +32,23 @@
                 x:Name="bExpandAll"
                 Command="{Binding ExpandAllCommand}"
                 Content="Expand all"
-                Glyph="/EasyDriverServer;component/Resources/Images/expand-arrow-48.png" />
+                Glyph="/AHDScadaServer;component/Resources/Images/expand-arrow-48.png" />
             <dxb:BarButtonItem
                 x:Name="bCollapseAll"
                 Command="{Binding CollapseAllCommand}"
                 Content="Collapse all"
-                Glyph="/EasyDriverServer;component/Resources/Images/collapse-arrow-48.png" />
+                Glyph="/AHDScadaServer;component/Resources/Images/collapse-arrow-48.png" />
             <dxb:BarButtonItem
                 x:Name="bRefresh"
                 Command="{Binding RefreshCommand}"
                 Content="Refresh"
-                Glyph="/EasyDriverServer;component/Resources/Images/refresh_48px.png" />
+                Glyph="/AHDScadaServer;component/Resources/Images/refresh_48px.png" />
             <dxb:BarButtonItem
                 x:Name="bComfirm"
                 Alignment="Far"
                 Command="{Binding ComfirmCommand}"
                 Content="Comfirm"
-                Glyph="/EasyDriverServer;component/Resources/Images/checkmark_48px.png" />
+                Glyph="/AHDScadaServer;component/Resources/Images/checkmark_48px.png" />
         </dxb:BarManager.Items>
         <dxb:BarManager.Bars>
             <dxb:Bar
@@ -215,7 +215,7 @@
                                                     <Image
                                                         Width="16"
                                                         Height="16"
-                                                        Source="/EasyDriverServer;component/Resources/Images/tag_48px.png" />
+                                                        Source="/AHDScadaServer;component/Resources/Images/tag_48px.png" />
                                                 </DataTemplate>
                                             </dxg:TableView.RowIndicatorContentTemplate>
                                             <dxg:TableView.RowCellMenuCustomizations />

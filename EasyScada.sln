@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriverPlugin", "EasyDriverPlugin\EasyDriverPlugin.csproj", "{5CBCE8B3-27A3-4D71-B38A-9CEEEF539F0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.ModbusRTU2", "EasyDriver.ModbusRTU\EasyDriver.ModbusRTU2.csproj", "{948DC54F-D9C2-4ACC-A948-DF58D489023D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.ModbusRTU_Old", "EasyDriver.ModbusRTU\EasyDriver.ModbusRTU_Old.csproj", "{948DC54F-D9C2-4ACC-A948-DF58D489023D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.ServerApplication", "EasyDriver.ServerApplication\EasyDriver.ServerApplication.csproj", "{08F091A3-CEBC-4859-AE08-C921B69076FD}"
 EndProject
@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyScada.Winforms.Connecto
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.OmronHostLink", "EasyDriver.OmronHostLink\EasyDriver.OmronHostLink.csproj", "{7831A5A2-20C9-40ED-8DB5-41F4D74E2563}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.ModbusTCP", "EasyDriver.ModbusTCP\EasyDriver.ModbusTCP.csproj", "{155D9C5D-AC0E-491F-AA64-6816F2049B47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.ModbusTCP_Old", "EasyDriver.ModbusTCP\EasyDriver.ModbusTCP_Old.csproj", "{155D9C5D-AC0E-491F-AA64-6816F2049B47}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "License", "License", "{5CB11167-9337-4148-B8D4-4133502E49B7}"
 EndProject
@@ -117,7 +117,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDriver.Service.Clipboar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDriver.ModbusRTU", "Drivers\EasyDriver.ModbusRTU\EasyDriver.ModbusRTU.csproj", "{51E1354D-492A-4B8E-8AB8-0CDC8DEAB7C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDriver.RemoteConnection.SignalR", "RemoteConnections\EasyDriver.RemoteConnection.SignalR\EasyDriver.RemoteConnection.SignalR.csproj", "{43DEB1DB-C89E-4044-9329-FCC1B029DF4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDriver.RemoteConnection.SignalR", "RemoteConnections\EasyDriver.RemoteConnection.SignalR\EasyDriver.RemoteConnection.SignalR.csproj", "{43DEB1DB-C89E-4044-9329-FCC1B029DF4D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyDriverServer.WebHosting", "EasyDriverServer.WebHosting\EasyDriverServer.WebHosting.csproj", "{72980FE8-1F86-41E4-8AC6-5F8C2195530C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -297,6 +299,10 @@ Global
 		{43DEB1DB-C89E-4044-9329-FCC1B029DF4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43DEB1DB-C89E-4044-9329-FCC1B029DF4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43DEB1DB-C89E-4044-9329-FCC1B029DF4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72980FE8-1F86-41E4-8AC6-5F8C2195530C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72980FE8-1F86-41E4-8AC6-5F8C2195530C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72980FE8-1F86-41E4-8AC6-5F8C2195530C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72980FE8-1F86-41E4-8AC6-5F8C2195530C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -354,6 +360,7 @@ Global
 		{51F49C77-5730-4603-897D-1192ECD7702D} = {58B71253-8EFD-45F8-8673-145794F8AC75}
 		{51E1354D-492A-4B8E-8AB8-0CDC8DEAB7C8} = {61493679-BA3A-4687-85CB-7DE2668B16DD}
 		{43DEB1DB-C89E-4044-9329-FCC1B029DF4D} = {D4AD5F45-63E4-40A4-A4C6-1FBEA4FEE84F}
+		{72980FE8-1F86-41E4-8AC6-5F8C2195530C} = {FDCDF7CC-9203-4B94-AC34-82779243CB4D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6494DC4C-62EB-49F5-B63E-F3EA2BA3E057}

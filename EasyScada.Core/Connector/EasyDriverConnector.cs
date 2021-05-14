@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNet.SignalR.Client;
 using Microsoft.AspNet.SignalR.Client.Transports;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -25,15 +27,25 @@ namespace EasyScada.Core
         private bool isFirstLoad = false;
         private bool isTagFileLoaded = false;
 
+        private MongoDbTagConverter mongoDbTagConverter = new MongoDbTagConverter();
         private Task requestTask;
+        private Hashtable channelCache = new Hashtable();
+        private Hashtable deviceCache = new Hashtable();
         private Hashtable tagsCache = new Hashtable();
         private SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private List<ITag> subscribedTags = new List<ITag>();
         private ClientTagJsonConverter clientTagJsonConverter = new ClientTagJsonConverter();
-
+        private System.Timers.Timer timeoutTimer;
         #endregion
 
         #region Public members
+
+        public bool UseMongoDb { get; set; }
+        public string MongoDb_ConnectionString { get; set; }
+        public string DatabaseName { get; set; }
+        public string CollectionName { get; set; }
+        public string StationName { get; set; }
+        public int Timeout { get; set; } = 30;
 
         public string ServerAddress { get; set; } = "127.0.0.1";
         public ushort Port { get; set; } = 8800;
@@ -56,6 +68,131 @@ namespace EasyScada.Core
 
         #region Public methods
 
+        public IEnumerable<ICoreItem> GetAllChannels()
+        {
+            foreach (var item in channelCache.Values)
+            {
+                if (item is ICoreItem coreItem)
+                    yield return coreItem;
+            }
+        }
+
+        public ICoreItem GetChannel(string path)
+        {
+            if (channelCache.ContainsKey(path))
+            {
+                return channelCache[path] as ICoreItem;
+            }
+            return null;
+        }
+
+        public IEnumerable<ICoreItem> GetAllDevices()
+        {
+            foreach (var item in deviceCache.Values)
+            {
+                if (item is ICoreItem coreItem)
+                    yield return coreItem;
+            }
+        }
+
+        public ICoreItem GetDevice(string path)
+        {
+            if (deviceCache.ContainsKey(path))
+            {
+                return deviceCache[path] as ICoreItem;
+            }
+            return null;
+        }
+
+        public async Task<ConnectionSchema> GetConnectionSchemaAsync(string ipAddress, ushort port)
+        {
+            try
+            {
+                ConnectionSchema ConnectionSchema = null;
+                using (HubConnection hubConnection = new HubConnection($"http://{ipAddress}:{port}/easyScada"))
+                {
+                    IHubProxy hubProxy = hubConnection.CreateHubProxy("EasyDriverServerHub");
+                    await hubConnection.Start();
+                    if (hubConnection.State == ConnectionState.Connected)
+                    {
+                        ConnectionSchema = new ConnectionSchema()
+                        {
+                            CreatedDate = DateTime.Now,
+                            Port = port,
+                            ServerAddress = ipAddress,
+                        };
+
+                        string resJson = await hubProxy.Invoke<string>("getAllElementsAsync");
+
+                        List<ICoreItem> coreItems = new List<ICoreItem>();
+                        if (JsonConvert.DeserializeObject(resJson) is JObject obj)
+                        {
+                            if (obj["Childs"] is JArray jArray)
+                            {
+                                foreach (var item in jArray)
+                                {
+                                    ICoreItem coreItem = JsonConvert.DeserializeObject<ICoreItem>(item.ToString(), new ConnectionSchemaJsonConverter());
+                                    if (coreItem != null)
+                                        coreItems.Add(coreItem);
+                                }
+                            }
+                        }
+                        if (coreItems != null)
+                            coreItems.ForEach(x => ConnectionSchema.Childs.Add(x));
+                    }
+                }
+                return ConnectionSchema;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<ConnectionSchema> GetConnectionSchemaAsync(string url)
+        {
+            try
+            {
+                ConnectionSchema ConnectionSchema = null;
+                using (HubConnection hubConnection = new HubConnection(url))
+                {
+                    IHubProxy hubProxy = hubConnection.CreateHubProxy("EasyDriverServerHub");
+                    await hubConnection.Start();
+                    if (hubConnection.State == ConnectionState.Connected)
+                    {
+                        ConnectionSchema = new ConnectionSchema()
+                        {
+                            CreatedDate = DateTime.Now,
+                            Url = url,
+                        };
+
+                        string resJson = await hubProxy.Invoke<string>("getAllElementsAsync");
+
+                        List<ICoreItem> coreItems = new List<ICoreItem>();
+                        if (JsonConvert.DeserializeObject(resJson) is JObject obj)
+                        {
+                            if (obj["Childs"] is JArray jArray)
+                            {
+                                foreach (var item in jArray)
+                                {
+                                    ICoreItem coreItem = JsonConvert.DeserializeObject<ICoreItem>(item.ToString(), new ConnectionSchemaJsonConverter());
+                                    if (coreItem != null)
+                                        coreItems.Add(coreItem);
+                                }
+                            }
+                        }
+                        if (coreItems != null)
+                            coreItems.ForEach(x => ConnectionSchema.Childs.Add(x));
+                    }
+                }
+                return ConnectionSchema;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public ITag GetTag(string pathToTag)
         {
             if (tagsCache != null && !string.IsNullOrWhiteSpace(pathToTag))
@@ -63,13 +200,24 @@ namespace EasyScada.Core
             return null;
         }
 
+        public IEnumerable<ITag> GetAllTags()
+        {
+            if (tagsCache != null)
+            {
+                foreach (var item in tagsCache.Values)
+                {
+                    if (item is ITag tag)
+                        yield return tag;
+                }
+            }
+        }
+
         public WriteResponse WriteTag(string pathToTag, string value, WritePiority writePiority)
         {
-            semaphore.Wait();
+            //semaphore.Wait();
             try
             {
                 if (!string.IsNullOrWhiteSpace(pathToTag) && 
-                    !string.IsNullOrWhiteSpace(value) && 
                     hubConnection != null && 
                     hubConnection.State == ConnectionState.Connected)
                 {
@@ -90,13 +238,34 @@ namespace EasyScada.Core
                     if (writeTask.IsCompleted)
                     {
                         WriteResponse response = writeTask.Result;
-                        if (response.IsSuccess)
-                            return response;
+                        return response;
                     }
                 }
             }
             catch { }
-            finally { semaphore.Release(); }
+            //finally { semaphore.Release(); }
+            return new WriteResponse() { IsSuccess = false, };
+        }
+
+        public WriteResponse WriteTag(WriteCommand cmd)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(cmd.Prefix) &&
+                    !string.IsNullOrWhiteSpace(cmd.TagName) &&
+                    hubConnection != null &&
+                    hubConnection.State == ConnectionState.Connected)
+                {
+                    var writeTask = hubProxy.Invoke<WriteResponse>("writeTagValueAsync", cmd);
+                    Task.WaitAll(writeTask);
+                    if (writeTask.IsCompleted)
+                    {
+                        WriteResponse response = writeTask.Result;
+                        return response;
+                    }
+                }
+            }
+            catch { }
             return new WriteResponse() { IsSuccess = false, };
         }
 
@@ -108,9 +277,17 @@ namespace EasyScada.Core
             });
         }
 
+        public async Task<WriteResponse> WriteTagAsync(WriteCommand cmd)
+        {
+            return await Task.Run(() =>
+            {
+                return WriteTag(cmd);
+            });
+        }
+
         public List<WriteResponse> WriteMultiTag(List<WriteCommand> writeCommands)
         {
-            semaphore.Wait();
+            //semaphore.Wait();
             try
             {
                 if (writeCommands != null &&
@@ -128,7 +305,7 @@ namespace EasyScada.Core
                 }
             }
             catch { }
-            finally { semaphore.Release(); }
+            //finally { semaphore.Release(); }
             List<WriteResponse> result = new List<WriteResponse>();
             for (int i = 0; i < writeCommands.Count; i++)
                 result.Add(new WriteResponse() { IsSuccess = false });
@@ -161,7 +338,7 @@ namespace EasyScada.Core
                     string tagFilePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\ConnectionSchema.json";
                     if (!File.Exists(tagFilePath))
                     {
-                        
+
                         Debug.WriteLine($"The tag file doesn't exists. Please create tag file at '{tagFilePath}' and restart the application.");
                         return;
                     }
@@ -195,35 +372,59 @@ namespace EasyScada.Core
                     Started += OnStarted;
                 }
 
-                // If hub connection is initialized then unsubscribe all events
-                if (hubConnection != null)
+
+                if (!UseMongoDb)
                 {
-                    try
+                    // If hub connection is initialized then unsubscribe all events
+                    if (hubConnection != null)
                     {
-                        hubConnection.StateChanged -= OnStateChanged;
-                        hubConnection.Closed -= OnDisconnected;
-                        hubConnection.ConnectionSlow -= OnConnectionSlow;
-                        if (hubConnection.State == ConnectionState.Connected)
-                            await Task.Factory.StartNew(() => hubConnection.Stop());
-                        await Task.Factory.StartNew(() => hubConnection.Dispose());
+                        try
+                        {
+             
+                            hubConnection.StateChanged -= OnStateChanged;
+                            hubConnection.Closed -= OnDisconnected;
+                            hubConnection.ConnectionSlow -= OnConnectionSlow;
+                            if (hubConnection.State == ConnectionState.Connected)
+                                await Task.Factory.StartNew(() => hubConnection.Stop());
+                            await Task.Factory.StartNew(() => hubConnection.Dispose());
+                        }
+                        catch { }
                     }
-                    catch { }
+
+                    // Make a new connection
+                    if (ServerAddress.StartsWith("http://") || ServerAddress.StartsWith("https://"))
+                    {
+                        if (ServerAddress.EndsWith("/easyScada"))
+                        {
+                            hubConnection = new HubConnection($"{ServerAddress}");
+                        }
+                        else
+                        {
+                            hubConnection = new HubConnection($"{ServerAddress}/easyScada");
+                        }
+                    }
+                    else
+                    {
+                        hubConnection = new HubConnection($"http://{ServerAddress}:{Port}/easyScada");
+                    }
+                    // Subscribe connection events
+                    hubConnection.StateChanged += OnStateChanged;
+                    hubConnection.Closed += OnDisconnected;
+                    hubConnection.ConnectionSlow += OnConnectionSlow;
+
+                    // Create proxy
+                    hubProxy = hubConnection.CreateHubProxy("EasyDriverServerHub");
+                    // Handle all message received from server
+                    hubProxy.On<string>("broadcastSubscribeData", OnReceivedBroadcastMessage);
+
+                    // Start connection
+                    await hubConnection.Start(new LongPollingTransport());
                 }
-
-                // Make a new connection
-                hubConnection = new HubConnection($"http://{ServerAddress}:{Port}/easyScada");
-                // Subscribe connection events
-                hubConnection.StateChanged += OnStateChanged;
-                hubConnection.Closed += OnDisconnected;
-                hubConnection.ConnectionSlow += OnConnectionSlow;
-
-                // Create proxy
-                hubProxy = hubConnection.CreateHubProxy("EasyDriverServerHub");
-                // Handle all message received from server
-                hubProxy.On<string>("broadcastSubscribeData", OnReceivedBroadcastMessage);
-
-                // Start connection
-                await hubConnection.Start(new LongPollingTransport());
+                else
+                {
+                    if (requestTask == null)
+                        requestTask = Task.Factory.StartNew(WatchChangedMongoDb, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                }
 
             }
             catch (Exception) { }
@@ -271,12 +472,26 @@ namespace EasyScada.Core
                 if (!isFirstLoad)
                 {
                     // Create tag cache
-                    foreach (var tag in connectionSchema.GetAllTags())
+                    foreach (var item in connectionSchema.GetAllChildItems())
                     {
-                        (tag as Tag).quality = Quality.Uncertain;
-                        (tag as Tag).value = string.Empty;
-                        if (!tagsCache.ContainsKey(tag.Path))
-                            tagsCache.Add(tag.Path, tag);
+                        if (item is ITag tag)
+                        {
+                            (tag as Tag).quality = Quality.Uncertain;
+                            (tag as Tag).value = string.Empty;
+                            if (!tagsCache.ContainsKey(tag.Path))
+                                tagsCache.Add(tag.Path, tag);
+                        }
+                        else
+                        {
+                            if (item.ItemType == ItemType.Channel)
+                            {
+                                channelCache.Add(item.Path, item);
+                            }
+                            if (item.ItemType == ItemType.Device)
+                            {
+                                deviceCache.Add(item.Path, item);
+                            }
+                        }
                     }
                     // Set a first load flag to determine we are already loaded
                     isFirstLoad = true;
@@ -471,6 +686,136 @@ namespace EasyScada.Core
             }
         }
 
+        #endregion
+
+        #region MongoDb
+        private void WatchChangedMongoDb()
+        {
+            while (true)
+            {
+                try
+                {
+                    // Create tag cache and start the refresh timer in the first load
+                    if (!isFirstLoad)
+                    {
+                        // Create tag cache
+                        foreach (var tag in connectionSchema.GetAllTags())
+                        {
+                            (tag as Tag).quality = Quality.Uncertain;
+                            (tag as Tag).value = string.Empty;
+                            if (!tagsCache.ContainsKey(tag.Path))
+                                tagsCache.Add(tag.Path, tag);
+                        }
+
+                        // Set a first load flag to determine we are already loaded
+                        isFirstLoad = true;
+                    }
+
+                    if (!IsStarted)
+                        Started?.Invoke(this, EventArgs.Empty);
+
+                    var client = new MongoClient(MongoDb_ConnectionString);
+                    var database = client.GetDatabase(DatabaseName);
+                    var collection = database.GetCollection<BsonDocument>(CollectionName);
+                    var filter = Builders<BsonDocument>.Filter.Eq("name", StationName);
+                    var pipeline =
+                        new EmptyPipelineDefinition<ChangeStreamDocument<BsonDocument>>()
+                        .Match(x => x.OperationType == ChangeStreamOperationType.Insert || x.OperationType == ChangeStreamOperationType.Update);
+
+                    var document = collection.Find(filter).FirstOrDefault();
+                    UpdateTagViaMongoDb(document);
+
+                    using (var cursor = collection.Watch(pipeline))
+                    {
+                        try
+                        {
+                            foreach (var change in cursor.ToEnumerable())
+                            {
+                                document = collection.Find(filter).FirstOrDefault();
+                                UpdateTagViaMongoDb(document);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            SetAllTagBad();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SetAllTagBad();
+                    Thread.Sleep(5000);
+                }
+            }
+        }
+
+        private void UpdateTagViaMongoDb(BsonDocument document)
+        {
+            bool isValid = false;
+            if (document != null && document.ElementCount > 0)
+            {
+                if (document.Contains("data"))
+                {
+                    if (document.Contains("name"))
+                    {
+                        string name = document.Elements.FirstOrDefault(x => x.Name == "name").Value.AsString;
+
+                        string updatedTimeStr = document.Elements.FirstOrDefault(x => x.Name == "updateTime").Value.AsString;
+
+                        if (DateTime.TryParse(updatedTimeStr, out DateTime updatedTime))
+                        {
+                            if ((DateTime.Now - updatedTime).TotalSeconds < Timeout)
+                            {
+                                if (name == StationName)
+                                {
+                                    string data = document.Elements.FirstOrDefault(x => x.Name == "data").Value.AsString;
+                                    List<Tag> tags = JsonConvert.DeserializeObject<List<Tag>>(StringCompresser.DecompressString(data), mongoDbTagConverter);
+
+                                    foreach (var item in tags)
+                                    {
+                                        if (item != null)
+                                        {
+                                            if (tagsCache.ContainsKey(item.Path))
+                                            {
+                                                var tag = tagsCache[item.Path];
+                                                (tag as Tag).Value = item.Value;
+                                                (tag as Tag).Quality = item.Quality;
+                                                (tag as Tag).TimeStamp = item.TimeStamp;
+                                            }
+                                        }
+                                    }
+                                    isValid = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!isValid)
+            {
+                SetAllTagBad();
+            }
+            else
+            {
+
+                if (timeoutTimer == null)
+                {
+                    timeoutTimer = new System.Timers.Timer();
+                    timeoutTimer.Interval = Timeout * 1000;
+                    timeoutTimer.Elapsed += TimeoutTimer_Elapsed;
+                    timeoutTimer.AutoReset = false;
+                }
+                timeoutTimer.Stop();
+                timeoutTimer.Start();
+            }
+        }
+
+        private void TimeoutTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            timeoutTimer.Stop();
+            SetAllTagBad();
+        }
         #endregion
     }
 }

@@ -28,7 +28,6 @@ namespace EasyScada.ServerApplication
         #endregion
 
         #region Authentication 
-
         public bool Login(string password)
         {
             return false;
@@ -38,7 +37,6 @@ namespace EasyScada.ServerApplication
         {
             return true;
         }
-
         #endregion
 
         #region Subscribe/Unsubscribe
@@ -56,6 +54,7 @@ namespace EasyScada.ServerApplication
             }
             return "Fail";
         }
+
         public async Task<string> SubscribeAsync(string stationsJson, string communicationMode, int refreshRate)
         {
             return await Task.Run(() => Subscribe(stationsJson, communicationMode, refreshRate));
@@ -66,6 +65,7 @@ namespace EasyScada.ServerApplication
             ioc.ServerBroadcastService.RemoveEndpoint(Context.ConnectionId);
             return "Ok";
         }
+
         public async Task<string> UnsubscribeAsync()
         {
             return await Task.Run(() => Unsubscribe());
@@ -79,6 +79,7 @@ namespace EasyScada.ServerApplication
             }
             return string.Empty;
         }
+
         public async Task<string> GetSubscribedDataAsync()
         {
             return await Task.Run(() => GetSubscribedData());
@@ -91,7 +92,6 @@ namespace EasyScada.ServerApplication
             if (ioc.ProjectManagerService.CurrentProject != null)
             {
                 CoreItemToClientJsonObjectConverter converter = new CoreItemToClientJsonObjectConverter();
-
                 return JsonConvert.SerializeObject(ioc.ProjectManagerService.CurrentProject, Formatting.Indented, converter);
             }
             return null; 

@@ -34,8 +34,17 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.95.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.95.3\lib\net40\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.0.10.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.0.10\lib\net20\ExcelNumberFormat.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.4.1\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
@@ -46,6 +55,12 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OxyPlot, Version=2.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.Core.2.0.0\lib\net45\OxyPlot.dll</HintPath>
+    </Reference>
+    <Reference Include="OxyPlot.WindowsForms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=245eacd6b5d2d338, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.WindowsForms.2.0.0\lib\net45\OxyPlot.WindowsForms.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -67,11 +82,10 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\IAuthorizeControl.cs" />
     <Compile Include="Base\ISupportWriteMultiTag.cs" />
     <Compile Include="Base\WriteTagCommand.cs" />
-    <Compile Include="Charts\Controls\HistoricalTrend\HistoricalTrendDesigner.cs" />
-    <Compile Include="Charts\Controls\TrendLine.cs" />
-    <Compile Include="Charts\Controls\TrendLineCollection.cs" />
+    <Compile Include="ConnectorUtils.cs" />
     <Compile Include="Connector\EasyDriverConnector.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -80,25 +94,106 @@
     </Compile>
     <Compile Include="Controls\EasyAlarmLogger\EasyAlarmLoggerDesginer.cs" />
     <Compile Include="Controls\EasyAlarmSetting\EasyAlarmSettingDesigner.cs" />
+    <Compile Include="Controls\EasyAlarmSetting\StoreAt.cs" />
     <Compile Include="Controls\EasyAlarmViewer\EasyAlarmViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\EasyAlarmViewer\EasyAlarmViewer.Designer.cs">
       <DependentUpon>EasyAlarmViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\EasyAlarmViewer\EasyAlarmViewerDesigner.cs" />
+    <Compile Include="Controls\EasyBar\BarDisplayMode.cs" />
+    <Compile Include="Controls\EasyBar\BarType.cs" />
+    <Compile Include="Controls\EasyBar\EasyBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyBar\EasyBarDesigner.cs" />
+    <Compile Include="Controls\EasyButton\EasyButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyButton\EasyButtonDesigner.cs" />
     <Compile Include="Controls\EasyEmailSetting\EasyEmailSetting.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\EasyEmailSetting\EasyEmailSetting.Designer.cs">
       <DependentUpon>EasyEmailSetting.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\EasyHistoricalAlarm\AckAlarmComfirm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalAlarm\AckAlarmComfirm.Designer.cs">
+      <DependentUpon>AckAlarmComfirm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalAlarm\EasyHistoricalAlarm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalAlarm\EasyHistoricalAlarm.Designer.cs">
+      <DependentUpon>EasyHistoricalAlarm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalAlarm\EasyHistoricalAlarmDesigner.cs" />
+    <Compile Include="Controls\EasyHistoricalData\EasyHistoricalData.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalData\EasyHistoricalData.Designer.cs">
+      <DependentUpon>EasyHistoricalData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalData\EasyHistoricalDataDesigner.cs" />
+    <Compile Include="Controls\EasyHistoricalTrend\EasyHistoricalTrend.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalTrend\EasyHistoricalTrend.Designer.cs">
+      <DependentUpon>EasyHistoricalTrend.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyHistoricalTrend\EasyHistoricalTrendDesigner.cs" />
+    <Compile Include="Controls\EasyLabel\DisplayMode.cs" />
     <Compile Include="Controls\EasyLabel\EasyLabel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\EasyLabel\EasyLabelDesigner.cs" />
+    <Compile Include="Controls\EasyLoginLogger\EasyLoginLogger.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyLoginLogger\EasyLoginLogger.Designer.cs">
+      <DependentUpon>EasyLoginLogger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyLoginLogger\EasyLoginLoggerDesigner.cs" />
+    <Compile Include="Controls\EasyLogin\EasyLogin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyLogin\EasyLogin.Designer.cs">
+      <DependentUpon>EasyLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyLogin\EasyLoginDesigner.cs" />
     <Compile Include="Controls\EasyPictureBox\AnimateImageFlipMode.cs" />
     <Compile Include="Controls\EasyPictureBox\AnimateImgeFillMode.cs" />
     <Compile Include="Controls\EasyPictureBox\ImageAnimatePropertyWrapper.cs" />
+    <Compile Include="Controls\EasyRealtimeTrend\EasyRealtimeTrend.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyRealtimeTrend\EasyRealtimeTrendDesigner.cs" />
+    <Compile Include="Controls\EasyReportTool\EasyReportToolDesigner.cs" />
+    <Compile Include="Controls\EasyReportTool\EasyReportTool.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyReportTool\EasyReportTool.Designer.cs">
+      <DependentUpon>EasyReportTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyRoleProvider\EasyRoleProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasyRoleProvider\EasyRoleProvider.Designer.cs">
+      <DependentUpon>EasyRoleProvider.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasyRoleProvider\EasyRoleProviderDesigner.cs" />
+    <Compile Include="Controls\EasySyncTag\EasySyncTag.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\EasySyncTag\EasySyncTag.Designer.cs">
+      <DependentUpon>EasySyncTag.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EasySyncTag\EasySyncTagDesigner.cs" />
+    <Compile Include="Controls\EasySyncTag\SyncTarget.cs" />
+    <Compile Include="Controls\EasySyncTag\SyncTargetCollection.cs" />
     <Compile Include="Controls\EasyTextBox\DropDownDirection.cs" />
     <Compile Include="Controls\EasyTextBox\EasyTextBox.cs">
       <SubType>Component</SubType>
@@ -121,6 +216,12 @@
     </Compile>
     <Compile Include="Designer\Animate\AnimateDesignerForm.Designer.cs">
       <DependentUpon>AnimateDesignerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Designer\Authenticate\AuthenticateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Designer\Authenticate\AuthenticateForm.Designer.cs">
+      <DependentUpon>AuthenticateForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Designer\Connector\ConnectionSchemeDesignerForm.cs">
       <SubType>Form</SubType>
@@ -150,48 +251,6 @@
       <DependentUpon>LogProfileConfigDesignerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Designer\DatabaseConfig\LogProfilePropertyEditor.cs" />
-    <Compile Include="Charts\Axis.cs" />
-    <Compile Include="Charts\AxisCollection.cs" />
-    <Compile Include="Charts\AxisFormat.cs" />
-    <Compile Include="Charts\AxisLabel.cs" />
-    <Compile Include="Charts\AxisPosition.cs" />
-    <Compile Include="Charts\AxisType.cs" />
-    <Compile Include="Charts\ChartHelper.cs" />
-    <Compile Include="Charts\ChartPoint.cs" />
-    <Compile Include="Charts\ChartPointCollection.cs" />
-    <Compile Include="Charts\ChartPointEventArgs.cs" />
-    <Compile Include="Charts\ChartPointEventHandler.cs" />
-    <Compile Include="Charts\Controls\EasyChart.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Charts\Controls\HistoricalTrend\HistoricalTrend.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Charts\Controls\RealtimeTrend.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Charts\Curve\AuxiliaryLabel.cs" />
-    <Compile Include="Charts\Curve\AuxiliaryLine.cs" />
-    <Compile Include="Charts\Curve\CurveItem.cs" />
-    <Compile Include="Charts\Curve\MarkBackSection.cs" />
-    <Compile Include="Charts\Curve\MarkForeSection.cs" />
-    <Compile Include="Charts\Curve\MarkLine.cs" />
-    <Compile Include="Charts\Curve\MarkSectionBase.cs" />
-    <Compile Include="Charts\Curve\MarkText.cs" />
-    <Compile Include="Charts\Curve\MarkTextPositionStyle.cs" />
-    <Compile Include="Charts\GarphDirection.cs" />
-    <Compile Include="Charts\SelectMode.cs" />
-    <Compile Include="Charts\SeriesBase.cs" />
-    <Compile Include="Charts\SeriesCollection.cs" />
-    <Compile Include="Charts\SeriesCollectionEditor.cs" />
-    <Compile Include="Charts\SeriesFormat.cs" />
-    <Compile Include="Charts\Series\BezierSeries.cs" />
-    <Compile Include="Charts\Series\ColumnSeries.cs" />
-    <Compile Include="Charts\Series\LabelSeries.cs" />
-    <Compile Include="Charts\Series\LineSeries.cs" />
-    <Compile Include="Charts\Series\PointSeries.cs" />
-    <Compile Include="Charts\Series\StandardLineSeries.cs" />
-    <Compile Include="Charts\ZoomType.cs" />
     <Compile Include="Controls\EasyAlarmLogger\EasyAlarmLogger.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -222,6 +281,13 @@
     <Compile Include="Designer\Base\ControlDesignerAcionList.cs" />
     <Compile Include="Designer\Base\ControlDesignerBase.cs" />
     <Compile Include="Designer\Base\DesignerCategory.cs" />
+    <Compile Include="Designer\Role\RoleConverter.cs" />
+    <Compile Include="Designer\Role\RoleDesigner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Designer\Role\RoleDesigner.Designer.cs">
+      <DependentUpon>RoleDesigner.cs</DependentUpon>
+    </Compile>
     <Compile Include="Designer\TagPath\SearchTagControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -237,12 +303,6 @@
     <Compile Include="Designer\TagPath\PathToTagPropertyEditor.cs" />
     <Compile Include="Designer\Base\PropertyEditorBase.cs" />
     <Compile Include="Designer\SupportInterface\ISupportPallet.cs" />
-    <Compile Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.Designer.cs">
-      <DependentUpon>HistoricalTrendToolbox.cs</DependentUpon>
-    </Compile>
     <Compile Include="Extensions\Helper.cs" />
     <Compile Include="Extensions\RGB.cs" />
     <Compile Include="Navigator\ButtonSpecs\ButtonSpecNavClose.cs">
@@ -1158,6 +1218,9 @@
     <Compile Include="Toolkit\View Layout\ViewLayoutStretch.cs" />
     <Compile Include="Toolkit\View Layout\ViewLayoutViewport.cs" />
     <Compile Include="Toolkit\View Layout\ViewLayoutWeekCorner.cs" />
+    <Compile Include="Trend\DateTimePoint.cs" />
+    <Compile Include="Trend\LineDefinition.cs" />
+    <Compile Include="Trend\LineDefinitionCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyScada.Core\EasyScada.Core.csproj">
@@ -1177,17 +1240,39 @@
     <EmbeddedResource Include="Controls\EasyAlarmViewer\EasyAlarmViewer.resx">
       <DependentUpon>EasyAlarmViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\EasyHistoricalTrend\HistoricalTrendToolbox.resx">
-      <DependentUpon>HistoricalTrendToolbox.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\EasyAlarmSetting\EasyAlarmSetting.resx">
       <DependentUpon>EasyAlarmSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EasyBar\EasyBar.resx">
+      <DependentUpon>EasyBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EasyHistoricalAlarm\AckAlarmComfirm.resx">
+      <DependentUpon>AckAlarmComfirm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EasyHistoricalAlarm\EasyHistoricalAlarm.resx">
+      <DependentUpon>EasyHistoricalAlarm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EasyHistoricalData\EasyHistoricalData.resx">
+      <DependentUpon>EasyHistoricalData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EasyHistoricalTrend\EasyHistoricalTrend.resx">
+      <DependentUpon>EasyHistoricalTrend.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EasyLogin\EasyLogin.resx">
+      <DependentUpon>EasyLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EasyReportTool\EasyReportTool.resx">
+      <DependentUpon>EasyReportTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Designer\Alarm\EasyAlarmSettingDesignerForm.resx">
       <DependentUpon>EasyAlarmSettingDesignerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Designer\Animate\AnimateDesignerForm.resx">
       <DependentUpon>AnimateDesignerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Authenticate\AuthenticateForm.resx">
+      <DependentUpon>AuthenticateForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Designer\Connector\ConnectionSchemeDesignerForm.resx">
       <DependentUpon>ConnectionSchemeDesignerForm.cs</DependentUpon>
@@ -1200,6 +1285,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Designer\DatabaseConfig\LogProfileConfigDesignerForm.resx">
       <DependentUpon>LogProfileConfigDesignerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Designer\Role\RoleDesigner.resx">
+      <DependentUpon>RoleDesigner.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Designer\TagPath\SearchTagControl.resx">
       <DependentUpon>SearchTagControl.cs</DependentUpon>
@@ -1557,8 +1645,6 @@
     <Content Include="Toolkit\ToolkitBitmaps\EasyTreeView.bmp" />
     <Content Include="Toolkit\ToolkitBitmaps\EasyWrapLabel.bmp" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\EasyButton\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,28 +1,44 @@
-﻿<UserControl x:Class="EasyScada.ServerApplication.AuthenticateLicenseView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:EasyScada.ServerApplication"
-             mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="600"
-             Width="600" Height="200"
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm">
+﻿<UserControl
+    x:Class="EasyScada.ServerApplication.AuthenticateLicenseView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+    xmlns:local="clr-namespace:EasyScada.ServerApplication"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="600"
+    Height="200"
+    d:DesignHeight="200"
+    d:DesignWidth="600"
+    mc:Ignorable="d">
     <dx:BackgroundPanel>
         <Grid>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image Source="Resources/Images/key_96px.png" Stretch="UniformToFill" Width="48"/>
-                <TextBlock Text="Your 'EasyDriverServer' application has not been licensed!" 
-                           FontWeight="Bold"
-                           Margin="0 4 0 0"
-                           FontSize="20" Foreground="{StaticResource ResourceKey=OrganeBrush}"/>
-                <TextBlock Text="Please contact EasyScada to active license now !" FontSize="18"
-                           Margin="0 2 0 0"
-                           Foreground="{StaticResource ResourceKey=CyanBrush}"/>
-                <dx:SimpleButton Content="Activate License Now" Width="300" Height="30" FontWeight="Bold" FontSize="16"
-                                 Margin="0 16 0 0" Foreground="{StaticResource ResourceKey=GreenBrush}"/>
+                <Image
+                    Width="48"
+                    Source="Resources/Images/key_96px.png"
+                    Stretch="UniformToFill" />
+                <TextBlock
+                    Margin="0,4,0,0"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Text="Your 'AHD Scada Server' has not been licensed!" />
+                <TextBlock
+                    Margin="0,2,0,0"
+                    FontSize="18"
+                    Foreground="Gray"
+                    Text="Please contact AHD to active license now !" />
+                <dx:SimpleButton
+                    x:Name="btnActive"
+                    Width="300"
+                    Height="30"
+                    Margin="0,16,0,0"
+                    Content="Activate License Now"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="Orange" />
             </StackPanel>
         </Grid>
     </dx:BackgroundPanel>

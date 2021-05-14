@@ -19,7 +19,7 @@ namespace EasyDriver.OmronHostLink
     {
         #region Public members
 
-        public IEasyDriverPlugin Driver { get; set; }
+        public OmronHostLinkDriver Driver { get; set; }
         public IGroupItem ParentChannel { get; set; }
 
         public List<string> ComPortSource { get; set; }
@@ -32,7 +32,7 @@ namespace EasyDriver.OmronHostLink
 
         #region Constructors
 
-        public CreateChannelView(IEasyDriverPlugin driver, IGroupItem parent, IChannelCore templateItem)
+        public CreateChannelView(OmronHostLinkDriver driver, IGroupItem parent, IChannelCore templateItem)
         {
             Driver = driver;
             ParentChannel = parent;
@@ -110,23 +110,26 @@ namespace EasyDriver.OmronHostLink
         {
             if (CheckPortNotIsInUse(cobPort.SelectedItem?.ToString()))
             {
-                Driver.Channel.ParameterContainer.DisplayName = "Omron Host Link Comunication Parameters";
-                Driver.Channel.ParameterContainer.DisplayParameters = "Omron Host Link Comunication Parameters";
-                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
-                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
+                var Channel = new ChannelCore(ParentChannel);
 
-                Driver.Connect();
-                ((Parent as FrameworkElement).Parent as Window).Tag = Driver.Channel;
+                Channel.ParameterContainer.DisplayName = "Omron Host Link Comunication Parameters";
+                Channel.ParameterContainer.DisplayParameters = "Omron Host Link Comunication Parameters";
+                Channel.DriverPath = "OmronHostLink";
+
+                Channel.ParameterContainer.SetValue("Port", cobPort.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("Baudrate", cobBaudrate.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("Parity", cobParity.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("DataBits", cobDataBits.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("StopBits", cobStopBits.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("ScanRate", spnScanRate.Value.ToString());
+                Channel.ParameterContainer.SetValue("DelayBetweenPool", spnDelayPool.Value.ToString());
+
+                this.Tag = Channel;
                 ((Parent as FrameworkElement).Parent as Window).Close();
             }
             else
             {
-                DXMessageBox.Show($"{cobPort.SelectedItem?.ToString()} is already in use.", "Easy Driver Server", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DXMessageBox.Show($"{cobPort.SelectedItem?.ToString()} is already in use.", "Message", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

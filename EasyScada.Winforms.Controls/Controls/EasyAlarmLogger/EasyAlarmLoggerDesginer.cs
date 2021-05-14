@@ -24,7 +24,7 @@ namespace EasyScada.Winforms.Controls
         {
             actionItems.Add(new DesignerActionPropertyItem("Enabled", "Enabled", DesignerCategory.EASYSCADA, ""));
             actionItems.Add(new DesignerActionMethodItem(this, "DatabaseConfig", "Configure databases", DesignerCategory.EASYSCADA, "Click here to configure databases", true));
-            actionItems.Add(new DesignerActionMethodItem(this, "AlarmConfig", "Configure alarms", DesignerCategory.EASYSCADA, "Click here to configure alarms", true));
+            //actionItems.Add(new DesignerActionMethodItem(this, "AlarmConfig", "Configure alarms", DesignerCategory.EASYSCADA, "Click here to configure alarms", true));
         }
 
         public bool Enabled
@@ -43,19 +43,24 @@ namespace EasyScada.Winforms.Controls
                 BaseComponent.Databases.Clear();
                 BaseComponent.Databases.AddRange(form.ResultDatabases.ToArray());
             }
+
+            designerActionUIservice.Refresh(Component);
+            BaseComponent.SetValue(BaseComponent.Enabled, "Enabled");
         }
 
         public void AlarmConfig()
         {
-            try
-            {
-                EasyAlarmSettingDesignerForm form = new EasyAlarmSettingDesignerForm(Component.Site);
-                form.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+            //try
+            //{
+            //    EasyAlarmSettingDesignerForm form = new EasyAlarmSettingDesignerForm(Component.Site, baseCo);
+            //    form.ShowDialog();
+            //    designerActionUIservice.Refresh(Component);
+            //    BaseComponent.SetValue(BaseComponent.Enabled, "Enabled");
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.ToString());
+            //}
         }
     }
 }

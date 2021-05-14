@@ -33,7 +33,7 @@ namespace EasyScada.ServerApplication
         {
             ComputerId = LicenseManager.GetComputerId();
             Product = product;
-            authenticateTask = Task.Factory.StartNew(Authenticate, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            //authenticateTask = Task.Factory.StartNew(Authenticate, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             SerialKey = LicenseManager.GetStoredSerialKey(product);
             this.projectManagerService = projectManagerService;
         }
@@ -42,11 +42,11 @@ namespace EasyScada.ServerApplication
         {
             try
             {
-                string url = $"http://localhost/EasyScadaLicsenceService/Authentication?" +
+                string url = $"http://localhost/ScadaLicense/Authentication?" +
                     $"serialKey={serialKey}&product={Product}&computerId={ComputerId}";
                 int limitTagCount = 0;
 
-                if (string.IsNullOrEmpty(SerialKey))
+                if (string.IsNullOrEmpty(serialKey))
                     limitTagCount = 0;
                 else
                     limitTagCount = await LicenseManager.AuthenticateAsync(url, Product, ComputerId);
@@ -55,6 +55,7 @@ namespace EasyScada.ServerApplication
                 {
                     LicenseManager.SetSerialKey(Product, serialKey);
                 }
+
                 LimitTagCount = limitTagCount;
                 return limitTagCount;
             }
@@ -71,16 +72,24 @@ namespace EasyScada.ServerApplication
                     {
                         if (projectManagerService.CurrentProject == null)
                         {
-                            Thread.Sleep(5000);
+                            await Task.Delay(5000);
                         }
                         else
                         {
                             // Do authenticate every 30 minutes
-                            Thread.Sleep(30 * 60 * 1000);
+                            //Thread.Sleep(30 * 60 * 1000);
 
-                            string url = $"http://eslic.xyz/EasyScadaLicenseService/Authentication?" +
-                                $"serialKey={SerialKey}&product={Product}&computerId={ComputerId}";
+                            await Task.Delay(1000);
+
+                            //string url = $"http://eslic.xyz/ScadaLicense/Authentication?" +
+                            //    $"serialKey={SerialKey}&product={Product}&computerId={ComputerId}";
+
+                            string url = $"http://localhost/ScadaLicense/Authentication?" +
+                                    $"serialKey={SerialKey}&product={Product}&computerId={ComputerId}";
+
                             int limitTagCount = 0;
+
+                            SerialKey = LicenseManager.GetStoredSerialKey(Product);
 
                             if (!string.IsNullOrEmpty(SerialKey))
                             {
@@ -88,9 +97,9 @@ namespace EasyScada.ServerApplication
                                 LimitTagCount = limitTagCount;
                             }
 
-                            if (projectManagerService.CurrentProject != null)
+                            if (projectManagerService.CurrentProject != null && projectManagerService.CurrentProject.Childs.Count > 0)
                             {
-                                int tagCounts = projectManagerService.CurrentProject.LocalStation.Find(x => x is ITagCore, true).Count();
+                                int tagCounts = projectManagerService.CurrentProject.GetAllTags(true).Count();
                                 bool isAuthenticated = false;
                                 string message = "";
                                 if (tagCounts <= limitTagCount || tagCounts <= 256)

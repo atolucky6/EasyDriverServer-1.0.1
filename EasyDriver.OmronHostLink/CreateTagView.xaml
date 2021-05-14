@@ -21,7 +21,6 @@
             <Setter Property="LabelPosition" Value="Top" />
             <Setter Property="ElementSpace" Value="4" />
             <Setter Property="AddColonToLabel" Value="True" />
-            <Setter Property="Foreground" Value="#F1FA88" />
         </Style>
         <Style TargetType="dxlc:LayoutGroup">
             <Setter Property="ItemSpace" Value="8" />
@@ -39,17 +38,14 @@
                         ShowCaption="True">
                         <dxdo:LayoutGroup.CaptionTemplate>
                             <DataTemplate>
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="#FF79C6"
-                                    Text="{Binding}" />
+                                <TextBlock FontWeight="Bold" Text="{Binding}" />
                             </DataTemplate>
                         </dxdo:LayoutGroup.CaptionTemplate>
                         <dxdo:LayoutControlItem>
                             <dxlc:LayoutControl>
                                 <dxlc:LayoutGroup ItemLabelsAlignment="Local" Orientation="Vertical">
                                     <dxlc:LayoutItem AddColonToLabel="True" Label="Name">
-                                        <dxe:TextEdit x:Name="txbName">
+                                        <dxe:TextEdit x:Name="txbName" Height="30">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:FocusBehavior />
                                             </dxmvvm:Interaction.Behaviors>
@@ -59,6 +55,7 @@
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Address">
                                             <dxe:AutoSuggestEdit
                                                 x:Name="txbAddress"
+                                                Height="30"
                                                 AllowPopupTextHighlighting="True"
                                                 ImmediatePopup="True"
                                                 PopupHighlightedTextCriteria="StartsWith"
@@ -68,6 +65,7 @@
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Data Type">
                                             <dxe:ComboBoxEdit
                                                 x:Name="cobDataType"
+                                                Height="30"
                                                 AllowNullInput="False"
                                                 IsTextEditable="False"
                                                 SelectedIndex="0" />
@@ -77,6 +75,7 @@
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Refresh Rate (ms)">
                                             <dxe:SpinEdit
                                                 x:Name="spnRefreshRate"
+                                                Height="30"
                                                 AllowDefaultButton="True"
                                                 AllowSpinOnMouseWheel="True"
                                                 Increment="100"
@@ -90,6 +89,7 @@
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Access Permission">
                                             <dxe:ComboBoxEdit
                                                 x:Name="cobPermission"
+                                                Height="30"
                                                 AllowNullInput="False"
                                                 IsTextEditable="False"
                                                 SelectedIndex="0" />
@@ -109,10 +109,7 @@
                         ShowCaption="True">
                         <dxdo:LayoutGroup.CaptionTemplate>
                             <DataTemplate>
-                                <TextBlock
-                                    FontWeight="Bold"
-                                    Foreground="#FF79C6"
-                                    Text="{Binding}" />
+                                <TextBlock FontWeight="Bold" Text="{Binding}" />
                             </DataTemplate>
                         </dxdo:LayoutGroup.CaptionTemplate>
                         <dxdo:LayoutControlItem>
@@ -122,6 +119,7 @@
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Gain">
                                             <dxe:SpinEdit
                                                 x:Name="spnGain"
+                                                Height="30"
                                                 AllowDefaultButton="True"
                                                 AllowSpinOnMouseWheel="True"
                                                 Increment="0.1"
@@ -133,6 +131,7 @@
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Offset">
                                             <dxe:SpinEdit
                                                 x:Name="spnOffset"
+                                                Height="30"
                                                 AllowDefaultButton="True"
                                                 AllowSpinOnMouseWheel="True"
                                                 Increment="1"
@@ -155,13 +154,11 @@
                     Orientation="Horizontal">
                     <dxdo:LayoutControlItem HorizontalAlignment="Left">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="#FFB86C"
-                                Text="Auto create " />
+                            <TextBlock VerticalAlignment="Center" Text="Auto create " />
                             <dxe:SpinEdit
                                 x:Name="spnAutoCreateCount"
                                 Width="40"
+                                Height="30"
                                 HorizontalContentAlignment="Center"
                                 AllowDefaultButton="False"
                                 AllowNullInput="False"
@@ -170,23 +167,20 @@
                                 MaxValue="10000"
                                 MinValue="1"
                                 Value="1" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="#FFB86C"
-                                Text=" tags" />
+                            <TextBlock VerticalAlignment="Center" Text=" tags" />
                         </StackPanel>
                     </dxdo:LayoutControlItem>
                     <dxdo:LayoutControlItem ItemWidth="70">
                         <dx:SimpleButton
                             x:Name="btnOk"
-                            Content="Ok"
-                            Foreground="#50FA7B" />
+                            Height="30"
+                            Content="Ok" />
                     </dxdo:LayoutControlItem>
                     <dxdo:LayoutControlItem ItemWidth="70">
                         <dx:SimpleButton
                             x:Name="btnCancel"
-                            Content="Cancel"
-                            Foreground="#FF5555" />
+                            Height="30"
+                            Content="Cancel" />
                     </dxdo:LayoutControlItem>
                 </dxdo:LayoutGroup>
             </dxdo:LayoutGroup>

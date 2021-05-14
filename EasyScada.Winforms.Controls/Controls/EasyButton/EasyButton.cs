@@ -8,7 +8,7 @@ using EasyScada.Core;
 namespace EasyScada.Winforms.Controls
 {
     [Designer(typeof(EasyButtonDesigner))]
-    public class EasyButton : Button, ISupportConnector, ISupportWriteMultiTag
+    public class EasyButton : Button, ISupportConnector, ISupportWriteMultiTag, IAuthorizeControl, ISupportInitialize
     {
         #region Constructors
         public EasyButton() : base()
@@ -19,12 +19,17 @@ namespace EasyScada.Winforms.Controls
         #endregion
 
         #region ISupportConnector
-
-        IEasyDriverConnector easyDriverConnector;
         [Description("Select driver connector for control")]
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
         public IEasyDriverConnector Connector => EasyDriverConnectorProvider.GetEasyDriverConnector();
+        #endregion
 
+        #region IAuthorizeControl
+        [Browsable(true), TypeConverter(typeof(RoleConverter)), Category(DesignerCategory.EASYSCADA)]
+        public string Role { get; set; }
+
+        [Browsable(false)]
+        public bool IsAuthenticated { get; protected set; }
         #endregion
 
         #region Fields
@@ -72,7 +77,23 @@ namespace EasyScada.Winforms.Controls
                 }
             }
         }
-        
+        #endregion
+
+        #region ISupportInitialize
+        public void BeginInit()
+        {
+        }
+
+        public void EndInit()
+        {
+            if (!DesignMode)
+            {
+                AuthenticateHelper.Logouted += (s, e) =>
+                {
+                    IsAuthenticated = false;
+                };
+            }
+        }
         #endregion
 
         #region Private methods
@@ -84,11 +105,33 @@ namespace EasyScada.Winforms.Controls
                 foreach (var cmd in WriteTagCommands)
                 {
                     if (cmd.Enabled)
-                        commands.Add(new WriteCommand()
+                    {
+                        string[] splitPath = cmd.TagPath.Split('/');
+                        var writeCommand = new WriteCommand()
                         {
-                            PathToTag = cmd.TagPath,
+                            Prefix = string.Join("/", splitPath, 0, splitPath.Length - 1),
+                            TagName = splitPath[splitPath.Length - 1],
                             Value = cmd.WriteValue,
-                        });
+                            WritePiority = WritePiority.High,
+                            WriteMode = WriteMode.WriteAllValue,
+                        };
+                        if (cmd.AllowResetValue)
+                        {
+                            var nextCommand = new WriteCommand()
+                            {
+                                Prefix = string.Join("/", splitPath, 0, splitPath.Length - 1),
+                                TagName = splitPath[splitPath.Length - 1],
+                                Value = cmd.ResetValue,
+                                Delay = cmd.WriteDelay,
+                                WritePiority = WritePiority.High,
+                                WriteMode = WriteMode.WriteAllValue,
+                            };
+                            if (writeCommand.NextCommands == null)
+                                writeCommand.NextCommands = new List<WriteCommand>();
+                            writeCommand.NextCommands.Add(nextCommand);
+                        }
+                        commands.Add(writeCommand);
+                    }
                 }
                 await Connector.WriteMultiTagAsync(commands);
             }
@@ -96,10 +139,25 @@ namespace EasyScada.Winforms.Controls
 
         protected override void OnClick(EventArgs e)
         {
-            base.OnClick(e);
-            if (Enabled)
+            if (!IsAuthenticated)
             {
-                OnWriteTags();
+                if (!AuthenticateHelper.Authenticate(Role))
+                {
+                    AuthenticateForm form = new AuthenticateForm();
+                    if (form.ShowDialog() != DialogResult.OK)
+                        return;
+                }
+
+                IsAuthenticated = true;
+            }
+
+            if (IsAuthenticated)
+            {
+                base.OnClick(e);
+                if (Enabled)
+                {
+                    OnWriteTags();
+                }
             }
         }
 

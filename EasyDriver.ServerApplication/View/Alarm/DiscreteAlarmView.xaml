@@ -42,26 +42,26 @@
                 x:Name="bExport"
                 Command="{Binding ExportCommand}"
                 Content="Export"
-                Glyph="/EasyDriverServer;component/Resources/Images/export_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/export_48px.png"
                 GlyphSize="Default" />
             <dxb:BarButtonItem
                 x:Name="bImport"
                 Command="{Binding ImportCommand}"
                 Content="Import"
-                Glyph="/EasyDriverServer;component/Resources/Images/import_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/import_48px.png"
                 GlyphSize="Default" />
             <dxb:BarButtonItem
                 x:Name="bCopy"
                 Command="{Binding CopyCommand}"
                 Content="Copy"
-                Glyph="/EasyDriverServer;component/Resources/Images/copy_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/copy_48px.png"
                 GlyphSize="Default"
                 KeyGesture="Ctrl+C" />
             <dxb:BarButtonItem
                 x:Name="bCut"
                 Command="{Binding CutCommand}"
                 Content="Cut"
-                Glyph="/EasyDriverServer;component/Resources/Images/cut_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/cut_48px.png"
                 GlyphSize="Default"
                 KeyGesture="Ctrl+X" />
             <dxb:BarButtonItem
@@ -74,25 +74,25 @@
                 x:Name="bDelete"
                 Command="{Binding DeleteCommand}"
                 Content="Delete"
-                Glyph="/EasyDriverServer;component/Resources/Images/delete_48px.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/delete_48px.png"
                 GlyphSize="Default"
                 KeyGesture="Delete" />
             <dxb:BarButtonItem
                 x:Name="bEdit"
                 Command="{Binding EditCommand}"
                 Content="Edit"
-                Glyph="/EasyDriverServer;component/Resources/Images/edit-48.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/edit-48.png"
                 GlyphSize="Default" />
             <dxb:BarButtonItem
                 x:Name="bSearch"
                 Command="{Binding ShowSearchPanelCommand}"
                 Content="Search"
-                Glyph="/EasyDriverServer;component/Resources/Images/search-48.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/search-48.png"
                 GlyphSize="Default" />
             <dxb:BarCheckItem
                 x:Name="bAllowDrag"
                 Content="Allow Drag/Drop Tag"
-                Glyph="/EasyDriverServer;component/Resources/Images/drag-48.png"
+                Glyph="/AHDScadaServer;component/Resources/Images/drag-48.png"
                 GlyphSize="Default" />
             <dxb:BarButtonItem
                 x:Name="bWriteTag"

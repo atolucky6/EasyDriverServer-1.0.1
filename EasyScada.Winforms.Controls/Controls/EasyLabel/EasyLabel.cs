@@ -11,6 +11,11 @@ namespace EasyScada.Winforms.Controls
     [Designer(typeof(EasyLabelDesigner))]
     public class EasyLabel : Label, ISupportConnector, ISupportTag, ISupportInitialize
     {
+        #region Private members
+        DisplayMode _displayMode = DisplayMode.Value;
+        #endregion
+
+
         #region Constructors
         public EasyLabel() : base()
         {
@@ -67,6 +72,44 @@ namespace EasyScada.Winforms.Controls
         }
         #endregion
 
+        #region Properties
+        [Description("Select driver connector for control")]
+        [Browsable(true), Category(DesignerCategory.EASYSCADA)]
+        public DisplayMode DisplayMode
+        {
+            get => _displayMode;
+            set
+            {
+                if (_displayMode != value)
+                {
+                    _displayMode = value;
+                    if (!DesignMode && LinkedTag != null)
+                    {
+                        if (_displayMode == DisplayMode.FullPath)
+                        {
+                            this.SetInvoke((x) =>
+                            {
+                                x.Text = LinkedTag.Path;
+                            });
+                        }
+                        else if (_displayMode == DisplayMode.Name)
+                        {
+                            this.SetInvoke((x) =>
+                            {
+                                x.Text = LinkedTag.Path;
+                            });
+                        }
+                        else
+                        {
+                            OnTagValueChanged(LinkedTag, new TagValueChangedEventArgs(LinkedTag, null, LinkedTag.Value));
+                            OnTagQualityChanged(LinkedTag, new TagQualityChangedEventArgs(LinkedTag, Quality.Uncertain, LinkedTag.Quality));
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region Event handlers
         private void OnConnectorStarted(object sender, EventArgs e)
         {
@@ -76,11 +119,43 @@ namespace EasyScada.Winforms.Controls
                 OnTagQualityChanged(LinkedTag, new TagQualityChangedEventArgs(LinkedTag, Quality.Uncertain, LinkedTag.Quality));
                 LinkedTag.ValueChanged += OnTagValueChanged;
                 LinkedTag.QualityChanged += OnTagQualityChanged;
+
+                if (_displayMode == DisplayMode.FullPath)
+                {
+                    this.SetInvoke((x) =>
+                    {
+                        x.Text = LinkedTag.Path;
+                    });
+                }
+                else if (_displayMode == DisplayMode.Name)
+                {
+                    this.SetInvoke((x) =>
+                    {
+                        x.Text = LinkedTag.Path;
+                    });
+                }
             }
         }
 
         private void OnTagQualityChanged(object sender, TagQualityChangedEventArgs e)
         {
+
+            this.SetInvoke((x) =>
+            {
+                if (_displayMode == DisplayMode.Quality)
+                {
+                    if (x.Text != e.NewQuality.ToString())
+                        x.Text = e.NewQuality.ToString();
+                }
+                else if (_displayMode == DisplayMode.TimeStamp)
+                {
+                    string timeStamp = LinkedTag.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss");
+                    if (x.Text != timeStamp)
+                    {
+                        x.Text = timeStamp;
+                    }
+                }
+            });
 
         }
 
@@ -88,9 +163,25 @@ namespace EasyScada.Winforms.Controls
         {
             this.SetInvoke((x) =>
             {
-                if (x.Text != e.NewValue)
-                    x.Text = e.NewValue;
+                if (_displayMode == DisplayMode.Value)
+                {
+                    if (x.Text != e.NewValue)
+                        x.Text = e.NewValue;
+                }
+                else if (_displayMode == DisplayMode.TimeStamp)
+                {
+                    string timeStamp = LinkedTag.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss");
+                    if (x.Text != timeStamp)
+                    {
+                        x.Text = timeStamp;
+                    }
+                }
             });
+        }
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            base.OnTextChanged(e);
         }
         #endregion
     }

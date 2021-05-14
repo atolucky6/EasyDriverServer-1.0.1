@@ -41,7 +41,7 @@ namespace EasyDriver.OmronHostLink
 
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
-            var mbr = DXMessageBox.Show("Do you want to clear all settings?", "Easy Driver Server", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var mbr = DXMessageBox.Show("Do you want to clear all settings?", "Message", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (mbr == MessageBoxResult.Yes)
             {
                 ReadBlockSettings.Clear();

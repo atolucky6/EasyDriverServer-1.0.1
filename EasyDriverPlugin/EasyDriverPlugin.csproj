@@ -63,6 +63,8 @@
     <Compile Include="Core\Base\Commons\PropertyCategory.cs" />
     <Compile Include="Core\Base\CoreItem\CoreItemBase.cs" />
     <Compile Include="Core\Base\GroupItem\GroupItemBase.cs" />
+    <Compile Include="DataTypes\Integers\BCD.cs" />
+    <Compile Include="DataTypes\Integers\LBCD.cs" />
     <Compile Include="Enums\AccessPermission.cs" />
     <Compile Include="Enums\ByteOrder.cs" />
     <Compile Include="DataTypes\Base\IDataType.cs" />

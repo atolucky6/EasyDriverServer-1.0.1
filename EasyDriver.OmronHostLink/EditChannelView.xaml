@@ -12,7 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:serial="clr-nameSerialPortace:System.IO.Ports;assembly=System"
     MinWidth="400"
-    d:DesignHeight="380"
+    d:DesignHeight="500"
     d:DesignWidth="400"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -20,7 +20,6 @@
             <Setter Property="LabelPosition" Value="Top" />
             <Setter Property="ElementSpace" Value="4" />
             <Setter Property="AddColonToLabel" Value="True" />
-            <Setter Property="Foreground" Value="#F1FA88" />
         </Style>
         <Style TargetType="dxlc:LayoutGroup">
             <Setter Property="ItemSpace" Value="8" />
@@ -40,7 +39,7 @@
                             <DataTemplate>
                                 <TextBlock
                                     FontWeight="Bold"
-                                    Foreground="#FF79C6"
+           
                                     Text="{Binding}" />
                             </DataTemplate>
                         </dxdo:LayoutGroup.CaptionTemplate>
@@ -49,13 +48,13 @@
                                 <dxlc:LayoutGroup ItemLabelsAlignment="Local" Orientation="Vertical">
                                     <dxlc:LayoutGroup Orientation="Horizontal">
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Name">
-                                            <dxe:TextEdit x:Name="txbName" />
+                                            <dxe:TextEdit x:Name="txbName"  Height="30"/>
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                     <dxlc:LayoutGroup Orientation="Horizontal">
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Port">
                                             <dxe:ComboBoxEdit
-                                                x:Name="cobPort"
+                                                x:Name="cobPort" Height="30"
                                                 AllowNullInput="False"
                                                 IsTextEditable="False"
                                                 SelectedIndex="0" />
@@ -63,7 +62,7 @@
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Scan Rate (ms)">
                                             <dxe:SpinEdit
                                                 x:Name="spnScanRate"
-                                                AllowNullInput="False"
+                                                AllowNullInput="False" Height="30"
                                                 Increment="100"
                                                 IsTextEditable="True"
                                                 Mask="d"
@@ -74,22 +73,22 @@
                                     </dxlc:LayoutGroup>
                                     <dxlc:LayoutGroup Orientation="Horizontal">
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Baudrate">
-                                            <dxe:ComboBoxEdit x:Name="cobBaudrate" IsTextEditable="False" />
+                                            <dxe:ComboBoxEdit x:Name="cobBaudrate" IsTextEditable="False" Height="30"/>
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Data bits">
                                             <dxe:ComboBoxEdit
                                                 x:Name="cobDataBits"
                                                 AllowNullInput="False"
-                                                IsTextEditable="False"
+                                                IsTextEditable="False" Height="30"
                                                 SelectedIndex="0" />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                     <dxlc:LayoutGroup Orientation="Horizontal">
                                         <dxlc:LayoutItem AddColonToLabel="True" Label="Parity">
-                                            <dxe:ComboBoxEdit x:Name="cobParity" IsTextEditable="False" />
+                                            <dxe:ComboBoxEdit x:Name="cobParity" IsTextEditable="False" Height="30"/>
                                         </dxlc:LayoutItem>
                                         <dxlc:LayoutItem AddColonToLabel="False" Label="Stop bits">
-                                            <dxe:ComboBoxEdit x:Name="cobStopBits" IsTextEditable="False" />
+                                            <dxe:ComboBoxEdit x:Name="cobStopBits" IsTextEditable="False" Height="30"/>
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                     <dxlc:LayoutGroup Orientation="Horizontal">
@@ -97,7 +96,7 @@
                                             <dxe:SpinEdit
                                                 x:Name="spnDelayPool"
                                                 AllowNullInput="False"
-                                                Increment="1"
+                                                Increment="1" Height="30"
                                                 IsTextEditable="False"
                                                 Mask="d"
                                                 MaskUseAsDisplayFormat="True"
@@ -120,13 +119,13 @@
                         <dx:SimpleButton
                             x:Name="btnOk"
                             Content="Ok"
-                            Foreground="#50FA7B" />
+                            Height="30" />
                     </dxdo:LayoutControlItem>
                     <dxdo:LayoutControlItem ItemWidth="70">
                         <dx:SimpleButton
                             x:Name="btnCancel"
                             Content="Cancel"
-                            Foreground="#FF5555" />
+                            Height="30" />
                     </dxdo:LayoutControlItem>
                 </dxdo:LayoutGroup>
             </dxdo:LayoutGroup>

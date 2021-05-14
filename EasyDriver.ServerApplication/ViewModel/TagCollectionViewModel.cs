@@ -281,48 +281,56 @@ namespace EasyScada.ServerApplication
                 }
                 else
                 {
-                    IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
-                    string oldName = tag.Name;
-                    string oldAddress = tag.Address;
-                    double oldGain = tag.Gain;
-                    double oldOffset = tag.Offset;
-                    IDataType oldDataType = tag.DataType;
-
-                    int oldRefreshRate = tag.RefreshRate;
-                    ByteOrder oldByteOrder = tag.ByteOrder;
-                    AccessPermission oldAccessPermission = tag.AccessPermission;
-
-                    if (ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}") is ITagCore tagCore)
+                    IStationCore station = tag.FindParent<IStationCore>(x => x is IStationCore);
+                    if (station.StationType == "Local")
                     {
-                        if (tagCore.HasChanges())
+                        IEasyDriverPlugin driver = DriverManagerService.GetDriver(tag);
+                        string oldName = tag.Name;
+                        string oldAddress = tag.Address;
+                        double oldGain = tag.Gain;
+                        double oldOffset = tag.Offset;
+                        IDataType oldDataType = tag.DataType;
+
+                        int oldRefreshRate = tag.RefreshRate;
+                        ByteOrder oldByteOrder = tag.ByteOrder;
+                        AccessPermission oldAccessPermission = tag.AccessPermission;
+
+                        if (ContextWindowService.Show(driver.GetEditTagControl(tag), $"Edit Tag - {tag.Name}") is ITagCore tagCore)
                         {
-                            using (Transaction transaction = ReverseService.Begin("Edit Tag"))
+                            if (tagCore.HasChanges())
                             {
-                                if (oldName != tagCore.Name)
-                                    tagCore.AddPropertyChangedReversible(x => x.Name, oldName, tagCore.Name);
-                                if (oldAddress != tagCore.Address)
-                                    tagCore.AddPropertyChangedReversible(x => x.Address, oldAddress, tagCore.Address);
-                                if (oldGain != tagCore.Gain)
-                                    tagCore.AddPropertyChangedReversible(x => x.Gain, oldGain, tagCore.Gain);
-                                if (oldOffset != tagCore.Offset)
-                                    tagCore.AddPropertyChangedReversible(x => x.Offset, oldOffset, tagCore.Offset);
-                                if (oldDataType.Name != tagCore.DataType.Name)
-                                    tagCore.AddPropertyChangedReversible(x => x.DataType, oldDataType, tagCore.DataType);
-                                if (oldRefreshRate != tagCore.RefreshRate)
-                                    tagCore.AddPropertyChangedReversible(x => x.RefreshRate, oldRefreshRate, tagCore.RefreshRate);
-                                if (oldByteOrder != tagCore.ByteOrder)
-                                    tagCore.AddPropertyChangedReversible(x => x.ByteOrder, oldByteOrder, tagCore.ByteOrder);
-                                if (oldAccessPermission != tagCore.AccessPermission)
-                                    tagCore.AddPropertyChangedReversible(x => x.AccessPermission, oldAccessPermission, tagCore.AccessPermission);
-
-                                transaction.Reversing += (s, e) =>
+                                using (Transaction transaction = ReverseService.Begin("Edit Tag"))
                                 {
-                                    WorkspaceManagerService.OpenPanel(this);
-                                };
+                                    if (oldName != tagCore.Name)
+                                        tagCore.AddPropertyChangedReversible(x => x.Name, oldName, tagCore.Name);
+                                    if (oldAddress != tagCore.Address)
+                                        tagCore.AddPropertyChangedReversible(x => x.Address, oldAddress, tagCore.Address);
+                                    if (oldGain != tagCore.Gain)
+                                        tagCore.AddPropertyChangedReversible(x => x.Gain, oldGain, tagCore.Gain);
+                                    if (oldOffset != tagCore.Offset)
+                                        tagCore.AddPropertyChangedReversible(x => x.Offset, oldOffset, tagCore.Offset);
+                                    if (oldDataType.Name != tagCore.DataType.Name)
+                                        tagCore.AddPropertyChangedReversible(x => x.DataType, oldDataType, tagCore.DataType);
+                                    if (oldRefreshRate != tagCore.RefreshRate)
+                                        tagCore.AddPropertyChangedReversible(x => x.RefreshRate, oldRefreshRate, tagCore.RefreshRate);
+                                    if (oldByteOrder != tagCore.ByteOrder)
+                                        tagCore.AddPropertyChangedReversible(x => x.ByteOrder, oldByteOrder, tagCore.ByteOrder);
+                                    if (oldAccessPermission != tagCore.AccessPermission)
+                                        tagCore.AddPropertyChangedReversible(x => x.AccessPermission, oldAccessPermission, tagCore.AccessPermission);
 
-                                transaction.Commit();
+                                    transaction.Reversing += (s, e) =>
+                                    {
+                                        WorkspaceManagerService.OpenPanel(this);
+                                    };
+
+                                    transaction.Commit();
+                                }
                             }
                         }
+                    }
+                    else
+                    {
+                        WindowService.Show("EditRemoteTagView", tag, this);
                     }
                 }
             }
@@ -332,7 +340,7 @@ namespace EasyScada.ServerApplication
 
         public bool CanEdit()
         {
-            return !IsBusy && SelectedItem != null && !Parent.IsReadOnly;
+            return !IsBusy && SelectedItem != null;
         }
 
         public void Export()

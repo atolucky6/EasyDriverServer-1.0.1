@@ -10,6 +10,7 @@ namespace EasyDriverPlugin
         public string Prefix { get; set; }
         [JsonIgnore]
         public ITagCore EquivalentTag { get; set; }
+        [JsonIgnore]
         public IDeviceCore EquivalentDevice { get; set; }
         public string Value { get; set; }
         public DateTime SendTime { get; set; }

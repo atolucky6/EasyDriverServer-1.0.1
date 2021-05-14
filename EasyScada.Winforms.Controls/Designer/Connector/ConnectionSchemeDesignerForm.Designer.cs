@@ -45,6 +45,7 @@
             this.easySplitContainer2 = new EasyScada.Winforms.Controls.EasySplitContainer();
             this.groupProjectTree = new EasyScada.Winforms.Controls.EasyHeaderGroup();
             this.projectTree = new EasyScada.Winforms.Controls.HieraticalTreeView();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupTagCollection = new EasyScada.Winforms.Controls.EasyHeaderGroup();
             this.searchTagControl = new EasyScada.Winforms.Controls.SearchTagControl();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -63,7 +64,6 @@
             this.btnSave = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnGetConnectionSchema = new System.Windows.Forms.ToolStripButton();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -215,9 +215,9 @@
             // 
             this.easyLabel1.Location = new System.Drawing.Point(7, 9);
             this.easyLabel1.Name = "easyLabel1";
-            this.easyLabel1.Size = new System.Drawing.Size(94, 20);
+            this.easyLabel1.Size = new System.Drawing.Size(131, 20);
             this.easyLabel1.TabIndex = 0;
-            this.easyLabel1.Values.Text = "Server Address:";
+            this.easyLabel1.Values.Text = "Server Address Or Url:";
             // 
             // txbPort
             // 
@@ -307,7 +307,6 @@
             this.projectTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.projectTree.HideSelection = false;
             this.projectTree.ImageIndex = 0;
-            this.projectTree.ImageList = this.imageList1;
             this.projectTree.ItemHeight = 21;
             this.projectTree.Location = new System.Drawing.Point(0, 0);
             this.projectTree.Name = "projectTree";
@@ -315,6 +314,18 @@
             this.projectTree.SelectedImageIndex = 0;
             this.projectTree.Size = new System.Drawing.Size(338, 419);
             this.projectTree.TabIndex = 2;
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.White;
+            this.imageList1.Images.SetKeyName(0, "remote_station_24px-2.png");
+            this.imageList1.Images.SetKeyName(1, "local_station_16px.png");
+            this.imageList1.Images.SetKeyName(2, "remote_station_24px.png");
+            this.imageList1.Images.SetKeyName(3, "channel_24px.png");
+            this.imageList1.Images.SetKeyName(4, "device_24px.png");
+            this.imageList1.Images.SetKeyName(5, "folder_48px.png");
+            this.imageList1.Images.SetKeyName(6, "tag_24px.png");
             // 
             // groupTagCollection
             // 
@@ -476,18 +487,6 @@
             this.btnGetConnectionSchema.Name = "btnGetConnectionSchema";
             this.btnGetConnectionSchema.Size = new System.Drawing.Size(23, 22);
             this.btnGetConnectionSchema.Text = "toolStripButton4";
-            // 
-            // imageList1
-            // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.White;
-            this.imageList1.Images.SetKeyName(0, "remote_station_24px-2.png");
-            this.imageList1.Images.SetKeyName(1, "local_station_16px.png");
-            this.imageList1.Images.SetKeyName(2, "remote_station_24px.png");
-            this.imageList1.Images.SetKeyName(3, "channel_24px.png");
-            this.imageList1.Images.SetKeyName(4, "device_24px.png");
-            this.imageList1.Images.SetKeyName(5, "folder_48px.png");
-            this.imageList1.Images.SetKeyName(6, "tag_24px.png");
             // 
             // openFileDialog1
             // 

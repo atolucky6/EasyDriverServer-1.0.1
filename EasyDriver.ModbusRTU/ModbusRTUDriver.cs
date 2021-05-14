@@ -35,10 +35,14 @@ namespace EasyDriver.ModbusRTU
                 new Bool(),
                 new Word(),
                 new DWord(),
+                new LWord(),
                 new Int() { Name = "Short" },
                 new DInt() { Name = "Long" },
+                new LInt() {Name = "LInt"},
                 new Real() { Name = "Float" },
                 new LReal() { Name = "Double" },
+                new BCD(),
+                new LBCD(),
                 new ModbusRTU.String() { Name = "String" },
             };
         }
@@ -88,7 +92,7 @@ namespace EasyDriver.ModbusRTU
 
         readonly ModbusSerialRTU mbMaster;
         private Task refreshTask;
-        readonly SemaphoreSlim locker;
+        readonly object locker = new object();
         readonly Stopwatch stopwatch;
 
         public List<string> ComPortSource { get; set; }
@@ -133,24 +137,25 @@ namespace EasyDriver.ModbusRTU
                 return false;
 
             // Đợi semaphore rảnh thì bắt đầu kết nối
-            locker.Wait();
-            try
+            lock (locker)
             {
-                // Khởi tạo cổng serial
-                if (Channel.ParameterContainer.Parameters.Count >= 5)
-                    mbMaster.Init(Channel.Port, Channel.Baudrate, Channel.DataBits, Channel.Parity, Channel.StopBits);
+                try
+                {
+                    // Khởi tạo cổng serial
+                    if (Channel.ParameterContainer.Parameters.Count >= 5)
+                        mbMaster.Init(Channel.Port, Channel.Baudrate, Channel.DataBits, Channel.Parity, Channel.StopBits);
 
-                // Mở cổng serial
-                return mbMaster.Open();
-            }
-            catch { return false; }
-            finally
-            {
-                // Giải phóng semaphore
-                locker.Release();
-                // Nếu task đang null thì khởi tạo task refresh để thực hiện việc đọc dữ liệu
-                if (refreshTask == null)
-                    refreshTask = Task.Factory.StartNew(Refresh, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                    // Mở cổng serial
+                    return mbMaster.Open();
+                }
+                catch { return false; }
+                finally
+                {
+                    // Giải phóng semaphore
+                    // Nếu task đang null thì khởi tạo task refresh để thực hiện việc đọc dữ liệu
+                    if (refreshTask == null)
+                        refreshTask = Task.Factory.StartNew(Refresh, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                }
             }
         }
 
@@ -160,13 +165,14 @@ namespace EasyDriver.ModbusRTU
         /// <returns></returns>
         public override bool Stop()
         {
-            try
+            lock (locker)
             {
-                locker.Wait();
-                return mbMaster.Close();
+                try
+                {
+                    return mbMaster.Close();
+                }
+                catch { return false; }
             }
-            catch { return false; }
-            finally { locker.Release(); }
         }
 
         /// <summary>
@@ -515,20 +521,22 @@ namespace EasyDriver.ModbusRTU
         {
             try
             {
-                locker.Wait();
-                switch (addressType)
+                lock (locker)
                 {
-                    case AddressType.InputContact:
-                        return mbMaster.ReadDiscreteInputContact(deviceId, offset, count, ref boolBuffer);
-                    case AddressType.OutputCoil:
-                        return mbMaster.ReadCoils(deviceId, offset, count, ref boolBuffer);
-                    default:
-                        break;
+                    switch (addressType)
+                    {
+                        case AddressType.InputContact:
+                            return mbMaster.ReadDiscreteInputContact(deviceId, offset, count, ref boolBuffer);
+                        case AddressType.OutputCoil:
+                            return mbMaster.ReadCoils(deviceId, offset, count, ref boolBuffer);
+                        default:
+                            break;
+                    }
+                    return false;
                 }
-                return false;
             }
             catch { return false; }
-            finally { Thread.Sleep(Channel.DelayBetweenPool); locker.Release(); }
+            finally { Thread.Sleep(Channel.DelayBetweenPool); }
         }
 
         /// <summary>
@@ -544,23 +552,24 @@ namespace EasyDriver.ModbusRTU
         {
             try
             {
-                locker.Wait();
-                switch (addressType)
+                lock (locker)
                 {
-                    case AddressType.InputRegister:
-                        return mbMaster.ReadInputRegisters(deviceId, offset, count, ref byteBuffer);
-                    case AddressType.HoldingRegister:
-                        return mbMaster.ReadHoldingRegisters(deviceId, offset, count, ref byteBuffer);
-                    default:
-                        break;
+                    switch (addressType)
+                    {
+                        case AddressType.InputRegister:
+                            return mbMaster.ReadInputRegisters(deviceId, offset, count, ref byteBuffer);
+                        case AddressType.HoldingRegister:
+                            return mbMaster.ReadHoldingRegisters(deviceId, offset, count, ref byteBuffer);
+                        default:
+                            break;
+                    }
+                    return false;
                 }
-                return false;
             }
             catch { return false; }
             finally 
             { 
                 Thread.Sleep(Channel.DelayBetweenPool); 
-                locker.Release();
             }
         }
 
@@ -630,22 +639,24 @@ namespace EasyDriver.ModbusRTU
                                                         return response;
                                                     }
                                                     Thread.Sleep(cmd.Delay);
-                                                    locker.Wait();
-                                                    try
-                                                    {
-                                                        bool[] writeValues = cmd.CustomWriteValue.Select(x =>
-                                                        {
-                                                            if (x > 0)
-                                                                return true;
-                                                            return false;
-                                                        }).ToArray();
 
-                                                        response.IsSuccess = mbMaster.WriteMultipleCoils(deviceId, offset, (ushort)(writeValues.Length), writeValues);
-                                                        if (!response.IsSuccess)
-                                                            response.Error = mbMaster.modbusStatus;
+                                                    lock (locker)
+                                                    {
+                                                        try
+                                                        {
+                                                            bool[] writeValues = cmd.CustomWriteValue.Select(x =>
+                                                            {
+                                                                if (x > 0)
+                                                                    return true;
+                                                                return false;
+                                                            }).ToArray();
+
+                                                            response.IsSuccess = mbMaster.WriteMultipleCoils(deviceId, offset, (ushort)(writeValues.Length), writeValues);
+                                                            if (!response.IsSuccess)
+                                                                response.Error = mbMaster.modbusStatus;
+                                                        }
+                                                        catch { }
                                                     }
-                                                    catch { }
-                                                    finally { locker.Release(); }
                                                     break;
                                                 }
                                             case AddressType.HoldingRegister:
@@ -658,15 +669,16 @@ namespace EasyDriver.ModbusRTU
                                                         return response;
                                                     }
                                                     Thread.Sleep(cmd.Delay);
-                                                    locker.Wait();
-                                                    try
+                                                    lock (locker)
                                                     {
-                                                        response.IsSuccess = mbMaster.WriteHoldingRegisters(deviceId, offset, (ushort)(cmd.CustomWriteValue.Length / 2), cmd.CustomWriteValue);
-                                                        if (!response.IsSuccess)
-                                                            response.Error = mbMaster.modbusStatus;
+                                                        try
+                                                        {
+                                                            response.IsSuccess = mbMaster.WriteHoldingRegisters(deviceId, offset, (ushort)(cmd.CustomWriteValue.Length / 2), cmd.CustomWriteValue);
+                                                            if (!response.IsSuccess)
+                                                                response.Error = mbMaster.modbusStatus;
+                                                        }
+                                                        catch { }
                                                     }
-                                                    catch { }
-                                                    finally { locker.Release(); }
                                                     break;
                                                 }
                                             default:
@@ -756,36 +768,49 @@ namespace EasyDriver.ModbusRTU
                                             case AddressType.OutputCoil:
                                                 {
                                                     Thread.Sleep(cmd.Delay);
-                                                    locker.Wait();
-                                                    try
+                                                    lock (locker)
                                                     {
-                                                        bool[] writeValues = cmd.CustomWriteValue.Select(x =>
+                                                        try
                                                         {
-                                                            if (x > 0)
-                                                                return true;
-                                                            return false;
-                                                        }).ToArray();
-                                                        bool bitResult = ByteHelper.GetBitAt(writeBuffer, 0, 0);
-                                                        response.IsSuccess = mbMaster.WriteSingleCoil(deviceId, (ushort)tag.AddressOffset, bitResult);
-                                                        if (!response.IsSuccess)
-                                                            response.Error = mbMaster.modbusStatus;
+                                                            bool[] writeValues = new bool[1];
+
+                                                            if (cmd.Value == "1")
+                                                            {
+                                                                writeValues[0] = true;
+                                                            }
+                                                            else if (cmd.Value == "0")
+                                                            {
+                                                                writeValues[0] = false;
+                                                            }
+                                                            else
+                                                            {
+                                                                response.IsSuccess = false;
+                                                                response.Error = "Write value not valid";
+                                                                return response;
+                                                            }
+
+                                                            bool bitResult = ByteHelper.GetBitAt(writeBuffer, 0, 0);
+                                                            response.IsSuccess = mbMaster.WriteSingleCoil(deviceId, (ushort)tag.AddressOffset, bitResult);
+                                                            if (!response.IsSuccess)
+                                                                response.Error = mbMaster.modbusStatus;
+                                                        }
+                                                        catch { }
+                                                        break;
                                                     }
-                                                    catch { }
-                                                    finally { locker.Release(); }
-                                                    break;
                                                 }
                                             case AddressType.HoldingRegister:
                                                 {
                                                     Thread.Sleep(cmd.Delay);
-                                                    locker.Wait();
-                                                    try
+                                                    lock (locker)
                                                     {
-                                                        response.IsSuccess = mbMaster.WriteHoldingRegisters(deviceId, (ushort)tag.AddressOffset, (ushort)(writeBuffer.Length / 2), writeBuffer);
-                                                        if (!response.IsSuccess)
-                                                            response.Error = mbMaster.modbusStatus;
+                                                        try
+                                                        {
+                                                            response.IsSuccess = mbMaster.WriteHoldingRegisters(deviceId, (ushort)tag.AddressOffset, (ushort)(writeBuffer.Length / 2), writeBuffer);
+                                                            if (!response.IsSuccess)
+                                                                response.Error = mbMaster.modbusStatus;
+                                                        }
+                                                        catch { }
                                                     }
-                                                    catch { }
-                                                    finally { locker.Release(); }
                                                     break;
                                                 }
                                             default:
@@ -885,6 +910,8 @@ namespace EasyDriver.ModbusRTU
         public override void Dispose()
         {
             IsDisposed = true;
+            Stop();
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         public override object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null)

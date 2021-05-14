@@ -27,7 +27,7 @@
         </Style>
     </UserControl.Resources>
     <dx:BackgroundPanel FontSize="14">
-        <DockPanel LastChildFill="True" Margin="8">
+        <DockPanel Margin="8" LastChildFill="True">
             <TabControl>
                 <TabItem Header="General">
                     <dxdo:DockLayoutManager AllowCustomization="False" Foreground="Black">

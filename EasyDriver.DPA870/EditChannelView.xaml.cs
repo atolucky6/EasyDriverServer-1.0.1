@@ -120,21 +120,22 @@ namespace EasyDriver.DPA870
                 return;
             }
 
-            string currentPort = Driver.Channel.ParameterContainer.Parameters["Port"].ToString();
+            string currentPort = Channel.ParameterContainer.Parameters["Port"].ToString();
             if (cobPort.SelectedItem?.ToString() == currentPort || CheckPortNotIsInUse(cobPort.SelectedItem?.ToString()))
             {
                 Channel.Name = txbName.Text?.Trim();
-                Driver.Channel.ParameterContainer.DisplayName = "ModbusRTU Comunication Parameters";
-                Driver.Channel.ParameterContainer.DisplayParameters = "ModbusRTU Comunication Parameters";
-                Driver.Channel.ParameterContainer.Parameters["Port"] = cobPort.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["Baudrate"] = cobBaudrate.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["Parity"] = cobParity.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["DataBits"] = cobDataBits.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["StopBits"] = cobStopBits.SelectedItem.ToString();
-                Driver.Channel.ParameterContainer.Parameters["ScanRate"] = spnScanRate.Value.ToString();
-                Driver.Channel.ParameterContainer.Parameters["DelayBetweenPool"] = spnDelayPool.Value.ToString();
 
-                ((Parent as FrameworkElement).Parent as Window).Tag = Channel;
+                Channel.ParameterContainer.DisplayName = "DPA870 Comunication Parameters";
+                Channel.ParameterContainer.DisplayParameters = "DPA870 Comunication Parameters";
+                Channel.ParameterContainer.SetValue("Port", cobPort.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("Baudrate", cobBaudrate.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("Parity", cobParity.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("DataBits", cobDataBits.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("StopBits", cobStopBits.SelectedItem.ToString());
+                Channel.ParameterContainer.SetValue("ScanRate", spnScanRate.Value.ToString());
+                Channel.ParameterContainer.SetValue("DelayBetweenPool", spnDelayPool.Value.ToString());
+
+                Tag = Channel;
                 ((Parent as FrameworkElement).Parent as Window).Close();
             }
             else

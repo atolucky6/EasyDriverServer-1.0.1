@@ -2,6 +2,7 @@
 using DeviceId.Encoders;
 using DeviceId.Formatters;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -29,6 +30,8 @@ namespace EasyScada.License
                 using (HttpClient client = new HttpClient())
                 {
                     string result = await client.GetStringAsync(url);
+
+                    result = result?.Trim('"');
                     if (int.TryParse(result, out int limitTagCount))
                     {
                         if (limitTagCount > 0)
@@ -47,7 +50,7 @@ namespace EasyScada.License
                     return 0;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 return IsAuthenticated(product, serialKey);
             }
@@ -93,10 +96,10 @@ namespace EasyScada.License
             try
             {
                 RegistryKey key = null;
-                if (Registry.LocalMachine.GetSubKeyNames().Contains(@"SOFTWARE\EASYSCADA"))
-                    key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\EASYSCADA");
+                if (Registry.LocalMachine.GetSubKeyNames().Contains(@"Software\EasyScada"))
+                    key = Registry.LocalMachine.OpenSubKey(@"Software\EasyScada");
                 else
-                    key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\EASYSCADA");
+                    key = Registry.LocalMachine.CreateSubKey(@"Software\EasyScada");
 
                 if (key != null)
                 {
@@ -104,6 +107,17 @@ namespace EasyScada.License
                 }
             }
             catch {  }
+        }
+
+        public class LicenseModel
+        {
+            public string SerialKey { get; set; }
+            public string Product { get; set; }
+            public string ComputerId { get; set; }
+            public string LicenseType { get; set; }
+            public string ActiveTime { get; set; }
+            public string Activated { get; set; }
+            public string LimitTagCount { get; set; }
         }
     }
 

@@ -8,6 +8,7 @@ namespace EasyScada.Winforms.Controls
     {
         SearchTagControl editControl;
         string selectedTag = "";
+        bool isSelected;
 
         protected override Control GetEditControl(string propertyName, object currentValue)
         {
@@ -18,18 +19,23 @@ namespace EasyScada.Winforms.Controls
                 tagPaths.Add(item?.ToString());
             editControl.TagPathSource = tagPaths;
             editControl.SelectedItemDoubleClick += EditControl_SelectedItemDoubleClick;
+            isSelected = false;
             return editControl;
         }
 
         private void EditControl_SelectedItemDoubleClick(object obj)
         {
+            isSelected = true;
             selectedTag = obj?.ToString();
             EditorService.CloseDropDown();
         }
 
         protected override object GetEditedValue(Control editControl, string propertyName, object oldValue)
         {
-            return selectedTag;
+            if (isSelected)
+                return selectedTag;
+            else
+                return oldValue;
         }
     }
 }

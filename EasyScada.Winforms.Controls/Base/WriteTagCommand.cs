@@ -20,8 +20,41 @@ namespace EasyScada.Winforms.Controls
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
         public string WriteValue { get; set; }
 
+        protected int _WriteDelay ;
         [Browsable(true), Category(DesignerCategory.EASYSCADA)]
-        public int WriteDelay { get; set; }
+        public int WriteDelay
+        {
+            get
+            {
+                if (_WriteDelay > 1000)
+                    _WriteDelay = 1000;
+                if (_WriteDelay < 0)
+                    _WriteDelay = 0;
+                return _WriteDelay;
+            }
+            set => _WriteDelay = value;
+        }
+
+        [Browsable(true), Category(DesignerCategory.EASYSCADA)]
+        public bool AllowResetValue { get; set; }
+
+        protected int _ResetDelay;
+        [Browsable(true), Category(DesignerCategory.EASYSCADA)]
+        public int ResetDelay
+        {
+            get
+            {
+                if (_ResetDelay > 1000)
+                    _ResetDelay = 1000;
+                if (_ResetDelay < 0)
+                    _ResetDelay = 0;
+                return _ResetDelay;
+            }
+            set => _ResetDelay = value;
+        }
+
+        [Browsable(true), Category(DesignerCategory.EASYSCADA)]
+        public string ResetValue { get; set; }
 
         #endregion
 
@@ -63,8 +96,7 @@ namespace EasyScada.Winforms.Controls
             if (Connector != null &&
                 Connector.IsStarted &&
                 LinkedTag != null &&
-                LinkedTag.Value != writeValue &&
-                IsNumber(writeValue))
+                LinkedTag.Value != writeValue)
             {
                 await Task.Delay(WriteDelay);
 

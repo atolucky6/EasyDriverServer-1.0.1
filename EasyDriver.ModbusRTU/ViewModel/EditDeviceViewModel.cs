@@ -358,23 +358,23 @@ namespace EasyDriver.ModbusRTU
                     case nameof(DeviceId):
                         if (int.TryParse(DeviceId, out int deviceId))
                         {
-                            if (deviceId < 0 || deviceId > 254)
+                            if (deviceId < 0 || deviceId > 255)
                                 Error = $"Value is out of range.";
-                            else
-                            {
-                                var channel = Parent.FindParent<Channel>(x => x is Channel);
-                                foreach (var item in channel.GetAllDevices())
-                                {
-                                    if (item is Device device)
-                                    {
-                                        if (device != Device && device.DeviceId == deviceId)
-                                        {
-                                            Error = $"The device id '{DeviceId}' is already used by device '{device.Name}'";
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+                            //else
+                            //{
+                            //    var channel = Parent.FindParent<Channel>(x => x is Channel);
+                            //    foreach (var item in channel.GetAllDevices())
+                            //    {
+                            //        if (item is Device device)
+                            //        {
+                            //            if (device != Device && device.DeviceId == deviceId)
+                            //            {
+                            //                Error = $"The device id '{DeviceId}' is already used by device '{device.Name}'";
+                            //                break;
+                            //            }
+                            //        }
+                            //    }
+                            //}
                         }
                         else
                         {

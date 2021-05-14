@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EasyDriver.DPA870
 {
-    public class DPA870Driver : IEasyDriverPlugin
+    public class DPA870Driver : EasyDriverPluginBase
     {
         #region Static
 
@@ -48,8 +48,19 @@ namespace EasyDriver.DPA870
         readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private string receivedLine;
 
-        public event EventHandler Disposed;
-        public event EventHandler Refreshed;
+        public override event EventHandler Disposed;
+        public override event EventHandler Refreshed;
+
+        public override bool Start(IChannelCore channel)
+        {
+            Channel = channel;
+            return Connect();
+        }
+
+        public override bool Stop()
+        {
+            return Disconnect();
+        }
 
         public bool Connect()
         {
@@ -188,38 +199,40 @@ namespace EasyDriver.DPA870
             finally { semaphore.Release(); }
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             IsDisposed = true;
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        public object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null)
+        public override List<IDataType> SupportDataTypes { get => supportDataTypes; }
+
+        public override object GetCreateChannelControl(IGroupItem parent, IChannelCore templateItem = null)
         {
             return new CreateChannelView(this, parent, templateItem);
         }
 
-        public object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
+        public override object GetCreateDeviceControl(IGroupItem parent, IDeviceCore templateItem = null)
         {
             return new CreateDeviceView(this, parent, templateItem);
         }
 
-        public object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
+        public override object GetCreateTagControl(IGroupItem parent, ITagCore templateItem = null)
         {
             return new CreateTagView(this, parent, templateItem);
         }
 
-        public object GetEditChannelControl(IChannelCore channel)
+        public override object GetEditChannelControl(IChannelCore channel)
         {
             return new EditChannelView(this, channel);
         }
 
-        public object GetEditDeviceControl(IDeviceCore device)
+        public override object GetEditDeviceControl(IDeviceCore device)
         {
             return new EditDeviceView(this, device);
         }
 
-        public object GetEditTagControl(ITagCore tag)
+        public override object GetEditTagControl(ITagCore tag)
         {
             return new EditTagView(this, tag);
         }
@@ -233,5 +246,22 @@ namespace EasyDriver.DPA870
         {
             return Quality.Bad;
         }
+
+        public override IChannelCore CreateChannel(IGroupItem parent)
+        {
+            return new ChannelCore(parent);
+        }
+
+        public override IDeviceCore CreateDevice(IGroupItem parent)
+        {
+            return new DeviceCore(parent);
+        }
+
+        public override ITagCore CreateTag(IGroupItem parent)
+        {
+            return new TagCore(parent);
+        }
+
+
     }
 }

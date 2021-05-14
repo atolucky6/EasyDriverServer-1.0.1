@@ -25,5 +25,20 @@ namespace EasyScada.Core
                 }
             }
         }
+
+        public static IEnumerable<ICoreItem> GetAllChildItems(this ICoreItem coreItem)
+        {
+            if (coreItem != null && coreItem.Childs != null)
+            {
+                foreach (var item in coreItem.Childs)
+                {
+                    if (item is ICoreItem tag)
+                        yield return tag;
+
+                    foreach (var childTag in item.GetAllChildItems())
+                        yield return childTag as ICoreItem;
+                }
+            }
+        }
     }
 }
