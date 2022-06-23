@@ -21,7 +21,7 @@
     <PackageReference Include="devexpress.windowsdesktop.wpf.docking" Version="20.2.3" />
     <PackageReference Include="devexpress.windowsdesktop.wpf.grid.core" Version="20.2.3" />
     <PackageReference Include="devexpress.windowsdesktop.wpf.layoutcontrol" Version="20.2.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.IO.Ports" Version="5.0.0" />
   </ItemGroup>
 
