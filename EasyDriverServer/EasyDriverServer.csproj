@@ -35,7 +35,7 @@
     <PackageReference Include="Microsoft.AspNet.SignalR.Core" Version="2.4.1" />
     <PackageReference Include="Microsoft.AspNet.SignalR.SelfHost" Version="2.4.1" />
     <PackageReference Include="Microsoft.AspNet.SignalR.Utils" Version="2.4.1" />
-    <PackageReference Include="Microsoft.Owin" Version="4.1.1" />
+    <PackageReference Include="Microsoft.Owin" Version="4.2.2" />
     <PackageReference Include="Microsoft.Owin.Cors" Version="4.1.1" />
     <PackageReference Include="Microsoft.Owin.Security" Version="4.1.1" />
     <PackageReference Include="Microsoft.Owin.SelfHost" Version="4.1.1" />
