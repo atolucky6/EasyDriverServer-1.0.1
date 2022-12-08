@@ -10,7 +10,7 @@
     <PackageReference Include="devexpress.windowsdesktop.wpf.docking" Version="20.2.3" />
     <PackageReference Include="devexpress.windowsdesktop.wpf.layoutcontrol" Version="20.2.3" />
     <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.4.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
   <ItemGroup>
