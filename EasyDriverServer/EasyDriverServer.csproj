@@ -29,7 +29,7 @@
     <PackageReference Include="devexpress.windowsdesktop.wpf.docking" Version="20.2.3" />
     <PackageReference Include="devexpress.windowsdesktop.wpf.grid.core" Version="20.2.3" />
     <PackageReference Include="devexpress.windowsdesktop.wpf.layoutcontrol" Version="20.2.3" />
-    <PackageReference Include="LiteDB" Version="5.0.9" />
+    <PackageReference Include="LiteDB" Version="5.0.13" />
     <PackageReference Include="Microsoft.AspNet.Cors" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.4.1" />
     <PackageReference Include="Microsoft.AspNet.SignalR.Core" Version="2.4.1" />
